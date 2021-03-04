@@ -180,6 +180,13 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), "rownames", "rownames.value", withRuntimeInfo = true)
   }
 
+  fun testCompletionDeepPredefinedParametersS3LikeS4() {
+    doTest("new('Device', C<caret>)", "Class", withRuntimeInfo = true)
+    doWrongVariantsTest("new('Device', ..<caret>)", "...", withRuntimeInfo = true)
+    doWrongVariantsTest("new('Device', ava<caret>)", "available", withRuntimeInfo = true)
+    doWrongVariantsTest("new('Device', li<caret>)", "lib.loc", withRuntimeInfo = true)
+  }
+
   fun testNotImportedNamedArguments() {
     doTest("data.table::frollmean(table, al<caret>)", "algo", "align", withRuntimeInfo = true)
     doTest("frollmean(table, al<caret>)", "algo", "align", withRuntimeInfo = true)

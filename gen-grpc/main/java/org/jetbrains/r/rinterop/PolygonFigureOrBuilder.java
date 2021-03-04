@@ -8,21 +8,19 @@ public interface PolygonFigureOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>repeated fixed64 point = 1;</code>
-   * @return A list containing the point.
+   * <code>.rplugininterop.Polyline polyline = 1;</code>
+   * @return Whether the polyline field is set.
    */
-  java.util.List<java.lang.Long> getPointList();
+  boolean hasPolyline();
   /**
-   * <code>repeated fixed64 point = 1;</code>
-   * @return The count of point.
+   * <code>.rplugininterop.Polyline polyline = 1;</code>
+   * @return The polyline.
    */
-  int getPointCount();
+  org.jetbrains.r.rinterop.Polyline getPolyline();
   /**
-   * <code>repeated fixed64 point = 1;</code>
-   * @param index The index of the element to return.
-   * @return The point at the given index.
+   * <code>.rplugininterop.Polyline polyline = 1;</code>
    */
-  long getPoint(int index);
+  org.jetbrains.r.rinterop.PolylineOrBuilder getPolylineOrBuilder();
 
   /**
    * <code>int32 strokeIndex = 2;</code>

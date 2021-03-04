@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<idea-plugin>
+
+  <resource-bundle/>
+  <extensions defaultExtensionNs="com.intellij">
+    <projectService serviceImplementation="org.jetbrains.r.remote.settings.RRemoteSettings"/>
+
+    <projectService serviceImplementation="org.jetbrains.r.remote.filesystem.RRemoteHostViewManager"/>
+
+    <projectService serviceImplementation="org.jetbrains.r.remote.filesystem.ROpenedRemoteFilesState"/>
+
+    <applicationService serviceImplementation="org.jetbrains.r.remote.host.RRemoteHostManager"/>
+
+    <toolWindow id="R Remote Host" anchor="left" canCloseContents="false" icon="/icons/toolWindow/RConsole.svg"
+                factoryClass="org.jetbrains.r.remote.filesystem.RRemoteHostToolWindowFactory" secondary="true"
+                doNotActivateOnStart="true"/>
+
+    <rInterpreterSettingsProvider implementation="org.jetbrains.r.remote.settings.RRemoteInterpreterSettingsProvider"/>
+
+    <virtualFileSystem implementationClass="org.jetbrains.r.remote.filesystem.RRemoteVFS"
+                       key="rplugin-remote" physical="false"/>
+
+    <editorTabTitleProvider implementation="org.jetbrains.r.remote.filesystem.RRemoteFileEditorTabTitleProvider"/>
+
+    <navbar implementation="org.jetbrains.r.remote.filesystem.RootNameNavBarExtension" order="first"/>
+  </extensions>
+
+  <!-- Remote host view actions -->
+  <actions>
+    <group id="org.jetbrains.r.remote.filesystem.RRemoteHostViewPopupMenu">
+      <action id="org.jetbrains.r.remote.filesystem.RRemoteHostViewNewActionGroup"
+              class="org.jetbrains.r.remote.filesystem.RRemoteHostViewNewActionGroup"
+              icon="AllIcons.General.Add" popup="true"/>
+      <reference id="RemoteHostView.SetPermissions"/>
+      <reference id="RemoteHostView.Rename"/>
+      <reference id="$Delete"/>
+      <reference id="$Cut"/>
+      <reference id="$Copy"/>
+      <reference id="$Paste"/>
+      <reference id="RemoteHostView.CopyPaths"/>
+    </group>
+  </actions>
+</idea-plugin>

@@ -121,7 +121,19 @@ public interface PlotOrBuilder extends
       int index);
 
   /**
-   * <code>int32 error = 6;</code>
+   * <code>int32 previewComplexity = 6;</code>
+   * @return The previewComplexity.
+   */
+  int getPreviewComplexity();
+
+  /**
+   * <code>int32 totalComplexity = 7;</code>
+   * @return The totalComplexity.
+   */
+  int getTotalComplexity();
+
+  /**
+   * <code>int32 error = 8;</code>
    * @return The error.
    */
   int getError();

@@ -12,7 +12,6 @@ import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -35,7 +34,8 @@ interface RInterpreter : RInterpreterInfo {
   val interpreterPathOnHost: String
 
   fun suggestConsoleName(workingDirectory: String): String {
-    return "[ ${FileUtil.getLocationRelativeToUserHome(LocalFileSystem.getInstance().extractPresentableUrl(workingDirectory))} ]"
+    val path = Path.of(project.basePath).parent.relativize(Path.of(workingDirectory)).toString()
+    return LocalFileSystem.getInstance().extractPresentableUrl(path)
   }
 
   fun getFilePathAtHost(file: VirtualFile): String? {
@@ -96,20 +96,24 @@ data class LocalOrRemotePath(val path: String, val isRemote: Boolean)
 fun RInterpreter.isLocal(): Boolean = interpreterLocation is RLocalInterpreterLocation
 
 fun RInterpreter.runHelper(helper: File, args: List<String>, workingDirectory: String = basePath) =
-  RInterpreterUtil.runHelper(interpreterLocation, helper, workingDirectory, args)
+  RInterpreterUtil.runHelper(interpreterLocation, helper, workingDirectory, args, project)
 
 fun RInterpreter.uploadFileToHost(file: File, preserveName: Boolean = false) = interpreterLocation.uploadFileToHost(file, preserveName)
 
 fun RInterpreter.runProcessOnHost(command: GeneralCommandLine, workingDirectory: String = basePath, isSilent: Boolean = false) =
   interpreterLocation.runProcessOnHost(command, workingDirectory, isSilent)
 
-fun RInterpreter.runHelperProcess(script: String, args: List<String>, workingDirectory: String = basePath): BaseProcessHandler<*> {
-  val interpreterArgs= RInterpreterUtil.getRunHelperArgs(script, args)
-  return interpreterLocation.runInterpreterOnHost(interpreterArgs, workingDirectory)
+fun RInterpreter.runHelperProcess(script: String,
+                                  scriptArgs: List<String>,
+                                  workingDirectory: String = basePath,
+                                  environment: Map<String, String>? = null,
+                                  interpreterArgs: List<String>? = null): BaseProcessHandler<*> {
+  val allArguments = RInterpreterUtil.getRunHelperArgs(script, scriptArgs, project, interpreterArgs)
+  return interpreterLocation.runInterpreterOnHost(allArguments, workingDirectory, environment)
 }
 
 fun RInterpreter.runMultiOutputHelper(helper: File, workingDirectory: String?, args: List<String>, processor: RMultiOutputProcessor) {
-  return RInterpreterUtil.runMultiOutputHelper(interpreterLocation, helper, workingDirectory, args, processor)
+  return RInterpreterUtil.runMultiOutputHelper(interpreterLocation, helper, workingDirectory, args, processor, project)
 }
 
 fun RInterpreter.uploadFileToHostIfNeeded(path: LocalOrRemotePath, preserveName: Boolean = false): String {

@@ -86,6 +86,11 @@ private static final long serialVersionUID = 0L;
             httpUserAgent_ = s;
             break;
           }
+          case 56: {
+
+            enableRStudioApi_ = input.readBool();
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -292,6 +297,17 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int ENABLERSTUDIOAPI_FIELD_NUMBER = 7;
+  private boolean enableRStudioApi_;
+  /**
+   * <code>bool enableRStudioApi = 7;</code>
+   * @return The enableRStudioApi.
+   */
+  @java.lang.Override
+  public boolean getEnableRStudioApi() {
+    return enableRStudioApi_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -324,6 +340,9 @@ private static final long serialVersionUID = 0L;
     if (!getHttpUserAgentBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 6, httpUserAgent_);
     }
+    if (enableRStudioApi_ != false) {
+      output.writeBool(7, enableRStudioApi_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -353,6 +372,10 @@ private static final long serialVersionUID = 0L;
     if (!getHttpUserAgentBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, httpUserAgent_);
     }
+    if (enableRStudioApi_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(7, enableRStudioApi_);
+    }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
@@ -380,6 +403,8 @@ private static final long serialVersionUID = 0L;
         != other.getSaveOnExit()) return false;
     if (!getHttpUserAgent()
         .equals(other.getHttpUserAgent())) return false;
+    if (getEnableRStudioApi()
+        != other.getEnableRStudioApi()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -405,6 +430,9 @@ private static final long serialVersionUID = 0L;
         getSaveOnExit());
     hash = (37 * hash) + HTTPUSERAGENT_FIELD_NUMBER;
     hash = (53 * hash) + getHttpUserAgent().hashCode();
+    hash = (37 * hash) + ENABLERSTUDIOAPI_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getEnableRStudioApi());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -550,6 +578,8 @@ private static final long serialVersionUID = 0L;
 
       httpUserAgent_ = "";
 
+      enableRStudioApi_ = false;
+
       return this;
     }
 
@@ -582,6 +612,7 @@ private static final long serialVersionUID = 0L;
       result.loadWorkspace_ = loadWorkspace_;
       result.saveOnExit_ = saveOnExit_;
       result.httpUserAgent_ = httpUserAgent_;
+      result.enableRStudioApi_ = enableRStudioApi_;
       onBuilt();
       return result;
     }
@@ -651,6 +682,9 @@ private static final long serialVersionUID = 0L;
       if (!other.getHttpUserAgent().isEmpty()) {
         httpUserAgent_ = other.httpUserAgent_;
         onChanged();
+      }
+      if (other.getEnableRStudioApi() != false) {
+        setEnableRStudioApi(other.getEnableRStudioApi());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -1043,6 +1077,37 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
       
       httpUserAgent_ = value;
+      onChanged();
+      return this;
+    }
+
+    private boolean enableRStudioApi_ ;
+    /**
+     * <code>bool enableRStudioApi = 7;</code>
+     * @return The enableRStudioApi.
+     */
+    @java.lang.Override
+    public boolean getEnableRStudioApi() {
+      return enableRStudioApi_;
+    }
+    /**
+     * <code>bool enableRStudioApi = 7;</code>
+     * @param value The enableRStudioApi to set.
+     * @return This builder for chaining.
+     */
+    public Builder setEnableRStudioApi(boolean value) {
+      
+      enableRStudioApi_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool enableRStudioApi = 7;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearEnableRStudioApi() {
+      
+      enableRStudioApi_ = false;
       onChanged();
       return this;
     }

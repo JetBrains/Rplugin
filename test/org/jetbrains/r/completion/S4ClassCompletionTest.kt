@@ -181,7 +181,7 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
       setClass('MyClass1')
       new('My<caret>')
       setClass('MyClass2')
-    """.trimIndent(), "MyClass1" to "", "MyClass2" to "")
+    """.trimIndent(), "MyClass1" to "foo.R", "MyClass2" to "foo.R")
   }
 
   fun testVirtualClassName() {
@@ -200,7 +200,7 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
       setClass('MyClass1')
       setClass('MyClass2')
       setClass('MyClass3', slots = c(slot = 'My<caret>'))
-    """.trimIndent(), "MyClass1" to "", "MyClass2" to "")
+    """.trimIndent(), "MyClass1" to "foo.R", "MyClass2" to "foo.R")
     doWrongVariantsTest("setClass('MyClass', slots = c('POSIX<caret>'))", "POSIXct", "POSIXlt", "POSIXt")
     doWrongVariantsTest("setClass('MyClass', slots = c('POSIX<caret>' = 'character'))", "POSIXct", "POSIXlt", "POSIXt")
     doWrongVariantsTest("setClass('MyClass', slot = 'class<caret>')",
@@ -215,7 +215,7 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
       setClass('MyClass1')
       setClass('MyClass2')
       setClass('MyClass3', contains = c('My<caret>'))
-    """.trimIndent(), "MyClass1" to "", "MyClass2" to "")
+    """.trimIndent(), "MyClass1" to "foo.R", "MyClass2" to "foo.R")
     doWrongVariantsTest("setClass('MyClass', contains = c('class<caret>' = 'character'))",
                         "classGeneratorFunction", "className", "classPrototypeDef", "classRepresentation")
   }
@@ -228,7 +228,7 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
       setClass('MyClass1')
       setClass('MyClass2')
       setClass('MyClass3', 'My<caret>')
-    """.trimIndent(), "MyClass1" to "", "MyClass2" to "")
+    """.trimIndent(), "MyClass1" to "foo.R", "MyClass2" to "foo.R")
     doWrongVariantsTest("setClass('MyClass', representation = representation('class<caret>' = 'character'))",
                         "classGeneratorFunction", "className", "classPrototypeDef", "classRepresentation")
   }
@@ -241,16 +241,16 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
       setClass('MyClass1')
       setClass('MyClass2')
       setClass('MyClass3', contains = MyC<caret>)
-    """.trimIndent(), "\"MyClass1\"" to "", "\"MyClass2\"" to "", strict = false)
+    """.trimIndent(), "\"MyClass1\"" to "foo.R", "\"MyClass2\"" to "foo.R", strict = false)
     doTest("""
       setClass('MyClass1')
       setClass('MyClass2')
       setClass('MyClass3', representation = representation(MyC<caret>))
-    """.trimIndent(), "\"MyClass1\"" to "", "\"MyClass2\"" to "", strict = false)
+    """.trimIndent(), "\"MyClass1\"" to "foo.R", "\"MyClass2\"" to "foo.R", strict = false)
     doTest("""
       setClass('Test', slots = c(name = 'numeric'))
       new_test <- new(Tes<caret>)
-    """.trimIndent(), "\"Test\"" to "", strict = false)
+    """.trimIndent(), "\"Test\"" to "foo.R", strict = false)
   }
 
   fun testOmitSetClassName() {
@@ -272,7 +272,15 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
       setClass('MyClass1')
       setClass('MyClass2')
       setClass('MyClass3', 'My<caret>')
-    """.trimIndent(), "MyClass1" to "TestPackage", "MyClass2" to "TestPackage")
+    """.trimIndent(), "MyClass1" to "foo.R", "MyClass2" to "foo.R")
+  }
+
+  fun testUserClassInSubdirectory() {
+    myFixture.addFileToProject("subdir/data.R", "setClass('DataClass')")
+    doTest("""
+      setClass('DataFoo', contains = 'DataClass')
+      setClass('MyClass', 'Data<caret>')
+    """.trimIndent(), "DataClass" to "subdir/data.R", "DataFoo" to "foo.R")
   }
 
   fun testConsole() {
@@ -338,6 +346,21 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
   fun testSlotInConsoleNew() {
     rInterop.executeCode("setClass('OldDevice', slots = c(imei = 'character'))")
     doTest("new('OldDevice', ime<caret>)", "imei" to "character", strict = false, withRuntimeInfo = true, inConsole = true)
+  }
+
+  // Trying to test case when class names like "<-" place somewhere at the end of the completion list
+  fun testLanguageClassNamePriority() {
+    val result = doTestBase("setClass('MyClass', slots = c(slotName = '<caret>'))")
+    val strangeClasses = listOf("{", "(", "<-")
+    for (langClass in strangeClasses) {
+      val numberInOrder = result.indexOfFirst { it.lookupString == langClass }
+      assertTrue("""
+        Language class "$langClass" not in the end of completion list
+        Completion list size: ${result.size}
+        Expected that it will be after ${result.size - 15} elements
+        Number in order: $numberInOrder
+      """.trimIndent(), numberInOrder > result.size - 15)
+    }
   }
 
   fun testApplyCompletionField() {

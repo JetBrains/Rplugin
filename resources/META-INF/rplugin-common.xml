@@ -77,6 +77,9 @@ You can find the source code in the following repositories:
 
       <extensionPoint qualifiedName="com.intellij.rInterpreterSettingsProvider"
                       interface="org.jetbrains.r.settings.RInterpreterSettingsProvider" dynamic="true"/>
+
+      <extensionPoint qualifiedName="com.intellij.rS4ContextProvider"
+                      interface="org.jetbrains.r.classes.s4.context.RS4ContextProvider" dynamic="true"/>
     </extensionPoints>
 
     <resource-bundle>messages.RPluginBundle</resource-bundle>
@@ -354,10 +357,11 @@ You can find the source code in the following repositories:
     </actions>
 
     <extensions defaultExtensionNs="org.jetbrains.plugins.notebooks">
-        <notebookCellTypeAwareLexerProvider language="RMarkdown"
-                                            implementationClass="org.jetbrains.r.editor.RMarkdownCellTypeAwareLexerProvider"/>
+        <notebookCellLinesProvider language="RMarkdown"
+                                   implementationClass="org.jetbrains.r.editor.RMarkdownCellLinesProvider"/>
         <editor.notebookEditorAppearanceProvider implementation="org.jetbrains.r.editor.RMarkdownNotebookEditorAppearanceProvider"/>
         <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownCellToolbarController$Factory"/>
+        <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownOutputInlayController$Factory"/>
     </extensions>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -718,15 +722,25 @@ You can find the source code in the following repositories:
         <!-- Registry keys -->
         <registryKey defaultValue="120000" key="r.interpreter.defaultTimeout" description="Default timeout for R interpreter operations"/>
         <registryKey defaultValue="30000" key="r.interpreter.initializedTimeout" description="Timeout for initializing Rwrapper"/>
+        <registryKey defaultValue="true" key="r.interpreter.useOutputInlays" description="Use new implementation for output inlays"/>
 
         <!-- Interpreter -->
         <rInterpreterSettingsProvider implementation="org.jetbrains.r.settings.RLocalInterpreterSettingsProvider"/>
+
+        <!-- S4 contexts-->
+        <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.RS4NewObjectContextProvider"/>
+        <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.RS4SetClassContextProvider"/>
 
       <notificationGroup id="RDataFrameViewer" displayType="BALLOON"/>
       <notificationGroup id="RMarkdownRenderError" displayType="BALLOON"/>
       <notificationGroup id="RMarkdownRunChunkStatus" displayType="BALLOON"/>
 
       <iconProvider implementation="org.jetbrains.r.icons.RProjectIconProvider" order="first"/>
+
+      <!-- Run configuration -->
+      <configurationType implementation="org.jetbrains.r.run.configuration.RRunConfigurationType"/>
+      <runConfigurationProducer implementation="org.jetbrains.r.run.configuration.RRunConfigurationProducer"/>
+      <programRunner implementation="org.jetbrains.r.run.configuration.RProgramRunner"/>
     </extensions>
 
   <extensions defaultExtensionNs="org.intellij.intelliLang">
@@ -744,6 +758,7 @@ You can find the source code in the following repositories:
   <extensions defaultExtensionNs="org.jetbrains.r">
     <librarySupportProvider implementation="org.jetbrains.r.codeInsight.libraries.RShinySupportProvider"/>
     <librarySupportProvider implementation="org.jetbrains.r.codeInsight.libraries.RDataTableSupportProvider"/>
+    <librarySupportProvider implementation="org.jetbrains.r.codeInsight.libraries.Ggplot2SupportProvider"/>
     <tableContextProvider implementation="org.jetbrains.r.codeInsight.table.RDplyrTableContextManager"/>
     <tableContextProvider implementation="org.jetbrains.r.codeInsight.table.RDataTableContextManager"/>
     <tableContextProvider implementation="org.jetbrains.r.codeInsight.table.RGgplotTableContextManager"/>

@@ -29,27 +29,25 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
 
   private val manager = ChunkGraphicsManager(project)
 
-  @Volatile
-  private var globalResolution: Int? = null
-
   override val useDefaultSaveAction = false
   override val extraActions = createExtraActions()
 
+  private var overridesGlobal = false
+
   init {
     toolbarPane.dataComponent = wrapper.component
-    setResolution(manager.globalResolution)
+    wrapper.targetResolution = manager.globalResolution
     manager.addGlobalResolutionListener(parent) { newGlobalResolution ->
-      setResolution(newGlobalResolution)
+      if (!overridesGlobal) {
+        wrapper.targetResolution = newGlobalResolution
+      }
     }
     wrapper.isStandalone = manager.isStandalone
     manager.addStandaloneListener(parent) { newStandalone ->
-      wrapper.isStandalone = newStandalone
+      if (!overridesGlobal) {
+        wrapper.isStandalone = newStandalone
+      }
     }
-  }
-
-  private fun setResolution(resolution: Int) {
-    wrapper.targetResolution = resolution
-    globalResolution = resolution
   }
 
   override fun addToolbar() {
@@ -162,22 +160,19 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
     val initialSettings = getInitialSettings(isDarkModeEnabled)
     val dialog = RChunkGraphicsSettingsDialog(initialSettings) { newSettings ->
       wrapper.isAutoResizeEnabled = newSettings.isAutoResizedEnabled
-      wrapper.targetResolution = newSettings.localResolution
-      wrapper.isStandalone = newSettings.localStandalone
-      if (newSettings.localStandalone && wrapper.isStandalone != newSettings.localStandalone) {
+      overridesGlobal = newSettings.overridesGlobal
+      wrapper.targetResolution = if (overridesGlobal) newSettings.localResolution else newSettings.globalResolution
+      val newStandalone = if (overridesGlobal) newSettings.localStandalone else newSettings.globalStandalone
+      wrapper.isStandalone = newStandalone
+      if (newStandalone && wrapper.isStandalone != newStandalone) {
         Messages.showErrorDialog(project, SWITCH_ERROR_DESCRIPTION, SWITCH_ERROR_TITLE)
       }
       manager.isStandalone = newSettings.globalStandalone
       newSettings.isDarkModeEnabled?.let { newDarkModeEnabled ->
-        if (newDarkModeEnabled != isDarkModeEnabled) {
-          manager.isDarkModeEnabled = newDarkModeEnabled
-        }
+        manager.isDarkModeEnabled = newDarkModeEnabled
       }
       newSettings.globalResolution?.let { newGlobalResolution ->
-        if (newGlobalResolution != globalResolution) {
-          // Note: no need to set `this.globalResolution` here: it will be changed automatically by a listener below
-          manager.globalResolution = newGlobalResolution
-        }
+        manager.globalResolution = newGlobalResolution
       }
     }
     dialog.show()
@@ -186,7 +181,8 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
   private fun getInitialSettings(isDarkModeEnabled: Boolean?) = RChunkGraphicsSettingsDialog.Settings(
     wrapper.isAutoResizeEnabled,
     isDarkModeEnabled,
-    globalResolution,
+    overridesGlobal,
+    manager.globalResolution,
     wrapper.localResolution,
     manager.isStandalone,
     wrapper.isStandalone

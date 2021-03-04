@@ -7,6 +7,7 @@ package org.jetbrains.r.rendering.toolwindow
 import com.intellij.codeInsight.documentation.DocumentationComponent
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
@@ -81,6 +82,7 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
     const val ID = "R Tools"
 
     fun showDocumentation(psiElement: PsiElement) {
+      if (ApplicationManager.getApplication().isUnitTestMode) return
       val project = psiElement.project
       RNonStealingToolWindowInvoker(project, HELP).showWindow()
       DocumentationManager.getInstance(project).fetchDocInfo(psiElement, getDocumentationComponent(project))
@@ -108,7 +110,7 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
       }
     }
 
-    private fun getDocumentationComponent(project: Project): DocumentationComponent =
+    fun getDocumentationComponent(project: Project): DocumentationComponent =
       findContent(project, HELP).component as DocumentationComponent
 
     private fun getViewerComponent(project: Project): RViewerToolWindow =

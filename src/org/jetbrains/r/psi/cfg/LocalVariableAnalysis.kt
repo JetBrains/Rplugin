@@ -67,7 +67,7 @@ private class AnalysisInstance(private val controlFlowHolder: RControlFlowHolder
     when (val element = instruction.element) {
       is RAssignmentStatement -> {
         val assignee = element.assignee
-        if (assignee is RIdentifierExpression) {
+        if (assignee is RIdentifierExpression && PsiTreeUtil.getParentOfType(element, RSubscriptionExpression::class.java) == null) {
           result = addWrite(info, assignee, element.isClosureAssignment)
         }
       }

@@ -32,7 +32,6 @@ import com.intellij.util.concurrency.NonUrgentExecutor
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.intellij.datavis.r.inlays.components.InlayProgressStatus
-import org.intellij.datavis.r.ui.InlineToolbar
 import org.intellij.datavis.r.ui.UiCustomizer
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.CancellablePromise
@@ -164,27 +163,12 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   private fun updateInlaysForViewport() {
     invokeLater {
       if (Disposer.isDisposed(editor.disposable)) return@invokeLater
-      val viewportRange = calculateViewportRange()
-      val expansionRange = calculateInlayExpansionRange(viewportRange)
+      val viewportRange = calculateViewportRange(editor)
+      val expansionRange = calculateInlayExpansionRange(editor, viewportRange)
       for (element in inlayElements) {
         updateInlayForViewport(element, viewportRange, expansionRange)
       }
     }
-  }
-
-  private fun calculateViewportRange(): IntRange {
-    val viewport = editor.scrollPane.viewport
-    val yMin = viewport.viewPosition.y
-    val yMax = yMin + viewport.height
-    return yMin until yMax
-  }
-
-  private fun calculateInlayExpansionRange(viewportRange: IntRange): IntRange {
-    val startLine = editor.xyToLogicalPosition(Point(0, viewportRange.first)).line
-    val endLine = editor.xyToLogicalPosition(Point(0, viewportRange.last + 1)).line
-    val startOffset = editor.document.getLineStartOffset(max(startLine - VIEWPORT_INLAY_RANGE, 0))
-    val endOffset = editor.document.getLineStartOffset(max(min(endLine + VIEWPORT_INLAY_RANGE, editor.document.lineCount - 1), 0))
-    return startOffset..endOffset
   }
 
   private fun updateInlayForViewport(element: PsiElement, viewportRange: IntRange, expansionRange: IntRange) {
@@ -258,7 +242,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
           updateInlays()
         }
       }
-    })
+    }, editor.disposable)
   }
 
   private fun scheduleIntervalUpdate(offset: Int, length: Int) {
@@ -453,3 +437,18 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
 }
 
 const val VIEWPORT_INLAY_RANGE = 20
+
+fun calculateViewportRange(editor: EditorImpl): IntRange {
+  val viewport = editor.scrollPane.viewport
+  val yMin = viewport.viewPosition.y
+  val yMax = yMin + viewport.height
+  return yMin until yMax
+}
+
+fun calculateInlayExpansionRange(editor: EditorImpl, viewportRange: IntRange): IntRange {
+  val startLine = editor.xyToLogicalPosition(Point(0, viewportRange.first)).line
+  val endLine = editor.xyToLogicalPosition(Point(0, viewportRange.last + 1)).line
+  val startOffset = editor.document.getLineStartOffset(max(startLine - VIEWPORT_INLAY_RANGE, 0))
+  val endOffset = editor.document.getLineStartOffset(max(min(endLine + VIEWPORT_INLAY_RANGE, editor.document.lineCount - 1), 0))
+  return startOffset..endOffset
+}

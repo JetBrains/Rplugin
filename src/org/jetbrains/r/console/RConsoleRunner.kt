@@ -32,6 +32,7 @@ import com.intellij.util.WaitForProgressToShow
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RFileType
@@ -40,6 +41,7 @@ import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.help.RWebHelpProvider
 import org.jetbrains.r.interpreter.RInterpreter
+import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 import org.jetbrains.r.run.graphics.RGraphicsDevice
@@ -48,6 +50,7 @@ import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.graphics.ui.RGraphicsToolWindowListener
 import org.jetbrains.r.settings.REditorSettings
 import org.jetbrains.r.settings.RGraphicsSettings
+import org.jetbrains.r.settings.RSettings
 import org.jetbrains.r.util.RPathUtil
 import java.awt.BorderLayout
 import javax.swing.JComponent
@@ -64,20 +67,24 @@ class RConsoleRunner(private val interpreter: RInterpreter,
 
   fun initAndRun(): Promise<RConsoleView> {
     val promise = AsyncPromise<RConsoleView>()
-    fixRProfileFile().onProcessed {
-      UIUtil.invokeLaterIfNeeded {
-        val placeholder = RConsoleToolWindowFactory.addConsolePlaceholder(project, contentIndex)
-        RInteropUtil.runRWrapperAndInterop(interpreter, workingDir).onSuccess { rInterop ->
-          initByInterop(rInterop, promise)
-          rInterop.state.scheduleSkeletonUpdate()
-        }.onError {
-          showErrorMessage(project, it.message ?: "Cannot find suitable rwrapper", "Cannot run console")
-          promise.setError(it)
-          UIUtil.invokeLaterIfNeeded {
-            placeholder?.manager?.removeContent(placeholder, true)
+    checkRProfile().onSuccess {
+      interpreter.prepareForExecution().onProcessed {
+        UIUtil.invokeLaterIfNeeded {
+          val placeholder = RConsoleToolWindowFactory.addConsolePlaceholder(project, contentIndex)
+          RInteropUtil.runRWrapperAndInterop(interpreter, workingDir).onSuccess { rInterop ->
+            initByInterop(rInterop, promise)
+            rInterop.state.scheduleSkeletonUpdate()
+          }.onError {
+            showErrorMessage(project, it.message ?: "Cannot find suitable rwrapper", "Cannot run console")
+            promise.setError(it)
+            UIUtil.invokeLaterIfNeeded {
+              placeholder?.manager?.removeContent(placeholder, true)
+            }
           }
         }
       }
+    }.onError {
+      promise.setError(it)
     }
     return promise
   }
@@ -170,16 +177,15 @@ class RConsoleRunner(private val interpreter: RInterpreter,
     panel.add(consoleView.component, BorderLayout.CENTER)
 
     actionToolbar.setTargetComponent(panel)
-    val contentDescriptor = RunContentDescriptor(consoleView, consoleView.rInterop.processHandler, panel, consoleTitle, RFileType.icon)
 
+    if (ApplicationManager.getApplication().isUnitTestMode) return
+    // do not create RunContentDescriptor for tests
+    val contentDescriptor = RunContentDescriptor(consoleView, consoleView.rInterop.processHandler, panel, consoleTitle, RFileType.icon)
     contentDescriptor.setFocusComputable { consoleView.consoleEditor.contentComponent }
     contentDescriptor.isAutoFocusContent = true
-
     registerActionShortcuts(actions, consoleView.consoleEditor.component)
     registerActionShortcuts(actions, panel)
-    if (!ApplicationManager.getApplication().isUnitTestMode) {
-      RConsoleToolWindowFactory.addContent(project, contentDescriptor)
-    }
+    RConsoleToolWindowFactory.addContent(project, contentDescriptor)
   }
 
   private fun createSetCurrentDirectory(): AnAction {
@@ -280,10 +286,9 @@ class RConsoleRunner(private val interpreter: RInterpreter,
   }
 
   // R-509: Newline is required in the end of .Rprofile
-  private fun fixRProfileFile(): Promise<Unit> {
-    val promise = AsyncPromise<Unit>()
-    runAsync {
-      val file = interpreter.findFileByPathAtHost(RPathUtil.join(workingDir, ".Rprofile")) ?: return@runAsync
+  private fun fixRProfile(): Promise<Unit> {
+    return runAsync {
+      val file = interpreter.findFileByPathAtHost(RPathUtil.join(workingDir, ".Rprofile")) ?: return@runAsync resolvedPromise()
       val needFix = runReadAction {
         val document = FileDocumentManager.getInstance().getDocument(file) ?: return@runReadAction false
         val text = document.text
@@ -294,11 +299,22 @@ class RConsoleRunner(private val interpreter: RInterpreter,
           val document = FileDocumentManager.getInstance().getDocument(file) ?: return@runWriteCommandAction
           document.insertString(document.textLength, "\n")
         }
+        interpreter.prepareForExecution()
+      } else {
+        resolvedPromise()
       }
-    }.onProcessed {
-      interpreter.prepareForExecution().processed(promise)
+    }.thenAsync {
+      it
     }
-    return promise
+  }
+
+  private fun checkRProfile(): Promise<Unit> {
+    if (RSettings.getInstance(project).disableRprofile) return resolvedPromise()
+    return fixRProfile().thenAsync {
+      runAsync<Unit> {
+        RInterpreterUtil.validateRProfile(project, interpreter.interpreterLocation, workingDir, true)
+      }
+    }
   }
 }
 

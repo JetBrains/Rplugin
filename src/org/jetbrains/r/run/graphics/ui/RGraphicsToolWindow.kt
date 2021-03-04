@@ -5,11 +5,16 @@
 
 package org.jetbrains.r.run.graphics.ui
 
+import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ex.CheckboxAction
+import com.intellij.openapi.actionSystem.ex.ComboBoxAction
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.colors.EditorColorsManager
+import com.intellij.openapi.project.DumbAware
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.util.ui.update.MergingUpdateQueue
@@ -45,10 +50,18 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   private val graphicsPanel = GraphicsPanel(project, project)
   private val plotViewer = RPlotViewer(project, project)
 
+  private val usesPlotViewer: Boolean
+    get() = isStandalone && lastOutput?.plot?.error == null
+
   init {
     updateContent()
     toolbar = createToolbar(project)
     project.messageBus.syncPublisher(CHANGE_DARK_MODE_TOPIC).onDarkModeChanged(RGraphicsSettings.isDarkModeEnabled(project))
+    RGraphicsSettings.addStandaloneListener(project, project) { newStandalone ->
+      isStandalone = newStandalone
+      showCurrent()
+      postScreenParameters()
+    }
 
     graphicsPanel.component.addResizeListener {
       schedulePostScreenParameters()
@@ -65,7 +78,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun updateContent() {
-    val targetContent = if (isStandalone) plotViewer else graphicsPanel.component
+    val targetContent = if (usesPlotViewer) plotViewer else graphicsPanel.component
     updateContent(targetContent)
   }
 
@@ -124,7 +137,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   private fun showCurrent() {
     lastOutput?.let { output ->
       updateContent()
-      if (isStandalone) {
+      if (usesPlotViewer) {
         showPlot(output.plot)
       } else {
         if (output.snapshot != null) {
@@ -137,25 +150,12 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun showPlot(plot: RPlot) {
-    if (plot.error != null) {
-      updateContent(graphicsPanel.component)
-      val message = RPlotUtil.getErrorDescription(plot.error)
-      graphicsPanel.showMessageWithLink(message, SWITCH_TO_BUILTIN_TEXT, this::switchToBuiltinEngine)
-    } else {
-      plotViewer.resolution = resolution
-      plotViewer.plot = plot
-    }
-  }
-
-  private fun switchToBuiltinEngine() {
-    RGraphicsSettings.setStandalone(project, false)
-    isStandalone = false
-    showCurrent()
-    postScreenParameters()
+    plotViewer.resolution = resolution
+    plotViewer.plot = plot
   }
 
   private fun createToolbar(project: Project): JComponent {
-    return ToolbarUtil.createToolbar(RToolWindowFactory.PLOTS, createActionHolderGroups(), DarkModeCheckBox(project))
+    return ToolbarUtil.createToolbar(RToolWindowFactory.PLOTS, createActionHolderGroups(), EngineComboBox(), DarkModeCheckBox(project))
   }
 
   private fun createActionHolderGroups(): List<List<ToolbarUtil.ActionHolder>> {
@@ -200,7 +200,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   private fun exportCurrentOutput() {
     lastOutput?.let { output ->
       val initialSize = getAdjustedScreenDimension()
-      if (isStandalone) {
+      if (usesPlotViewer) {
         RGraphicsExportDialog.show(project, project, output.plot, initialSize, resolution)
       } else {
         output.snapshot?.let { snapshot ->
@@ -212,7 +212,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
   private fun copyCurrentOutput() {
     lastOutput?.let {
-      val image = if (isStandalone) plotViewer.image else graphicsPanel.image
+      val image = if (usesPlotViewer) plotViewer.image else graphicsPanel.image
       if (image != null) {
         ClipboardUtils.copyImageToClipboard(image)
       }
@@ -221,7 +221,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
   private fun zoomCurrentOutput() {
     lastOutput?.let { output ->
-      if (isStandalone) {
+      if (usesPlotViewer) {
         RGraphicsZoomDialog.show(project, project, output.plot, resolution)
       } else {
         output.snapshot?.let { snapshot ->
@@ -242,16 +242,12 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun showSettingsDialog() {
-    RGraphicsSettingsDialogEx.show(resolution, isStandalone) { newResolution, newStandalone ->
+    RGraphicsSettingsDialogEx.show(resolution) { newResolution ->
       if (newResolution != resolution) {
         val oldParameters = RGraphicsSettings.getScreenParameters(project)
         val newParameters = oldParameters.copy(resolution = newResolution)
         RGraphicsSettings.setScreenParameters(project, newParameters)
         resolution = newResolution
-      }
-      if (newStandalone != isStandalone) {
-        RGraphicsSettings.setStandalone(project, newStandalone)
-        isStandalone = newStandalone
       }
       showCurrent()
       postScreenParameters()
@@ -259,7 +255,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun getAdjustedScreenDimension(): Dimension {
-    return if (isStandalone) plotViewer.size else graphicsPanel.imageComponentSize
+    return if (usesPlotViewer) plotViewer.size else graphicsPanel.imageComponentSize
   }
 
   private fun schedulePostScreenParameters() {
@@ -274,11 +270,12 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     val newDimension = getAdjustedScreenDimension()
     if (newDimension.isValid) {
       RGraphicsSettings.setScreenDimension(project, newDimension)
-      if (!isStandalone) {
+      val isRescalingEnabled = !usesPlotViewer
+      if (isRescalingEnabled) {
         repository.configuration?.let { oldConfiguration ->
           val parameters = oldConfiguration.screenParameters
           val newParameters = parameters.copy(dimension = newDimension, resolution = resolution)
-          repository.configuration = oldConfiguration.copy(screenParameters = newParameters)
+          repository.configuration = oldConfiguration.copy(screenParameters = newParameters, isRescalingEnabled = isRescalingEnabled)
         }
       }
     }
@@ -286,12 +283,41 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
   private fun postOutputNumber() {
     repository.configuration?.let { oldConfiguration ->
-      repository.configuration = oldConfiguration.copy(snapshotNumber = lastNumber)
+      repository.configuration = oldConfiguration.copy(isRescalingEnabled = !usesPlotViewer, snapshotNumber = lastNumber)
     }
   }
 
   private fun loadOutputNumber(): Int? {
     return repository.configuration?.snapshotNumber
+  }
+
+  private inner class EngineComboBox : ComboBoxAction(), DumbAware {
+    override fun update(e: AnActionEvent) {
+      val canRenderPlot = lastOutput?.plot?.error == null
+      e.presentation.text = if (isStandalone && canRenderPlot) ENGINE_IDE_TEXT else ENGINE_R_TEXT
+      e.presentation.description = if (canRenderPlot) ENGINE_TOOLTIP else ENGINE_CORRUPTED_TOOLTIP
+      e.presentation.isEnabled = canRenderPlot
+    }
+
+    override fun createPopupActionGroup(button: JComponent): DefaultActionGroup {
+      val ideAction = createAction(ENGINE_IDE_TEXT, ENGINE_IDE_DESCRIPTION, newStandalone = true)
+      val rAction = createAction(ENGINE_R_TEXT, ENGINE_R_DESCRIPTION, newStandalone = false)
+      return DefaultActionGroup(ideAction, rAction)
+    }
+
+    private fun createAction(text: String, description: String, newStandalone: Boolean): AnAction {
+      return object : DumbAwareAction(text, description, null) {
+        override fun actionPerformed(e: AnActionEvent) {
+          setStandalone(newStandalone)
+        }
+      }
+    }
+
+    private fun setStandalone(newStandalone: Boolean) {
+      if (newStandalone != isStandalone) {
+        RGraphicsSettings.setStandalone(project, newStandalone)
+      }
+    }
   }
 
   private class DarkModeCheckBox(private val project: Project): CheckboxAction(DARK_MODE_TITLE, DARK_MODE_DESCRIPTION, null) {
@@ -333,6 +359,13 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     private val RESCALING_HINT = RBundle.message("graphics.panel.rescaling.hint")
 
     private val SWITCH_TO_BUILTIN_TEXT = RBundle.message("plot.viewer.switch.to.builtin")
+
+    private val ENGINE_TOOLTIP = RBundle.message("graphics.panel.engine.tooltip")
+    private val ENGINE_CORRUPTED_TOOLTIP = RBundle.message("graphics.panel.engine.corrupted.tooltip")
+    private val ENGINE_IDE_TEXT = RBundle.message("graphics.panel.engine.ide.text")
+    private val ENGINE_IDE_DESCRIPTION = RBundle.message("graphics.panel.engine.ide.description")
+    private val ENGINE_R_TEXT = RBundle.message("graphics.panel.engine.r.text")
+    private val ENGINE_R_DESCRIPTION = RBundle.message("graphics.panel.engine.r.description")
 
     private val DARK_MODE_TITLE = RBundle.message("graphics.panel.action.darkMode.title")
     private val DARK_MODE_DESCRIPTION = RBundle.message("graphics.panel.action.darkMode.description")

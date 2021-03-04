@@ -6,7 +6,9 @@ package org.jetbrains.r.configuration
 
 import com.intellij.openapi.options.UnnamedConfigurable
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.ui.layout.*
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
@@ -25,6 +27,8 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
   private val interpreterPanel = RManageInterpreterPanel(RBundle.message("project.settings.interpreter.label"), false, null)
   private val loadWorkspaceCheckBox = JCheckBox(RBundle.message("project.settings.load.workspace.checkbox"))
   private val saveWorkspaceCheckBox = JCheckBox(RBundle.message("project.settings.save.workspace.checkbox"))
+  private val disableRprofileCheckbox = JCheckBox(RBundle.message("project.settings.disable.rprofile.checkbox"))
+  private val rStudioApiEnabledCheckbox = JCheckBox(RBundle.message("project.settings.enable.rstudioapi.checkbox"))
   private val component: JComponent
   private val extensionConfigurables = RInterpreterSettingsProvider.getProviders().mapNotNull { it.createSettingsConfigurable(project) }
 
@@ -33,6 +37,8 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
       row { component(interpreterPanel.component).constraints(growX) }
       row { component(loadWorkspaceCheckBox) }
       row { component(saveWorkspaceCheckBox) }
+      row { component(disableRprofileCheckbox) }
+      row { component(rStudioApiEnabledCheckbox) }
       extensionConfigurables
         .mapNotNull { it.createComponent() }
         .forEach { newComponent ->
@@ -45,6 +51,8 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
     return interpreterPanel.isModified() ||
            loadWorkspaceCheckBox.isSelected != settings.loadWorkspace ||
            saveWorkspaceCheckBox.isSelected != settings.saveWorkspace ||
+           disableRprofileCheckbox.isSelected != settings.disableRprofile ||
+           rStudioApiEnabledCheckbox.isSelected != settings.rStudioApiEnabled ||
            extensionConfigurables.any { it.isModified }
   }
 
@@ -63,6 +71,8 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
     interpreterPanel.reset()
     loadWorkspaceCheckBox.isSelected = settings.loadWorkspace
     saveWorkspaceCheckBox.isSelected = settings.saveWorkspace
+    disableRprofileCheckbox.isSelected = settings.disableRprofile
+    rStudioApiEnabledCheckbox.isSelected = settings.rStudioApiEnabled
   }
 
   override fun apply() {
@@ -79,6 +89,11 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
       settings.saveWorkspace = saveWorkspaceCheckBox.isSelected
       onSaveWorkspaceChanged()
     }
+    settings.disableRprofile = disableRprofileCheckbox.isSelected
+    if (settings.rStudioApiEnabled != rStudioApiEnabledCheckbox.isSelected) {
+      settings.rStudioApiEnabled = rStudioApiEnabledCheckbox.isSelected
+      onRStudioApiEnabledChanged(rStudioApiEnabledCheckbox.isSelected)
+    }
     reset()
   }
 
@@ -90,6 +105,16 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
     if (project.isDefault) return
     RConsoleManager.getInstance(project).consoles.forEach {
       it.rInterop.saveOnExit = settings.saveWorkspace
+    }
+  }
+
+  private fun onRStudioApiEnabledChanged(value: Boolean) {
+    if (project.isDefault) return
+    RConsoleManager.getInstance(project).consoles.forEach { rConsoleView ->
+      runAsync {
+        if (Disposer.isDisposed(rConsoleView)) return@runAsync
+        rConsoleView.rInterop.setRStudioApiEnabled(value)
+      }
     }
   }
 

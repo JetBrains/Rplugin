@@ -83,7 +83,12 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
       if (field != value && canSwitchTo(value)) {
         field = value
         updateContent()
-        scheduleRescalingIfNecessary()
+        if (usesViewer) {
+          localResolution = plotViewer.resolution
+        } else {
+          localResolution = null  // Note: force rescaling for builtin engine
+          scheduleRescalingIfNecessary()
+        }
       }
     }
 
@@ -96,8 +101,11 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
         if (value) {
           scheduleRescalingIfNecessary()
         } else if (isStandalone) {
-          graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
-          rescale(preferredImageSize, targetResolution)
+          val newSize = preferredImageSize
+          if (newSize.isValid) {
+            graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
+            rescale(newSize, targetResolution)
+          }
         }
       }
     }
@@ -162,10 +170,12 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     isAutoResizeEnabled = true
     localResolution = null
     updateContent()
-    if (isStandalone) {
-      localResolution = targetResolution
+    if (plot != null) {
       plotViewer.resolution = targetResolution
-      plotViewer.plot = plot!!
+      plotViewer.plot = plot
+    }
+    if (usesViewer) {
+      localResolution = targetResolution
     } else {
       graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
       rescaleIfNecessary()
@@ -193,7 +203,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     if (newStandalone) {
       return plot != null && plot?.error == null
     } else {
-      return snapshot != null
+      return plot == null || snapshot != null
     }
   }
 
@@ -273,7 +283,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   private fun rescale(plot: RPlot, newSize: Dimension, newResolution: Int?) {
     runAsync {
       val parameters = RGraphicsUtils.ScreenParameters(newSize, newResolution)
-      val image = RPlotUtil.createImage(plot, parameters, manager.isDarkModeEnabled)
+      val image = RPlotUtil.createImage(plot, parameters, manager.isDarkModeEnabled, isPreview = false)
       localResolution = newResolution
       oldStandalone = isStandalone
       graphicsPanel.showBufferedImage(image)

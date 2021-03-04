@@ -18,6 +18,7 @@ import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidgetFactory
 import com.intellij.openapi.wm.impl.status.EditorBasedStatusBarPopup
+import com.intellij.openapi.wm.impl.status.widget.StatusBarWidgetsManager
 import icons.RIcons
 import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.CancellablePromise
@@ -25,6 +26,7 @@ import org.jetbrains.concurrency.isPending
 import org.jetbrains.concurrency.isRejected
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.settings.RInterpreterSettings
@@ -39,13 +41,22 @@ class RInterpreterBarWidgetFactory : StatusBarWidgetFactory {
 
   override fun getDisplayName(): String = RBundle.message("interpreter.status.bar.display.name")
 
-  override fun isAvailable(project: Project): Boolean = true
+  override fun isAvailable(project: Project): Boolean {
+    val consoleContent = RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.contentManager?.contents ?: return false
+    return consoleContent.isNotEmpty()
+  }
 
   override fun createWidget(project: Project): StatusBarWidget = RInterpreterStatusBarWidget(project)
 
   override fun disposeWidget(widget: StatusBarWidget) = Disposer.dispose(widget)
 
   override fun canBeEnabledOn(statusBar: StatusBar): Boolean = true
+
+  companion object {
+    fun updateWidget(project: Project) {
+      project.getService(StatusBarWidgetsManager::class.java).updateWidget(RInterpreterBarWidgetFactory::class.java)
+    }
+  }
 }
 
 private class RInterpreterStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(project, false) {
@@ -105,7 +116,7 @@ private class RInterpreterStatusBarWidget(project: Project) : EditorBasedStatusB
     }, this)
   }
 
-  override fun createPopup(context: DataContext): ListPopup? = RInterpreterPopupFactory(project).createPopup(context)
+  override fun createPopup(context: DataContext): ListPopup = RInterpreterPopupFactory(project).createPopup(context)
 
   override fun ID(): String = rInterpreterWidgetId
 
@@ -116,21 +127,23 @@ class RInterpreterPopupFactory(private val project: Project) {
 
   private val settings = RSettings.getInstance(project)
 
-  fun createPopup(context: DataContext): ListPopup? {
+  fun createPopup(context: DataContext): ListPopup {
     val group = DefaultActionGroup()
     val allInterpreters = ExecuteExpressionUtils.getSynchronously(RBundle.message("project.settings.interpreters.loading")) {
       RInterpreterUtil.suggestAllInterpreters(true)
     }
     val groupedInterpreters = allInterpreters.groupBy { it.interpreterLocation.javaClass }
     groupedInterpreters.forEach { (_, interpreterGroup) ->
-      group.addAll(interpreterGroup.map { SwitchToRInterpreterAction(it) })
-      group.addSeparator()
-    }
+        group.addSeparator(interpreterGroup.first().interpreterLocation.getWidgetSwitchInterpreterActionHeader())
+        group.addAll(interpreterGroup.map { SwitchToRInterpreterAction(it) })
+      }
 
-    group.add(RInterpreterSettingsAction())
+    group.addSeparator(RBundle.message("interpreter.status.bar.add.new.header"))
     RInterpreterSettingsProvider.getProviders().forEach {
       group.add(AddRInterpreterAction(it, allInterpreters))
     }
+    group.addSeparator()
+    group.add(RInterpreterSettingsAction())
 
     val currentInterpreterLocation = settings.interpreterLocation
     return JBPopupFactory.getInstance().createActionGroupPopup(
@@ -168,7 +181,9 @@ class RInterpreterPopupFactory(private val project: Project) {
     override fun actionPerformed(e: AnActionEvent) = switchToInterpreter(interpreterInfo)
   }
 
-  private inner class RInterpreterSettingsAction : DumbAwareAction(RBundle.message("interpreter.status.bar.settings.action.name")) {
+  private inner class RInterpreterSettingsAction : DumbAwareAction(RBundle.message("interpreter.status.bar.settings.action.name"),
+                                                                   RBundle.message("interpreter.status.bar.settings.action.description"),
+                                                                   null) {
     override fun actionPerformed(e: AnActionEvent) {
       ShowSettingsUtil.getInstance().showSettingsDialog(project, RSettingsProjectConfigurable::class.java)
     }
@@ -176,7 +191,9 @@ class RInterpreterPopupFactory(private val project: Project) {
 
   private inner class AddRInterpreterAction(private val provider: RInterpreterSettingsProvider,
                                             private val allInterpreters: List<RInterpreterInfo>)
-    : DumbAwareAction(provider.getAddInterpreterActionName()) {
+    : DumbAwareAction(provider.getAddInterpreterWidgetActionName(),
+                      provider.getAddInterpreterWidgetActionDescription(),
+                      provider.getAddInterpreterWidgetActionIcon()) {
     override fun actionPerformed(e: AnActionEvent) {
       provider.showAddInterpreterDialog(allInterpreters) {
         RInterpreterSettings.setEnabledInterpreters(allInterpreters + it)

@@ -7,6 +7,7 @@ package org.jetbrains.r.settings
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
+import com.intellij.util.messages.Topic
 import org.intellij.datavis.r.inlays.components.CHANGE_DARK_MODE_TOPIC
 import org.intellij.datavis.r.inlays.components.DarkModeNotifier
 import org.jetbrains.r.run.graphics.RGraphicsUtils
@@ -15,7 +16,13 @@ import java.awt.Dimension
 @State(name = "RGraphicsSettings", storages = [Storage("rGraphicsSettings.xml")])
 class RGraphicsSettings : SimplePersistentStateComponent<RGraphicsSettingsState>(RGraphicsSettingsState()) {
   companion object {
+    private interface StandaloneNotifier {
+      fun onStandaloneChange(isStandalone: Boolean)
+    }
+
     private const val CURRENT_VERSION = 2
+
+    private val CHANGE_STANDALONE_TOPIC = Topic.create("R Standalone GE Topic", StandaloneNotifier::class.java)
 
     fun getInstance(project: Project) = project.service<RGraphicsSettings>()
 
@@ -43,8 +50,11 @@ class RGraphicsSettings : SimplePersistentStateComponent<RGraphicsSettingsState>
       getInstance(project).state.darkMode
 
     fun setDarkMode(project: Project, isEnabled: Boolean) {
-      getInstance(project).state.darkMode = isEnabled
-      project.messageBus.syncPublisher(CHANGE_DARK_MODE_TOPIC).onDarkModeChanged(isEnabled)
+      val state = getInstance(project).state
+      if (state.darkMode != isEnabled) {
+        state.darkMode = isEnabled
+        project.messageBus.syncPublisher(CHANGE_DARK_MODE_TOPIC).onDarkModeChanged(isEnabled)
+      }
     }
 
     fun isStandalone(project: Project): Boolean {
@@ -52,7 +62,11 @@ class RGraphicsSettings : SimplePersistentStateComponent<RGraphicsSettingsState>
     }
 
     fun setStandalone(project: Project, value: Boolean) {
-      getInstance(project).state.isStandalone = value
+      val state = getInstance(project).state
+      if (state.isStandalone != value) {
+        state.isStandalone = value
+        project.messageBus.syncPublisher(CHANGE_STANDALONE_TOPIC).onStandaloneChange(value)
+      }
     }
 
     fun getImageNumber(project: Project): Int {
@@ -75,6 +89,14 @@ class RGraphicsSettings : SimplePersistentStateComponent<RGraphicsSettingsState>
       project.messageBus.connect(parent).subscribe(CHANGE_DARK_MODE_TOPIC, object : DarkModeNotifier {
         override fun onDarkModeChanged(isEnabled: Boolean) {
           listener(isEnabled)
+        }
+      })
+    }
+
+    fun addStandaloneListener(project: Project, parent: Disposable, listener: (Boolean) -> Unit) {
+      project.messageBus.connect(parent).subscribe(CHANGE_STANDALONE_TOPIC, object : StandaloneNotifier {
+        override fun onStandaloneChange(isStandalone: Boolean) {
+          listener(isStandalone)
         }
       })
     }

@@ -61,19 +61,23 @@ class RJobRunner(private val project: Project) {
                                      console: RConsoleView?,
                                      task: RJobTask,
                                      exportEnvName: String? = null) {
-    val rInterop = console?.rInterop
-    processHandler.addProcessListener(object : ProcessAdapter() {
-      override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
-        if (rInterop?.isAlive == true) {
-          val variableName = if (task.exportGlobalEnv == ExportGlobalEnvPolicy.EXPORT_TO_VARIABLE)
-            exportEnvName ?: task.script.nameWithoutExtension + "_results"
-          else ""
-          rInterop.loadEnvironment(exportRDataFile, variableName).then {
-            console.debuggerPanel?.onCommandExecuted()
+    console?.rInterop?.let { rInterop ->
+      processHandler.addProcessListener(
+        object : ProcessAdapter() {
+          override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
+            if (rInterop.isAlive) {
+              val variableName = if (task.exportGlobalEnv == ExportGlobalEnvPolicy.EXPORT_TO_VARIABLE)
+                exportEnvName ?: task.script.nameWithoutExtension + "_results"
+              else ""
+              rInterop.loadEnvironment(exportRDataFile, variableName).then {
+                console.debuggerPanel?.onCommandExecuted()
+              }
+            }
           }
-        }
-      }
-    })
+        },
+        rInterop
+      )
+    }
   }
 
   private fun generateRunScript(interpreter: RInterpreter, task: RJobTask, rInterop: RInterop?): Pair<String, String?> {

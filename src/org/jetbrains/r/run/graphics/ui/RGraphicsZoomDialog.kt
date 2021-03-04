@@ -14,8 +14,11 @@ import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RSnapshot
 import java.awt.BorderLayout
+import java.awt.event.ActionListener
+import java.awt.event.KeyEvent
 import javax.swing.JComponent
 import javax.swing.JPanel
+import javax.swing.KeyStroke
 
 class RGraphicsZoomDialog(project: Project, viewerComponent: JComponent, private val zoomGroup: Disposable? = null) :
   BorderlessDialogWrapper(project, TITLE, IdeModalityType.MODELESS)
@@ -26,6 +29,7 @@ class RGraphicsZoomDialog(project: Project, viewerComponent: JComponent, private
   }
 
   init {
+    registerEscapeAction()
     init()
   }
 
@@ -36,6 +40,12 @@ class RGraphicsZoomDialog(project: Project, viewerComponent: JComponent, private
   override fun doCancelAction() {
     super.doCancelAction()
     zoomGroup?.dispose()
+  }
+
+  private fun registerEscapeAction() {
+    val listener = ActionListener { doCancelAction() }
+    val keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0)
+    rootPanel.registerKeyboardAction(listener, keyStroke, JComponent.WHEN_FOCUSED)
   }
 
   companion object {

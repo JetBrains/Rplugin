@@ -6,6 +6,7 @@ package org.jetbrains.r.completion
 
 import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.testFramework.UsefulTestCase
+import com.intellij.util.text.VersionComparatorUtil
 import junit.framework.TestCase
 
 class DplyrCompletionTest : RColumnCompletionTest() {
@@ -143,8 +144,8 @@ class DplyrCompletionTest : RColumnCompletionTest() {
 
   fun testNamedTableArgument() {
     checkCompletion("filter(yyyy_a<caret>, .data = table)",
-      initial = listOf("yyyy_aaa", "yyyy_aac", "yyyy_add", "yyyy_bbc"),
-      expected = listOf("yyyy_aaa", "yyyy_aac", "yyyy_add"))
+                    initial = listOf("yyyy_aaa", "yyyy_aac", "yyyy_add", "yyyy_bbc"),
+                    expected = listOf("yyyy_aaa", "yyyy_aac", "yyyy_add"))
   }
 
   fun testTwoTableArguments() {
@@ -324,6 +325,13 @@ tbl1 %>% inner_join(tbl2) %>% filter(colu<caret>)
   }
 
   fun testStaticCompletionForRelocate() {
+    val packages = rInterop.state.installedPackages
+    val dplyrPackage = packages.find { it.packageName == "dplyr" }
+
+    if (dplyrPackage == null || VersionComparatorUtil.compare(dplyrPackage.version, "1.0.0") < 0) {
+      return
+    }
+
     checkStaticCompletion(
       """
       tbl1 <- dplyr::tibble(letter = letters, column_one = letters)

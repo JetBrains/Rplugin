@@ -3,6 +3,7 @@ package org.jetbrains.r.codeInsight.table
 import com.intellij.psi.PsiElement
 import com.intellij.psi.filters.ElementFilter
 import com.intellij.psi.filters.position.FilterPattern
+import com.intellij.psi.impl.PsiElementBase
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import com.intellij.util.Processor
@@ -11,6 +12,7 @@ import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.TableColumnInfo
 import org.jetbrains.r.psi.api.*
+import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 
 class RGgplotTableContextManager : RTableContextManager {
   override fun processColumnsInContext(context: PsiElement, processor: Processor<TableColumnInfo>): Boolean {
@@ -18,17 +20,20 @@ class RGgplotTableContextManager : RTableContextManager {
       return true
     }
 
-    val expression = PsiTreeUtil.getParentOfType(context, RExpression::class.java, false) ?: return true
+    val call = PsiTreeUtil.getParentOfType(context, RCallExpression::class.java, false) ?: return true
+    if (call.isFunctionFromLibrarySoft("qplot", "ggplot2")) {
+      // handle qplot(x = cty, y = hwy, data = mpg, geom = "point")
+      return processColumnsFromDataArgument(call, processor)
+    }
 
-    val parent = expression.parent
-    val aesCall = (if (parent is RNamedArgument) parent.parent.parent else parent.parent) as RCallExpression
-    val ggplotCall = (if (aesCall.parent is RNamedArgument) aesCall.parent.parent.parent else aesCall.parent.parent) as? RCallExpression
-    // handle ggplot(data, aes(<caret>)) case
-    if (ggplotCall != null && ggplotCall.expression.text == "ggplot") {
-      return processGgplotCall(ggplotCall, processor)
-    } else {
+    val ggplotCall = (if (call.parent is RNamedArgument) call.parent.parent.parent else call.parent.parent) as? RCallExpression
+    if (ggplotCall != null && ggplotCall.isFunctionFromLibrarySoft("ggplot", "ggplot2")) {
+      // handle ggplot(data, aes(<caret>)) case
+      return processColumnsFromDataArgument(ggplotCall, processor)
+    }
+    else  {
       // handle ggplot(data, aes(P1, P2)) + geom_point(aes(<caret>), size=2)
-      return processPlusOperator(aesCall, processor)
+      return processPlusOperator(call, processor)
     }
   }
 
@@ -45,7 +50,7 @@ class RGgplotTableContextManager : RTableContextManager {
       }
       val left = operator?.leftExpr
       if (left is RCallExpression && left.expression.text == "ggplot") {
-        return processGgplotCall(left, processor)
+        return processColumnsFromDataArgument(left, processor)
       } else {
         val runtimeInfo = aesCall.containingFile.originalFile.runtimeInfo ?: return true
         val loadTableColumns = runtimeInfo.loadTableColumns(left?.text.toString() + "$" + "data")
@@ -59,7 +64,7 @@ class RGgplotTableContextManager : RTableContextManager {
     return true
   }
 
-  private fun processGgplotCall(ggplotCall: RCallExpression, processor: Processor<TableColumnInfo>): Boolean {
+  private fun processColumnsFromDataArgument(ggplotCall: RCallExpression, processor: Processor<TableColumnInfo>): Boolean {
     val dataParameter = RParameterInfoUtil.getArgumentByName(ggplotCall, "data") ?: return true
 
     val collectProcessor = RTableColumnCollectProcessor()
@@ -78,20 +83,36 @@ class RGgplotTableContextManager : RTableContextManager {
 
 val METHOD_TAKING_COLUMN_PARAMETER_FILTER = FilterPattern(MethodTakingColumnsFilter())
 
-val GGPLOT_METHODS_WITH_COLUMNS = listOf("aes", "facet_grid", "facet_wrap")
+val GGPLOT_COLUMN_ARGUMENTS = mapOf(
+  "aes" to emptyList(), // emptyList when it's not a RNamedArgument
+  "facet_grid" to emptyList(),
+  "facet_wrap" to emptyList(),
+  "qplot" to listOf("x", "y"),
+)
 
 class MethodTakingColumnsFilter : ElementFilter {
   override fun isAcceptable(element: Any?, context: PsiElement?): Boolean {
-    val expression = PsiTreeUtil.getParentOfType(context, RExpression::class.java, false)
+    var expression: PsiElement? = PsiTreeUtil.getParentOfType(context, RExpression::class.java, false)
+
     if (expression !is RIdentifierExpression) return false
     val parent = expression.parent ?: return false
-    if (!(parent is RNamedArgument && parent.assignedValue == expression || parent is RArgumentList)) return false
-    val columnContainerCall = if (parent is RNamedArgument) parent.parent.parent else parent.parent
+    if (parent is RNamedArgument && parent.assignedValue == expression) {
+      expression = parent
+    }
+    if (expression !is PsiElementBase) {
+      return false
+    }
+
+    val argumentList = expression.parent ?: return false
+    if (argumentList !is RArgumentList) return false
+
+    val columnContainerCall = argumentList.parent
     if (columnContainerCall !is RCallExpression) return false
     val columnContainerCallIdentifier = columnContainerCall.expression
     if (columnContainerCallIdentifier !is RIdentifierExpression
-        || columnContainerCallIdentifier.name !in GGPLOT_METHODS_WITH_COLUMNS) return false
-    return true
+        || columnContainerCallIdentifier.name !in GGPLOT_COLUMN_ARGUMENTS.keys) return false
+    val columnArgumentArgumentCriterion = GGPLOT_COLUMN_ARGUMENTS[columnContainerCallIdentifier.name]
+    return columnArgumentArgumentCriterion!!.isEmpty() || expression.name in columnArgumentArgumentCriterion
   }
 
   override fun isClassAcceptable(hintClass: Class<*>?): Boolean = true

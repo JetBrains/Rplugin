@@ -30,14 +30,7 @@ object RSessionUtils {
     }
 
     if (focus) {
-      val toolWindow = RConsoleToolWindowFactory.getRConsoleToolWindows(console.project)
-      if (toolWindow != null) {
-        RConsoleToolWindowFactory.getConsoleContent(console)?.let { content ->
-          toolWindow.activate {
-            toolWindow.contentManager.setSelectedContent(content)
-          }
-        }
-      }
+      RConsoleToolWindowFactory.focusOnCurrentConsole(rInterop.project)
     }
 
     val consoleSetText = { text: String ->
@@ -71,7 +64,7 @@ object RSessionUtils {
     getConsoleView(rInterop)?.print("\nRestarting R session...\n\n", ConsoleViewContentType.NORMAL_OUTPUT)
     RInterpreterManager.restartInterpreter(rInterop.project, Runnable {
       if (command.isNotBlank()) {
-        RConsoleManager.getInstance(rInterop.project).currentConsoleAsync.then {
+        RConsoleManager.getInstance(rInterop.project).currentConsoleAsync.onSuccess {
           it.executeActionHandler.executeLater {
             it.executeText(command)
           }

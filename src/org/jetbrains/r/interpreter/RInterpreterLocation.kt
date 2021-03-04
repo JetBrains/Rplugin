@@ -10,16 +10,20 @@ import com.intellij.execution.process.OSProcessHandler
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Version
 import org.jetbrains.annotations.Nls
+import org.jetbrains.r.RBundle
 import java.io.File
 
 interface RInterpreterLocation {
   @Nls
   fun additionalShortRepresentationSuffix(): String = ""
 
+  @Nls
+  fun getWidgetSwitchInterpreterActionHeader(): String
+
   // workingDirectory is a separate parameter and not a part of GeneralCommandLine because it does not work well with remote paths
   fun runProcessOnHost(command: GeneralCommandLine, workingDirectory: String? = null, isSilent: Boolean = false): BaseProcessHandler<*>
 
-  fun runInterpreterOnHost(args: List<String>, workingDirectory: String? = null): BaseProcessHandler<*>
+  fun runInterpreterOnHost(args: List<String>, workingDirectory: String? = null, environment: Map<String, String>? = null): BaseProcessHandler<*>
 
   fun uploadFileToHost(file: File, preserveName: Boolean = false): String
 
@@ -37,8 +41,12 @@ interface RInterpreterLocation {
 data class RLocalInterpreterLocation(val path: String): RInterpreterLocation {
   override fun toString(): String = path
 
-  override fun runInterpreterOnHost(args: List<String>, workingDirectory: String?): BaseProcessHandler<*> {
-    return runProcessOnHost(GeneralCommandLine().withExePath(path).withParameters(args), workingDirectory)
+  override fun getWidgetSwitchInterpreterActionHeader(): String = RBundle.message("interpreter.status.bar.local.interpreters.header")
+
+  override fun runInterpreterOnHost(args: List<String>,
+                                    workingDirectory: String?,
+                                    environment: Map<String, String>?): BaseProcessHandler<*> {
+    return runProcessOnHost(GeneralCommandLine().withExePath(path).withParameters(args).withEnvironment(environment), workingDirectory)
   }
 
   override fun runProcessOnHost(command: GeneralCommandLine, workingDirectory: String?, isSilent: Boolean): BaseProcessHandler<*> {

@@ -3,17 +3,20 @@ package org.jetbrains.r.editor
 import com.intellij.lexer.Lexer
 import com.intellij.lexer.MergeFunction
 import com.intellij.lexer.MergingLexerAdapterBase
+import com.intellij.openapi.editor.Document
 import com.intellij.psi.tree.IElementType
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.lexer.MarkdownLexerAdapter
+import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesImpl
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
-import org.jetbrains.plugins.notebooks.editor.NotebookCellTypeAwareLexerProvider
+import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesLexer
+import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesProvider
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
-class RMarkdownCellTypeAwareLexerProvider : NotebookCellTypeAwareLexerProvider {
-  override fun createNotebookCellTypeAwareLexer(): Lexer = RMarkdownMergingLangLexer()
+class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesLexer {
+  override val longestTokenLength: Int = 0
 
-  override fun getCellType(tokenType: IElementType): NotebookCellLines.CellType? =
+  private fun getCellType(tokenType: IElementType): NotebookCellLines.CellType? =
     when (tokenType) {
       RMarkdownCellType.HEADER_CELL.elementType -> NotebookCellLines.CellType.MARKDOWN
       RMarkdownCellType.MARKDOWN_CELL.elementType -> NotebookCellLines.CellType.MARKDOWN
@@ -22,8 +25,31 @@ class RMarkdownCellTypeAwareLexerProvider : NotebookCellTypeAwareLexerProvider {
     }
 
   override fun shouldParseWholeFile(): Boolean = true
-}
 
+  override fun create(document: Document): NotebookCellLines =
+    NotebookCellLinesImpl.get(document, this)
+
+  override fun markerSequence(chars: CharSequence, ordinalIncrement: Int, offsetIncrement: Int): Sequence<NotebookCellLines.Marker> =
+    sequence {
+      var lastMarker: NotebookCellLines.Marker? = null
+      val seq = NotebookCellLinesLexer.defaultMarkerSequence({ RMarkdownMergingLangLexer() }, this@RMarkdownCellLinesProvider::getCellType,
+                                                             chars, ordinalIncrement, offsetIncrement)
+
+      for(marker in seq) {
+        lastMarker = marker
+        yield(marker)
+      }
+
+      if (lastMarker?.type == NotebookCellLines.CellType.CODE && chars.endsWith('\n')) {
+        yield(NotebookCellLines.Marker(
+          ordinal = lastMarker.ordinal + 1,
+          type = NotebookCellLines.CellType.MARKDOWN,
+          offset = chars.length + offsetIncrement,
+          length = 0
+        ))
+      }
+    }
+}
 
 internal enum class RMarkdownCellType(val debugName: String) {
   HEADER_CELL("HEADER_CELL"),
@@ -44,12 +70,14 @@ internal enum class RMarkdownCodeMarkers(debugName: String) {
 
 /**
  * merge ```{r} to BACKTICK_WITH_LANG and ``` to BACKTICK_NO_LANG
+ * ```{ and ``` should be at the start of line, otherwise they are ignored
  */
 internal class RMarkdownMapBackticks : MergingLexerAdapterBase(MarkdownLexerAdapter()) {
   override fun getMergeFunction(): MergeFunction = mergeFunction
 
   private val mergeFunction: MergeFunction = MergeFunction { type, originalLexer ->
-    if (type == MarkdownTokenTypes.BACKTICK && tokenText == "```") {
+    val isStartOfLine = tokenStart == 0 || bufferSequence[tokenStart - 1] == '\n'
+    if (isStartOfLine && type == MarkdownTokenTypes.BACKTICK && tokenText == "```") {
       if (originalLexer.tokenText.startsWith("{")) {
         originalLexer.advance()
         RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType
@@ -91,9 +119,8 @@ internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(RMarkdownMapB
 
   private fun consumeMarkdown(lexer: Lexer) {
     while (lexer.tokenType != null &&
-           lexer.tokenType != RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType &&
-           lexer.tokenType != RMarkdownCodeMarkers.BACKTICK_NO_LANG.elementType) {
-      lexer.advance()
+           lexer.tokenType != RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType) {
+      consumeToEndOfLine(lexer) // quoted line
     }
   }
 
@@ -101,13 +128,14 @@ internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(RMarkdownMapB
     while (true) {
       when (lexer.tokenType) {
         null, RMarkdownCodeMarkers.BACKTICK_NO_LANG.elementType, RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType -> return
+        MarkdownTokenTypes.BLOCK_QUOTE -> consumeToEndOfLine(lexer)
         else -> {
           if (lexer.tokenType == MarkdownTokenTypes.TEXT && lexer.tokenText == "---") {
             lexer.advance()
             consumeEndOfLine(lexer)
             return
           }
-          lexer.advance()
+          consumeToEndOfLine(lexer)
         }
       }
     }
@@ -125,7 +153,7 @@ internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(RMarkdownMapB
         RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType -> {
           return false
         }
-        else -> lexer.advance()
+        else -> consumeToEndOfLine(lexer)
       }
     }
   }

@@ -5,11 +5,13 @@
 package org.jetbrains.r.rinterop
 
 import com.intellij.execution.process.ProcessOutputType
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.interpreter.OperatingSystem
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
+import java.io.File
 
 class SubprocessTest : RProcessHandlerBaseTestCase() {
   private val echoCommand get() = if (interpreter.hostOS == OperatingSystem.WINDOWS) "cmd /c echo" else "echo"
@@ -17,7 +19,6 @@ class SubprocessTest : RProcessHandlerBaseTestCase() {
   fun testEcho() {
     val result = rInterop.executeCodeAsync("system('$echoCommand abcd123')", withEcho = false).blockingGet(DEFAULT_TIMEOUT)!!
     TestCase.assertEquals("abcd123${System.lineSeparator()}", result.stdout)
-    TestCase.assertEquals("", result.stderr)
     TestCase.assertEquals(null, result.exception)
   }
 
@@ -84,6 +85,30 @@ class SubprocessTest : RProcessHandlerBaseTestCase() {
     TestCase.assertTrue("stderr = $stderr", "hi" in stderr.toString())
   }
 
+  fun testInputFile() {
+    val inFile = FileUtil.createTempFile("a", ".txt", true)
+    inFile.writeText("paste(rep('z', 10), collapse='')")
+    rInterop.replExecute("""
+      s <- system2("${StringUtil.escapeStringCharacters(interpreter.interpreterPathOnHost)}",
+                   c("--vanilla", "--slave", "--interactive"),
+                   stdin = "${StringUtil.escapeStringCharacters(inFile.absolutePath)}", stdout = TRUE)
+    """.trimIndent()).blockingGet(DEFAULT_TIMEOUT)
+    val out = rInterop.executeCode("cat(s)").stdout
+    TestCase.assertTrue(out, "[1] \"zzzzzzzzzz\"" in out)
+  }
+
+  fun testInputText() {
+    val inFile = FileUtil.createTempFile("a", ".txt", true)
+    inFile.writeText("paste(rep('z', 10), collapse='')")
+    rInterop.replExecute("""
+      s <- system2("${StringUtil.escapeStringCharacters(interpreter.interpreterPathOnHost)}",
+                   c("--vanilla", "--slave", "--interactive"),
+                   input = "paste(rep('z', 10), collapse='')", stdout = TRUE)
+    """.trimIndent()).blockingGet(DEFAULT_TIMEOUT)
+    val out = rInterop.executeCode("cat(s)").stdout
+    TestCase.assertTrue(out, "[1] \"zzzzzzzzzz\"" in out)
+  }
+
   fun testBackground() {
     val stdoutBuf = StringBuilder()
     val promise = AsyncPromise<Unit>()
@@ -107,6 +132,53 @@ class SubprocessTest : RProcessHandlerBaseTestCase() {
     TestCase.assertTrue(pos1 != -1)
     TestCase.assertTrue(pos2 != -1)
     TestCase.assertTrue(pos1 < pos2)
+  }
+
+  private enum class OutputVariants {
+    IGNORE, COLLECT, CONSOLE, FILE
+  }
+
+  fun testSystem2() {
+    File(rInterop.workingDir, "a.R").writeText("""
+      cat("OUT_1\n")
+      cat("ERR_2\n", file=stderr())
+    """.trimIndent())
+    for (outVariant in OutputVariants.values()) {
+      for (errVariant in OutputVariants.values()) {
+        if (errVariant == OutputVariants.COLLECT && outVariant != OutputVariants.COLLECT) {
+          continue // Not allowed by R
+        }
+        val outValue = when (outVariant) {
+          OutputVariants.IGNORE -> "FALSE"
+          OutputVariants.COLLECT -> "TRUE"
+          OutputVariants.CONSOLE -> "''"
+          OutputVariants.FILE -> "'out.txt'"
+        }
+        val errValue = when (errVariant) {
+          OutputVariants.IGNORE -> "FALSE"
+          OutputVariants.COLLECT -> "TRUE"
+          OutputVariants.CONSOLE -> "''"
+          OutputVariants.FILE -> "'err.txt'"
+        }
+        val output = rInterop.executeCodeAsync(
+          """s <- system2("${StringUtil.escapeStringCharacters(interpreter.interpreterPathOnHost)}",
+            |              c('--vanilla', '--slave', '-f', 'a.R'), stdout = $outValue, stderr = $errValue)""".trimMargin(),
+          isRepl = true, returnOutput = true).blockingGet(DEFAULT_TIMEOUT)!!
+        val s = rInterop.executeCode("cat(s)").stdout
+
+        TestCase.assertEquals(outVariant == OutputVariants.COLLECT, "OUT_1" in s)
+        TestCase.assertEquals(outVariant == OutputVariants.CONSOLE, "OUT_1" in output.stdout)
+        TestCase.assertEquals(outVariant == OutputVariants.FILE,
+                              File(rInterop.workingDir, "out.txt").let { it.exists() && it.readText().trim() == "OUT_1" })
+        TestCase.assertEquals(errVariant == OutputVariants.COLLECT, "ERR_2" in s)
+        TestCase.assertEquals(errVariant == OutputVariants.CONSOLE, "ERR_2" in output.stderr)
+        TestCase.assertEquals(errVariant == OutputVariants.FILE,
+                              File(rInterop.workingDir, "err.txt").let { it.exists() && it.readText().trim() == "ERR_2" })
+
+        File(rInterop.workingDir, "out.txt").takeIf { it.exists() }?.delete()
+        File(rInterop.workingDir, "err.txt").takeIf { it.exists() }?.delete()
+      }
+    }
   }
 
   private fun makeRCommand(code: String): String {

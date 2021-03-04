@@ -3,8 +3,8 @@
 
 package org.jetbrains.r.rinterop;
 
-public interface SubPathOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:rplugininterop.SubPath)
+public interface PolylineOrBuilder extends
+    // @@protoc_insertion_point(interface_extends:rplugininterop.Polyline)
     com.google.protobuf.MessageOrBuilder {
 
   /**
@@ -23,4 +23,10 @@ public interface SubPathOrBuilder extends
    * @return The point at the given index.
    */
   long getPoint(int index);
+
+  /**
+   * <code>int32 previewCount = 2;</code>
+   * @return The previewCount.
+   */
+  int getPreviewCount();
 }

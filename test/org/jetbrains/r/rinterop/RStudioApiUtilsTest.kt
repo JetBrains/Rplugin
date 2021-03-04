@@ -4,6 +4,7 @@ import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.VisualPosition
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.vfs.VirtualFileManager
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
@@ -13,6 +14,7 @@ import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.console.jobs.RJobDescriptor
 import org.jetbrains.r.console.jobs.RJobRunner
 import org.jetbrains.r.console.jobs.RJobRunner.Listener
+import java.io.File
 import java.nio.file.Paths
 import kotlin.streams.toList
 
@@ -302,6 +304,16 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
       |rstudioapi::jobRunScript("rstudioapi/testJobsWithoutImport.R", exportEnv = "R_GlobalEnv")
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
     TestCase.assertEquals(true, promise.blockingGet(DEFAULT_TIMEOUT))
+  }
+
+  fun testBasic_openAndInitProject() {
+    console.executeText("""
+      |rstudioapi::openProject("testProject", TRUE)
+    """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    val project = ProjectManagerEx.getInstanceEx().openProjects.find { it.name == "testProject" }
+    TestCase.assertNotNull(project)
+    TestCase.assertEquals(listOf("testProject.Rproj"), File(project?.basePath).list().toList())
+    ProjectManagerEx.getInstanceEx().forceCloseProject(project!!)
   }
 
   fun testBasic_sourceMarkersErrorFocus() {

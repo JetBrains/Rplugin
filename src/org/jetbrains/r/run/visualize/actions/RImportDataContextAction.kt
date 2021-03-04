@@ -18,6 +18,9 @@ import org.jetbrains.r.rinterop.RInterop
 abstract class RImportDataContextAction(text: String, description: String) : DumbAwareAction(text, description, null) {
   protected abstract val supportedFormats: List<String>
 
+  protected open val suggestedFormats: List<String>
+    get() = supportedFormats
+
   final override fun actionPerformed(e: AnActionEvent) {
     e.project?.let { project ->
       e.selectedFiles?.firstOrNull()?.let { file ->
@@ -34,8 +37,24 @@ abstract class RImportDataContextAction(text: String, description: String) : Dum
     return e.selectedFiles?.let { it.size == 1 && isApplicableTo(it.first()) } ?: false
   }
 
-  fun isApplicableTo(file: VirtualFile): Boolean {
-    return !file.isDirectory && !ScratchUtil.isScratch(file) && file.extension?.isSupportedFormat == true
+  private fun isApplicableTo(file: VirtualFile): Boolean {
+    return checkFile(file, supportedFormats)
+  }
+
+  /**
+   * Whether this import action should be **suggested** for a specified [file] opened in editor.
+   * **Note:** this condition is stricter than [isApplicableTo].
+   * For instance, if this action is used to import datasets from text files,
+   * it must be **applicable to** `txt` files. On the other hand, the vast majority
+   * of `txt` files are **not** datasets so it's **not suggested** using
+   * this action for any opened `txt` file
+   */
+  fun isSuggestedFor(file: VirtualFile): Boolean {
+    return checkFile(file, suggestedFormats)
+  }
+
+  private fun checkFile(file: VirtualFile, formats: List<String>): Boolean {
+    return !file.isDirectory && !ScratchUtil.isScratch(file) && file.extension?.let { formats.contains(it.toLowerCase()) } == true
   }
 
   fun applyTo(project: Project, file: VirtualFile) {
@@ -49,9 +68,6 @@ abstract class RImportDataContextAction(text: String, description: String) : Dum
   }
 
   protected abstract fun applyTo(project: Project, interop: RInterop, file: VirtualFile)
-
-  private val String.isSupportedFormat: Boolean
-    get() = toLowerCase() in supportedFormats
 
   companion object {
     private val AnActionEvent.selectedFiles: Array<VirtualFile>?

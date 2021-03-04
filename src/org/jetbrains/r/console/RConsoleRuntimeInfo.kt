@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.r.classes.RS4ClassInfo
+import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
 import org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.psi.api.RFunctionExpression
@@ -68,7 +68,7 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
   override val variables
     get() = rInterop.currentEnvLoader.variables.map { it.name to it.value }.toMap()
   override val loadedPackages
-    get() = rInterop.loadedPackages.getWithCheckCancel()
+    get() = rInterop.loadedPackages.safeGet()
   override val workingDir
     get() = rInterop.workingDir
 

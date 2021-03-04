@@ -5,9 +5,10 @@ import com.intellij.util.ui.ImageUtil
 import org.intellij.datavis.r.inlays.components.ImageInverter
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rinterop.*
-import org.jetbrains.r.rinterop.Font
-import org.jetbrains.r.rinterop.Stroke
-import java.awt.*
+import java.awt.Color
+import java.awt.Graphics2D
+import java.awt.Image
+import java.awt.RenderingHints
 import java.awt.geom.Rectangle2D
 import java.awt.image.BufferedImage
 import java.io.File
@@ -18,8 +19,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 object RPlotUtil {
-  private const val PROTOCOL_VERSION = 9
-  private const val STROKE_WIDTH_SCALE = 1.25f
+  private const val PROTOCOL_VERSION = 11
 
   private val UNKNOWN_PARSING_ERROR_TEXT = RBundle.message("plot.viewer.unknown.parsing.error")
   private val GENERIC_PARSING_ERROR_TEXT = RBundle.message("plot.viewer.figure.parsing.failure")
@@ -37,6 +37,13 @@ object RPlotUtil {
       return null
     }
     return Plot.parseFrom(plotFile.inputStream())
+  }
+
+  fun fitTheme(image: BufferedImage, darkMode: Boolean): BufferedImage {
+    val editorColorsManager = EditorColorsManager.getInstance()
+    val colorScheme = editorColorsManager.globalScheme
+    val shouldInvert = darkMode && editorColorsManager.isDarkEditor
+    return if (shouldInvert) ImageInverter(colorScheme.defaultForeground, colorScheme.defaultBackground).invert(image) else image
   }
 
   private fun getPlotFile(directory: File, number: Int): File {
@@ -64,7 +71,7 @@ object RPlotUtil {
     val viewports = plot.viewportList.map { convert(it) }
     val layers = plot.layerList.map { convert(it) }
     val error = convertError(plot.error)
-    return RPlot(number, fonts, colors, strokes, viewports, layers, error)
+    return RPlot(number, fonts, colors, strokes, viewports, layers, plot.previewComplexity, plot.totalComplexity, error)
   }
 
   private fun convert(font: Font): RFont {
@@ -167,27 +174,17 @@ object RPlotUtil {
   }
 
   private fun convert(path: PathFigure): RFigure {
-    val subPaths = path.subPathList.map { subPath ->
-      LongArray(subPath.pointCount) { i ->
-        subPath.getPoint(i)
-      }
-    }
+    val subPaths = path.subPathList.map { convert(it) }
     val winding = if (path.winding) RWinding.NON_ZERO else RWinding.EVEN_ODD
     return RFigure.Path(subPaths, winding, path.strokeIndex, path.colorIndex, path.fillIndex)
   }
 
   private fun convert(polygon: PolygonFigure): RFigure {
-    val points = LongArray(polygon.pointCount) { i ->
-      polygon.getPoint(i)
-    }
-    return RFigure.Polygon(points, polygon.strokeIndex, polygon.colorIndex, polygon.fillIndex)
+    return RFigure.Polygon(convert(polygon.polyline), polygon.strokeIndex, polygon.colorIndex, polygon.fillIndex)
   }
 
   private fun convert(polyline: PolylineFigure): RFigure {
-    val points = LongArray(polyline.pointCount) { i ->
-      polyline.getPoint(i)
-    }
-    return RFigure.Polyline(points, polyline.strokeIndex, polyline.colorIndex)
+    return RFigure.Polyline(convert(polyline.polyline), polyline.strokeIndex, polyline.colorIndex)
   }
 
   private fun convert(raster: RasterFigure): RFigure {
@@ -220,27 +217,34 @@ object RPlotUtil {
     }
   }
 
+  private fun convert(polyline: Polyline): RPolyline {
+    val points = LongArray(polyline.pointCount) { i ->
+      polyline.getPoint(i)
+    }
+    return RPolyline(points, polyline.previewCount)
+  }
+
   private fun convertError(error: Int): RPlotError? {
     return if (error > 0) RPlotError.values()[error - 1] else null
   }
 
-  fun createImage(plot: RPlot, parameters: RGraphicsUtils.ScreenParameters, darkMode: Boolean): BufferedImage {
+  fun createImage(plot: RPlot, parameters: RGraphicsUtils.ScreenParameters, darkMode: Boolean, isPreview: Boolean): BufferedImage {
     return ImageUtil.createImage(parameters.width, parameters.height, BufferedImage.TYPE_INT_ARGB).also { image ->
       val graphics = image.graphics as Graphics2D
       graphics.font = JLabel().font
       graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
       graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE)
       val provider = RCanvasPlotterProvider(parameters, graphics)
-      replay(plot, provider, darkMode)
+      replay(plot, provider, darkMode, isPreview)
     }
   }
 
-  fun replay(plot: RPlot, provider: RPlotterProvider, darkMode: Boolean) {
-    val helper = ReplayHelper(plot, provider, darkMode)
+  fun replay(plot: RPlot, provider: RPlotterProvider, darkMode: Boolean, isPreview: Boolean) {
+    val helper = ReplayHelper(plot, provider, darkMode, isPreview)
     helper.replay()
   }
 
-  private class ReplayHelper(val plot: RPlot, provider: RPlotterProvider, private val darkMode: Boolean) {
+  private class ReplayHelper(val plot: RPlot, provider: RPlotterProvider, private val darkMode: Boolean, private val isPreview: Boolean) {
     private val width = provider.parameters.width
     private val height = provider.parameters.height
     private val resolution = provider.parameters.resolution ?: RGraphicsUtils.DEFAULT_RESOLUTION
@@ -347,10 +351,14 @@ object RPlotUtil {
     }
 
     private fun replay(circle: RFigure.Circle) {
+      if (isPreview && (circle.center and BIT_63 != 0L)) {
+        return
+      }
       val x = calculateX(circle.center)
       val y = calculateY(circle.center)
       val radius = calculate(circle.radius, currentViewport.height)
-      plotter.drawCircle(x, y, radius, circle.strokeIndex, circle.colorIndex, circle.fillIndex)
+      val colorIndex = filterColorIndex(circle.strokeIndex, circle.colorIndex, circle.fillIndex)
+      plotter.drawCircle(x, y, radius, circle.strokeIndex, colorIndex, circle.fillIndex)
     }
 
     private fun replay(line: RFigure.Line) {
@@ -367,18 +375,20 @@ object RPlotUtil {
         val ys = calculateYs(points)
         Pair(xs, ys)
       }
-      plotter.drawPath(subPaths, path.winding, path.strokeIndex, path.colorIndex, path.fillIndex)
+      val colorIndex = filterColorIndex(path.strokeIndex, path.colorIndex, path.fillIndex)
+      plotter.drawPath(subPaths, path.winding, path.strokeIndex, colorIndex, path.fillIndex)
     }
 
     private fun replay(polygon: RFigure.Polygon) {
-      val xs = calculateXs(polygon.points)
-      val ys = calculateYs(polygon.points)
-      plotter.drawPolygon(xs, ys, polygon.strokeIndex, polygon.colorIndex, polygon.fillIndex)
+      val xs = calculateXs(polygon.polyline)
+      val ys = calculateYs(polygon.polyline)
+      val colorIndex = filterColorIndex(polygon.strokeIndex, polygon.colorIndex, polygon.fillIndex)
+      plotter.drawPolygon(xs, ys, polygon.strokeIndex, colorIndex, polygon.fillIndex)
     }
 
     private fun replay(polyline: RFigure.Polyline) {
-      val xs = calculateXs(polyline.points)
-      val ys = calculateYs(polyline.points)
+      val xs = calculateXs(polyline.polyline)
+      val ys = calculateYs(polyline.polyline)
       plotter.drawPolyline(xs, ys, polyline.strokeIndex, polyline.colorIndex)
     }
 
@@ -387,13 +397,15 @@ object RPlotUtil {
       val yFrom = calculateY(raster.from)
       val xTo = calculateX(raster.to)
       val yTo = calculateY(raster.to)
-      val original = fitTheme(raster.image)
       val multiplier = if (RGraphicsUtils.isHiDpi) 2 else 1
-      val mode = if (raster.interpolate) Image.SCALE_SMOOTH else Image.SCALE_FAST
       val width = ((xTo - xFrom) * multiplier).toInt()
       val height = ((yTo - yFrom) * multiplier).toInt()
-      val scaled = original.getScaledInstance(width, height, mode)
-      plotter.drawRaster(scaled, xFrom, yFrom, raster.angle)
+      if (width > 0 && height > 0) {
+        val original = fitTheme(raster.image)
+        val mode = if (raster.interpolate) Image.SCALE_SMOOTH else Image.SCALE_FAST
+        val scaled = original.getScaledInstance(width, height, mode)
+        plotter.drawRaster(scaled, xFrom, yFrom, raster.angle)
+      }
     }
 
     private fun replay(rectangle: RFigure.Rectangle) {
@@ -401,7 +413,8 @@ object RPlotUtil {
       val yFrom = calculateY(rectangle.from)
       val xTo = calculateX(rectangle.to)
       val yTo = calculateY(rectangle.to)
-      plotter.drawRectangle(xFrom, yFrom, xTo - xFrom, yTo - yFrom, rectangle.strokeIndex, rectangle.colorIndex, rectangle.fillIndex)
+      val colorIndex = filterColorIndex(rectangle.strokeIndex, rectangle.colorIndex, rectangle.fillIndex)
+      plotter.drawRectangle(xFrom, yFrom, xTo - xFrom, yTo - yFrom, rectangle.strokeIndex, colorIndex, rectangle.fillIndex)
     }
 
     private fun replay(text: RFigure.Text) {
@@ -414,15 +427,35 @@ object RPlotUtil {
       plotter.drawText(text.text, x, y, text.angle, text.anchor, text.fontIndex, text.colorIndex)
     }
 
-    private fun calculateXs(points: LongArray): FloatArray {
-      return FloatArray(points.size) { i ->
-        calculateX(points[i])
-      }
+    private fun filterColorIndex(strokeIndex: Int, colorIndex: Int, fillIndex: Int): Int {
+      val skipStroke = isPreview && strokeIndex >= 0 && fillIndex >= 0 && plot.strokes[strokeIndex].width < STROKE_WIDTH_THRESHOLD
+      return if (skipStroke) -1 else colorIndex
     }
 
-    private fun calculateYs(points: LongArray): FloatArray {
-      return FloatArray(points.size) { i ->
-        calculateY(points[i])
+    private fun calculateXs(polyline: RPolyline): FloatArray {
+      return calculateArray(polyline, this::calculateX)
+    }
+
+    private fun calculateYs(polyline: RPolyline): FloatArray {
+      return calculateArray(polyline, this::calculateY)
+    }
+
+    private inline fun calculateArray(polyline: RPolyline, mapper: (Long) -> Float): FloatArray {
+      val points = polyline.points
+      return if (isPreview) {
+        FloatArray(polyline.previewCount).also { coordinates ->
+          var index = 0
+          for (point in points) {
+            if (point and BIT_63 == 0L) {
+              coordinates[index] = mapper(point)
+              index++
+            }
+          }
+        }
+      } else {
+        FloatArray(points.size) { i ->
+          mapper(points[i])
+        }
       }
     }
 
@@ -504,6 +537,10 @@ object RPlotUtil {
       private const val BLACK_COLOR_INDEX = 0
       private const val WHITE_COLOR_INDEX = 1
       private const val TRANSPARENT_INDEX = -1
+      private const val BIT_63 = 1L shl 63
+
+      private const val STROKE_WIDTH_THRESHOLD = 1.0f / 72.0f  // 1 px (in inches)
+      private const val STROKE_WIDTH_SCALE = 1.25f
 
       private const val GAP_TEXT = "m"  // Not to be translated
 

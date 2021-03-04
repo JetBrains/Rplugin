@@ -6,7 +6,7 @@ package org.jetbrains.r.psi.stubs
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.stubs.StubBase
 import com.intellij.psi.stubs.StubElement
-import org.jetbrains.r.classes.RS4ClassInfo
+import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.psi.api.RCallExpression
 
 class RCallExpressionStubImpl(parent: StubElement<*>,

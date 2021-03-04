@@ -2166,35 +2166,35 @@ public final class RPIServiceGrpc {
     return getDataFrameFilterMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Int32Value,
-      com.google.protobuf.Empty> getDataFrameDisposeMethod;
+  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
+      com.google.protobuf.BoolValue> getDataFrameRefreshMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "dataFrameDispose",
-      requestType = com.google.protobuf.Int32Value.class,
-      responseType = com.google.protobuf.Empty.class,
+      fullMethodName = SERVICE_NAME + '/' + "dataFrameRefresh",
+      requestType = org.jetbrains.r.rinterop.RRef.class,
+      responseType = com.google.protobuf.BoolValue.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<com.google.protobuf.Int32Value,
-      com.google.protobuf.Empty> getDataFrameDisposeMethod() {
-    io.grpc.MethodDescriptor<com.google.protobuf.Int32Value, com.google.protobuf.Empty> getDataFrameDisposeMethod;
-    if ((getDataFrameDisposeMethod = RPIServiceGrpc.getDataFrameDisposeMethod) == null) {
+  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
+      com.google.protobuf.BoolValue> getDataFrameRefreshMethod() {
+    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef, com.google.protobuf.BoolValue> getDataFrameRefreshMethod;
+    if ((getDataFrameRefreshMethod = RPIServiceGrpc.getDataFrameRefreshMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
-        if ((getDataFrameDisposeMethod = RPIServiceGrpc.getDataFrameDisposeMethod) == null) {
-          RPIServiceGrpc.getDataFrameDisposeMethod = getDataFrameDisposeMethod =
-              io.grpc.MethodDescriptor.<com.google.protobuf.Int32Value, com.google.protobuf.Empty>newBuilder()
+        if ((getDataFrameRefreshMethod = RPIServiceGrpc.getDataFrameRefreshMethod) == null) {
+          RPIServiceGrpc.getDataFrameRefreshMethod = getDataFrameRefreshMethod =
+              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.RRef, com.google.protobuf.BoolValue>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "dataFrameDispose"))
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "dataFrameRefresh"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.google.protobuf.Int32Value.getDefaultInstance()))
+                  org.jetbrains.r.rinterop.RRef.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.google.protobuf.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("dataFrameDispose"))
+                  com.google.protobuf.BoolValue.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("dataFrameRefresh"))
               .build();
         }
       }
     }
-    return getDataFrameDisposeMethod;
+    return getDataFrameRefreshMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest,
@@ -2784,6 +2784,37 @@ public final class RPIServiceGrpc {
       }
     }
     return getSetSaveOnExitMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.BoolValue,
+      org.jetbrains.r.rinterop.CommandOutput> getSetRStudioApiEnabledMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "setRStudioApiEnabled",
+      requestType = com.google.protobuf.BoolValue.class,
+      responseType = org.jetbrains.r.rinterop.CommandOutput.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.BoolValue,
+      org.jetbrains.r.rinterop.CommandOutput> getSetRStudioApiEnabledMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.BoolValue, org.jetbrains.r.rinterop.CommandOutput> getSetRStudioApiEnabledMethod;
+    if ((getSetRStudioApiEnabledMethod = RPIServiceGrpc.getSetRStudioApiEnabledMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getSetRStudioApiEnabledMethod = RPIServiceGrpc.getSetRStudioApiEnabledMethod) == null) {
+          RPIServiceGrpc.getSetRStudioApiEnabledMethod = getSetRStudioApiEnabledMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.BoolValue, org.jetbrains.r.rinterop.CommandOutput>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "setRStudioApiEnabled"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.BoolValue.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.CommandOutput.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("setRStudioApiEnabled"))
+              .build();
+        }
+      }
+    }
+    return getSetRStudioApiEnabledMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
@@ -3402,9 +3433,9 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public void dataFrameDispose(com.google.protobuf.Int32Value request,
-        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
-      asyncUnimplementedUnaryCall(getDataFrameDisposeMethod(), responseObserver);
+    public void dataFrameRefresh(org.jetbrains.r.rinterop.RRef request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.BoolValue> responseObserver) {
+      asyncUnimplementedUnaryCall(getDataFrameRefreshMethod(), responseObserver);
     }
 
     /**
@@ -3544,6 +3575,13 @@ public final class RPIServiceGrpc {
     public void setSaveOnExit(com.google.protobuf.BoolValue request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnimplementedUnaryCall(getSetSaveOnExitMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void setRStudioApiEnabled(com.google.protobuf.BoolValue request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput> responseObserver) {
+      asyncUnimplementedUnaryCall(getSetRStudioApiEnabledMethod(), responseObserver);
     }
 
     /**
@@ -4046,12 +4084,12 @@ public final class RPIServiceGrpc {
                 com.google.protobuf.Int32Value>(
                   this, METHODID_DATA_FRAME_FILTER)))
           .addMethod(
-            getDataFrameDisposeMethod(),
+            getDataFrameRefreshMethod(),
             asyncUnaryCall(
               new MethodHandlers<
-                com.google.protobuf.Int32Value,
-                com.google.protobuf.Empty>(
-                  this, METHODID_DATA_FRAME_DISPOSE)))
+                org.jetbrains.r.rinterop.RRef,
+                com.google.protobuf.BoolValue>(
+                  this, METHODID_DATA_FRAME_REFRESH)))
           .addMethod(
             getConvertRoxygenToHTMLMethod(),
             asyncUnaryCall(
@@ -4185,6 +4223,13 @@ public final class RPIServiceGrpc {
                 com.google.protobuf.BoolValue,
                 com.google.protobuf.Empty>(
                   this, METHODID_SET_SAVE_ON_EXIT)))
+          .addMethod(
+            getSetRStudioApiEnabledMethod(),
+            asyncServerStreamingCall(
+              new MethodHandlers<
+                com.google.protobuf.BoolValue,
+                org.jetbrains.r.rinterop.CommandOutput>(
+                  this, METHODID_SET_RSTUDIO_API_ENABLED)))
           .addMethod(
             getGetLoadedShortS4ClassInfosMethod(),
             asyncUnaryCall(
@@ -4792,10 +4837,10 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public void dataFrameDispose(com.google.protobuf.Int32Value request,
-        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+    public void dataFrameRefresh(org.jetbrains.r.rinterop.RRef request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.BoolValue> responseObserver) {
       asyncUnaryCall(
-          getChannel().newCall(getDataFrameDisposeMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getDataFrameRefreshMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -4954,6 +4999,14 @@ public final class RPIServiceGrpc {
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getSetSaveOnExitMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void setRStudioApiEnabled(com.google.protobuf.BoolValue request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput> responseObserver) {
+      asyncServerStreamingCall(
+          getChannel().newCall(getSetRStudioApiEnabledMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -5508,9 +5561,9 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public com.google.protobuf.Empty dataFrameDispose(com.google.protobuf.Int32Value request) {
+    public com.google.protobuf.BoolValue dataFrameRefresh(org.jetbrains.r.rinterop.RRef request) {
       return blockingUnaryCall(
-          getChannel(), getDataFrameDisposeMethod(), getCallOptions(), request);
+          getChannel(), getDataFrameRefreshMethod(), getCallOptions(), request);
     }
 
     /**
@@ -5650,6 +5703,14 @@ public final class RPIServiceGrpc {
     public com.google.protobuf.Empty setSaveOnExit(com.google.protobuf.BoolValue request) {
       return blockingUnaryCall(
           getChannel(), getSetSaveOnExitMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public java.util.Iterator<org.jetbrains.r.rinterop.CommandOutput> setRStudioApiEnabled(
+        com.google.protobuf.BoolValue request) {
+      return blockingServerStreamingCall(
+          getChannel(), getSetRStudioApiEnabledMethod(), getCallOptions(), request);
     }
 
     /**
@@ -6124,10 +6185,10 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> dataFrameDispose(
-        com.google.protobuf.Int32Value request) {
+    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.BoolValue> dataFrameRefresh(
+        org.jetbrains.r.rinterop.RRef request) {
       return futureUnaryCall(
-          getChannel().newCall(getDataFrameDisposeMethod(), getCallOptions()), request);
+          getChannel().newCall(getDataFrameRefreshMethod(), getCallOptions()), request);
     }
 
     /**
@@ -6374,7 +6435,7 @@ public final class RPIServiceGrpc {
   private static final int METHODID_DATA_FRAME_GET_DATA = 66;
   private static final int METHODID_DATA_FRAME_SORT = 67;
   private static final int METHODID_DATA_FRAME_FILTER = 68;
-  private static final int METHODID_DATA_FRAME_DISPOSE = 69;
+  private static final int METHODID_DATA_FRAME_REFRESH = 69;
   private static final int METHODID_CONVERT_ROXYGEN_TO_HTML = 70;
   private static final int METHODID_HTTPD_REQUEST = 71;
   private static final int METHODID_GET_DOCUMENTATION_FOR_PACKAGE = 72;
@@ -6394,8 +6455,9 @@ public final class RPIServiceGrpc {
   private static final int METHODID_CLIENT_REQUEST_FINISHED = 86;
   private static final int METHODID_R_STUDIO_API_RESPONSE = 87;
   private static final int METHODID_SET_SAVE_ON_EXIT = 88;
-  private static final int METHODID_GET_LOADED_SHORT_S4CLASS_INFOS = 89;
-  private static final int METHODID_GET_S4CLASS_INFO_BY_CLASS_NAME = 90;
+  private static final int METHODID_SET_RSTUDIO_API_ENABLED = 89;
+  private static final int METHODID_GET_LOADED_SHORT_S4CLASS_INFOS = 90;
+  private static final int METHODID_GET_S4CLASS_INFO_BY_CLASS_NAME = 91;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -6690,9 +6752,9 @@ public final class RPIServiceGrpc {
           serviceImpl.dataFrameFilter((org.jetbrains.r.rinterop.DataFrameFilterRequest) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Int32Value>) responseObserver);
           break;
-        case METHODID_DATA_FRAME_DISPOSE:
-          serviceImpl.dataFrameDispose((com.google.protobuf.Int32Value) request,
-              (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
+        case METHODID_DATA_FRAME_REFRESH:
+          serviceImpl.dataFrameRefresh((org.jetbrains.r.rinterop.RRef) request,
+              (io.grpc.stub.StreamObserver<com.google.protobuf.BoolValue>) responseObserver);
           break;
         case METHODID_CONVERT_ROXYGEN_TO_HTML:
           serviceImpl.convertRoxygenToHTML((org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest) request,
@@ -6769,6 +6831,10 @@ public final class RPIServiceGrpc {
         case METHODID_SET_SAVE_ON_EXIT:
           serviceImpl.setSaveOnExit((com.google.protobuf.BoolValue) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
+          break;
+        case METHODID_SET_RSTUDIO_API_ENABLED:
+          serviceImpl.setRStudioApiEnabled((com.google.protobuf.BoolValue) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput>) responseObserver);
           break;
         case METHODID_GET_LOADED_SHORT_S4CLASS_INFOS:
           serviceImpl.getLoadedShortS4ClassInfos((com.google.protobuf.Empty) request,
@@ -6908,7 +6974,7 @@ public final class RPIServiceGrpc {
               .addMethod(getDataFrameGetDataMethod())
               .addMethod(getDataFrameSortMethod())
               .addMethod(getDataFrameFilterMethod())
-              .addMethod(getDataFrameDisposeMethod())
+              .addMethod(getDataFrameRefreshMethod())
               .addMethod(getConvertRoxygenToHTMLMethod())
               .addMethod(getHttpdRequestMethod())
               .addMethod(getGetDocumentationForPackageMethod())
@@ -6928,6 +6994,7 @@ public final class RPIServiceGrpc {
               .addMethod(getClientRequestFinishedMethod())
               .addMethod(getRStudioApiResponseMethod())
               .addMethod(getSetSaveOnExitMethod())
+              .addMethod(getSetRStudioApiEnabledMethod())
               .addMethod(getGetLoadedShortS4ClassInfosMethod())
               .addMethod(getGetS4ClassInfoByClassNameMethod())
               .build();

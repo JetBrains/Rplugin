@@ -18,6 +18,8 @@ interface RDataFrameViewer : Disposable {
   
   val project: Project
 
+  val canRefresh: Boolean
+
   fun getColumnName(index: Int): String
 
   fun getColumnType(index: Int): KClass<*>
@@ -33,6 +35,8 @@ interface RDataFrameViewer : Disposable {
   fun sortBy(sortKeys: List<RowSorter.SortKey>): RDataFrameViewer
 
   fun filter(f: DataFrameFilterRequest.Filter): RDataFrameViewer
+
+  fun refresh(): Promise<Boolean>
 
   override fun dispose() {
   }

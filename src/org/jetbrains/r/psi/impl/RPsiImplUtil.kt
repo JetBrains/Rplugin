@@ -21,8 +21,8 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.r.RElementGenerator
-import org.jetbrains.r.classes.RS4ClassInfo
-import org.jetbrains.r.classes.RS4ClassInfoUtil
+import org.jetbrains.r.classes.s4.RS4ClassInfo
+import org.jetbrains.r.classes.s4.RS4ClassInfoUtil
 import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.RElementFilters

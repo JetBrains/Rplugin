@@ -7,6 +7,7 @@ package org.jetbrains.r.rinterop
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.google.protobuf.*
+import com.intellij.codeInsight.CodeInsightBundle
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
@@ -34,8 +35,8 @@ import io.grpc.stub.StreamObserver
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.*
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.classes.RS4ClassInfo
-import org.jetbrains.r.classes.RS4ClassSlot
+import org.jetbrains.r.classes.s4.RS4ClassInfo
+import org.jetbrains.r.classes.s4.RS4ClassSlot
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame
@@ -47,6 +48,7 @@ import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.psi.TableColumnInfo
 import org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.psi.TableType
+import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiFunctionId
 import org.jetbrains.r.run.graphics.RGraphicsDeviceManager
 import org.jetbrains.r.run.graphics.RGraphicsUtils
@@ -229,6 +231,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       }
       initRequest.setWorkspaceFile(it).setLoadWorkspace(loadWorkspace).setSaveOnExit(saveOnExit)
     }
+    initRequest.enableRStudioApi = RSettings.getInstance(project).rStudioApiEnabled
     initRequest.setRScriptsPath(rScriptsPath).projectDir = baseDir
     initRequest.httpUserAgent = "Rkernel/" + (ApplicationInfo.getInstance()?.build?.asStringWithoutProductCode() ?: "IntelliJ")
 
@@ -761,31 +764,32 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     execute(asyncStub::commitDataImport, request)
   }
 
+  private fun dataFrameIndexToViewer(index: Int): RDataFrameViewer {
+    if (index == -1) {
+      throw RDataFrameException("Invalid data frame")
+    }
+    return dataFrameViewerCache.getOrPut(index) {
+      val persistentRef = RPersistentRef(index, this)
+      Disposer.register(persistentRef, Disposable {
+        dataFrameViewerCache.remove(index)
+      })
+      RDataFrameViewerImpl(persistentRef).also {
+        Disposer.register(this, it)
+      }
+    }
+  }
+
   fun dataFrameGetViewer(ref: RReference): Promise<RDataFrameViewer> {
     try {
       RDataFrameViewerImpl.ensureDplyrInstalled(project)
     } catch (e: RequiredPackageException) {
        return rejectedPromise(e)
     }
-    return executeAsync(asyncStub::dataFrameRegister, ref.proto).thenCancellable {
-      val index = it.value
-      if (index == -1) {
-        throw RDataFrameException("Invalid data frame")
-      }
-      dataFrameViewerCache.getOrPut(index) {
-        val persistentRef = RPersistentRef(index, this)
-        Disposer.register(persistentRef, Disposable {
-          dataFrameViewerCache.remove(index)
-          if (isAlive) executeAsync(asyncStub::dataFrameDispose, Int32Value.of(index))
-        })
-        val viewer = RDataFrameViewerImpl(persistentRef)
-        viewer
-      }
-    }
+    return executeAsync(asyncStub::dataFrameRegister, ref.proto).thenCancellable { dataFrameIndexToViewer(it.value) }
   }
 
-  fun dataFrameGetInfo(ref: RReference): DataFrameInfoResponse {
-    return executeWithCheckCancel(asyncStub::dataFrameGetInfo, ref.proto)
+  fun dataFrameGetInfo(ref: RReference): CancellablePromise<DataFrameInfoResponse> {
+    return executeAsync(asyncStub::dataFrameGetInfo, ref.proto)
   }
 
   fun dataFrameGetData(ref: RReference, start: Int, end: Int): CancellablePromise<DataFrameGetDataResponse> {
@@ -811,6 +815,10 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     return executeAsync(asyncStub::dataFrameFilter, request)
       .also { disposableParent?.tryRegisterDisposable(Disposable { it.cancel() }) }
       .let { RPersistentRef(it.getWithCheckCanceled().value, this, disposableParent) }
+  }
+
+  fun dataFrameRefresh(ref: RReference): CancellablePromise<Boolean> {
+    return executeAsync(asyncStub::dataFrameRefresh, ref.proto).thenCancellable { it.value }
   }
 
   fun findInheritorNamedArguments(function: RReference): List<String> {
@@ -905,6 +913,10 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
 
   fun getObjectSizes(refs: List<RReference>): List<Long> {
     return execute(asyncStub::getObjectSizes, RRefList.newBuilder().addAllRefs(refs.map { it.proto }).build()).listList
+  }
+
+  fun setRStudioApiEnabled(isEnabled: Boolean) {
+    executeRequestAsync(RPIServiceGrpc.getSetRStudioApiEnabledMethod(), BoolValue.of(isEnabled))
   }
 
   private fun <TRequest : GeneratedMessageV3> executeRequest(
@@ -1029,6 +1041,12 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
           executeAsync(asyncStub::clientRequestFinished, Empty.getDefaultInstance())
         }
       }
+      AsyncEvent.EventCase.VIEWTABLEREQUEST -> {
+        val viewer = dataFrameIndexToViewer(event.viewTableRequest.persistentRefIndex)
+        fireListenersAsync({ it.onViewTableRequest(viewer, event.viewTableRequest.title) }) {
+          executeAsync(asyncStub::clientRequestFinished, Empty.getDefaultInstance())
+        }
+      }
       AsyncEvent.EventCase.SHOWFILEREQUEST -> {
         val request = event.showFileRequest
         fireListenersAsync({ it.onShowFileRequest(request.filePath, request.title) }) {
@@ -1036,6 +1054,9 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         }
       }
       AsyncEvent.EventCase.SHOWHELPREQUEST -> {
+        if (!ApplicationManager.getApplication().isUnitTestMode) invokeLater {
+          RToolWindowFactory.getDocumentationComponent(project).setText(CodeInsightBundle.message("javadoc.fetching.progress"), null, null)
+        }
         val httpdResponse = event.showHelpRequest.takeIf { it.success }?.let { HttpdResponse(it.content, it.url) } ?: return
         fireListeners { it.onShowHelpRequest(httpdResponse) }
       }
@@ -1275,6 +1296,16 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
           cacheIndex = currentCacheIndex
           currentPromise?.cancel()
           val promise = AsyncPromise<T>().also { currentPromise = it }
+          promise.onError {
+            if (it is CancellationException) {
+              synchronized(this@AsyncCached) {
+                if (promise === currentPromise) {
+                  currentPromise = null
+                  --cacheIndex
+                }
+              }
+            }
+          }
           f().onSuccess {
             cached = it
             promise.setResult(it)
@@ -1294,9 +1325,10 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       return currentPromise ?: resolvedPromise(cached)
     }
 
-    fun getWithCheckCancel(): T {
+    fun safeGet(): T {
       val result = value
-      currentPromise?.let { return it.getWithCheckCanceled(false) }
+      if (!isUnitTestMode && ApplicationManager.getApplication().isDispatchThread) return result
+      currentPromise?.let { return it.getWithCheckCanceled() }
       return result
     }
   }
@@ -1309,6 +1341,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     fun onException(exception: RExceptionInfo) {}
     fun onTermination() {}
     fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> = resolvedPromise()
+    fun onViewTableRequest(viewer: RDataFrameViewer, title: String): Promise<Unit> = resolvedPromise()
     fun onShowHelpRequest(httpdResponse: HttpdResponse) {}
     fun onShowFileRequest(filePath: String, title: String): Promise<Unit> = resolvedPromise()
     fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject>? = null

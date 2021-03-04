@@ -42,5 +42,7 @@ data class RPlot(
   val strokes: List<RStroke>,
   val viewports: List<RViewport>,
   val layers: List<RLayer>,
+  val previewComplexity: Int,
+  val totalComplexity: Int,
   val error: RPlotError?
 )

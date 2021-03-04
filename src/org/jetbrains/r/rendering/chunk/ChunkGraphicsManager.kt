@@ -42,9 +42,9 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
     }
 
   var isStandalone: Boolean
-    get() = settings.isStandalone
+    get() = RGraphicsSettings.isStandalone(project)
     set(newStandalone) {
-      settings.isStandalone = newStandalone
+      RGraphicsSettings.setStandalone(project, newStandalone)
     }
 
   var outputDirectory: String?
@@ -97,7 +97,7 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
   }
 
   fun addStandaloneListener(parent: Disposable, listener: (Boolean) -> Unit) {
-    settings.addStandaloneListener(parent, listener)
+    RGraphicsSettings.addStandaloneListener(project, parent, listener)
   }
 
   fun rescaleImage(imagePath: String, newSize: Dimension, newResolution: Int? = null, onResize: (File) -> Unit) {

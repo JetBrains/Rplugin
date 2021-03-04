@@ -19,7 +19,9 @@ import com.intellij.util.ui.UIUtil.findComponentOfType
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.configuration.RInterpreterBarWidgetFactory
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.packages.RPackageProjectManager
@@ -36,9 +38,7 @@ class RConsoleManager(private val project: Project) {
     private set
 
   val currentConsoleAsync: Promise<RConsoleView>
-    get() = AsyncPromise<RConsoleView>().apply {
-      currentConsole?.let { setResult(it) } ?: runConsole().processed(this)
-    }
+    get() = currentConsole?.let { resolvedPromise(it) } ?: runConsole()
 
   private fun run(lambda: (RConsoleView) -> Unit): Promise<Unit> {
     return currentConsoleAsync.onError {
@@ -68,6 +68,7 @@ class RConsoleManager(private val project: Project) {
       synchronized(this) {
         consolePromise = null
       }
+    }.onError {
     }
   }
 
@@ -100,6 +101,7 @@ class RConsoleManager(private val project: Project) {
           currentConsole = findComponentOfType(event.content.component, RConsoleView::class.java)
           currentConsole?.onSelect()
         }
+        RInterpreterBarWidgetFactory.updateWidget(project)
       }
 
       override fun contentRemoved(event: ContentManagerEvent) {
@@ -107,6 +109,7 @@ class RConsoleManager(private val project: Project) {
           currentConsole = null
           RConsoleToolWindowFactory.setAvailableForRToolWindows(project, false)
         }
+        RInterpreterBarWidgetFactory.updateWidget(project)
       }
 
       override fun selectionChanged(event: ContentManagerEvent) {
@@ -141,9 +144,9 @@ class RConsoleManager(private val project: Project) {
     /**
      * Success promise means that [currentConsoleOrNull] is not null
      */
-    fun runConsole(project: Project, requestFocus: Boolean = false): Promise<RConsoleView> {
+    fun runConsole(project: Project, requestFocus: Boolean = false, workingDir: String? = null): Promise<RConsoleView> {
       val promise = AsyncPromise<RConsoleView>()
-      doRunConsole(project, requestFocus).processed(promise)
+      doRunConsole(project, requestFocus, workingDir).processed(promise)
       return promise
     }
 
@@ -161,10 +164,10 @@ class RConsoleManager(private val project: Project) {
       }
     }
 
-    private fun doRunConsole(project: Project, requestFocus: Boolean): Promise<RConsoleView> {
+    private fun doRunConsole(project: Project, requestFocus: Boolean, workingDir: String?): Promise<RConsoleView> {
       val result = AsyncPromise<RConsoleView>()
       RInterpreterManager.getInterpreterAsync(project).onSuccess { interpreter ->
-        RConsoleRunner(interpreter).initAndRun().onSuccess { console ->
+        RConsoleRunner(interpreter, workingDir ?: interpreter.basePath).initAndRun().onSuccess { console ->
           result.setResult(console)
           invokeLater {
             val toolWindow = RConsoleToolWindowFactory.getRConsoleToolWindows(project)
@@ -177,6 +180,8 @@ class RConsoleManager(private val project: Project) {
             toolWindow?.component?.validate()
           }
           RPackageProjectManager.getInstance(project).loadOrSuggestToInstallMissedPackages()
+        }.onError {
+          result.setError(it)
         }
       }.onError {
         result.setError("Cannot run console until path to viable R interpreter is specified")
