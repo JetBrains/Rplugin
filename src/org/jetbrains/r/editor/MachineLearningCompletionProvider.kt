@@ -57,10 +57,9 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
 
   private fun mergePriority(lookupElement: LookupElement,
                             mlVariant: MachineLearningCompletionHttpResponse.CompletionVariant): LookupElement {
-    var priority = mlVariant.score
-    if (lookupElement is PrioritizedLookupElement<*>) {
-      priority = maxOf(lookupElement.priority, priority)
-    }
+    val priority = lookupElement.`as`(PrioritizedLookupElement.CLASS_CONDITION_KEY)?.run {
+      maxOf(priority, mlVariant.score)
+    } ?: mlVariant.score
     return PrioritizedLookupElement.withPriority(lookupElement, priority)
   }
 
