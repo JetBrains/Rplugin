@@ -66,9 +66,9 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
         row {
           cell {
             label(RBundle.message("project.settings.ml.completion.version.app"))
-            versionLabel(MachineLearningCompletionAppArtifact())
+            versionLabel(MachineLearningCompletionRemoteArtifact.Application())
             label(RBundle.message("project.settings.ml.completion.version.model")).withLargeLeftGap()
-            versionLabel(MachineLearningCompletionModelArtifact())
+            versionLabel(MachineLearningCompletionRemoteArtifact.Model())
           }
         }
 

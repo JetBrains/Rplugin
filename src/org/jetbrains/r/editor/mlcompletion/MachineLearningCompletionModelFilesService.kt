@@ -7,8 +7,6 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import org.eclipse.aether.version.Version
-import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionAppArtifact
-import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionModelArtifact
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionRemoteArtifact
 import org.jetbrains.r.editor.mlcompletion.update.VersionConverter
 import java.io.File
@@ -44,8 +42,8 @@ class MachineLearningCompletionModelFilesService {
   private val appLock = ReentrantLock()
   private val MachineLearningCompletionRemoteArtifact.lock
     get() = when (this) {
-      is MachineLearningCompletionAppArtifact -> appLock
-      is MachineLearningCompletionModelArtifact -> modelLock
+      is MachineLearningCompletionRemoteArtifact.Application -> appLock
+      is MachineLearningCompletionRemoteArtifact.Model -> modelLock
     }
 
   val localServerDirectory
@@ -65,8 +63,8 @@ class MachineLearningCompletionModelFilesService {
 
   private val MachineLearningCompletionRemoteArtifact.localVersionProperty
     get() = when (this) {
-      is MachineLearningCompletionModelArtifact -> _modelVersion
-      is MachineLearningCompletionAppArtifact -> _applicationVersion
+      is MachineLearningCompletionRemoteArtifact.Model -> _modelVersion
+      is MachineLearningCompletionRemoteArtifact.Application -> _applicationVersion
     }
 
   open class UpdateArtifactTask(
@@ -119,8 +117,8 @@ class MachineLearningCompletionModelFilesService {
   fun validate(artifact: MachineLearningCompletionRemoteArtifact) =
     artifact.lock.withLock {
       when (artifact) {
-        is MachineLearningCompletionModelArtifact -> MachineLearningCompletionModelFiles.modelAvailable()
-        is MachineLearningCompletionAppArtifact -> MachineLearningCompletionModelFiles.applicationAvailable()
+        is MachineLearningCompletionRemoteArtifact.Model -> MachineLearningCompletionModelFiles.modelAvailable()
+        is MachineLearningCompletionRemoteArtifact.Application -> MachineLearningCompletionModelFiles.applicationAvailable()
       }
     }
 }

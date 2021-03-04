@@ -8,8 +8,6 @@ import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
 import com.intellij.util.io.isFile
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionAppArtifact
-import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionModelArtifact
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionRemoteArtifact
 import java.io.File
 import java.nio.file.Paths
@@ -55,8 +53,8 @@ object MachineLearningCompletionModelFiles {
 
   fun updateArtifactFromArchive(progress: ProgressIndicator, artifact: MachineLearningCompletionRemoteArtifact, zipFile: File) : Boolean {
     val dstDir = File(when (artifact) {
-      is MachineLearningCompletionModelArtifact -> localServerModelDirectory
-      is MachineLearningCompletionAppArtifact -> localServerAppDirectory
+      is MachineLearningCompletionRemoteArtifact.Model -> localServerModelDirectory
+      is MachineLearningCompletionRemoteArtifact.Application -> localServerAppDirectory
     } ?: return false)
 
     dstDir.clearDirectory()

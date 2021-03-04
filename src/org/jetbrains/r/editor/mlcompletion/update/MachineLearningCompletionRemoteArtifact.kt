@@ -43,8 +43,8 @@ sealed class MachineLearningCompletionRemoteArtifact {
 
   val currentVersion
     get() = when (this) {
-      is MachineLearningCompletionModelArtifact -> MachineLearningCompletionModelFilesService.getInstance().modelVersion
-      is MachineLearningCompletionAppArtifact -> MachineLearningCompletionModelFilesService.getInstance().applicationVersion
+      is Model -> MachineLearningCompletionModelFilesService.getInstance().modelVersion
+      is Application -> MachineLearningCompletionModelFilesService.getInstance().applicationVersion
     }
 
   val latestArtifactUrl: String
@@ -54,8 +54,8 @@ sealed class MachineLearningCompletionRemoteArtifact {
   fun ignoreLatestVersion() {
     val settings = MachineLearningCompletionSettings.getInstance()
     when (this) {
-      is MachineLearningCompletionModelArtifact -> settings.state.modelLastIgnoredVersion = latestVersion
-      is MachineLearningCompletionAppArtifact -> settings.state.appLastIgnoredVersion = latestVersion
+      is Model -> settings.state.modelLastIgnoredVersion = latestVersion
+      is Application -> settings.state.appLastIgnoredVersion = latestVersion
     }
   }
 
@@ -63,24 +63,24 @@ sealed class MachineLearningCompletionRemoteArtifact {
     get() {
       val settings = MachineLearningCompletionSettings.getInstance()
       return when (this) {
-        is MachineLearningCompletionModelArtifact -> settings.state.modelLastIgnoredVersion
-        is MachineLearningCompletionAppArtifact -> settings.state.appLastIgnoredVersion
+        is Model -> settings.state.modelLastIgnoredVersion
+        is Application -> settings.state.appLastIgnoredVersion
       }
     }
 
   fun localIsMissing() = !MachineLearningCompletionModelFilesService.getInstance().validate(this)
-}
 
-class MachineLearningCompletionModelArtifact : MachineLearningCompletionRemoteArtifact() {
-  override val id = "model"
-  override val visibleName = "model"
-}
+  class Model : MachineLearningCompletionRemoteArtifact() {
+    override val id = "model"
+    override val visibleName = "model"
+  }
 
-class MachineLearningCompletionAppArtifact : MachineLearningCompletionRemoteArtifact() {
-  override val id = when {
-                      SystemInfo.isWindows -> "win"
-                      SystemInfo.isMac -> "macos"
-                      else -> "linux"
-                    } + "-app"
-  override val visibleName = "application"
+  class Application : MachineLearningCompletionRemoteArtifact() {
+    override val id = when {
+                        SystemInfo.isWindows -> "win"
+                        SystemInfo.isMac -> "macos"
+                        else -> "linux"
+                      } + "-app"
+    override val visibleName = "application"
+  }
 }
