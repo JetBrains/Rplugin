@@ -375,7 +375,7 @@ You can find the source code in the following repositories:
     </applicationListeners>
 
     <projectListeners>
-      <listener class="org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionProjectOpenListener"
+      <listener class="org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionProjectOpenListener"
                 topic="com.intellij.openapi.project.ProjectManagerListener" />
     </projectListeners>
 
@@ -528,7 +528,7 @@ You can find the source code in the following repositories:
 
         <codeCompletionConfigurable instance="org.jetbrains.r.settings.MachineLearningCompletionConfigurable"/>
 
-        <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionDownloadModelService"/>
+        <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionDownloadModelService"/>
 
         <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService"/>
 

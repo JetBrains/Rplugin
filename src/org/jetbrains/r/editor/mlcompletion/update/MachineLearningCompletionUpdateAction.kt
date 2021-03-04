@@ -1,4 +1,4 @@
-package org.jetbrains.r.editor.mlcompletion.model.updater
+package org.jetbrains.r.editor.mlcompletion.update
 
 import com.intellij.openapi.observable.properties.AtomicBooleanProperty
 import com.intellij.openapi.project.Project

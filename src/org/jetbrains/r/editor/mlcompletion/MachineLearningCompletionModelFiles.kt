@@ -8,9 +8,9 @@ import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
 import com.intellij.util.io.isFile
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionAppArtifact
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionModelArtifact
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionRemoteArtifact
+import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionAppArtifact
+import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionModelArtifact
+import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionRemoteArtifact
 import java.io.File
 import java.nio.file.Paths
 

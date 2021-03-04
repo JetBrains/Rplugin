@@ -1,4 +1,4 @@
-package org.jetbrains.r.editor.mlcompletion.model.updater
+package org.jetbrains.r.editor.mlcompletion.update
 
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationAction
@@ -7,7 +7,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.editor.mlcompletion.model.updater.UpdateUtils.showSizeMb
+import org.jetbrains.r.editor.mlcompletion.update.UpdateUtils.showSizeMb
 import java.util.concurrent.atomic.AtomicReference
 
 

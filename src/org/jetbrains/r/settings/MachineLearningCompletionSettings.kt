@@ -3,7 +3,7 @@ package org.jetbrains.r.settings
 import com.intellij.openapi.components.*
 import com.intellij.util.xmlb.annotations.OptionTag
 import org.eclipse.aether.version.Version
-import org.jetbrains.r.editor.mlcompletion.model.updater.VersionConverter
+import org.jetbrains.r.editor.mlcompletion.update.VersionConverter
 
 
 @State(

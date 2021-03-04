@@ -16,8 +16,8 @@ import com.intellij.util.ui.JBUI
 import org.eclipse.aether.version.Version
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
-import org.jetbrains.r.editor.mlcompletion.model.updater.*
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionNotifications.showUpdateDialog
+import org.jetbrains.r.editor.mlcompletion.update.*
+import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionNotifications.showUpdateDialog
 import java.awt.Component
 import java.awt.event.ActionEvent
 import javax.swing.AbstractAction

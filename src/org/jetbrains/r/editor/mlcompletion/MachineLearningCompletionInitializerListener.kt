@@ -1,10 +1,10 @@
 package org.jetbrains.r.editor.mlcompletion
 
 import com.intellij.ide.AppLifecycleListener
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionDownloadModelService
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionNotifications
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionRemoteArtifact
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionUpdateAction
+import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionDownloadModelService
+import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionNotifications
+import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionRemoteArtifact
+import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionUpdateAction
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener
 

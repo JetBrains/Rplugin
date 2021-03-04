@@ -7,10 +7,10 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import org.eclipse.aether.version.Version
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionAppArtifact
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionModelArtifact
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionRemoteArtifact
-import org.jetbrains.r.editor.mlcompletion.model.updater.VersionConverter
+import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionAppArtifact
+import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionModelArtifact
+import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionRemoteArtifact
+import org.jetbrains.r.editor.mlcompletion.update.VersionConverter
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path

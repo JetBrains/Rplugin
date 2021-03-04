@@ -1,4 +1,4 @@
-package org.jetbrains.r.editor.mlcompletion.model.updater
+package org.jetbrains.r.editor.mlcompletion.update
 
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.io.HttpRequests

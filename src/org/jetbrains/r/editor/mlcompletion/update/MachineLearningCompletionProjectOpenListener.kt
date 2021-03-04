@@ -1,10 +1,10 @@
-package org.jetbrains.r.editor.mlcompletion.model.updater
+package org.jetbrains.r.editor.mlcompletion.update
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.roots.ProjectFileIndex
 import org.jetbrains.r.RFileType
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionNotifications.showPopup
+import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionNotifications.showPopup
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import java.util.concurrent.atomic.AtomicBoolean
 
