@@ -176,6 +176,7 @@ class NotebookOutputInlayController private constructor(
       it.component.gutterPainter = it.gutterPainter
       if (it.hasUnlimitedHeight) it.component.hasUnlimitedHeight = true
       if (it.forceHeightLimitForComplexOutputs) it.component.forceHeightLimitForComplexOutputs = true
+      it.component.heightProposer = it.heightProposer
     }
 
   class Factory : NotebookCellInlayController.Factory {
@@ -381,11 +382,12 @@ private class FixedWidthLayout(private val widthGetter: (Container) -> Int) : La
     for (component in parent.components) {
       val componentPreferedSize = component.preferredSize
       val newWidth = getComponentWidthByConstraint(parentDesiredWidth, parentInsets, component.constraints, componentPreferedSize.width)
+      val newHeight = component.castSafelyTo<JComponent>()?.heightProposer?.invoke(newWidth) ?: componentPreferedSize.height
       component.setBounds(
         parentInsets.left,
         totalY,
         newWidth,
-        componentPreferedSize.height,
+        newHeight,
       )
       totalY += componentPreferedSize.height
     }
@@ -449,4 +451,11 @@ private var JComponent.forceHeightLimitForComplexOutputs: Boolean
   get() = getClientProperty("forceHeightLimitForComplexOutputs") != null
   set(value) {
     putClientProperty("forceHeightLimitForComplexOutputs", if (value) Unit else null)
+  }
+
+@Suppress("UNCHECKED_CAST")
+private var JComponent.heightProposer: ((width: Int) -> Int?)?
+  get() = getClientProperty("heightProposer") as ((Int) -> Int?)?
+  set(value) {
+    putClientProperty("heightProposer", value)
   }
