@@ -10,6 +10,7 @@ import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ex.ActionManagerEx
+import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.actionSystem.ex.ActionUtil.performActionDumbAwareWithCallbacks
 import com.intellij.openapi.application.TransactionGuard
 import com.intellij.openapi.application.invokeLater
@@ -46,6 +47,6 @@ object RActionUtil {
    */
   fun performDelegatedAction(anAction: AnAction, actionEvent: AnActionEvent) {
     ActionManagerEx.getInstanceEx().fireBeforeActionPerformed(anAction, actionEvent.dataContext, actionEvent)
-    anAction.actionPerformed(actionEvent)
+    ActionUtil.performAction(anAction, actionEvent)
   }
 }
