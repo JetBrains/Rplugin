@@ -211,8 +211,20 @@ open class NotebookOutputNonStickyScrollPane(view: Component) : NotebookOutputDe
     }
 
     override fun mouseMoved(e: MouseEvent?) {
-      isScrollCaptured = true
+      if (!contentFitsViewport()) {
+        // DS-1193: If the viewport fits the entire view, there is no reason to capture
+        // the scroll. An unwanted additional attempt is needed to scroll the editor otherwise.
+        isScrollCaptured = true
+      }
       super.mouseMoved(e)
+    }
+
+    private fun contentFitsViewport(): Boolean {
+     val viewRect = viewport.viewRect
+     return viewRect.x == 0
+            && viewRect.y == 0
+            && viewRect.height == viewport.view.height
+            && viewRect.width == viewport.view.width
     }
   }
 
