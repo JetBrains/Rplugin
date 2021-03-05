@@ -144,7 +144,7 @@ class NotebookOutputInlayController private constructor(
 
     for (ignored in oldComponentsWithFactories) {
       val idx = innerComponent.componentCount - 1
-      val old = innerComponent.components[idx]
+      val old = innerComponent.getComponent(idx)
       innerComponent.remove(idx)
       if (old is Disposable) {
         Disposer.dispose(old)
@@ -210,8 +210,14 @@ class NotebookOutputInlayController private constructor(
 val EditorCustomElementRenderer.notebookInlayOutputComponent: JComponent?
   get() = castSafelyTo<JComponent>()?.components?.firstOrNull()?.castSafelyTo<SurroundingComponent>()
 
-val EditorCustomElementRenderer.notebookInlayInnerComponent: JComponent?
+private val EditorCustomElementRenderer.notebookInlayInnerComponent: JComponent?
   get() = notebookInlayOutputComponent?.components?.firstOrNull()?.castSafelyTo<InnerComponentScrollPane>()
+
+fun EditorCustomElementRenderer.isInnerComponentScrollbarEnabled(additionalHeight: Int): Boolean? {
+  val outerHeight = notebookInlayOutputComponent?.preferredSize?.height ?: return null
+  val innerHeight = notebookInlayInnerComponent?.preferredSize?.height ?: return null
+  return innerHeight + additionalHeight > outerHeight
+}
 
 private val NotebookOutputComponentFactory.WidthStretching.fixedWidthLayoutConstraint
   get() = when (this) {
