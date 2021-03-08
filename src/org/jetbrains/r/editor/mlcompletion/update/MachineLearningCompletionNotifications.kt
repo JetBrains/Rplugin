@@ -83,7 +83,7 @@ object MachineLearningCompletionNotifications {
       .createNotification(notificationsTitle, RBundle.message("notification.ml.update.updateCompleted.content"))
       .notify(project)
 
-  fun notifyUpdateFailed(project: Project?, artifact: MachineLearningCompletionRemoteArtifact) =
+  fun notifyUpdateFailed(project: Project?, artifact: MachineLearningCompletionArtifact) =
     NotificationGroupManager.getInstance().getNotificationGroup(GROUP_NAME)
       .createNotification(notificationsTitle, RBundle.message("notification.ml.update.updateFailed.content", artifact.visibleName))
       .notify(project)

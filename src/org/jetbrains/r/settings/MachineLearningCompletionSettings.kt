@@ -1,8 +1,8 @@
 package org.jetbrains.r.settings
 
 import com.intellij.openapi.components.*
+import com.intellij.openapi.util.Version
 import com.intellij.util.xmlb.annotations.OptionTag
-import org.eclipse.aether.version.Version
 import org.jetbrains.r.editor.mlcompletion.update.VersionConverter
 
 

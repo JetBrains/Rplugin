@@ -6,8 +6,8 @@ import com.intellij.openapi.observable.properties.AtomicLazyProperty
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
-import org.eclipse.aether.version.Version
-import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionRemoteArtifact
+import com.intellij.openapi.util.Version
+import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionLocalArtifact
 import org.jetbrains.r.editor.mlcompletion.update.VersionConverter
 import java.io.File
 import java.nio.file.Files
@@ -40,10 +40,10 @@ class MachineLearningCompletionModelFilesService {
 
   private val modelLock = ReentrantLock()
   private val appLock = ReentrantLock()
-  private val MachineLearningCompletionRemoteArtifact.lock
+  private val MachineLearningCompletionLocalArtifact.lock
     get() = when (this) {
-      is MachineLearningCompletionRemoteArtifact.Application -> appLock
-      is MachineLearningCompletionRemoteArtifact.Model -> modelLock
+      is MachineLearningCompletionLocalArtifact.Application -> appLock
+      is MachineLearningCompletionLocalArtifact.Model -> modelLock
     }
 
   val localServerDirectory
@@ -61,14 +61,14 @@ class MachineLearningCompletionModelFilesService {
   val applicationVersion
     get() = _applicationVersion.get()
 
-  private val MachineLearningCompletionRemoteArtifact.localVersionProperty
+  private val MachineLearningCompletionLocalArtifact.localVersionProperty
     get() = when (this) {
-      is MachineLearningCompletionRemoteArtifact.Model -> _modelVersion
-      is MachineLearningCompletionRemoteArtifact.Application -> _applicationVersion
+      is MachineLearningCompletionLocalArtifact.Model -> _modelVersion
+      is MachineLearningCompletionLocalArtifact.Application -> _applicationVersion
     }
 
   open class UpdateArtifactTask(
-    private val artifact: MachineLearningCompletionRemoteArtifact,
+    private val artifact: MachineLearningCompletionLocalArtifact,
     private val artifactZipFile: Path,
     project: Project?,
     progressTitle: String,
@@ -84,7 +84,7 @@ class MachineLearningCompletionModelFilesService {
     }
   }
 
-  fun updateArtifact(progress: ProgressIndicator, artifact: MachineLearningCompletionRemoteArtifact, zipFile: File) =
+  fun updateArtifact(progress: ProgressIndicator, artifact: MachineLearningCompletionLocalArtifact, zipFile: File) =
     artifact.lock.withLock {
       MachineLearningCompletionModelFiles.updateArtifactFromArchive(progress, artifact, zipFile)
       artifact.localVersionProperty.reset()
@@ -101,7 +101,7 @@ class MachineLearningCompletionModelFilesService {
       }
     }
 
-  fun registerVersionChangeListener(artifact: MachineLearningCompletionRemoteArtifact,
+  fun registerVersionChangeListener(artifact: MachineLearningCompletionLocalArtifact,
                                     disposable: Disposable? = null,
                                     listener: (Version?) -> Unit) {
     val property = artifact.localVersionProperty
@@ -114,11 +114,11 @@ class MachineLearningCompletionModelFilesService {
     }
   }
 
-  fun validate(artifact: MachineLearningCompletionRemoteArtifact) =
+  fun validate(artifact: MachineLearningCompletionLocalArtifact) =
     artifact.lock.withLock {
       when (artifact) {
-        is MachineLearningCompletionRemoteArtifact.Model -> MachineLearningCompletionModelFiles.modelAvailable()
-        is MachineLearningCompletionRemoteArtifact.Application -> MachineLearningCompletionModelFiles.applicationAvailable()
+        is MachineLearningCompletionLocalArtifact.Model -> MachineLearningCompletionModelFiles.modelAvailable()
+        is MachineLearningCompletionLocalArtifact.Application -> MachineLearningCompletionModelFiles.applicationAvailable()
       }
     }
 }

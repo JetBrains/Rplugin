@@ -37,7 +37,7 @@ class MachineLearningCompletionUpdateAction(val project: Project?,
     artifacts.forEach { artifact ->
       val artifactTempFile = Files.createTempFile(localServerDirectory, artifact.id, ".zip")
 
-      val unzipTask = createUnzipTask(artifact, artifactTempFile, project, updateCompletedCallback,
+      val unzipTask = createUnzipTask(artifact.localDelegate, artifactTempFile, project, updateCompletedCallback,
                                       releaseFlagCallback)
 
       val downloadTask = createDownloadTask(artifact, artifactTempFile, project, unzipTask,
@@ -47,7 +47,7 @@ class MachineLearningCompletionUpdateAction(val project: Project?,
     }
   }
 
-  private fun createUnzipTask(artifact: MachineLearningCompletionRemoteArtifact,
+  private fun createUnzipTask(artifact: MachineLearningCompletionLocalArtifact,
                               artifactTempFile: Path,
                               project: Project?,
                               updateCompletedCallback: () -> Unit,

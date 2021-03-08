@@ -7,13 +7,13 @@ import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.options.BoundConfigurable
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.util.Version
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.*
 import com.intellij.util.text.DateFormatUtil
 import com.intellij.util.ui.JBUI
-import org.eclipse.aether.version.Version
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
 import org.jetbrains.r.editor.mlcompletion.update.*
@@ -66,9 +66,9 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
         row {
           cell {
             label(RBundle.message("project.settings.ml.completion.version.app"))
-            versionLabel(MachineLearningCompletionRemoteArtifact.Application())
+            versionLabel(MachineLearningCompletionLocalArtifact.Application)
             label(RBundle.message("project.settings.ml.completion.version.model")).withLargeLeftGap()
-            versionLabel(MachineLearningCompletionRemoteArtifact.Model())
+            versionLabel(MachineLearningCompletionLocalArtifact.Model)
           }
         }
 
@@ -128,7 +128,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     return component(label)
   }
 
-  private fun Cell.versionLabel(artifact: MachineLearningCompletionRemoteArtifact): CellBuilder<JLabel> {
+  private fun Cell.versionLabel(artifact: MachineLearningCompletionLocalArtifact): CellBuilder<JLabel> {
     val label = JBLabel()
     updateVersionLabel(label, artifact.currentVersion)
 
