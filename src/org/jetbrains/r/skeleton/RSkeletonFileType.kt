@@ -5,7 +5,6 @@
 package org.jetbrains.r.skeleton
 
 import com.intellij.openapi.fileTypes.FileType
-import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.r.RBundle
 import javax.swing.Icon
 
@@ -18,7 +17,8 @@ object RSkeletonFileType : FileType {
 
   override fun getName(): String = EXTENSION
 
-  override fun getDescription(): String = RBundle.message("r.skeleton.file.description.binary.skeleton.format.for.r.package")
+  override fun getDescription(): String = RBundle.message("filetype.r.skeleton.binary.skeleton.format.for.r.package.description")
+  override fun getDisplayName(): String = RBundle.message("filetype.r.skeleton.binary.skeleton.format.for.r.package.display.name")
 
   override fun isBinary(): Boolean = true
 
