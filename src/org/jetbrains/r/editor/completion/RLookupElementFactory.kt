@@ -9,8 +9,10 @@ import com.intellij.codeInsight.completion.BasicInsertHandler
 import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.completion.PrioritizedLookupElement
 import com.intellij.codeInsight.lookup.LookupElement
+import com.intellij.codeInsight.lookup.LookupElementDecorator
 import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.util.ClassConditionKey
 import com.intellij.openapi.util.TextRange
 import icons.RIcons
 import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.associatedS4GenericInfo
@@ -76,6 +78,16 @@ interface RLookupElementInsertHandler {
 
 class REmptyLookupElementInsertHandler : RLookupElementInsertHandler {
   override fun getInsertHandlerForAssignment(assignment: RAssignmentStatement) = BasicInsertHandler<LookupElement>()
+}
+
+sealed class MachineLearningCompletionLookupDecorator(delegate: LookupElement) : LookupElementDecorator<LookupElement>(delegate) {
+  companion object {
+    val CLASS_CONDITION_KEY: ClassConditionKey<MachineLearningCompletionLookupDecorator> =
+      ClassConditionKey.create(MachineLearningCompletionLookupDecorator::class.java)
+  }
+
+  class New(delegate: LookupElement) : MachineLearningCompletionLookupDecorator(delegate)
+  class Merged(delegate: LookupElement) : MachineLearningCompletionLookupDecorator(delegate)
 }
 
 class RLookupElementFactory(private val functionInsertHandler: RLookupElementInsertHandler = REmptyLookupElementInsertHandler(),
@@ -186,7 +198,8 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
 
   fun createMachineLearningCompletionLookupElement(variant: MachineLearningCompletionHttpResponse.CompletionVariant): LookupElement {
     val element = RLookupElement(variant.text, true, RIcons.MachineLearning)
-    return createLookupElementWithPriority(element, BasicInsertHandler(), variant.score)
+    val prioritized = createLookupElementWithPriority(element, BasicInsertHandler(), variant.score)
+    return MachineLearningCompletionLookupDecorator.New(prioritized)
   }
 
   fun createMergedMachineLearningCompletionLookupElement(lookupElement: LookupElement,
@@ -194,7 +207,8 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
     val priority = lookupElement.`as`(PrioritizedLookupElement.CLASS_CONDITION_KEY)?.run {
       maxOf(priority, mlVariant.score)
     } ?: mlVariant.score
-    return createLookupElementWithPriority(lookupElement, BasicInsertHandler(), priority)
+    val prioritized = createLookupElementWithPriority(lookupElement, BasicInsertHandler(), priority)
+    return MachineLearningCompletionLookupDecorator.Merged(prioritized)
   }
 
   private fun createOperatorLookupElement(functionAssignment: RAssignmentStatement, isLocal: Boolean): LookupElement {

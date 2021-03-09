@@ -793,6 +793,9 @@ You can find the source code in the following repositories:
       <configurationType implementation="org.jetbrains.r.run.configuration.RRunConfigurationType"/>
       <runConfigurationProducer implementation="org.jetbrains.r.run.configuration.RRunConfigurationProducer"/>
       <programRunner implementation="org.jetbrains.r.run.configuration.RProgramRunner"/>
+
+      <!-- FUS -->
+      <lookup.usageDetails implementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionLookupUsageDescriptor"/>
     </extensions>
 
   <extensions defaultExtensionNs="org.intellij.intelliLang">
