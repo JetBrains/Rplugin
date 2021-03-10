@@ -1,4 +1,4 @@
-package org.jetbrains.r.editor.mlcompletion
+package org.jetbrains.r.editor.mlcompletion.logging
 
 import com.intellij.codeInsight.completion.BaseCompletionService
 import com.intellij.codeInsight.lookup.Lookup
@@ -9,37 +9,36 @@ import com.intellij.internal.statistic.eventLog.FeatureUsageData
 import org.jetbrains.r.editor.RCompletionContributor
 import org.jetbrains.r.editor.RMachineLearningCompletionContributor
 import org.jetbrains.r.editor.completion.MachineLearningCompletionLookupDecorator
-import org.jetbrains.r.settings.MachineLearningCompletionSettings
 
 class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
-
-  companion object {
-    private val settings = MachineLearningCompletionSettings.getInstance()
-  }
 
   private enum class RLookupElementOrigin { ORIGINAL, ML_COMPLETION, MERGED }
 
   override fun getExtensionKey(): String = "rmlcompletion"
 
   override fun fillUsageData(lookup: Lookup, usageData: FeatureUsageData) {
-    lookup.logIfSelectedRElement { lookupElement ->
-      val lookupOrigin = lookupElement.`as`(MachineLearningCompletionLookupDecorator.CLASS_CONDITION_KEY)?.origin
-                         ?: RLookupElementOrigin.ORIGINAL
+    val selectedElement = lookup.currentItem
+    if (!lookup.isCompletion || lookup !is LookupImpl
+        || selectedElement == null || !selectedElement.isRLookupElement()) {
+      return
+    }
 
-      usageData.apply {
-        addData("rLookupElementOrigin", lookupOrigin.name)
-        addData("rMLCompletionEnabled", settings.state.isEnabled)
+    val lookupOrigin = selectedElement.`as`(MachineLearningCompletionLookupDecorator.CLASS_CONDITION_KEY)?.origin
+                       ?: RLookupElementOrigin.ORIGINAL
+
+    usageData.apply {
+      addData("rLookupElementOrigin", lookupOrigin.name)
+
+      MachineLearningCompletionLookupStatistics.get(lookup)?.let { statistics ->
+        addData("rMLCompletionEnabled", statistics.mlCompletionIsEnabled)
+        addData("rMLCompletionResponseReceived", statistics.mlCompletionRequestReceived)
       }
     }
   }
 
-  private inline fun Lookup.logIfSelectedRElement(logger: (LookupElement) -> Unit): Unit? = currentItem?.takeIf { selected ->
-    isCompletion
-    && this is LookupImpl
-    && selected.getUserData(BaseCompletionService.LOOKUP_ELEMENT_CONTRIBUTOR).let { contributor ->
-      contributor is RCompletionContributor || contributor is RMachineLearningCompletionContributor
-    }
-  }?.let(logger)
+  private fun LookupElement.isRLookupElement(): Boolean = getUserData(BaseCompletionService.LOOKUP_ELEMENT_CONTRIBUTOR).let { contributor ->
+    contributor is RCompletionContributor || contributor is RMachineLearningCompletionContributor
+  }
 
   private val MachineLearningCompletionLookupDecorator.origin: RLookupElementOrigin
     get() = when (this) {

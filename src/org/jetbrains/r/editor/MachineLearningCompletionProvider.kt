@@ -19,6 +19,7 @@ import org.jetbrains.r.editor.completion.RLookupElementFactory
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpRequest
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpResponse
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerService
+import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupStatistics
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
 
@@ -40,7 +41,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
   }
 
   private fun processRequest(requestData: MachineLearningCompletionHttpRequest):
-    CompletableFuture<MachineLearningCompletionHttpResponse> {
+    CompletableFuture<MachineLearningCompletionHttpResponse?> {
     return CompletableFuture.supplyAsync(
       {
         try {
@@ -53,18 +54,18 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
         }
         catch (e: IOException) {
           serverService.tryRelaunchServer()
-          MachineLearningCompletionHttpResponse.emptyResponse
+          null
         }
       },
       getAppExecutorService())
   }
 
   private fun addFutureCompletions(parameters: CompletionParameters,
-                                   futureResponse: CompletableFuture<MachineLearningCompletionHttpResponse>,
+                                   futureResponse: CompletableFuture<MachineLearningCompletionHttpResponse?>,
                                    result: CompletionResultSet,
                                    startTime: Long) {
     val mlCompletionVariantsMap = futureResponse.thenApply { response ->
-      response.completionVariants.associateByTo(mutableMapOf()) { it.text }
+      response?.completionVariants?.associateByTo(mutableMapOf()) { it.text }
     }
     val otherCompletionVariants = HashSet<String>()
 
@@ -79,7 +80,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
         return@runRemainingContributors
       }
 
-      val mlVariant = mlCompletionVariantsMap.get().remove(lookupElement.lookupString)
+      val mlVariant = mlCompletionVariantsMap.get()?.remove(lookupElement.lookupString)
       if (mlVariant == null) {
         result.passResult(it)
         return@runRemainingContributors
@@ -101,6 +102,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
         }
       } ?: return
 
+    MachineLearningCompletionLookupStatistics.reportCompletionSuccessfullyFinished(parameters)
     for (key in otherCompletionVariants) {
       mlCompletionResult.remove(key)
     }

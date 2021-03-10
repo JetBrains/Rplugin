@@ -377,6 +377,9 @@ You can find the source code in the following repositories:
     <projectListeners>
       <listener class="org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionProjectOpenListener"
                 topic="com.intellij.openapi.project.ProjectManagerListener" />
+      <listener class="org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupTracker"
+                topic="com.intellij.codeInsight.lookup.LookupManagerListener"
+                activeInTestMode="false"/>
     </projectListeners>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -795,7 +798,7 @@ You can find the source code in the following repositories:
       <programRunner implementation="org.jetbrains.r.run.configuration.RProgramRunner"/>
 
       <!-- FUS -->
-      <lookup.usageDetails implementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionLookupUsageDescriptor"/>
+      <lookup.usageDetails implementation="org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupUsageDescriptor"/>
     </extensions>
 
   <extensions defaultExtensionNs="org.intellij.intelliLang">
