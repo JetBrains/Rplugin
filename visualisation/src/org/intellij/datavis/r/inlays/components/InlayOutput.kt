@@ -39,7 +39,6 @@ import org.intellij.datavis.r.ui.ToolbarUtil
 import org.intellij.datavis.r.ui.UiCustomizer
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.concurrency.Promise
-import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.event.ActionEvent
@@ -231,7 +230,14 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
     Disposer.register(parent, console)
     toolbarPane.dataComponent = console.component
 
-    initOutputTextConsole(editor, parent, console, scrollPaneTopBorderHeight, UiCustomizer.instance.getTextOutputBackground(editor))
+    initOutputTextConsole(editor, parent, console, scrollPaneTopBorderHeight)
+    ApplicationManager.getApplication().messageBus.connect(console)
+      .subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
+        (console.editor as EditorEx).apply {
+          updateOutputTextConsoleUI(console, editor)
+          component.repaint()
+        }
+      })
   }
 
   override fun clear() {
@@ -322,12 +328,10 @@ fun initOutputTextConsole(
   parent: Disposable,
   console: ConsoleViewImpl,
   scrollPaneTopBorderHeight: Int,
-  editorBackgroundColor: Color,
 ) {
+  updateOutputTextConsoleUI(console, editor)
   (console.editor as EditorEx).apply {
     isRendererMode = true
-    backgroundColor = editorBackgroundColor
-    setFontSize(editor.colorsScheme.editorFontSize)
     scrollPane.border = IdeBorderFactory.createEmptyBorder(JBUI.insets(scrollPaneTopBorderHeight, 0, 0, 0))
     MouseWheelUtils.wrapMouseWheelListeners(scrollPane, parent)
   }
@@ -346,14 +350,17 @@ fun initOutputTextConsole(
   console.editor.contentComponent.actionMap.put(actionNameSelect, actionSelect)
 
   console.editor.settings.isUseSoftWraps = true
+}
 
-  ApplicationManager.getApplication().messageBus.connect(console)
-    .subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
-      (console.editor as EditorEx).apply {
-        setFontSize(editor.colorsScheme.editorFontSize)
-        component.repaint()
-      }
-    })
+/**
+ * [editor] is a main notebook editor, not the editor inside [console].
+ */
+fun updateOutputTextConsoleUI(console: ConsoleViewImpl, editor: Editor) {
+  (console.editor as EditorEx).also {
+    if (it.colorsScheme != editor.colorsScheme) {
+      it.colorsScheme = editor.colorsScheme
+    }
+  }
 }
 
 class InlayOutputHtml(parent: Disposable, editor: Editor, clearAction: () -> Unit) : InlayOutput(parent, editor, clearAction) {
