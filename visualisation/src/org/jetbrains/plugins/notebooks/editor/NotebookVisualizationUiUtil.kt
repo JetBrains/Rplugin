@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.notebooks.editor
 
+import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentListener
@@ -13,8 +14,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 infix fun IntRange.hasIntersectionWith(other: IntRange): Boolean =
-  if (first < other.first) other.first in this || other.last in this
-  else first in other || last in other
+  !(first > other.last || last < other.first)
 
 inline fun <T, G : Graphics> G.use(handler: (g: G) -> T): T =
   try {
@@ -85,6 +85,22 @@ fun Document.getText(interval: NotebookCellLines.Interval): String =
     getLineStartOffset(interval.lines.first),
     getLineEndOffset(interval.lines.last)
   ))
+
+fun Editor.getSelectedCells(): List<NotebookCellLines.Interval> {
+  val notebookCellLines = NotebookCellLines.get(this)
+  return caretModel.allCarets.flatMap { caret ->
+    val selectionLines = document.getSelectionLines(caret)
+    notebookCellLines.intervalsIterator(selectionLines.first).asSequence().takeWhile { it.lines.first <= selectionLines.last }
+  }.distinct()
+}
+
+fun Editor.isSelectedCell(cell: NotebookCellLines.Interval): Boolean =
+  caretModel.allCarets.any { caret ->
+    document.getSelectionLines(caret).hasIntersectionWith(cell.lines)
+  }
+
+private fun Document.getSelectionLines(caret: Caret): IntRange =
+  IntRange(getLineNumber(caret.selectionStart), getLineNumber(caret.selectionEnd))
 
 /** Both lists should be sorted by the [IntRange.first]. */
 fun MutableList<IntRange>.mergeAndJoinIntersections(other: List<IntRange>) {
