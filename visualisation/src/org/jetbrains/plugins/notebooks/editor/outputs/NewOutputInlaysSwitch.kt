@@ -10,7 +10,6 @@ object NewOutputInlaysSwitch {
 
   val useNewForAnything: Boolean = types.isNotEmpty()
   val useNewForEverything: Boolean = "all" in types
-  val useNewForWeb: Boolean = useNewForEverything || "web" in types
   val useNewForText: Boolean = useNewForEverything || "text" in types
   val useNewForTable: Boolean = useNewForEverything || "jupyter_table" in types
   val useNewForImage = useNewForEverything || "image" in types
