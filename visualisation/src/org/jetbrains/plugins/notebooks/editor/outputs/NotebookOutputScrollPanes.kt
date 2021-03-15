@@ -9,10 +9,7 @@ import java.awt.Component
 import java.awt.Insets
 import java.awt.Point
 import java.awt.event.*
-import javax.swing.JComponent
-import javax.swing.JPanel
-import javax.swing.JScrollBar
-import javax.swing.JScrollPane
+import javax.swing.*
 
 internal fun getEditorBackground() = EditorColorsManager.getInstance().globalScheme.defaultBackground
 
@@ -245,7 +242,9 @@ open class NotebookOutputNonStickyScrollPane(view: Component) : NotebookOutputDe
 }
 
 private fun recursivelyAddMouseListenerToComponent(comp: JComponent, listener: MouseListener) {
-  comp.addMouseListener(listener)
+  if (comp is Scrollable) {
+    comp.addMouseListener(listener)
+  }
   for (c in comp.components) {
     if (c is JComponent) {
       recursivelyAddMouseListenerToComponent(c, listener)
@@ -254,7 +253,9 @@ private fun recursivelyAddMouseListenerToComponent(comp: JComponent, listener: M
 }
 
 private fun recursivelyAddMouseMotionListenerToComponent(comp: JComponent, listener: MouseMotionListener) {
-  comp.addMouseMotionListener(listener)
+  if (comp is Scrollable) {
+    comp.addMouseMotionListener(listener)
+  }
   for (c in comp.components) {
     if (c is JComponent) {
       recursivelyAddMouseMotionListenerToComponent(c, listener)
