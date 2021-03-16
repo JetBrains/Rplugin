@@ -86,11 +86,19 @@ fun Document.getText(interval: NotebookCellLines.Interval): String =
     getLineEndOffset(interval.lines.last)
   ))
 
+fun Editor.getCell(line: Int): NotebookCellLines.Interval =
+  NotebookCellLines.get(this).intervalsIterator(line).next()
+
+fun Editor.getCells(lines: IntRange): List<NotebookCellLines.Interval> =
+  NotebookCellLines.get(this).getCells(lines).toList()
+
+fun Editor.getPrimarySelectedCell(): NotebookCellLines.Interval =
+  getCell(caretModel.primaryCaret.logicalPosition.line)
+
 fun Editor.getSelectedCells(): List<NotebookCellLines.Interval> {
   val notebookCellLines = NotebookCellLines.get(this)
   return caretModel.allCarets.flatMap { caret ->
-    val selectionLines = document.getSelectionLines(caret)
-    notebookCellLines.intervalsIterator(selectionLines.first).asSequence().takeWhile { it.lines.first <= selectionLines.last }
+    notebookCellLines.getCells(document.getSelectionLines(caret))
   }.distinct()
 }
 
@@ -98,6 +106,9 @@ fun Editor.isSelectedCell(cell: NotebookCellLines.Interval): Boolean =
   caretModel.allCarets.any { caret ->
     document.getSelectionLines(caret).hasIntersectionWith(cell.lines)
   }
+
+private fun NotebookCellLines.getCells(lines: IntRange): Sequence<NotebookCellLines.Interval> =
+  intervalsIterator(lines.first).asSequence().takeWhile { it.lines.first <= lines.last }
 
 private fun Document.getSelectionLines(caret: Caret): IntRange =
   IntRange(getLineNumber(caret.selectionStart), getLineNumber(caret.selectionEnd))
