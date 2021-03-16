@@ -31,7 +31,7 @@ class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
 
       MachineLearningCompletionLookupStatistics.get(lookup)?.let { statistics ->
         addData("rMLCompletionEnabled", statistics.mlCompletionIsEnabled)
-        addData("rMLCompletionResponseReceived", statistics.mlCompletionRequestReceived)
+        addData("rMLCompletionResponseReceived", statistics.mlCompletionResponseReceived)
       }
     }
   }

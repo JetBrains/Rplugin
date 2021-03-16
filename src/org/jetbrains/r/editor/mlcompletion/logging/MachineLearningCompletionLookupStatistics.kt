@@ -9,7 +9,7 @@ import org.jetbrains.r.settings.MachineLearningCompletionSettings
 class MachineLearningCompletionLookupStatistics {
 
   @Volatile
-  var mlCompletionRequestReceived: Boolean = false
+  var mlCompletionResponseReceived: Boolean = false
     private set
   val mlCompletionIsEnabled: Boolean = MachineLearningCompletionSettings.getInstance().state.isEnabled
 
@@ -28,7 +28,7 @@ class MachineLearningCompletionLookupStatistics {
     fun reportCompletionSuccessfullyFinished(parameters: CompletionParameters) {
       val activeLookup = (parameters.process as? CompletionProgressIndicator)?.lookup
       activeLookup?.let {
-        get(it)?.mlCompletionRequestReceived = true
+        get(it)?.mlCompletionResponseReceived = true
       }
     }
   }
