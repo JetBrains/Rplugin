@@ -82,27 +82,12 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
     checkIntegrity(null)
   }
 
-  private fun shiftOffsetToMarkerStart(text: CharSequence, initialOffset: Int): Int {
-    val line = document.getLineNumber(initialOffset)
-    val interestingText = text.subSequence(
-      document.getLineStartOffset(line),
-      // +1 -- to handle \n, and another +1 -- to include the last character.
-      min(document.textLength, document.getLineEndOffset(line) + 2),
-    )
-    return cellTypeAwareLexerProvider
-             .markerSequence(interestingText, 0, document.getLineStartOffset(line))
-             .map { it.offset }
-             .takeWhile { it < initialOffset }
-             .lastOrNull()
-           ?: initialOffset
-  }
-
   private fun createDocumentListener() = object : DocumentListener {
-    private var shiftedStartOffsetBefore: Int = -1
+    private var previousEndDocumentOffset: Int = -1
 
     override fun beforeDocumentChange(event: DocumentEvent) {
       if (!cellTypeAwareLexerProvider.shouldParseWholeFile()) {
-        shiftedStartOffsetBefore = shiftOffsetToMarkerStart(document.immutableCharSequence, event.offset)
+        previousEndDocumentOffset = document.getLineEndOffset(document.getLineNumber(event.offset + event.oldLength))
       }
     }
 
@@ -114,13 +99,13 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
         val oldIntervals = intervalCache.toList()
         intervalCache.clear()
         initializeEmptyLists()
-        notifyChangedIntervals(oldIntervals, intervalCache.toList())
+        notifyChangedIntervals(true, oldIntervals, intervalCache.toList())
       }
       else {
         wrapErrors(event) {
           updateIntervals(
             updateMarkers(
-              shiftedStartOffsetBefore = shiftedStartOffsetBefore,
+              previousEndDocumentOffset = previousEndDocumentOffset,
               startOffset = event.offset,
               oldLength = event.oldLength,
               newLength = event.newLength,
@@ -143,35 +128,22 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
     val firstIntervalOrdinal: Int,
     val markerSizeDiff: Int,
     val adjustedNewMarkers: List<Marker>,
+    val firstMarkerIsChanged: Boolean,
   )
 
   private fun updateMarkers(
-    shiftedStartOffsetBefore: Int,
+    previousEndDocumentOffset: Int,
     startOffset: Int,
     oldLength: Int,
     newLength: Int,
   ): UpdateMarkersResult {
-    // The document change may cut half of a marker at the start. In such case, rewind a bit to rescan from the marker start.
-    val startDocumentOffset = min(
-      shiftedStartOffsetBefore,
-      shiftOffsetToMarkerStart(document.immutableCharSequence, startOffset)
-    )
+    // The document change may cut half of a marker at the start. It is expected that markers consume the whole line.
+    val startDocumentOffset = document.getLineStartOffset(document.getLineNumber(startOffset))
 
     val markerCacheCutStart = getMarkerUpperBound(startDocumentOffset)
 
-    // Also, the document change may cut half of a marker at the end. Detect that and widen the text slice if needed.
-    val endOffsetIncrement =
-      markerCache
-        .getOrNull(getMarkerUpperBound(startOffset + oldLength))
-        ?.takeIf {
-          // -1 because the document is changed until previousEndOffset excluding the end.
-          (startOffset + oldLength - it.offset - 1) in 0 until it.length
-        }
-        ?.let { startOffset + oldLength - it.offset + it.length }
-      ?: 0
-
-    val previousEndDocumentOffset = startOffset + oldLength + endOffsetIncrement
-    val endDocumentOffset = startOffset + newLength + endOffsetIncrement
+    // Also, the document change may cut half of a marker at the end. Widen the text until the end of the last changed line.
+    val endDocumentOffset = document.getLineEndOffset(document.getLineNumber(startOffset + newLength))
 
     val markerCacheCutEndExclusive =
       markerCache
@@ -228,6 +200,7 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
       firstIntervalOrdinal = max(0, markerCacheCutStart - if (markerCacheCutStart == 0 && markerCache.getOrNull(0)?.offset != 0) 0 else 1),
       markerSizeDiff = adjustedNewMarkers.size - adjustedOldMarkersSize,
       adjustedNewMarkers = adjustedNewMarkers,
+      firstMarkerIsChanged = markerCacheCutStart == 0 && markerCacheCutEndExclusive > 0,
     )
   }
 
@@ -258,7 +231,7 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
       }
 
       // If one marker is just converted to another one, lists will be trimmed at left by one.
-      notifyChangedIntervals(oldIntervals, newIntervals)
+      notifyChangedIntervals(updateMarkersResult.firstMarkerIsChanged, oldIntervals, newIntervals)
     }
   }
 
@@ -275,11 +248,30 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
            ?: markerCache.size
   }
 
-  private fun notifyChangedIntervals(oldIntervals: List<Interval>, newIntervals: List<Interval>) {
-    val (trimmedOld, trimmedNew) = trimLists(oldIntervals, newIntervals) { o, n ->
-      o.type == n.type &&
-      o.lines.last - o.lines.first == n.lines.last - n.lines.first
+  private infix fun Interval.looksLikeShifted(other: Interval): Boolean =
+    type == other.type &&
+    lines.last - lines.first == other.lines.last - other.lines.first
+
+  private fun notifyChangedIntervals(firstMarkerIsChanged: Boolean, oldIntervals: List<Interval>, newIntervals: List<Interval>) {
+    // Because the region of changed markers search is always expanded until line starts and ends, the first intervals can be excessive and
+    // not related to the real change. The same happens with the last intervals. However, there's a tricky case. When the topmost marker
+    // is changed (especially, when it is deleted), it also means that the first interval is changed. In that case, list should not be
+    // trimmed at starts.
+    val trimStart = when {
+      firstMarkerIsChanged -> 0
+      oldIntervals.isEmpty() -> 0
+      oldIntervals[0] == newIntervals.firstOrNull() -> 1
+      else -> 0
     }
+
+    val trimEnd: Int = when {
+      trimStart == min(oldIntervals.size, newIntervals.size) -> 0
+      oldIntervals.last() looksLikeShifted newIntervals.last() -> 1
+      else -> 0
+    }
+
+    val trimmedOld = oldIntervals.run { subList(trimStart, size - trimEnd) }
+    val trimmedNew = newIntervals.run { subList(trimStart, size - trimEnd) }
 
     if (trimmedOld != trimmedNew) {
       LOG.trace {
