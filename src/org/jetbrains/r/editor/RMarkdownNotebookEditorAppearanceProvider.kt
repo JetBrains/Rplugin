@@ -1,7 +1,6 @@
 package org.jetbrains.r.editor
 
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.colors.ColorKey
 import com.intellij.openapi.editor.colors.EditorColorsScheme
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.editor.impl.EditorImpl

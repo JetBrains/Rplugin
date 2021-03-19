@@ -61,6 +61,8 @@ interface NotebookEditorAppearanceColors {
   fun getCellStripeColor(editor: EditorImpl, interval: NotebookCellLines.Interval): Color?
 
   fun shouldShowCellLineNumbers(): Boolean
+
+  fun getCollapseOutputAreaBackground(scheme: EditorColorsScheme): Color? = null
 }
 
 
