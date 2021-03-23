@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.notebooks.editor.outputs
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorImpl
@@ -21,6 +22,8 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 import kotlin.math.max
 import kotlin.math.min
+
+private const val DEFAULT_INLAY_HEIGHT = 200
 
 /**
  * Shows outputs for intervals using [NotebookOutputDataKeyExtractor] and [NotebookOutputComponentFactory].
@@ -43,6 +46,12 @@ class NotebookOutputInlayController private constructor(
     )
 
   init {
+    innerComponent.maxHeight = if (!ApplicationManager.getApplication().isUnitTestMode) {
+      (Toolkit.getDefaultToolkit().screenSize.height * 0.3).toInt()
+    } else {
+      DEFAULT_INLAY_HEIGHT
+    }
+
     Disposer.register(inlay) {
       for (disposable in innerComponent.components) {
         if (disposable is Disposable) {
@@ -219,11 +228,7 @@ private class SurroundingComponent private constructor(private val innerComponen
       registerEditorSizeWatcher(it) {
         val oldWidth = it.presetWidth
         it.presetWidth = editor.textEditingAreaWidth
-        val oldHeight = it.innerComponent.maxHeight
-
-        // TODO If the maximum height changes with the window resize, the vertical scrolling is shifted.
-        it.innerComponent.maxHeight = 500  // max(300, editor.scrollingModel.visibleArea.height * 2 / 3)
-        if (oldWidth != it.presetWidth || oldHeight != it.innerComponent.maxHeight) {
+        if (oldWidth != it.presetWidth) {
           innerComponent.revalidate()
         }
       }
