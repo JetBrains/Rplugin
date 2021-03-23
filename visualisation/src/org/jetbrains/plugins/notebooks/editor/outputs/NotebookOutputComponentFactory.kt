@@ -30,23 +30,15 @@ interface NotebookOutputComponentFactory {
     fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle)
   }
 
+  /**
+   * @param limitHeight if the height of the component should be limited by 2/3 of visible vertical space. It's  the [component]'s
+   * responsibility to handle cutoffs, by using scroll panes, for example.
+   */
   data class CreatedComponent(
     val component: JComponent,
     val widthStretching: WidthStretching,
     val gutterPainter: GutterPainter?,
-
-    /** Experimental. The meaning can be changed, the type can be changed, the field can be removed. */
-    val hasUnlimitedHeight: Boolean = false,
-    val forceHeightLimitForComplexOutputs: Boolean = false,
-
-    /**
-     * Given a new width imposed by [widthStretching], propose the corresponding height if the [component] is supposed
-     * to keep a dimensions ratio.
-     *
-     * Prefer using this method instead of assigning a [java.awt.event.ComponentListener] because it allows to set proper height
-     * immediately, without blinking.
-     */
-    val heightProposer: ((width: Int) -> Int?)? = null,
+    val limitHeight: Boolean,
   )
 
   /**

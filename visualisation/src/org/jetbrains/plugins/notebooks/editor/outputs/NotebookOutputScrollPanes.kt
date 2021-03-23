@@ -15,7 +15,7 @@ internal fun getEditorBackground() = EditorColorsManager.getInstance().globalSch
 
 /** Default output scroll pane similar to one used in the IDEA editor features no border and corners
  * that respect content background. */
-open class NotebookOutputDefaultScrollPane(view: Component) : JBScrollPane(view) {
+open class NotebookOutputDefaultScrollPane(view: Component, private val validateRoot: Boolean = true) : JBScrollPane(view) {
   private val view get() = viewport.view
 
   init {
@@ -27,6 +27,8 @@ open class NotebookOutputDefaultScrollPane(view: Component) : JBScrollPane(view)
     setupScrollBars()
     setupCorners()
   }
+
+  override fun isValidateRoot(): Boolean = validateRoot
 
   private fun setupScrollBars() {
     setScrollBar(verticalScrollBar)
@@ -62,7 +64,10 @@ open class NotebookOutputDefaultScrollPane(view: Component) : JBScrollPane(view)
  * 4. When top or bottom of the scroll pane is reached, it doesn't continue scrolling the outer scroll pane immediately.
  *
  * */
-open class NotebookOutputNonStickyScrollPane(view: Component) : NotebookOutputDefaultScrollPane(view) {
+open class NotebookOutputNonStickyScrollPane(
+  view: Component,
+  validateRoot: Boolean = true,
+) : NotebookOutputDefaultScrollPane(view, validateRoot) {
   private var latestMouseWheelEventTime = 0L
   private var mouseEnteredTime = 0L
 
