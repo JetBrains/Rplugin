@@ -283,6 +283,8 @@ private class InnerComponent : JPanel() {
 
   override fun add(comp: Component, constraints: Any) {
     require(comp is CollapsingComponent)
+    // It'd rather the constraint was set in the layout manager, but it's broken. See DS-1566.
+    comp.layoutConstraints = constraints as FixedWidthMaxHeightLayout.Constraint
     super.add(comp, constraints)
   }
 
@@ -318,8 +320,7 @@ private class FixedWidthMaxHeightLayout(
   data class Constraint(val widthStretching: NotebookOutputComponentFactory.WidthStretching, val limitedHeight: Boolean)
 
   override fun addLayoutComponent(comp: Component, constraints: Any) {
-    require(comp is JComponent)
-    comp.constraints = constraints as Constraint
+    // Can't rely on this method. See DS-1566.
   }
 
   override fun addLayoutComponent(name: String?, comp: Component) {
@@ -327,7 +328,8 @@ private class FixedWidthMaxHeightLayout(
   }
 
   override fun removeLayoutComponent(comp: Component) {
-    comp.constraints = null
+    require(comp is JComponent)
+    comp.layoutConstraints = null
   }
 
   override fun preferredLayoutSize(parent: Container): Dimension =
@@ -383,7 +385,7 @@ private class FixedWidthMaxHeightLayout(
       val proposedSize = component.sizeProposer()
       val newWidth = getComponentWidthByConstraint(parentDesiredWidth, parentInsets, component, proposedSize.width)
       val newHeight =
-        if (component.constraints?.limitedHeight == true) min(maxHeight, proposedSize.height)
+        if (component.layoutConstraints?.limitedHeight == true) min(maxHeight, proposedSize.height)
         else proposedSize.height
       handleComponent(component, newWidth, newHeight)
     }
@@ -394,7 +396,7 @@ private class FixedWidthMaxHeightLayout(
                                             component: JComponent,
                                             componentDesiredWidth: Int): Int =
     (parentWidth - parentInsets.left - parentInsets.right).let {
-      when (component.constraints?.widthStretching) {
+      when (component.layoutConstraints?.widthStretching) {
         STRETCH_AND_SQUEEZE -> it
         STRETCH -> max(it, componentDesiredWidth)
         SQUEEZE -> min(it, componentDesiredWidth)
@@ -405,13 +407,13 @@ private class FixedWidthMaxHeightLayout(
         }
       }
     }
-
-  private var Component.constraints: Constraint?
-    get() = castSafelyTo<JComponent>()?.getClientProperty(Constraint::class.java) as Constraint?
-    set(value) {
-      castSafelyTo<JComponent>()?.putClientProperty(Constraint::class.java, value)
-    }
 }
+
+private var JComponent.layoutConstraints: FixedWidthMaxHeightLayout.Constraint?
+  get() = getClientProperty(FixedWidthMaxHeightLayout.Constraint::class.java) as FixedWidthMaxHeightLayout.Constraint?
+  set(value) {
+    putClientProperty(FixedWidthMaxHeightLayout.Constraint::class.java, value)
+  }
 
 private object OutputCollapsingGutterMouseListener : MouseListener, MouseMotionListener {
   override fun mouseClicked(e: MouseEvent) {
