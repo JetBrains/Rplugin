@@ -248,14 +248,14 @@ open class NotebookOutputNonStickyScrollPane(
 
   inner class MyContainerAdapter : ContainerAdapter() {
     override fun componentAdded(e: ContainerEvent) {
-      (e.source as? JComponent)?.let {
+      (e.child as? JComponent)?.let {
         recursivelyAddMouseListenerToComponent(it, mouseAdapter)
         recursivelyAddMouseMotionListenerToComponent(it, mouseAdapter)
       }
     }
 
     override fun componentRemoved(e: ContainerEvent) {
-      (e.source as? JComponent)?.let {
+      (e.child as? JComponent)?.let {
         recursivelyRemoveListeners(it)
       }
     }
