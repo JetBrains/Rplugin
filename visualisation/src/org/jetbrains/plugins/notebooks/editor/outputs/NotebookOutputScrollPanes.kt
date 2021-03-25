@@ -5,11 +5,16 @@ import com.intellij.openapi.util.registry.Registry
 import com.intellij.ui.ComponentUtil
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.util.castSafelyTo
+import com.intellij.util.ui.MouseEventHandler
 import java.awt.Component
 import java.awt.Insets
 import java.awt.Point
 import java.awt.event.*
-import javax.swing.*
+import javax.swing.JComponent
+import javax.swing.JPanel
+import javax.swing.JScrollBar
+import javax.swing.JScrollPane
 
 internal fun getEditorBackground() = EditorColorsManager.getInstance().globalScheme.defaultBackground
 
@@ -87,7 +92,7 @@ open class NotebookOutputNonStickyScrollPane(
   /** If true, the scroll pane should handle the mouse wheel event unconditionally. */
   private var isScrollCaptured = false
 
-  private val mouseAdapter = MyMouseAdapter()
+  private val mouseAdapter = MyMouseHandler()
   private val containerAdapter = MyContainerAdapter()
 
   init {
@@ -178,7 +183,7 @@ open class NotebookOutputNonStickyScrollPane(
     return ComponentUtil.getParentOfType(type, parent)
   }
 
-  inner class MyMouseAdapter : MouseAdapter() {
+  inner class MyMouseHandler : MouseEventHandler() {
     override fun mouseEntered(e: MouseEvent) {
       if (mouseEnteredTime == 0L) {
         mouseEnteredTime = e.`when`
@@ -207,9 +212,9 @@ open class NotebookOutputNonStickyScrollPane(
       super.mouseExited(e)
     }
 
-    override fun mouseClicked(e: MouseEvent) {
+    override fun mousePressed(e: MouseEvent) {
       isScrollCaptured = true
-      super.mouseClicked(e)
+      super.mousePressed(e)
     }
 
     override fun mouseMoved(e: MouseEvent?) {
@@ -221,12 +226,23 @@ open class NotebookOutputNonStickyScrollPane(
       super.mouseMoved(e)
     }
 
+    override fun handle(e: MouseEvent) {
+      // The mouse listener is attached to every component inside the scroll pane
+      // to track mouse events and make the scrolling work the way we need. It can lead
+      // to the situation when components not intended to receive mouse events receive
+      // them. This makes the events invisible to the underlying parent components.
+      // The code below ensures that events will reach parents that may be interested in them.
+      e.takeUnless { it.isConsumed }?.source?.castSafelyTo<Component>()?.parent?.let {
+        it.dispatchEvent(MouseEvent(it, e.id, e.`when`, e.modifiersEx, e.x, e.y, e.clickCount, e.isPopupTrigger))
+      }
+    }
+
     private fun contentFitsViewport(): Boolean {
-     val viewRect = viewport.viewRect
-     return viewRect.x == 0
-            && viewRect.y == 0
-            && viewRect.height == viewport.view.height
-            && viewRect.width == viewport.view.width
+      val viewRect = viewport.viewRect
+      return viewRect.x == 0
+             && viewRect.y == 0
+             && viewRect.height == viewport.view.height
+             && viewRect.width == viewport.view.width
     }
   }
 
@@ -247,9 +263,7 @@ open class NotebookOutputNonStickyScrollPane(
 }
 
 private fun recursivelyAddMouseListenerToComponent(comp: JComponent, listener: MouseListener) {
-  if (comp is Scrollable) {
-    comp.addMouseListener(listener)
-  }
+  comp.addMouseListener(listener)
   for (c in comp.components) {
     if (c is JComponent) {
       recursivelyAddMouseListenerToComponent(c, listener)
@@ -258,9 +272,7 @@ private fun recursivelyAddMouseListenerToComponent(comp: JComponent, listener: M
 }
 
 private fun recursivelyAddMouseMotionListenerToComponent(comp: JComponent, listener: MouseMotionListener) {
-  if (comp is Scrollable) {
-    comp.addMouseMotionListener(listener)
-  }
+  comp.addMouseMotionListener(listener)
   for (c in comp.components) {
     if (c is JComponent) {
       recursivelyAddMouseMotionListenerToComponent(c, listener)
@@ -288,7 +300,7 @@ private fun recursivelyRemoveListeners(comp: JComponent) {
       }
     }
     c.mouseListeners.forEach {
-      if (it is NotebookOutputNonStickyScrollPane.MyMouseAdapter) {
+      if (it is NotebookOutputNonStickyScrollPane.MyMouseHandler) {
         c.removeMouseListener(it)
       }
     }
