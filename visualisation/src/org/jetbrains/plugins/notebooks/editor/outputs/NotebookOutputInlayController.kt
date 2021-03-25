@@ -282,14 +282,13 @@ private class InnerComponent : JPanel() {
   override fun add(comp: Component): Component = throw UnsupportedOperationException()
 
   override fun add(comp: Component, constraints: Any) {
-    require(comp is CollapsingComponent)
-    // It'd rather the constraint was set in the layout manager, but it's broken. See DS-1566.
-    comp.layoutConstraints = constraints as FixedWidthMaxHeightLayout.Constraint
-    super.add(comp, constraints)
+    add(comp, constraints, -1)
   }
 
   override fun add(comp: Component, constraints: Any, index: Int) {
     require(comp is CollapsingComponent)
+    // It'd rather the constraint was set in the layout manager, but it's broken. See DS-1566.
+    comp.layoutConstraints = constraints as FixedWidthMaxHeightLayout.Constraint
     super.add(comp, constraints, index)
   }
 
