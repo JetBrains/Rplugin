@@ -4,6 +4,7 @@ import com.intellij.ide.DataManager
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
@@ -378,8 +379,9 @@ private class FixedWidthMaxHeightLayout(
     val parentDesiredWidth = widthGetter(parent)
     val maxHeight = maxHeightGetter()
     for (component in parent.components) {
+      check(component is JComponent) { "$component is not JComponent" }
       val proposedSize = component.sizeProposer()
-      val newWidth = getComponentWidthByConstraint(parentDesiredWidth, parentInsets, component.constraints, proposedSize.width)
+      val newWidth = getComponentWidthByConstraint(parentDesiredWidth, parentInsets, component, proposedSize.width)
       val newHeight =
         if (component.constraints?.limitedHeight == true) min(maxHeight, proposedSize.height)
         else proposedSize.height
@@ -389,15 +391,18 @@ private class FixedWidthMaxHeightLayout(
 
   private fun getComponentWidthByConstraint(parentWidth: Int,
                                             parentInsets: Insets,
-                                            componentConstraints: Constraint?,
+                                            component: JComponent,
                                             componentDesiredWidth: Int): Int =
     (parentWidth - parentInsets.left - parentInsets.right).let {
-      when (componentConstraints?.widthStretching) {
+      when (component.constraints?.widthStretching) {
         STRETCH_AND_SQUEEZE -> it
         STRETCH -> max(it, componentDesiredWidth)
         SQUEEZE -> min(it, componentDesiredWidth)
         NOTHING -> componentDesiredWidth
-        else -> error(componentConstraints.toString())
+        null -> {
+          LOG.error("The component $component has no constraints")
+          componentDesiredWidth
+        }
       }
     }
 
@@ -547,3 +552,6 @@ private class CollapsingComponent(editor: EditorImpl, child: JComponent) : JPane
 
 private val EditorGutterComponentEx.editor: Editor?
   get() = PlatformDataKeys.EDITOR.getData(DataManager.getInstance().getDataContext(this))
+
+// Used only in exceptional, very rare cases, therefore covered by "lazy".
+private val LOG by lazy { logger<NotebookOutputInlayController>() }
