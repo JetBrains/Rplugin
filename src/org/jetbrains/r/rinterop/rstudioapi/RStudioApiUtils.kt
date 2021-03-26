@@ -12,11 +12,10 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.vcs.changes.actions.RefreshAction
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.PathUtilRt
 import com.intellij.util.containers.ComparatorUtil
-import git4idea.changes.GitChangesViewRefresher
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
@@ -26,7 +25,6 @@ import org.jetbrains.r.interpreter.isLocal
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
 import org.jetbrains.r.rinterop.rstudioapi.RStudioAPISourceMarkerInspection.Companion.SOURCE_MARKERS_KEY
-import java.nio.file.Paths
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.streams.toList
 
@@ -208,7 +206,7 @@ object RStudioApiUtils {
     when (val command = args.list.getRObjects(0).rString.getStrings(0)) {
       "vcsRefresh" -> {
         invokeLater {
-          GitChangesViewRefresher().refresh(rInterop.project)
+          RefreshAction.doRefresh(rInterop.project)
         }
       }
       else -> {
