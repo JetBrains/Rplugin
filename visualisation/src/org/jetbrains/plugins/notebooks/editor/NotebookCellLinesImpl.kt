@@ -29,6 +29,9 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
 
   override val intervalListeners = EventDispatcher.create(IntervalListener::class.java)
 
+  override val intervalsCount: Int
+    get() = intervalCache.size
+
   override var modificationStamp: Long = 0
     private set
 

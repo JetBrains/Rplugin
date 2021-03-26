@@ -113,6 +113,7 @@ class CodeCellLinesChecker(private val description: String,
           .isEqualTo(intervals)
       }
 
+      assertThat(codeCellLines.intervalsCount).isEqualTo(codeCellLines.intervalsIterator().asSequence().toList().size)
       notebookCellLinesChecker.check(editorGetter().document, codeCellLines)
     }
 
