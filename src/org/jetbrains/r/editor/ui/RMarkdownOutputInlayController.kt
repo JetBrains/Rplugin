@@ -90,7 +90,7 @@ class RMarkdownOutputInlayController private constructor(
       if (removeFiles) {
         RMarkdownInlayDescriptor.cleanup(psiElement)
       }
-      resetComponent(inlayComponent)
+      resetComponent()
     }
   }
 
@@ -111,7 +111,7 @@ class RMarkdownOutputInlayController private constructor(
   private fun updateOutputs(resetComponent: Boolean) {
     invokeLater {
       if (resetComponent) {
-        resetComponent(inlayComponent)
+        resetComponent()
       } else {
         // reuse inlayComponent, check that it is valid
         if (Disposer.isDisposed(inlay)) {
@@ -138,14 +138,11 @@ class RMarkdownOutputInlayController private constructor(
     disposeComponent(inlayComponent)
   }
 
-  private fun resetComponent(oldComponent: NotebookInlayComponent) {
+  private fun resetComponent() {
     if (Disposer.isDisposed(editor.disposable))
       return
-    inlayComponent = addInlayComponent(editor, psiElement, inlay.offset)
-    inlay = inlayComponent.inlay!!
-    registerDisposable(inlayComponent)
-    oldComponent.inlay?.let { Disposer.dispose(it) }
-    inlayComponent.createOutputComponent()
+
+    inlayComponent.clearOutputs()
   }
 
   private fun addInlayComponent(editor: EditorImpl, cell: PsiElement, offset: Int): NotebookInlayComponent {

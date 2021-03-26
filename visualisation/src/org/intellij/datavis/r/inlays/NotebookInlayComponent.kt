@@ -325,4 +325,9 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
   fun onViewportChange(isInViewport: Boolean) {
     state?.onViewportChange(isInViewport)
   }
+
+  fun clearOutputs() {
+    state?.clear()
+    removeToolbar()
+  }
 }
