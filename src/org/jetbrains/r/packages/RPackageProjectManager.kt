@@ -7,7 +7,6 @@ package org.jetbrains.r.packages
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.vfs.VirtualFileManager
@@ -224,7 +223,7 @@ class RPackageProjectManager(private val project: Project) {
     private val PACKAGE_DEPENDENCY_REGEX = Regex("(.+?)( \\((>=|<=|>|<|==) (.+?)\\))?") // E.g. R (>= 3.6)
 
     fun getInstance(project: Project): RPackageProjectManager {
-      return ServiceManager.getService(project, RPackageProjectManager::class.java)
+      return project.getService(RPackageProjectManager::class.java)
     }
   }
 }

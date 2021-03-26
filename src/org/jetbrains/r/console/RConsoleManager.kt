@@ -6,7 +6,6 @@ package org.jetbrains.r.console
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
@@ -138,7 +137,7 @@ class RConsoleManager(private val project: Project) {
     )
 
     fun getInstance(project: Project): RConsoleManager {
-      return ServiceManager.getService(project, RConsoleManager::class.java)
+      return project.getService(RConsoleManager::class.java)
     }
 
     /**
