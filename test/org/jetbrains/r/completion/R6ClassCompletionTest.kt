@@ -18,6 +18,14 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
     addLibraries()
   }
 
+  fun testUserClassWithSingleSlot() {
+    doTest("""
+      MyClass <- R6Class("MyClass", list( someField = 0 ))
+      obj <- MyClass${"$"}new()
+      obj$<caret>
+    """.trimIndent(), "someSlot" to "ANY")
+  }
+
   private fun doWrongVariantsTest(text: String, vararg variants: String, withRuntimeInfo: Boolean = false, inConsole: Boolean = false) {
     val result = doTestBase(text, withRuntimeInfo, inConsole)
     assertNotNull(result)

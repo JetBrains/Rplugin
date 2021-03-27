@@ -10,13 +10,7 @@ import com.intellij.usages.UsageTargetUtil
 import org.intellij.lang.annotations.Language
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
-class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
-
-  override fun setUp() {
-    super.setUp()
-    addLibraries()
-  }
-
+class RCommonFindUsagesTest  : FindUsagesTestBase() {
   fun testLocalVariable() {
     doTest("""
       my.local.<caret>variable <- 10
@@ -33,9 +27,8 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
         Unclassified (2 usages)
          light_idea_test_case (2 usages)
            (2 usages)
-           test.R (2 usages)
-            2print(my.local.variable)
-            5print(my.local.variable + 20)
+           2print(my.local.variable)
+           5print(my.local.variable + 20)
     """)
   }
 
@@ -56,9 +49,8 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
         Unclassified (2 usages)
          light_idea_test_case (2 usages)
            (2 usages)
-           test.R (2 usages)
-            2print(my.local.function(2, 3))
-            5print(my.local.function(4, 5))
+           2print(my.local.function(2, 3))
+           5print(my.local.function(4, 5))
      """)
   }
 
@@ -74,9 +66,8 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
         Unclassified (2 usages)
          light_idea_test_case (2 usages)
            (2 usages)
-           test.R (2 usages)
-            1base.package <- packageDescription("base")      
-            2dplyr.package <- packageDescription("dplyr")
+           1base.package <- packageDescription("base")      
+           2dplyr.package <- packageDescription("dplyr")
      """)
   }
 
@@ -97,9 +88,8 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
         Unclassified (2 usages)
          light_idea_test_case (2 usages)
            (2 usages)
-           test.R (2 usages)
-            2x + y + z
-            7func(x = p)
+           2x + y + z
+           7func(x = p)
      """)
   }
 
@@ -124,13 +114,11 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
         Unclassified (1 usage)
          light_idea_test_case (1 usage)
            (1 usage)
-           test.R (1 usage)
-            10x + y + z
+           10x + y + z
         Usage in roxygen2 documentation (1 usage)
          light_idea_test_case (1 usage)
            (1 usage)
-           test.R (1 usage)
-            5#' @param x, y X and y
+           5#' @param x, y X and y
      """)
   }
 
@@ -157,24 +145,11 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
         Unclassified (1 usage)
          light_idea_test_case (1 usage)
            (1 usage)
-           test.R (1 usage)
-            10bar(x) + y + z
+           10bar(x) + y + z
         Usage in roxygen2 documentation (1 usage)
          light_idea_test_case (1 usage)
            (1 usage)
-           test.R (1 usage)
-            5#' @see [bar]
+           5#' @see [bar]
      """)
-  }
-
-  private fun doTest(@Language("R") code: String, expected: String) {
-    myFixture.configureByText("test.R", code.trimIndent())
-    val element = myFixture.elementAtCaret
-    val targets = UsageTargetUtil.findUsageTargets(element)
-    assertNotNull(targets)
-    assertTrue(targets.size > 0)
-    val target = (targets[0] as PsiElementUsageTarget).element
-    val actual = myFixture.getUsageViewTreeTextRepresentation(target)
-    UsefulTestCase.assertSameLines(expected.trimIndent(), actual)
   }
 }
