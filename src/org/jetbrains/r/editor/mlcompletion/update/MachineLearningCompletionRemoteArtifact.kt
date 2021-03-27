@@ -15,7 +15,7 @@ sealed class MachineLearningCompletionRemoteArtifact {
   abstract val visibleName: String
 
   companion object {
-    const val REPOSITORY_URL = "https://packages.jetbrains.team/maven/p/mlrcc/rcompletion-models"
+    const val REPOSITORY_URL = "https://packages.jetbrains.team/maven/p/mlrcc/r-ml-completion-artifacts"
     const val GROUP_ID = "org.jetbrains.r.deps.mlcompletion"
 
     fun createSubclassInstances() =

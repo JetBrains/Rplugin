@@ -41,7 +41,7 @@ object MachineLearningCompletionModelFiles {
   val localServerModelDirectory = resolveWithNullable(localServerDirectory, "model")
   val localServerAppDirectory = resolveWithNullable(localServerDirectory, "app")
 
-  val localServerAppExecutableFile = resolveWithNullable(localServerAppDirectory,
+  val localServerAppExecutableFile = resolveWithNullable(localServerAppDirectory, "run_demo",
                                                          when {
                                                            SystemInfo.isWindows -> "run_demo.exe"
                                                            else -> "run_demo"
