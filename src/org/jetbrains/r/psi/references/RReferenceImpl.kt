@@ -31,7 +31,13 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
       }
     }
 
-    if (element.isDependantIdentifier) return emptyArray()
+    if (element.isDependantIdentifier) {
+      // TODO
+      // here we need to get parent object OBJ $ element
+      // and resolve all usages here
+
+      return emptyArray()
+    }
 
     return RResolver.resolveUsingSourcesAndRuntime(element, element.name, resolveLocally())
   }

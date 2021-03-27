@@ -35,7 +35,7 @@ class RSkeletonFileStubBuilder : BinaryFileStubBuilder {
       LibrarySummary.RLibraryPackage.parseFrom(it)
     }
     for (symbol in binPackage.symbolsList) {
-      when (symbol.representationCase){
+      when (symbol.representationCase) {
         RepresentationCase.S4CLASSREPRESENTATION -> {
           val s4ClassRepresentation = symbol.s4ClassRepresentation
           RSkeletonCallExpressionStub(skeletonFileStub,
@@ -56,26 +56,23 @@ class RSkeletonFileStubBuilder : BinaryFileStubBuilder {
                                       R6ClassInfo(symbol.name,
                                                   r6ClassRepresentation.packageName,
                                                   r6ClassRepresentation.superClass,
-                                                  r6ClassRepresentation.fieldsList.map { R6ClassField(it.name, it.isPublic ) },
+                                                  r6ClassRepresentation.fieldsList.map { R6ClassField(it.name, it.isPublic) },
                                                   r6ClassRepresentation.methodsList.map { R6ClassMethod(it.name, it.isPublic) },
                                                   r6ClassRepresentation.activeBindingsList.map { R6ClassActiveBinding(it.name) }))
         }
-      }
 
-      if (symbol.representationCase == RepresentationCase.S4CLASSREPRESENTATION) {
-
-      }
-      else {
-        val functionRepresentation = symbol.functionRepresentation
-        val extraNamedArguments = functionRepresentation.extraNamedArguments
-        RSkeletonAssignmentStub(skeletonFileStub,
-                                R_SKELETON_ASSIGNMENT_STATEMENT,
-                                symbol.name,
-                                symbol.type,
-                                functionRepresentation.parameters,
-                                symbol.exported,
-                                RExtraNamedArgumentsInfo(extraNamedArguments.argNamesList,
-                                                         extraNamedArguments.funArgNamesList))
+        else -> {
+          val functionRepresentation = symbol.functionRepresentation
+          val extraNamedArguments = functionRepresentation.extraNamedArguments
+          RSkeletonAssignmentStub(skeletonFileStub,
+                                  R_SKELETON_ASSIGNMENT_STATEMENT,
+                                  symbol.name,
+                                  symbol.type,
+                                  functionRepresentation.parameters,
+                                  symbol.exported,
+                                  RExtraNamedArgumentsInfo(extraNamedArguments.argNamesList,
+                                                           extraNamedArguments.funArgNamesList))
+        }
       }
     }
     return skeletonFileStub

@@ -19,11 +19,11 @@ object R6ClassInfoUtil {
 
   const val functionNew = "new"
 
-  private const val argumentClassName = "classname"
-  private const val argumentSuperClass = "inherit"
-  private const val argumentPublic = "public"
-  private const val argumentPrivate = "private"
-  private const val argumentActive = "active"
+  const val argumentClassName = "classname"
+  const val argumentSuperClass = "inherit"
+  const val argumentPublic = "public"
+  const val argumentPrivate = "private"
+  const val argumentActive = "active"
 
   private val INSTANTIATE_CLASS_DEFINITION_KEY: Key<RAssignmentStatement> = Key.create("R6_INSTANTIATE_CLASS_DEFINITION")
 
