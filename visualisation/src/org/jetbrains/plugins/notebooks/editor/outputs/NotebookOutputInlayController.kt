@@ -16,6 +16,7 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.util.castSafelyTo
+import org.intellij.datavis.r.inlays.ResizeController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
 import org.jetbrains.plugins.notebooks.editor.SwingClientProperty
@@ -137,11 +138,7 @@ class NotebookOutputInlayController private constructor(
             }
             val newComponent = createOutputGuessingFactory(newDataKey)
             if (newComponent != null) {
-              innerComponent.add(
-                CollapsingComponent(editor, newComponent.component),
-                newComponent.fixedWidthLayoutConstraint,
-                idx,
-              )
+              addIntoInnerComponent(newComponent, idx)
               true
             }
             else false
@@ -167,14 +164,16 @@ class NotebookOutputInlayController private constructor(
       val newComponent = createOutputGuessingFactory(outputDataKey)
       if (newComponent != null) {
         isFilled = true
-        innerComponent.add(
-          CollapsingComponent(editor, newComponent.component),
-          newComponent.fixedWidthLayoutConstraint,
-        )
+        addIntoInnerComponent(newComponent)
       }
     }
 
     return isFilled
+  }
+
+  private fun addIntoInnerComponent(newComponent: NotebookOutputComponentFactory.CreatedComponent, pos: Int = -1) {
+    val collapsingComponent = CollapsingComponent(editor, newComponent.component, newComponent.limitHeight)
+    innerComponent.add(collapsingComponent, newComponent.fixedWidthLayoutConstraint, pos)
   }
 
   private fun createOutputGuessingFactory(outputDataKey: NotebookOutputDataKey): NotebookOutputComponentFactory.CreatedComponent? =
@@ -270,7 +269,7 @@ private class InnerComponent : JPanel() {
   var maxHeight: Int = Int.MAX_VALUE
 
   init {
-    layout = FixedWidthMaxHeightLayout(widthGetter = { width }, maxHeightGetter = { maxHeight })
+    layout = FixedWidthMaxHeightLayout(this)
   }
 
   override fun updateUI() {
@@ -306,10 +305,7 @@ private fun <A, B> Iterator<A>.zip(other: Iterator<B>): Iterator<Pair<A, B>> = o
 
 private var JComponent.outputComponentFactory: NotebookOutputComponentFactory? by SwingClientProperty()
 
-private class FixedWidthMaxHeightLayout(
-  private val widthGetter: (Container) -> Int,
-  private val maxHeightGetter: () -> Int,
-) : LayoutManager2 {
+private class FixedWidthMaxHeightLayout(private val innerComponent: InnerComponent) : LayoutManager2 {
   data class Constraint(val widthStretching: NotebookOutputComponentFactory.WidthStretching, val limitedHeight: Boolean)
 
   override fun addLayoutComponent(comp: Component, constraints: Any) {
@@ -371,14 +367,14 @@ private class FixedWidthMaxHeightLayout(
     crossinline handleComponent: (component: Component, newWidth: Int, newHeight: Int) -> Unit,
   ) {
     val parentInsets = parent.insets
-    val parentDesiredWidth = widthGetter(parent)
-    val maxHeight = maxHeightGetter()
+    val parentDesiredWidth = innerComponent.width
+    val maxHeight = innerComponent.maxHeight
     for (component in parent.components) {
-      check(component is JComponent) { "$component is not JComponent" }
+      check(component is CollapsingComponent) { "$component is not CollapsingComponent" }
       val proposedSize = component.sizeProposer()
       val newWidth = getComponentWidthByConstraint(parentDesiredWidth, parentInsets, component, proposedSize.width)
       val newHeight =
-        if (component.layoutConstraints?.limitedHeight == true) min(maxHeight, proposedSize.height)
+        if (!component.isPreferredSizeSet && component.layoutConstraints?.limitedHeight == true) min(maxHeight, proposedSize.height)
         else proposedSize.height
       handleComponent(component, newWidth, newHeight)
     }
@@ -466,17 +462,36 @@ private object OutputCollapsingGutterMouseListener : MouseListener, MouseMotionL
   }
 }
 
-private class CollapsingComponent(editor: EditorImpl, child: JComponent) : JPanel(BorderLayout()) {
+private class CollapsingComponent(editor: EditorImpl, child: JComponent, private val resizable: Boolean) : JPanel(BorderLayout()) {
+  private val resizeController by lazy { ResizeController(this, editor) }
+  private var oldPredefinedPreferredSize: Dimension? = null
+
   var isSeen: Boolean
     get() = mainComponent.isVisible
     set(value) {
       mainComponent.isVisible = value
       stubComponent.isVisible = !value
+
+      if (resizable) {
+        if (value) {
+          addMouseListener(resizeController)
+          addMouseMotionListener(resizeController)
+          preferredSize = oldPredefinedPreferredSize
+          oldPredefinedPreferredSize = null
+        }
+        else {
+          removeMouseListener(resizeController)
+          removeMouseMotionListener(resizeController)
+          oldPredefinedPreferredSize = if (isPreferredSizeSet) preferredSize else null
+          preferredSize = null
+        }
+      }
     }
 
   init {
     add(child, BorderLayout.CENTER)
     add(StubComponent(editor), BorderLayout.NORTH)
+    border = IdeBorderFactory.createEmptyBorder(Insets(0, 0, 10, 0))  // It's used as a grip for resizing.
     isSeen = true
   }
 
