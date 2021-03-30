@@ -10,8 +10,9 @@ import java.awt.Component
 import java.awt.Cursor
 import java.awt.Dimension
 import java.awt.Point
-import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import java.awt.event.MouseListener
+import java.awt.event.MouseMotionListener
 import javax.swing.SwingUtilities
 import kotlin.math.abs
 
@@ -20,7 +21,7 @@ class ResizeController(
   private val component: Component,
   private val editor: Editor,
   private val deltaSize: (dx: Int, dy: Int) -> Unit = component::swingDeltaSize,
-) : MouseAdapter() {
+) : MouseListener, MouseMotionListener {
 
   private var prevPoint: Point? = null
 
@@ -108,6 +109,10 @@ class ResizeController(
       setCursor(defaultCursor)
     }
   }
+
+  override fun mouseClicked(e: MouseEvent): Unit = Unit
+
+  override fun mouseEntered(e: MouseEvent): Unit = Unit
 }
 
 private fun Component.swingDeltaSize(dx: Int, dy: Int) {
