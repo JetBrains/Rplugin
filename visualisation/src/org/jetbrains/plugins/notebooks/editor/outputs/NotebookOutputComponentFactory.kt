@@ -3,6 +3,7 @@ package org.jetbrains.plugins.notebooks.editor.outputs
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.extensions.ExtensionPointName
+import org.jetbrains.annotations.Nls
 import java.awt.Graphics
 import java.awt.Rectangle
 import javax.swing.JComponent
@@ -33,12 +34,15 @@ interface NotebookOutputComponentFactory {
   /**
    * @param limitHeight if the height of the component should be limited by 2/3 of visible vertical space. It's  the [component]'s
    * responsibility to handle cutoffs, by using scroll panes, for example.
+   * @param collapsedTextSupplier every time a user collapses a cell output, this delegate is called, and its result is written
+   * in collapsed component's stead.
    */
   data class CreatedComponent(
     val component: JComponent,
     val widthStretching: WidthStretching,
     val gutterPainter: GutterPainter?,
     val limitHeight: Boolean,
+    val collapsedTextSupplier: () -> @Nls String,
   )
 
   /**

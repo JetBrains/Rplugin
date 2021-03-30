@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.notebooks.editor.outputs
 
+import com.intellij.codeInsight.hints.presentation.MouseButton
+import com.intellij.codeInsight.hints.presentation.mouseButton
 import com.intellij.ide.DataManager
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.PlatformDataKeys
@@ -14,8 +16,12 @@ import com.intellij.openapi.editor.ex.EditorGutterComponentEx
 import com.intellij.openapi.editor.ex.util.EditorUtil
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.NlsSafe
+import com.intellij.openapi.wm.impl.IdeGlassPaneImpl
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.util.castSafelyTo
+import com.intellij.util.ui.JBUI
+import icons.VisualisationIcons
 import org.intellij.datavis.r.inlays.ResizeController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
@@ -76,12 +82,7 @@ class NotebookOutputInlayController private constructor(
       }
     }
 
-    val gutterComponentEx = (editor as EditorEx).gutterComponentEx
-    if (gutterComponentEx.getClientProperty(OutputCollapsingGutterMouseListener) == null) {
-      gutterComponentEx.putClientProperty(OutputCollapsingGutterMouseListener, Unit)
-      gutterComponentEx.addMouseListener(OutputCollapsingGutterMouseListener)
-      gutterComponentEx.addMouseMotionListener(OutputCollapsingGutterMouseListener)
-    }
+    OutputCollapsingGutterMouseListener.ensureInstalled((editor as EditorEx).gutterComponentEx)
   }
 
   override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, intervalIterator: ListIterator<NotebookCellLines.Interval>) {
@@ -91,14 +92,15 @@ class NotebookOutputInlayController private constructor(
     g.clip = Rectangle(oldClip.x, yOffset, oldClip.width, innerComponent.height).intersection(oldClip)
     for (collapsingComponent in innerComponent.components) {
       val mainComponent = (collapsingComponent as CollapsingComponent).mainComponent
+
+      collapsingComponent.paintGutter(editor, yOffset, g)
+
       mainComponent.gutterPainter?.let { painter ->
         mainComponent.yOffsetFromEditor(editor)?.let { yOffset ->
           bounds.setBounds(r.x, yOffset, r.width, mainComponent.height)
           painter.paintGutter(editor, g, bounds)
         }
       }
-
-      collapsingComponent.paintGutter(editor, yOffset, g)
     }
     g.clip = oldClip
   }
@@ -172,7 +174,12 @@ class NotebookOutputInlayController private constructor(
   }
 
   private fun addIntoInnerComponent(newComponent: NotebookOutputComponentFactory.CreatedComponent, pos: Int = -1) {
-    val collapsingComponent = CollapsingComponent(editor, newComponent.component, newComponent.limitHeight)
+    val collapsingComponent = CollapsingComponent(
+      editor,
+      newComponent.component,
+      newComponent.limitHeight,
+      newComponent.collapsedTextSupplier,
+    )
     innerComponent.add(collapsingComponent, newComponent.fixedWidthLayoutConstraint, pos)
   }
 
@@ -227,7 +234,7 @@ private class SurroundingComponent private constructor(private val innerComponen
   private var presetWidth = 0
 
   init {
-    border = IdeBorderFactory.createEmptyBorder(Insets(10, 0, 10, 0))
+    border = IdeBorderFactory.createEmptyBorder(Insets(10, 0, 0, 0))
     add(innerComponent, BorderLayout.CENTER)
   }
 
@@ -400,58 +407,93 @@ private class FixedWidthMaxHeightLayout(private val innerComponent: InnerCompone
 
 private var JComponent.layoutConstraints: FixedWidthMaxHeightLayout.Constraint? by SwingClientProperty()
 
-private object OutputCollapsingGutterMouseListener : MouseListener, MouseMotionListener {
-  override fun mouseClicked(e: MouseEvent) {
-    val gutterComponentEx = e.source as? EditorGutterComponentEx ?: return
-    if (!isAtCollapseRegion(e, gutterComponentEx)) return
-    val component = getCollapsingComponent(e, gutterComponentEx) ?: return
+private var EditorGutterComponentEx.hoveredCollapsingComponentRect: CollapsingComponent? by SwingClientProperty()
 
-    e.consume()
-    component.isSeen = !component.isSeen
+private class OutputCollapsingGutterMouseListener(
+  private val gutterComponentEx: EditorGutterComponentEx,
+) : MouseListener, MouseMotionListener {
+  companion object {
+    @JvmStatic
+    fun ensureInstalled(gutterComponentEx: EditorGutterComponentEx) {
+      if (gutterComponentEx.getClientProperty(OutputCollapsingGutterMouseListener::class.java) == null) {
+        gutterComponentEx.putClientProperty(OutputCollapsingGutterMouseListener::class.java, Unit)
+
+        val instance = OutputCollapsingGutterMouseListener(gutterComponentEx)
+        gutterComponentEx.addMouseListener(instance)
+        gutterComponentEx.addMouseMotionListener(instance)
+      }
+    }
   }
 
-  override fun mousePressed(e: MouseEvent) : Unit = Unit
+  override fun mouseClicked(e: MouseEvent) {
+    if (e.mouseButton != MouseButton.Left) return
+
+    val point = e.point
+    if (!isAtCollapseVerticalStripe(point)) return
+    val component = gutterComponentEx.hoveredCollapsingComponentRect ?: return
+
+    component.isSeen = !component.isSeen
+    e.consume()
+    SwingUtilities.invokeLater {  // Being invoked without postponing, it would access old states of layouts and get the same results.
+      if (gutterComponentEx.editor?.isDisposed == false) {
+        updateState(point)
+      }
+    }
+  }
+
+  override fun mousePressed(e: MouseEvent): Unit = Unit
 
   override fun mouseReleased(e: MouseEvent): Unit = Unit
 
   override fun mouseEntered(e: MouseEvent): Unit = Unit
 
   override fun mouseExited(e: MouseEvent) {
-    val gutterComponentEx = e.source as? EditorGutterComponentEx ?: return
-    gutterComponentEx.cursor = Cursor(Cursor.DEFAULT_CURSOR)
+    updateState(null)
   }
 
   override fun mouseMoved(e: MouseEvent) {
-    val gutterComponentEx = e.source as? EditorGutterComponentEx ?: return
-    when {
-      !isAtCollapseRegion(e, gutterComponentEx) -> {
-        gutterComponentEx.cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
+    updateState(e.point)
+  }
+
+  private fun updateState(point: Point?) {
+    if (point == null || !isAtCollapseVerticalStripe(point)) {
+      IdeGlassPaneImpl.forgetPreProcessedCursor(gutterComponentEx)
+      gutterComponentEx.cursor = @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS") null  // Huh? It's a valid operation!
+      updateHoveredComponent(null)
+    }
+    else {
+      val collapsingComponent = getCollapsingComponent(point)
+      updateHoveredComponent(collapsingComponent)
+      if (collapsingComponent != null) {
+        val cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+        IdeGlassPaneImpl.savePreProcessedCursor(gutterComponentEx, cursor)
+        gutterComponentEx.cursor = cursor
       }
-      getCollapsingComponent(e, gutterComponentEx) != null -> {
-        gutterComponentEx.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+      else {
+        IdeGlassPaneImpl.forgetPreProcessedCursor(gutterComponentEx)
       }
     }
   }
 
   override fun mouseDragged(e: MouseEvent): Unit = Unit
 
-  private fun isAtCollapseRegion(e: MouseEvent, gutterComponentEx: EditorGutterComponentEx): Boolean =
+  private fun isAtCollapseVerticalStripe(point: Point): Boolean =
     CollapsingComponent.collapseRectHorizontalLeft(gutterComponentEx.editor as EditorEx).let {
-      e.point.x in it until it + CollapsingComponent.COLLAPSING_RECT_WIDTH
+      point.x in it until it + CollapsingComponent.COLLAPSING_RECT_WIDTH
     }
 
-  private fun getCollapsingComponent(e: MouseEvent, gutterComponentEx: EditorGutterComponentEx): CollapsingComponent? {
+  private fun getCollapsingComponent(point: Point): CollapsingComponent? {
     val editor = gutterComponentEx.editor ?: return null
 
     val surroundingComponent: SurroundingComponent =
-      editor.contentComponent.getComponentAt(0, e.y).castSafelyTo<JComponent>()?.getComponent(0)?.castSafelyTo()
+      editor.contentComponent.getComponentAt(0, point.y).castSafelyTo<JComponent>()?.getComponent(0)?.castSafelyTo()
       ?: return null
 
     val innerComponent: InnerComponent =
       (surroundingComponent.layout as BorderLayout).getLayoutComponent(BorderLayout.CENTER).castSafelyTo()
       ?: return null
 
-    val y = e.y - SwingUtilities.convertPoint(innerComponent, 0, 0, editor.contentComponent).y
+    val y = point.y - SwingUtilities.convertPoint(innerComponent, 0, 0, editor.contentComponent).y
 
     val collapsingComponent: CollapsingComponent =
       innerComponent.getComponentAt(0, y).castSafelyTo()
@@ -460,9 +502,22 @@ private object OutputCollapsingGutterMouseListener : MouseListener, MouseMotionL
     if (!collapsingComponent.isWorthCollapsing) return null
     return collapsingComponent
   }
+
+  private fun updateHoveredComponent(collapsingComponent: CollapsingComponent?) {
+    val old = gutterComponentEx.hoveredCollapsingComponentRect
+    if (old !== collapsingComponent) {
+      gutterComponentEx.hoveredCollapsingComponentRect = collapsingComponent
+      gutterComponentEx.repaint()
+    }
+  }
 }
 
-private class CollapsingComponent(editor: EditorImpl, child: JComponent, private val resizable: Boolean) : JPanel(BorderLayout()) {
+private class CollapsingComponent(
+  editor: EditorImpl,
+  child: JComponent,
+  private val resizable: Boolean,
+  private val collapsedTextSupplier: () -> @NlsSafe String,
+) : JPanel(BorderLayout()) {
   private val resizeController by lazy { ResizeController(this, editor) }
   private var oldPredefinedPreferredSize: Dimension? = null
 
@@ -486,6 +541,10 @@ private class CollapsingComponent(editor: EditorImpl, child: JComponent, private
           preferredSize = null
         }
       }
+
+      if (!value) {
+        (stubComponent as StubComponent).text = collapsedTextSupplier()
+      }
     }
 
   init {
@@ -506,46 +565,62 @@ private class CollapsingComponent(editor: EditorImpl, child: JComponent, private
   val isWorthCollapsing: Boolean get() = !isSeen || mainComponent.height >= MIN_HEIGHT_TO_COLLAPSE
 
   fun paintGutter(editor: EditorEx, yOffset: Int, g: Graphics) {
-    val backgroundColor = editor.notebookAppearance.getCollapseOutputAreaBackground(editor.colorsScheme)
+    val notebookAppearance = editor.notebookAppearance
+    val backgroundColor = notebookAppearance.getCodeCellBackground(editor.colorsScheme)
     if (backgroundColor != null && isWorthCollapsing) {
+      val x = collapseRectHorizontalLeft(editor)
+
+      val (rectTop, rectHeight) = insets.let {
+        yOffset + y + it.top to height - it.top - it.bottom
+      }
+
       g.color = backgroundColor
-      g.fillRoundRect(
-        collapseRectHorizontalLeft(editor),
-        yOffset + y + COLLAPSING_RECT_MARGIN_Y,
-        COLLAPSING_RECT_WIDTH,
-        height - COLLAPSING_RECT_MARGIN_Y * 2,
-        COLLAPSING_RECT_ARC_RADIUS,
-        COLLAPSING_RECT_ARC_RADIUS,
-      )
+      if (editor.gutterComponentEx.hoveredCollapsingComponentRect === this) {
+        g.fillRect(x, rectTop, COLLAPSING_RECT_WIDTH, rectHeight)
+      }
+
+      if (!isSeen) {
+        val outputAdjacentRectWidth = notebookAppearance.getLeftBorderWidth()
+        g.fillRect(
+          editor.gutterComponentEx.width - outputAdjacentRectWidth,
+          rectTop,
+          outputAdjacentRectWidth,
+          rectHeight,
+        )
+      }
+
+      val icon = if (isSeen) VisualisationIcons.OutputCollapse else VisualisationIcons.OutputExpand
+      val iconOffset = (COLLAPSING_RECT_WIDTH - icon.iconWidth) / 2
+      icon.paintIcon(this, g, x + iconOffset, yOffset + y + COLLAPSING_RECT_MARGIN_Y_BOTTOM + iconOffset)
     }
   }
 
   private class StubComponent(private val editor: EditorImpl) : JLabel("...") {
     init {
-      border = IdeBorderFactory.createEmptyBorder(Insets(5, 10, 5, 0))
+      border = IdeBorderFactory.createEmptyBorder(Insets(7, 0, 7, 0))
       updateUIFromEditor()
     }
 
     override fun updateUI() {
       super.updateUI()
+      isOpaque = true
       if (@Suppress("SENSELESS_COMPARISON") (editor != null)) {
         updateUIFromEditor()
       }
     }
 
     private fun updateUIFromEditor() {
-      val attrs = editor.colorsScheme.getAttributes(EditorColors.DELETED_TEXT_ATTRIBUTES)
-      foreground = attrs.foregroundColor
-      background = attrs.backgroundColor
+      val attrs = editor.colorsScheme.getAttributes(EditorColors.FOLDED_TEXT_ATTRIBUTES)
+      foreground = JBUI.CurrentTheme.ActionsList.MNEMONIC_FOREGROUND
+      background = editor.notebookAppearance.getCodeCellBackground(editor.colorsScheme) ?: editor.colorsScheme.defaultBackground
       font = EditorUtil.fontForChar(text.first(), attrs.fontType, editor).font
     }
   }
 
   companion object {
     const val MIN_HEIGHT_TO_COLLAPSE = 50
-    const val COLLAPSING_RECT_WIDTH = 20
-    private const val COLLAPSING_RECT_MARGIN_Y = 5
-    private const val COLLAPSING_RECT_ARC_RADIUS = 7
+    const val COLLAPSING_RECT_WIDTH = 22
+    private const val COLLAPSING_RECT_MARGIN_Y_BOTTOM = 5
 
     @JvmStatic
     fun collapseRectHorizontalLeft(editor: EditorEx): Int =
