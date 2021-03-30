@@ -10,8 +10,10 @@ import com.intellij.util.containers.ContainerUtil
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Rectangle
+import javax.swing.JComponent
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.reflect.KProperty
 
 infix fun IntRange.hasIntersectionWith(other: IntRange): Boolean =
   !(first > other.last || last < other.first)
@@ -127,5 +129,14 @@ fun MutableList<IntRange>.mergeAndJoinIntersections(other: List<IntRange>) {
         add(current)
       }
     }
+  }
+}
+
+class SwingClientProperty<T, R: T?> {
+  operator fun getValue(thisRef: JComponent, property: KProperty<*>): R =
+    @Suppress("UNCHECKED_CAST") (thisRef.getClientProperty(property) as R)
+
+  operator fun setValue(thisRef: JComponent, property: KProperty<*>, value: R) {
+    thisRef.putClientProperty(property, value)
   }
 }
