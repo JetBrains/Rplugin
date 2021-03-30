@@ -18,6 +18,7 @@ import com.intellij.ui.IdeBorderFactory
 import com.intellij.util.castSafelyTo
 import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
+import org.jetbrains.plugins.notebooks.editor.SwingClientProperty
 import org.jetbrains.plugins.notebooks.editor.notebookAppearance
 import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputComponentFactory.Companion.gutterPainter
 import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputComponentFactory.WidthStretching.*
@@ -303,12 +304,7 @@ private fun <A, B> Iterator<A>.zip(other: Iterator<B>): Iterator<Pair<A, B>> = o
   override fun next(): Pair<A, B> = this@zip.next() to other.next()
 }
 
-private var JComponent.outputComponentFactory: NotebookOutputComponentFactory?
-  get() =
-    getClientProperty(NotebookOutputComponentFactory::class.java) as NotebookOutputComponentFactory?
-  set(value) {
-    putClientProperty(NotebookOutputComponentFactory::class.java, value)
-  }
+private var JComponent.outputComponentFactory: NotebookOutputComponentFactory? by SwingClientProperty()
 
 private class FixedWidthMaxHeightLayout(
   private val widthGetter: (Container) -> Int,
@@ -406,11 +402,7 @@ private class FixedWidthMaxHeightLayout(
     }
 }
 
-private var JComponent.layoutConstraints: FixedWidthMaxHeightLayout.Constraint?
-  get() = getClientProperty(FixedWidthMaxHeightLayout.Constraint::class.java) as FixedWidthMaxHeightLayout.Constraint?
-  set(value) {
-    putClientProperty(FixedWidthMaxHeightLayout.Constraint::class.java, value)
-  }
+private var JComponent.layoutConstraints: FixedWidthMaxHeightLayout.Constraint? by SwingClientProperty()
 
 private object OutputCollapsingGutterMouseListener : MouseListener, MouseMotionListener {
   override fun mouseClicked(e: MouseEvent) {
