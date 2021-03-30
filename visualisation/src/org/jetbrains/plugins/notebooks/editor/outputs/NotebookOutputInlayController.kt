@@ -196,8 +196,6 @@ class NotebookOutputInlayController private constructor(
       currentControllers: Collection<NotebookCellInlayController>,
       intervalIterator: ListIterator<NotebookCellLines.Interval>,
     ): NotebookCellInlayController? {
-      if (!NewOutputInlaysSwitch.useNewForAnything) return null
-
       val interval = intervalIterator.next()
       if (interval.type != NotebookCellLines.CellType.CODE) return null
 

@@ -92,13 +92,6 @@
       interface="org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputComponentWrapper"
       dynamic="true"/>
   </extensionPoints>
-  <extensions defaultExtensionNs="com.intellij">
-    <registryKey
-      defaultValue="all"
-      description="Which cell output types should be represented in a new way"
-      key="ds.editor.new.output.inlays.types"
-      restartRequired="true"/>
-  </extensions>
   <extensions defaultExtensionNs="org.jetbrains.plugins.notebooks">
     <notebookCellInlayController
       implementation="org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputInlayController$Factory"/>
