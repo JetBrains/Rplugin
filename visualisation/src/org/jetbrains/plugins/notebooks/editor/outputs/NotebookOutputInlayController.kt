@@ -4,7 +4,6 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
-import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.Disposer
 import com.intellij.util.castSafelyTo
@@ -13,7 +12,10 @@ import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
 import org.jetbrains.plugins.notebooks.editor.SwingClientProperty
 import org.jetbrains.plugins.notebooks.editor.notebookAppearance
 import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputComponentFactory.Companion.gutterPainter
-import org.jetbrains.plugins.notebooks.editor.outputs.impl.*
+import org.jetbrains.plugins.notebooks.editor.outputs.impl.CollapsingComponent
+import org.jetbrains.plugins.notebooks.editor.outputs.impl.FixedWidthMaxHeightLayout
+import org.jetbrains.plugins.notebooks.editor.outputs.impl.InnerComponent
+import org.jetbrains.plugins.notebooks.editor.outputs.impl.SurroundingComponent
 import org.jetbrains.plugins.notebooks.editor.ui.addComponentInlay
 import org.jetbrains.plugins.notebooks.editor.ui.yOffsetFromEditor
 import java.awt.Graphics
@@ -61,8 +63,6 @@ class NotebookOutputInlayController private constructor(
         }
       }
     }
-
-    OutputCollapsingGutterMouseListener.ensureInstalled((editor as EditorEx).gutterComponentEx)
   }
 
   override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, intervalIterator: ListIterator<NotebookCellLines.Interval>) {

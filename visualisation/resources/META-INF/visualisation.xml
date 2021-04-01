@@ -54,6 +54,15 @@
               text="Copy to Clipboard"
               icon="AllIcons.Actions.Copy"/>
     </group>
+
+    <group id="NotebookOutputCollapseActions" popup="true">
+      <action id="NotebookOutputCollapseSingleInCellAction"
+              class="org.jetbrains.plugins.notebooks.editor.outputs.impl.NotebookOutputCollapseSingleInCellAction"/>
+      <action id="NotebookOutputCollapseAllInCellAction"
+              class="org.jetbrains.plugins.notebooks.editor.outputs.impl.NotebookOutputCollapseAllInCellAction"/>
+      <action id="NotebookOutputCollapseAllAction"
+              class="org.jetbrains.plugins.notebooks.editor.outputs.impl.NotebookOutputCollapseAllAction"/>
+    </group>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
@@ -65,6 +74,11 @@
     <notificationGroup displayType="BALLOON" id="Notebook Table" bundle="messages.VisualizationBundle" key="inlay.output.table.notification.group.name"/>
     <notificationGroup id="InlayTable" displayType="BALLOON"/>
     <editorFactoryListener id="org.intellij.datavis.r.inlays.InlaysManager" implementation="org.intellij.datavis.r.inlays.InlaysManager"/>
+
+    <editorFactoryMouseListener
+      implementation="org.jetbrains.plugins.notebooks.editor.outputs.impl.OutputCollapsingGutterMouseListener"/>
+    <editorFactoryMouseMotionListener
+      implementation="org.jetbrains.plugins.notebooks.editor.outputs.impl.OutputCollapsingGutterMouseListener"/>
   </extensions>
 
   <extensions defaultExtensionNs="org.jetbrains.plugins.notebooks">
@@ -103,4 +117,6 @@
     <notebookCellInlayController
       implementation="org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputInlayController$Factory"/>
   </extensions>
+
+  <resource-bundle>messages.VisualizationBundle</resource-bundle>
 </idea-plugin>
