@@ -2,81 +2,83 @@ package org.jetbrains.plugins.notebooks.editor.outputs.impl
 
 import com.intellij.codeInsight.hints.presentation.MouseButton
 import com.intellij.codeInsight.hints.presentation.mouseButton
-import com.intellij.ide.DataManager
-import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.editor.event.EditorMouseEvent
+import com.intellij.openapi.editor.event.EditorMouseListener
+import com.intellij.openapi.editor.event.EditorMouseMotionListener
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
 import com.intellij.openapi.wm.impl.IdeGlassPaneImpl
 import com.intellij.util.castSafelyTo
+import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayManager
 import java.awt.BorderLayout
 import java.awt.Cursor
 import java.awt.Point
-import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
-import java.awt.event.MouseMotionListener
 import javax.swing.JComponent
 import javax.swing.SwingUtilities
 
-internal class OutputCollapsingGutterMouseListener(
-  private val gutterComponentEx: EditorGutterComponentEx,
-) : MouseListener, MouseMotionListener {
-  companion object {
-    @JvmStatic
-    fun ensureInstalled(gutterComponentEx: EditorGutterComponentEx) {
-      if (gutterComponentEx.getClientProperty(OutputCollapsingGutterMouseListener::class.java) == null) {
-        gutterComponentEx.putClientProperty(OutputCollapsingGutterMouseListener::class.java, Unit)
+private class OutputCollapsingGutterMouseListener : EditorMouseListener, EditorMouseMotionListener {
+  private val EditorMouseEvent.notebookEditor: EditorEx?
+    get() = editor.takeIf { NotebookCellInlayManager.get(it) != null }.castSafelyTo()
 
-        val instance = OutputCollapsingGutterMouseListener(gutterComponentEx)
-        gutterComponentEx.addMouseListener(instance)
-        gutterComponentEx.addMouseMotionListener(instance)
-      }
-    }
+  override fun mousePressed(e: EditorMouseEvent) {
+    val editor = e.notebookEditor ?: return
+    val gutterComponentEx = editor.gutterComponentEx
 
-    @JvmStatic
-    private val EditorGutterComponentEx.editor: Editor?
-      get() = PlatformDataKeys.EDITOR.getData(DataManager.getInstance().getDataContext(this))
-  }
-
-  override fun mouseClicked(e: MouseEvent) {
-    if (e.mouseButton != MouseButton.Left) return
-
-    val point = e.point
-    if (!isAtCollapseVerticalStripe(point)) return
+    val point = e.mouseEvent.takeIf { it.component === gutterComponentEx }?.point ?: return
+    if (!isAtCollapseVerticalStripe(editor, point)) return
     val component = gutterComponentEx.hoveredCollapsingComponentRect ?: return
 
-    component.isSeen = !component.isSeen
-    e.consume()
-    SwingUtilities.invokeLater {  // Being invoked without postponing, it would access old states of layouts and get the same results.
-      if (gutterComponentEx.editor?.isDisposed == false) {
-        updateState(point)
+    val actionManager = ActionManager.getInstance()
+    when (e.mouseEvent.mouseButton) {
+      MouseButton.Left -> {
+        e.consume()
+
+        val action = actionManager.getAction(NotebookOutputCollapseSingleInCellAction::class.java.simpleName)!!
+        actionManager.tryToExecute(action, e.mouseEvent, component, ActionPlaces.EDITOR_GUTTER_POPUP, true)
+
+        SwingUtilities.invokeLater {  // Being invoked without postponing, it would access old states of layouts and get the same results.
+          if (!editor.isDisposed) {
+            updateState(editor, point)
+          }
+        }
       }
+      MouseButton.Right -> {
+        e.consume()
+
+        val group = actionManager.getAction("NotebookOutputCollapseActions")
+        if (group is ActionGroup) {
+          val menu = actionManager.createActionPopupMenu(ActionPlaces.EDITOR_GUTTER_POPUP, group)
+          menu.setTargetComponent(component)
+          menu.component.show(gutterComponentEx, e.mouseEvent.x, e.mouseEvent.y)
+        }
+      }
+      else -> Unit
     }
   }
 
-  override fun mousePressed(e: MouseEvent): Unit = Unit
-
-  override fun mouseReleased(e: MouseEvent): Unit = Unit
-
-  override fun mouseEntered(e: MouseEvent): Unit = Unit
-
-  override fun mouseExited(e: MouseEvent) {
-    updateState(null)
+  override fun mouseExited(e: EditorMouseEvent) {
+    val editor = e.notebookEditor ?: return
+    updateState(editor, null)
   }
 
-  override fun mouseMoved(e: MouseEvent) {
-    updateState(e.point)
+  override fun mouseMoved(e: EditorMouseEvent) {
+    val editor = e.notebookEditor ?: return
+    updateState(editor, e.mouseEvent.point)
   }
 
-  private fun updateState(point: Point?) {
-    if (point == null || !isAtCollapseVerticalStripe(point)) {
+  private fun updateState(editor: EditorEx, point: Point?) {
+    val gutterComponentEx = editor.gutterComponentEx
+    if (point == null || !isAtCollapseVerticalStripe(editor, point)) {
       IdeGlassPaneImpl.forgetPreProcessedCursor(gutterComponentEx)
       gutterComponentEx.cursor = @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS") null  // Huh? It's a valid operation!
-      updateHoveredComponent(null)
+      updateHoveredComponent(gutterComponentEx, null)
     }
     else {
-      val collapsingComponent = getCollapsingComponent(point)
-      updateHoveredComponent(collapsingComponent)
+      val collapsingComponent = getCollapsingComponent(editor, point)
+      updateHoveredComponent(gutterComponentEx, collapsingComponent)
       if (collapsingComponent != null) {
         val cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
         IdeGlassPaneImpl.savePreProcessedCursor(gutterComponentEx, cursor)
@@ -88,16 +90,12 @@ internal class OutputCollapsingGutterMouseListener(
     }
   }
 
-  override fun mouseDragged(e: MouseEvent): Unit = Unit
-
-  private fun isAtCollapseVerticalStripe(point: Point): Boolean =
-    CollapsingComponent.collapseRectHorizontalLeft(gutterComponentEx.editor as EditorEx).let {
+  private fun isAtCollapseVerticalStripe(editor: EditorEx, point: Point): Boolean =
+    CollapsingComponent.collapseRectHorizontalLeft(editor).let {
       point.x in it until it + CollapsingComponent.COLLAPSING_RECT_WIDTH
     }
 
-  private fun getCollapsingComponent(point: Point): CollapsingComponent? {
-    val editor = gutterComponentEx.editor ?: return null
-
+  private fun getCollapsingComponent(editor: EditorEx, point: Point): CollapsingComponent? {
     val surroundingComponent: SurroundingComponent =
       editor.contentComponent.getComponentAt(0, point.y).castSafelyTo<JComponent>()?.getComponent(0)?.castSafelyTo()
       ?: return null
@@ -116,7 +114,7 @@ internal class OutputCollapsingGutterMouseListener(
     return collapsingComponent
   }
 
-  private fun updateHoveredComponent(collapsingComponent: CollapsingComponent?) {
+  private fun updateHoveredComponent(gutterComponentEx: EditorGutterComponentEx, collapsingComponent: CollapsingComponent?) {
     val old = gutterComponentEx.hoveredCollapsingComponentRect
     if (old !== collapsingComponent) {
       gutterComponentEx.hoveredCollapsingComponentRect = collapsingComponent
