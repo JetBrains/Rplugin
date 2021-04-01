@@ -9,10 +9,12 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.ResolveResult
+import com.intellij.psi.util.elementType
 import com.intellij.util.IncorrectOperationException
 import com.intellij.util.Processor
 import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
 import org.jetbrains.r.codeInsight.table.RTableContextManager
+import org.jetbrains.r.parsing.RElementTypes.R_MEMBER_EXPRESSION
 import org.jetbrains.r.psi.*
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
@@ -32,11 +34,7 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
     }
 
     if (element.isDependantIdentifier) {
-      // TODO
-      // here we need to get parent object OBJ $ element
-      // and resolve all usages here
-
-      return emptyArray()
+      return resolveDependantIdentifier(incompleteCode)
     }
 
     return RResolver.resolveUsingSourcesAndRuntime(element, element.name, resolveLocally())
@@ -90,6 +88,21 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
       }
       assignment.getParameters().firstOrNull { parameter -> parameter.name == element.name}?.let { PsiElementResolveResult(it) }
     }.toTypedArray()
+  }
+
+  private fun resolveDependantIdentifier(isIncomplete: Boolean): Array<ResolveResult> {
+    val objectDependantIdentifierCall = element.parent
+
+    when (objectDependantIdentifierCall.elementType) {
+      R_MEMBER_EXPRESSION -> {
+        val objectName = objectDependantIdentifierCall.firstChild
+        val classDeclarationStatement = objectName.reference?.resolve()
+
+        print(classDeclarationStatement)
+      }
+    }
+
+    return emptyArray()
   }
 
   @Throws(IncorrectOperationException::class)
