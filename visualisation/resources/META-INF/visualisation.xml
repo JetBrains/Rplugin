@@ -76,7 +76,9 @@
     <editorFactoryListener id="org.intellij.datavis.r.inlays.InlaysManager" implementation="org.intellij.datavis.r.inlays.InlaysManager"/>
 
     <editorFactoryMouseListener
-      implementation="org.jetbrains.plugins.notebooks.editor.outputs.impl.OutputCollapsingGutterMouseListener"/>
+      implementation="org.jetbrains.plugins.notebooks.editor.outputs.impl.OutputCollapsingGutterMouseListener"
+      id="OutputCollapsingGutterMouseListener"
+      order="first"/>
     <editorFactoryMouseMotionListener
       implementation="org.jetbrains.plugins.notebooks.editor.outputs.impl.OutputCollapsingGutterMouseListener"/>
   </extensions>
