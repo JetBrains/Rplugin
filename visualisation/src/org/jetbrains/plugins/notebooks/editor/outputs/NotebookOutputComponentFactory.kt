@@ -36,6 +36,8 @@ interface NotebookOutputComponentFactory {
    * responsibility to handle cutoffs, by using scroll panes, for example.
    * @param collapsedTextSupplier every time a user collapses a cell output, this delegate is called, and its result is written
    * in collapsed component's stead.
+   *
+   * [disposable] will be disposed when system destroys component. Default value is [component] itself if it implements [Disposable]
    */
   data class CreatedComponent(
     val component: JComponent,
@@ -43,6 +45,7 @@ interface NotebookOutputComponentFactory {
     val gutterPainter: GutterPainter?,
     val limitHeight: Boolean,
     val collapsedTextSupplier: () -> @Nls String,
+    val disposable: Disposable? = component as? Disposable
   )
 
   /**
@@ -63,7 +66,7 @@ interface NotebookOutputComponentFactory {
   /**
    * May return `null` if the factory can't create any component for specific subtype of [NotebookOutputDataKey].
    */
-  fun createComponent(editor: EditorImpl, output: NotebookOutputDataKey, disposable: Disposable): CreatedComponent?
+  fun createComponent(editor: EditorImpl, output: NotebookOutputDataKey): CreatedComponent?
 
   companion object {
     val EP_NAME: ExtensionPointName<NotebookOutputComponentFactory> =

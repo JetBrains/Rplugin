@@ -36,6 +36,18 @@ class NotebookOutputInlayController private constructor(
   private val editor: EditorImpl,
   lines: IntRange,
 ) : NotebookCellInlayController {
+
+  private companion object {
+    private val key = NotebookOutputInlayController::class.qualifiedName!!
+    fun JComponent.addDisposable(disposable: Disposable) {
+      putClientProperty(key, disposable)
+    }
+
+    fun JComponent.disposeComponent() {
+      (getClientProperty(key) as? Disposable)?.let(Disposer::dispose)
+    }
+  }
+
   private val innerComponent = InnerComponent()
   private val outerComponent = SurroundingComponent.create(editor, innerComponent)
 
@@ -58,9 +70,7 @@ class NotebookOutputInlayController private constructor(
 
     Disposer.register(inlay) {
       for (disposable in innerComponent.mainComponents) {
-        if (disposable is Disposable) {
-          Disposer.dispose(disposable)
-        }
+        disposable.disposeComponent()
       }
     }
   }
@@ -115,9 +125,7 @@ class NotebookOutputInlayController private constructor(
         when (oldFactory.match(oldComponent, newDataKey)) {
           NotebookOutputComponentFactory.Match.NONE -> {
             innerComponent.remove(idx)
-            if (oldComponent is Disposable) {
-              Disposer.dispose(oldComponent)
-            }
+            oldComponent.disposeComponent()
             val newComponent = createOutputGuessingFactory(newDataKey)
             if (newComponent != null) {
               addIntoInnerComponent(newComponent, idx)
@@ -137,9 +145,8 @@ class NotebookOutputInlayController private constructor(
       val idx = innerComponent.componentCount - 1
       val old = innerComponent.getComponent(idx).let { if (it is CollapsingComponent) it.mainComponent else it }
       innerComponent.remove(idx)
-      if (old is Disposable) {
-        Disposer.dispose(old)
-      }
+      //Must be JComponent because of ``createComponent`` signature
+      (old as JComponent).disposeComponent()
     }
 
     for (outputDataKey in newDataKeyIterator) {
@@ -154,6 +161,11 @@ class NotebookOutputInlayController private constructor(
   }
 
   private fun addIntoInnerComponent(newComponent: NotebookOutputComponentFactory.CreatedComponent, pos: Int = -1) {
+    newComponent.apply {
+      disposable?.let {
+        component.addDisposable(it)
+      }
+    }
     val collapsingComponent = CollapsingComponent(
       editor,
       newComponent.component,
@@ -177,7 +189,7 @@ class NotebookOutputInlayController private constructor(
 
   private fun createOutput(factory: NotebookOutputComponentFactory,
                            outputDataKey: NotebookOutputDataKey): NotebookOutputComponentFactory.CreatedComponent? =
-    factory.createComponent(editor, outputDataKey, inlay)?.also {
+    factory.createComponent(editor, outputDataKey)?.also {
       it.component.outputComponentFactory = factory
       it.component.gutterPainter = it.gutterPainter
     }
