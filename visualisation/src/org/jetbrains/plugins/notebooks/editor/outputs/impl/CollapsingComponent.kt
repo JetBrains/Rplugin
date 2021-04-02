@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.notebooks.editor.outputs.impl
 
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.editor.colors.EditorColors
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.util.EditorUtil
@@ -10,10 +11,9 @@ import com.intellij.util.ui.JBUI
 import icons.VisualisationIcons
 import org.intellij.datavis.r.inlays.ResizeController
 import org.jetbrains.plugins.notebooks.editor.notebookAppearance
-import java.awt.BorderLayout
-import java.awt.Dimension
-import java.awt.Graphics
-import java.awt.Insets
+import java.awt.*
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -105,6 +105,13 @@ internal class CollapsingComponent(
     init {
       border = IdeBorderFactory.createEmptyBorder(Insets(7, 0, 7, 0))
       updateUIFromEditor()
+      cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+
+      addMouseListener(object : MouseAdapter() {
+        override fun mouseClicked(e: MouseEvent) {
+          onClick(e)
+        }
+      })
     }
 
     override fun updateUI() {
@@ -112,6 +119,16 @@ internal class CollapsingComponent(
       isOpaque = true
       if (@Suppress("SENSELESS_COMPARISON") (editor != null)) {
         updateUIFromEditor()
+      }
+    }
+
+    private fun onClick(e: MouseEvent) {
+      if (e.isConsumed) return
+      val parent = parent as? CollapsingComponent ?: return
+      val actionManager = ActionManager.getInstance()
+      val action = actionManager.getAction(NotebookOutputCollapseSingleInCellAction::class.java.simpleName)!!
+      if (actionManager.tryToExecute(action, e, parent, null, true).isProcessed) {
+        e.consume()
       }
     }
 
