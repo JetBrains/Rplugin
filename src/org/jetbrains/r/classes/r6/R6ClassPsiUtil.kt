@@ -20,13 +20,13 @@ object R6ClassPsiUtil {
   fun getSearchedIdentifier(dependantIdentifier: RIdentifierExpression?) : RPsiElement? {
     if (dependantIdentifier == null) return null
 
-    val objectDeclarationStatement = getClassInstantiationExpression(dependantIdentifier)
-    val classDefinition = getClassDefinitionExpression(objectDeclarationStatement)
-    val argumentInfo = getClassDefinitionArgumentInfo(classDefinition)
+    val objectDeclarationStatement = getClassInstantiationExpression(dependantIdentifier) ?: return null
+    val classDefinition = getClassDefinitionExpression(objectDeclarationStatement) ?: return null
+    val argumentInfo = getClassDefinitionArgumentInfo(classDefinition) ?: return null
 
-    val publicMembersCall = argumentInfo?.getArgumentPassedToParameter(R6ClassInfoUtil.argumentPublic) as? RCallExpressionImpl
-    val privateMembersCall = argumentInfo?.getArgumentPassedToParameter(R6ClassInfoUtil.argumentPrivate) as? RCallExpressionImpl
-    val activeMembersCall = argumentInfo?.getArgumentPassedToParameter(R6ClassInfoUtil.argumentActive) as? RCallExpressionImpl
+    val publicMembersCall = argumentInfo.getArgumentPassedToParameter(R6ClassInfoUtil.argumentPublic) as? RCallExpressionImpl
+    val privateMembersCall = argumentInfo.getArgumentPassedToParameter(R6ClassInfoUtil.argumentPrivate) as? RCallExpressionImpl
+    val activeMembersCall = argumentInfo.getArgumentPassedToParameter(R6ClassInfoUtil.argumentActive) as? RCallExpressionImpl
 
     val publicMembers = publicMembersCall?.argumentList?.expressionList
     val privateMembers = privateMembersCall?.argumentList?.expressionList
