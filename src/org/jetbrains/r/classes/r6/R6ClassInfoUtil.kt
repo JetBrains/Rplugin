@@ -17,6 +17,7 @@ object R6ClassInfoUtil {
   const val R6PackageName = "R6"
   const val R6CreateClassMethod = "R6Class"
 
+  const val R6ClassThisKeyword = "self"
   const val functionNew = "new"
 
   const val argumentClassName = "classname"
