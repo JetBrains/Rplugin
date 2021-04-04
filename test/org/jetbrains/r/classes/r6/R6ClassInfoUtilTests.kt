@@ -7,6 +7,7 @@ package org.jetbrains.r.classes.r6
 import junit.framework.TestCase
 import org.jetbrains.r.classes.RClassesUtilTestsBase
 import org.jetbrains.r.psi.api.RAssignmentStatement
+import org.jetbrains.r.psi.api.RCallExpression
 
 class R6ClassInfoUtilTests : RClassesUtilTestsBase() {
   private val fullClassCodeDefinition = """
@@ -67,6 +68,16 @@ class R6ClassInfoUtilTests : RClassesUtilTestsBase() {
     val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
     val className = R6ClassInfoUtil.getAssociatedClassName(rCallExpression!!)
     assertEquals("Car", className)
+  }
+
+  fun testGetAssociatedClassNameFromInstantiationCall(){
+    val rAssignmentStatement = getRootElementOfPsi("""
+      obj <- MyClass${'$'}new()
+    """.trimIndent()) as RAssignmentStatement
+
+    val call = rAssignmentStatement.lastChild as RCallExpression
+    val className = R6ClassInfoUtil.getAssociatedClassNameFromInstantiationCall(call)
+    assertEquals("MyClass", className)
   }
 
   fun testGetAssociatedSuperClassName(){

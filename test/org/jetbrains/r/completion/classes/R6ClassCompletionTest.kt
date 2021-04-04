@@ -2,7 +2,7 @@
  * Copyright 2000-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.completion
+package org.jetbrains.r.completion.classes
 
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementPresentation
@@ -18,12 +18,20 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
     addLibraries()
   }
 
-  fun testUserClassWithSingleSlot() {
+  fun testUserClassWithSingleField() {
     doTest("""
       MyClass <- R6Class("MyClass", list( someField = 0 ))
       obj <- MyClass${"$"}new()
       obj$<caret>
-    """.trimIndent(), "someSlot" to "ANY")
+    """.trimIndent(), "someField" to "")
+  }
+
+  fun testUserClassWithSeveralMembers() {
+    doTest("""
+      MyClass <- R6Class("MyClass", list( someField = 0, someMethod = function (x = 1) { print(x) } ))
+      obj <- MyClass${"$"}new()
+      obj$<caret>
+    """.trimIndent(), "someField" to "", "someMethod" to "")
   }
 
   private fun doWrongVariantsTest(text: String, vararg variants: String, withRuntimeInfo: Boolean = false, inConsole: Boolean = false) {

@@ -11,7 +11,9 @@ import org.jetbrains.r.packages.RPackageProjectManager
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RCallExpressionImpl
+import org.jetbrains.r.psi.impl.RMemberExpressionImpl
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
+import java.util.*
 
 object R6ClassInfoUtil {
   const val R6PackageName = "R6"
@@ -34,6 +36,12 @@ object R6ClassInfoUtil {
                             portable = TRUE, lock_class = FALSE, cloneable = TRUE,
                             parent_env = parent.frame(), lock) {}""".trimIndent()
 
+  fun getAssociatedClassNameFromInstantiationCall(call: RCallExpression) : String? {
+    val callExpression = call.expression as? RMemberExpressionImpl ?: return null
+    if (callExpression.rightExpr?.text != functionNew) return null
+    return callExpression.leftExpr?.text
+  }
+
   fun getAssociatedClassName(callExpression: RCallExpression,
                              argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)): String? {
     argumentInfo ?: return null
@@ -49,31 +57,56 @@ object R6ClassInfoUtil {
     return (argumentInfo.getArgumentPassedToParameter(argumentSuperClass) as? RIdentifierExpression)?.name
   }
 
+  fun getAllClassMembers(callExpression: RCallExpression,
+                         argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression),
+                         onlyPublic: Boolean = false) : MutableList<R6ClassMember> {
+    val r6ClassMembers = mutableListOf<R6ClassMember>()
+
+    val fields = getAssociatedFields(callExpression, argumentInfo, onlyPublic)
+    if (!fields.isNullOrEmpty()) r6ClassMembers.addAll(fields)
+
+    val functions = getAssociatedMethods(callExpression, argumentInfo, onlyPublic)
+    if (!functions.isNullOrEmpty()) r6ClassMembers.addAll(functions)
+
+    val activeBindings = getAssociatedActiveBindings(callExpression, argumentInfo)
+    if (!activeBindings.isNullOrEmpty()) r6ClassMembers.addAll(activeBindings)
+
+    return r6ClassMembers
+  }
+
   fun getAssociatedFields(callExpression: RCallExpression,
-                          argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)): List<R6ClassField>? {
+                          argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression),
+                          onlyPublic: Boolean = false): List<R6ClassField>? {
     argumentInfo ?: return null
     if (!callExpression.isFunctionFromLibrarySoft(R6CreateClassMethod, R6PackageName)) return null
 
     val r6ClassFields = mutableListOf<R6ClassField>()
     val publicContents = (argumentInfo.getArgumentPassedToParameter(argumentPublic) as? RCallExpressionImpl)?.argumentList?.expressionList
-    val privateContents = (argumentInfo.getArgumentPassedToParameter(argumentPrivate) as? RCallExpressionImpl)?.argumentList?.expressionList
-
     if (!publicContents.isNullOrEmpty()) getFieldsFromExpressionList(r6ClassFields, publicContents, true)
-    if (!privateContents.isNullOrEmpty()) getFieldsFromExpressionList(r6ClassFields, privateContents, false)
+
+    if (!onlyPublic) {
+      val privateContents = (argumentInfo.getArgumentPassedToParameter(argumentPrivate) as? RCallExpressionImpl)?.argumentList?.expressionList
+      if (!privateContents.isNullOrEmpty()) getFieldsFromExpressionList(r6ClassFields, privateContents, false)
+    }
+
     return r6ClassFields
   }
 
   fun getAssociatedMethods(callExpression: RCallExpression,
-                           argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)): List<R6ClassMethod>? {
+                           argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression),
+                           onlyPublic: Boolean = false): List<R6ClassMethod>? {
     argumentInfo ?: return null
     if (!callExpression.isFunctionFromLibrarySoft(R6CreateClassMethod, R6PackageName)) return null
 
     val r6ClassMethods = mutableListOf<R6ClassMethod>()
     val publicContents = (argumentInfo.getArgumentPassedToParameter(argumentPublic) as? RCallExpressionImpl)?.argumentList?.expressionList
-    val privateContents = (argumentInfo.getArgumentPassedToParameter(argumentPrivate) as? RCallExpressionImpl)?.argumentList?.expressionList
-
     if (!publicContents.isNullOrEmpty()) getMethodsFromExpressionList(r6ClassMethods, publicContents, true)
-    if (!privateContents.isNullOrEmpty()) getMethodsFromExpressionList(r6ClassMethods, privateContents, false)
+
+    if (!onlyPublic) {
+      val privateContents = (argumentInfo.getArgumentPassedToParameter(argumentPrivate) as? RCallExpressionImpl)?.argumentList?.expressionList
+      if (!privateContents.isNullOrEmpty()) getMethodsFromExpressionList(r6ClassMethods, privateContents, false)
+    }
+
     return r6ClassMethods
   }
 

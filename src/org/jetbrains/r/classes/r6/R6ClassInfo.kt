@@ -11,9 +11,10 @@ import com.intellij.util.io.StringRef
 
 // no need to care about overloads because R6 lib doesn't support it:
 // "All items in public, private, and active must have unique names."
-data class R6ClassField(val name: String, val isPublic: Boolean = true)
-data class R6ClassMethod(val name: String, val isPublic: Boolean = true)
-data class R6ClassActiveBinding(val name: String)
+interface R6ClassMember { val name: String }
+data class R6ClassField(override val name: String, val isPublic: Boolean = true) : R6ClassMember
+data class R6ClassMethod(override val name: String, val isPublic: Boolean = true) : R6ClassMember
+data class R6ClassActiveBinding(override val name: String) : R6ClassMember
 
 data class R6ClassInfo(val className: String,
                        val packageName: String,

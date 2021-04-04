@@ -20,6 +20,11 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
 import org.jetbrains.r.RLanguage
+import org.jetbrains.r.classes.r6.R6ClassInfoUtil
+import org.jetbrains.r.classes.r6.R6ClassMember
+import org.jetbrains.r.classes.r6.context.R6ContextProvider
+import org.jetbrains.r.classes.r6.context.R6CreateClassContext
+import org.jetbrains.r.classes.r6.context.R6NewObjectContext
 import org.jetbrains.r.classes.s4.*
 import org.jetbrains.r.classes.s4.context.*
 import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
@@ -35,6 +40,7 @@ import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.*
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.references.RSearchScopeUtil
+import org.jetbrains.r.psi.stubs.R6ClassNameIndex
 import org.jetbrains.r.psi.stubs.RS4ClassNameIndex
 import org.jetbrains.r.refactoring.RNamesValidator
 import org.jetbrains.r.rinterop.RValueFunction
@@ -119,6 +125,46 @@ class RCompletionContributor : CompletionContributor() {
       }
       for (extension in RLibrarySupportProvider.EP_NAME.extensions) {
         extension.completeMembers(leftExpr, rCompletionElementFactory, result)
+      }
+
+      addStaticRuntimeCompletionDependsOfFile(memberAccess, file, result, MemberStaticRuntimeCompletionProvider)
+    }
+
+    private object MemberStaticRuntimeCompletionProvider : RStaticRuntimeCompletionProvider<RMemberExpression> {
+      override fun addCompletionFromRuntime(psiElement: RMemberExpression,
+                                            shownNames: MutableSet<String>,
+                                            result: CompletionResultSet,
+                                            runtimeInfo: RConsoleRuntimeInfo): Boolean {
+        TODO("Not yet implemented")
+      }
+
+      override fun addCompletionStatically(psiElement: RMemberExpression,
+                                           shownNames: MutableSet<String>,
+                                           result: CompletionResultSet): Boolean {
+        psiElement.leftExpr?.reference?.multiResolve(false)?.forEach { resolveResult ->
+          val definition = resolveResult.element as? RAssignmentStatement ?: return@forEach
+          (definition.assignedValue as? RCallExpression)?.let { call ->
+            val className = R6ClassInfoUtil.getAssociatedClassNameFromInstantiationCall(call) ?: return@forEach
+            R6ClassNameIndex.findClassDefinitions(className, psiElement.project, RSearchScopeUtil.getScope(psiElement)).forEach {
+              return addSlotsCompletion(R6ClassInfoUtil.getAllClassMembers(it), shownNames, result)
+            }
+          }
+        }
+        return false
+      }
+
+      private fun addSlotsCompletion(r6ClassMembers: List<R6ClassMember>?, shownNames: MutableSet<String>, result: CompletionResultSet): Boolean {
+        var hasNewResults = false
+        if (r6ClassMembers.isNullOrEmpty()) return hasNewResults
+
+        for (r6Member in r6ClassMembers) {
+          if (r6Member.name in shownNames) continue
+          result.consume(rCompletionElementFactory.createAtAccess(r6Member.name))
+          shownNames.add(r6Member.name)
+          hasNewResults = true
+        }
+
+        return hasNewResults
       }
     }
   }
@@ -561,15 +607,19 @@ class RCompletionContributor : CompletionContributor() {
       val expression = PsiTreeUtil.getParentOfType(parameters.position, RExpression::class.java, false) ?: return
       val file = parameters.originalFile
       addR6ClassNameCompletion(expression, file, result)
-      addR6SlotNameCompletion(expression, file, result)
+      addR6MemberNameCompletion(expression, file, result)
     }
 
     private fun addR6ClassNameCompletion(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet){
-      // TODO fill completion
+      val r6Context = R6ContextProvider.getR6Context(classNameExpression,
+                                                     R6NewObjectContext::class.java,
+                                                     R6CreateClassContext::class.java) ?: return
     }
 
-    private fun addR6SlotNameCompletion(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet){
-      // TODO fill completion
+    private fun addR6MemberNameCompletion(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet){
+      val r6Context = R6ContextProvider.getR6Context(classNameExpression,
+                                                     R6NewObjectContext::class.java,
+                                                     R6CreateClassContext::class.java) ?: return
     }
   }
 
