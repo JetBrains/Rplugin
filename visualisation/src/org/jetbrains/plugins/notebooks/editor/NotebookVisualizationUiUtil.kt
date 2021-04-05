@@ -6,6 +6,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.TextRange
+import com.intellij.util.SmartList
 import com.intellij.util.containers.ContainerUtil
 import java.awt.Color
 import java.awt.Graphics
@@ -115,6 +116,17 @@ fun Editor.deselectCell(cell: NotebookCellLines.Interval) {
       caretModel.removeCaret(caret)
     }
   }
+}
+
+fun groupNeighborCells(cells: List<NotebookCellLines.Interval>): List<List<NotebookCellLines.Interval>> {
+  val groups = SmartList<SmartList<NotebookCellLines.Interval>>()
+  for (cell in cells) {
+    if (groups.lastOrNull()?.last()?.let { it.ordinal + 1 } != cell.ordinal) {
+      groups.add(SmartList())
+    }
+    groups.last().add(cell)
+  }
+  return groups
 }
 
 private fun NotebookCellLines.getCells(lines: IntRange): Sequence<NotebookCellLines.Interval> =
