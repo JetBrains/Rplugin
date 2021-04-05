@@ -6,7 +6,7 @@ package org.jetbrains.r.settings
 
 import com.intellij.openapi.components.*
 
-@State(name = "RGraphicsSettings", storages = [Storage("rGraphicsSettings.xml")])
+@State(name = "REditorSettings", storages = [Storage("rGraphicsSettings.xml")])
 class REditorSettings : SimplePersistentStateComponent<REditorSettingsState>(REditorSettingsState()) {
   companion object {
     val INSTANCE
