@@ -109,6 +109,14 @@ fun Editor.isSelectedCell(cell: NotebookCellLines.Interval): Boolean =
     document.getSelectionLines(caret).hasIntersectionWith(cell.lines)
   }
 
+fun Editor.deselectCell(cell: NotebookCellLines.Interval) {
+  for (caret in caretModel.allCarets) {
+    if (caret.logicalPosition.line in cell.lines) {
+      caretModel.removeCaret(caret)
+    }
+  }
+}
+
 private fun NotebookCellLines.getCells(lines: IntRange): Sequence<NotebookCellLines.Interval> =
   intervalsIterator(lines.first).asSequence().takeWhile { it.lines.first <= lines.last }
 
