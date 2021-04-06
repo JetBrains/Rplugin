@@ -1208,7 +1208,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         processHandler.destroyProcess()
       }
     } else {
-      ProgressManager.getInstance().run(object : Task.Backgroundable(null, RBundle.message("rinterop.terminating.title"), true) {
+      ProgressManager.getInstance().run(object : Task.Backgroundable(null, RBundle.message("rinterop.terminating.title"), true, DEAF) {
         override fun run(indicator: ProgressIndicator) {
           try {
             indicator.isIndeterminate = true
@@ -1229,8 +1229,6 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
             executor.shutdown()
           }
         }
-
-        override fun shouldStartInBackground() = false
       }.apply { setCancelText(RBundle.message("rinterop.terminate.now")) })
     }
   }
