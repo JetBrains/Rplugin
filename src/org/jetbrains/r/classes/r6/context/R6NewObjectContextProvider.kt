@@ -7,18 +7,15 @@ package org.jetbrains.r.classes.r6.context
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
+import org.jetbrains.r.classes.common.context.LibraryClassContext
 import org.jetbrains.r.classes.r6.R6ClassInfoUtil
-import org.jetbrains.r.classes.s4.context.RS4NewObjectClassNameContext
-import org.jetbrains.r.classes.s4.context.RS4NewObjectSlotNameContext
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
-import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.psi.isFunctionFromLibrary
 
-sealed class R6NewObjectContext : R6Context {
+sealed class R6NewObjectContext : LibraryClassContext {
   override val functionName = "new"
 }
 
@@ -27,8 +24,8 @@ data class R6NewObjectClassNameContext(override val originalElement: RPsiElement
                                        override val functionCall: RCallExpression,
                                        override val argumentInfo: RArgumentInfo) : R6NewObjectContext()
 
-class R6NewObjectContextProvider : R6ContextProvider<R6NewObjectContext>() {
-  override fun getR6Context(element: RPsiElement): R6NewObjectContext? {
+class R6NewObjectContextProvider : R6ContextProvider() {
+  override fun getContext(element: RPsiElement): R6NewObjectContext? {
     return CachedValuesManager.getCachedValue(element) {
       CachedValueProvider.Result.create(getR6ContextInner(element), element)
     }

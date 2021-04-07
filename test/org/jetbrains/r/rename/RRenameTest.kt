@@ -95,6 +95,8 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
 
   fun testRenameR6MethodFromUsage() = doTestWithProject("additiveOperator", isInOtherDirectory = true)
 
+  fun testRenameR6ActiveBindingFromUsage() = doTestWithProject("rnd", isInOtherDirectory = true)
+
   private fun doTestWithProject(newName: String, isInlineAvailable: Boolean = true, isRmd: Boolean = false, isSourceTest: Boolean = false, isInOtherDirectory: Boolean = false) {
     val dotFileExtension = getDotExtension(isRmd)
     lateinit var startFiles: List<String>

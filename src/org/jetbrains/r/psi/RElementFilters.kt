@@ -11,8 +11,7 @@ import com.intellij.psi.filters.NotFilter
 import com.intellij.psi.filters.position.FilterPattern
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
-import org.jetbrains.r.classes.r6.context.R6ContextProvider
-import org.jetbrains.r.classes.s4.context.RS4ContextProvider
+import org.jetbrains.r.classes.common.context.LibraryContextProvider
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.api.*
 
@@ -121,7 +120,7 @@ class StringFilter : ElementFilter {
 class S4ContextFilter : ElementFilter {
   override fun isAcceptable(element: Any?, context: PsiElement?): Boolean {
     val expression = PsiTreeUtil.getParentOfType(context, RExpression::class.java, false) ?: return false
-    return RS4ContextProvider.getS4Context(expression) != null
+    return LibraryContextProvider.getContext(expression) != null
   }
 
   override fun isClassAcceptable(hintClass: Class<*>?) = true
@@ -130,7 +129,7 @@ class S4ContextFilter : ElementFilter {
 class R6ContextFilter : ElementFilter {
   override fun isAcceptable(element: Any?, context: PsiElement?): Boolean {
     val expression = PsiTreeUtil.getParentOfType(context, RExpression::class.java, false) ?: return false
-    return R6ContextProvider.getR6Context(expression) != null
+    return LibraryContextProvider.getContext(expression) != null
   }
 
   override fun isClassAcceptable(hintClass: Class<*>?) = true

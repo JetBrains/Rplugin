@@ -3,6 +3,7 @@ package org.jetbrains.r.classes.s4.context
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
+import org.jetbrains.r.classes.common.context.LibraryClassContext
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.psi.RPsiUtil
@@ -11,7 +12,7 @@ import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.psi.isFunctionFromLibrary
 
-sealed class RS4NewObjectContext : RS4Context {
+sealed class RS4NewObjectContext : LibraryClassContext {
   override val functionName = "new"
 }
 
@@ -26,8 +27,8 @@ data class RS4NewObjectSlotNameContext(override val originalElement: RPsiElement
                                        override val functionCall: RCallExpression,
                                        override val argumentInfo: RArgumentInfo) : RS4NewObjectContext()
 
-class RS4NewObjectContextProvider : RS4ContextProvider<RS4NewObjectContext>() {
-  override fun getS4Context(element: RPsiElement): RS4NewObjectContext? {
+class RS4NewObjectContextProvider : RS4ContextProvider() {
+  override fun getContext(element: RPsiElement): RS4NewObjectContext? {
     return CachedValuesManager.getCachedValue(element) {
       CachedValueProvider.Result.create(getS4ContextInner(element), element)
     }

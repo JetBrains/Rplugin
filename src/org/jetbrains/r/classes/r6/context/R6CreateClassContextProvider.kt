@@ -7,17 +7,16 @@ package org.jetbrains.r.classes.r6.context
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
+import org.jetbrains.r.classes.common.context.LibraryClassContext
 import org.jetbrains.r.classes.r6.R6ClassInfoUtil
-import org.jetbrains.r.classes.s4.context.*
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
-import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.psi.isFunctionFromLibrary
 
-sealed class R6CreateClassContext : R6Context {
+sealed class R6CreateClassContext : LibraryClassContext {
   override val functionName = "R6Class"
 }
 
@@ -26,8 +25,8 @@ data class R6CreateClassNameContext(override val originalElement: RPsiElement,
                                     override val functionCall: RCallExpression,
                                     override val argumentInfo: RArgumentInfo) : R6CreateClassContext()
 
-class R6CreateClassContextProvider : R6ContextProvider<R6CreateClassContext>() {
-  override fun getR6Context(element: RPsiElement): R6CreateClassContext? {
+class R6CreateClassContextProvider : R6ContextProvider() {
+  override fun getContext(element: RPsiElement): R6CreateClassContext? {
     return CachedValuesManager.getCachedValue(element) {
       CachedValueProvider.Result.create(getR6ContextInner(element), element)
     }
