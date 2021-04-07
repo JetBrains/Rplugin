@@ -15,7 +15,7 @@ import org.jetbrains.r.psi.api.RStringLiteralExpression
 import org.jetbrains.r.psi.api.RVisitor
 import org.jetbrains.r.psi.isFunctionFromLibrary
 import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.RS4ClassNameIndex
+import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
 
 class InstanceOfVirtualS4ClassInspection : RInspection() {
   override fun getDisplayName() = RBundle.message("inspection.virtual.s4class.instance.name")

@@ -15,7 +15,10 @@ import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.classes.s4.RS4ClassInfoUtil
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.impl.RCallExpressionImpl
-import org.jetbrains.r.psi.stubs.*
+import org.jetbrains.r.psi.stubs.RCallExpressionStub
+import org.jetbrains.r.psi.stubs.RCallExpressionStubImpl
+import org.jetbrains.r.psi.stubs.RStubElementType
+import org.jetbrains.r.psi.stubs.classes.LibraryClassNameIndex
 import java.io.IOException
 
 class RCallExpressionElementType(debugName: String) : RStubElementType<RCallExpressionStub, RCallExpression>(debugName) {
@@ -47,8 +50,8 @@ class RCallExpressionElementType(debugName: String) : RStubElementType<RCallExpr
   }
 
   override fun indexStub(stub: RCallExpressionStub, sink: IndexSink) {
-    stub.s4ClassInfo?.className?.let { RS4ClassNameIndex.sink(sink, it) }
-    stub.r6ClassInfo?.className?.let { R6ClassNameIndex.sink(sink, it) }
+    stub.s4ClassInfo?.className?.let { LibraryClassNameIndex.sink(sink, it) }
+    stub.r6ClassInfo?.className?.let { LibraryClassNameIndex.sink(sink, it) }
   }
 
   override fun shouldCreateStub(node: ASTNode?): Boolean {

@@ -14,10 +14,8 @@ import com.intellij.util.IncorrectOperationException
 import org.jetbrains.r.classes.r6.R6ClassInfo
 import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.psi.stubs.R6ClassNameIndex
-import org.jetbrains.r.psi.stubs.RCallExpressionStubImpl
-import org.jetbrains.r.psi.stubs.RS4ClassNameIndex
 import org.jetbrains.r.psi.stubs.RStubElementType
+import org.jetbrains.r.psi.stubs.classes.LibraryClassNameIndex
 
 class RSkeletonCallExpressionElementType : RStubElementType<RSkeletonCallExpressionStub, RCallExpression>("R bin s4 r6") {
   override fun createPsi(stub: RSkeletonCallExpressionStub): RCallExpression {
@@ -50,7 +48,7 @@ class RSkeletonCallExpressionElementType : RStubElementType<RSkeletonCallExpress
   }
 
   override fun indexStub(stub: RSkeletonCallExpressionStub, sink: IndexSink) {
-    if (stub.s4ClassInfo != null) { RS4ClassNameIndex.sink(sink, stub.s4ClassInfo.className) }
-    if (stub.r6ClassInfo != null) { R6ClassNameIndex.sink(sink, stub.r6ClassInfo.className) }
+    if (stub.s4ClassInfo != null) { LibraryClassNameIndex.sink(sink, stub.s4ClassInfo.className) }
+    if (stub.r6ClassInfo != null) { LibraryClassNameIndex.sink(sink, stub.r6ClassInfo.className) }
   }
 }
