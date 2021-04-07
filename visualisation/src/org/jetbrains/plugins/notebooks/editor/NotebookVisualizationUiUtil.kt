@@ -44,21 +44,27 @@ inline fun <T> trimLists(left: List<T>, right: List<T>, comparator: (T, T) -> Bo
 }
 
 inline fun paintNotebookCellBackgroundGutter(
-  editor: Editor,
+  editor: EditorImpl,
   g: Graphics,
   r: Rectangle,
-  stripe: Color?,
+  interval: NotebookCellLines.Interval,
   top: Int,
   height: Int,
   crossinline actionBetweenBackgroundAndStripe: () -> Unit = {}
 ) {
   val appearance = editor.notebookAppearance
+  val stripe = appearance.getCellStripeColor(editor, interval)
+  val stripeHover = appearance.getCellStripeHoverColor(editor, interval)
   val borderWidth = appearance.getLeftBorderWidth()
   g.color = appearance.getCodeCellBackground(editor.colorsScheme)
   g.fillRect(r.width - borderWidth, top, borderWidth, height)
   actionBetweenBackgroundAndStripe()
   if (stripe != null) {
     appearance.paintCellStripe(g, r, stripe, top, height)
+  }
+  if (stripeHover != null) {
+    g.color = stripeHover
+    g.fillRect(r.width - appearance.getLeftBorderWidth(), top, appearance.getCellLeftLineHoverWidth(), height)
   }
 }
 

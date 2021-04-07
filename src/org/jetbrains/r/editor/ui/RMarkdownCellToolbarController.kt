@@ -59,8 +59,7 @@ internal class RMarkdownCellToolbarController private constructor(
   override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, intervalIterator: ListIterator<NotebookCellLines.Interval>) {
     val interval = intervalIterator.next()
     val inlayBounds = inlay.bounds ?: return
-    val stripeColor = editor.notebookAppearance.getCellStripeColor(editor, interval)
-    paintNotebookCellBackgroundGutter(editor, g, r, stripeColor, inlayBounds.y, inlayBounds.height)
+    paintNotebookCellBackgroundGutter(editor, g, r, interval, inlayBounds.y, inlayBounds.height)
   }
 
   class Factory : NotebookCellInlayController.Factory {

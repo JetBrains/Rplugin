@@ -23,7 +23,7 @@ class CellBackgroundGutterController : NotebookCellGutterController {
 
     val appearance = editor.notebookAppearance
     if (interval.type == NotebookCellLines.CellType.CODE) {
-      paintNotebookCellBackgroundGutter(editor, g, r, appearance.getCellStripeColor(editor, interval), top, height) {
+      paintNotebookCellBackgroundGutter(editor, g, r, interval, top, height) {
         paintCaretRow(editor, g, interval.lines)
       }
     }

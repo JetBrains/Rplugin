@@ -35,6 +35,7 @@ interface NotebookEditorAppearanceSizes {
   val EXTRA_PADDING_EXECUTION_COUNT: Int
 
   fun getCellLeftLineWidth(): Int
+  fun getCellLeftLineHoverWidth(): Int
   fun getLeftBorderWidth(): Int
 }
 
@@ -58,7 +59,8 @@ interface NotebookEditorAppearanceColors {
    * Takes lines of the cell and returns a color for the stripe that will be drawn behind the folding markers.
    * Currently only code cells are supported.
    */
-  fun getCellStripeColor(editor: EditorImpl, interval: NotebookCellLines.Interval): Color?
+  fun getCellStripeColor(editor: EditorImpl, interval: NotebookCellLines.Interval): Color? = null
+  fun getCellStripeHoverColor(editor: EditorImpl, interval: NotebookCellLines.Interval): Color? = null
 
   fun shouldShowCellLineNumbers(): Boolean
 }
@@ -90,6 +92,8 @@ object DefaultNotebookEditorAppearanceSizes: NotebookEditorAppearanceSizes {
   override val EXTRA_PADDING_EXECUTION_COUNT = 25
 
   override fun getCellLeftLineWidth(): Int = EDIT_MODE_CELL_LEFT_LINE_WIDTH
+  override fun getCellLeftLineHoverWidth(): Int = COMMAND_MODE_CELL_LEFT_LINE_WIDTH
+
   override fun getLeftBorderWidth(): Int =
     Integer.max(COMMAND_MODE_CELL_LEFT_LINE_WIDTH, EDIT_MODE_CELL_LEFT_LINE_WIDTH) + CODE_CELL_LEFT_LINE_PADDING
 }
