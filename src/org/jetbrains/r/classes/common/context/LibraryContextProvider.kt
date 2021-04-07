@@ -15,10 +15,7 @@ abstract class LibraryContextProvider <T: LibraryClassContext> {
   private val contextClass = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>
 
   companion object {
-    private val EP_NAME: ExtensionPointName<LibraryContextProvider<out LibraryClassContext>> =
-      ExtensionPointName.create("com.intellij.libraryContextProvider")
-
-    fun getProviders(): List<LibraryContextProvider<out LibraryClassContext>> = EP_NAME.extensionList
+    fun getProviders(): List<LibraryContextProvider<out LibraryClassContext>> = emptyList()
 
     fun getContext(element: RPsiElement): LibraryClassContext? {
       return getContext(element, LibraryClassContext::class.java)
