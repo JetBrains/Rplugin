@@ -30,7 +30,7 @@ class RenameRPsiElementProcessor : RenamePsiElementProcessor() {
         }
       }
       is RForStatement -> element.target
-      is RAssignmentStatement, is RParameter, is RFile -> element
+      is RAssignmentStatement, is RNamedArgument, is RParameter, is RFile -> element
       else -> null
     }
   }

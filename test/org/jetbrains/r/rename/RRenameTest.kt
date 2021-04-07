@@ -91,22 +91,39 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
 
   fun testRenameDocumentationFunctionLink() = doTestWithProject("baz")
 
-  private fun doTestWithProject(newName: String, isInlineAvailable: Boolean = true, isRmd: Boolean = false, isSourceTest: Boolean = false) {
+  fun testRenameR6FieldFromUsage() = doTestWithProject("summary", isInOtherDirectory = true)
+
+  fun testRenameR6MethodFromUsage() = doTestWithProject("additiveOperator", isInOtherDirectory = true)
+
+  private fun doTestWithProject(newName: String, isInlineAvailable: Boolean = true, isRmd: Boolean = false, isSourceTest: Boolean = false, isInOtherDirectory: Boolean = false) {
     val dotFileExtension = getDotExtension(isRmd)
     lateinit var startFiles: List<String>
     lateinit var endFiles: List<String>
-    if (isSourceTest) {
-      addLibraries()
-      val files = File(myFixture.testDataPath + "/rename/" + getTestName(true))
-                    .listFiles()
-                    ?.map { it.absolutePath.replace(myFixture.testDataPath, "") }
-                    ?.sortedByDescending { it.contains("main") } ?: error("Cannot find root test directory")
-      startFiles = files.filter { !it.contains(".after.") }
-      endFiles = files - startFiles
-      myFixture.configureByFiles(*startFiles.toTypedArray())
-    }
-    else {
-      myFixture.configureByFile("rename/" + getTestName(true) + dotFileExtension)
+
+    when {
+      isInOtherDirectory -> {
+        addLibraries()
+        val files = File(myFixture.testDataPath + "/rename/").walkBottomUp()
+                      .filter { it -> it.name.contains(getTestName(true)) }
+                      .map { it.absolutePath.replace(myFixture.testDataPath, "") }
+                      .sortedByDescending { it.contains("main") }.toList() ?: error("Cannot find root test directory")
+        startFiles = files.filter { !it.contains(".after.") }
+        endFiles = files - startFiles
+        myFixture.configureByFiles(*startFiles.toTypedArray())
+      }
+      isSourceTest -> {
+        addLibraries()
+        val files = File(myFixture.testDataPath + "/rename/" + getTestName(true))
+                      .listFiles()
+                      ?.map { it.absolutePath.replace(myFixture.testDataPath, "") }
+                      ?.sortedByDescending { it.contains("main") } ?: error("Cannot find root test directory")
+        startFiles = files.filter { !it.contains(".after.") }
+        endFiles = files - startFiles
+        myFixture.configureByFiles(*startFiles.toTypedArray())
+      }
+      else -> {
+        myFixture.configureByFile("rename/" + getTestName(true) + dotFileExtension)
+      }
     }
     val variableHandler = RVariableInplaceRenameHandler()
     val memberHandler = RMemberInplaceRenameHandler()
@@ -125,7 +142,7 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
     }
 
     CodeInsightTestUtil.doInlineRename(handler, newName, myFixture)
-    if (isSourceTest) {
+    if (isSourceTest || isInOtherDirectory) {
       if (endFiles.size != startFiles.size) error("Different number of start and end files")
       for (i in startFiles.indices) {
         myFixture.checkResultByFile(startFiles[i], endFiles[i], false)
