@@ -103,7 +103,7 @@ class R6FindUsagesTest : FindUsagesTestBase() {
     """, """
       Usage (2 usages)
        Variable
-        someField = 0
+        someField
        Found usages (2 usages)
         Unclassified (2 usages)
          light_idea_test_case (2 usages)

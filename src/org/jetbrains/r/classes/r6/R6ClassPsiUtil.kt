@@ -4,11 +4,12 @@
 
 package org.jetbrains.r.classes.r6
 
+import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
-import org.jetbrains.r.parsing.RElementTypes.R_IDENTIFIER_EXPRESSION
-import org.jetbrains.r.parsing.RElementTypes.R_MEMBER_EXPRESSION
+import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RCallExpressionImpl
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
@@ -22,40 +23,16 @@ object R6ClassPsiUtil {
   fun getSearchedIdentifier(dependantIdentifier: RIdentifierExpression?) : RPsiElement? {
     if (dependantIdentifier == null) return null
 
-    val objectDeclarationStatement = getClassInstantiationExpression(dependantIdentifier)
-    val classDefinition = getClassDefinitionExpression(dependantIdentifier, objectDeclarationStatement) ?: return null
-    val argumentInfo = getClassDefinitionArgumentInfo(classDefinition) ?: return null
+    val classDefinitionCall = getClassDefinitionCallFromMemberUsage(dependantIdentifier)
+    val argumentInfo = getClassDefinitionArgumentInfo(classDefinitionCall) ?: return null
 
-    val publicMembersCall = argumentInfo.getArgumentPassedToParameter(R6ClassInfoUtil.argumentPublic) as? RCallExpressionImpl
-    val privateMembersCall = argumentInfo.getArgumentPassedToParameter(R6ClassInfoUtil.argumentPrivate) as? RCallExpressionImpl
-    val activeMembersCall = argumentInfo.getArgumentPassedToParameter(R6ClassInfoUtil.argumentActive) as? RCallExpressionImpl
+    val publicMembers = getClassMemberExpressionsOfArgument(argumentInfo, R6ClassInfoUtil.argumentPublic)
+    val privateMembers = getClassMemberExpressionsOfArgument(argumentInfo, R6ClassInfoUtil.argumentPrivate)
+    val activeMembers = getClassMemberExpressionsOfArgument(argumentInfo, R6ClassInfoUtil.argumentActive)
 
-    val publicMembers = publicMembersCall?.argumentList?.expressionList
-    val privateMembers = privateMembersCall?.argumentList?.expressionList
-    val activeMembers = activeMembersCall?.argumentList?.expressionList
-
-    return extractNamedArgumentByName(dependantIdentifier.name, publicMembers?.map { it as RNamedArgument })
-           ?: extractNamedArgumentByName(dependantIdentifier.name, privateMembers?.map { it as RNamedArgument })
-           ?: extractNamedArgumentByName(dependantIdentifier.name, activeMembers?.map { it as RNamedArgument })
-  }
-
-  /**
-   * @param dependantIdentifier `someMember` psi-element of expression `obj$someMember`
-   * @return RAssignmentStatement `obj <- MyClass$new()`
-   */
-  private fun getClassInstantiationExpression(dependantIdentifier: RIdentifierExpression?): RAssignmentStatement? {
-    if (dependantIdentifier == null) return null
-
-    val usageExpression = dependantIdentifier.parent
-    if (usageExpression.elementType != R_MEMBER_EXPRESSION) return null
-
-    var r6Object = usageExpression.firstChild
-    while (r6Object != null && r6Object.elementType != R_IDENTIFIER_EXPRESSION){
-      r6Object = r6Object.firstChild
-    }
-
-    if (r6Object == null) return null
-    return r6Object.reference?.resolve() as? RAssignmentStatement
+    return extractNamedArgumentByName(dependantIdentifier.name, publicMembers?.mapNotNull { it as? RNamedArgument })
+           ?: extractNamedArgumentByName(dependantIdentifier.name, privateMembers?.mapNotNull { it as? RNamedArgument })
+           ?: extractNamedArgumentByName(dependantIdentifier.name, activeMembers?.mapNotNull { it as? RNamedArgument })
   }
 
   /**
@@ -92,15 +69,108 @@ object R6ClassPsiUtil {
   }
 
   /**
-   * @param classDefinition class definition expression `MyClass <- R6Class("MyClass", list( someField = 0))`
+   * @param rIdentifierExpression `someMember` of expression like `classObject$someMember` or `self$someMember`
+   * @return `R6Class` function call, which defines class containing `someMember`
+   */
+  fun getClassDefinitionCallFromMemberUsage(rIdentifierExpression: RIdentifierExpression?) : RCallExpression? {
+    if (rIdentifierExpression == null) return null
+    val usedClassVariable = getClassIdentifierFromChainedUsages(rIdentifierExpression.parent as? RMemberExpression)
+    return getClassDefinitionFromClassVariableUsage(usedClassVariable)
+  }
+
+  /**
+   * @param rMemberExpression expression like `classObject$someMember` or `self$someMember`
+   * @return `R6Class` function call, which defines class containing `someMember`
+   */
+  fun getClassDefinitionCallFromMemberUsage(rMemberExpression: RMemberExpression?) : RCallExpression? {
+    if (rMemberExpression == null) return null
+    val classObject = getClassIdentifierFromChainedUsages(rMemberExpression)
+    return getClassDefinitionFromClassVariableUsage(classObject)
+  }
+
+  private fun getClassDefinitionFromClassVariableUsage(classObject: PsiElement?) : RCallExpression? {
+    // `self$someMember`
+    if (classObject?.text == R6ClassInfoUtil.R6ClassThisKeyword) {
+      val parentFunction = PsiTreeUtil.getStubOrPsiParentOfType(classObject, RCallExpression::class.java)
+      val r6ClassDefinitionCall = PsiTreeUtil.getStubOrPsiParentOfType(parentFunction, RCallExpression::class.java)
+
+      if (r6ClassDefinitionCall?.isFunctionFromLibrarySoft(R6ClassInfoUtil.R6CreateClassMethod, R6ClassInfoUtil.R6PackageName) == true) {
+        return r6ClassDefinitionCall
+      }
+    }
+    // `classObject$someMember`
+    else {
+      // `classObject <- MyClass$new()` from `classObject$someMember$someMethod()$someMethod2()$someMember`
+      val r6ObjectCreationExpression = classObject?.reference?.resolve() as? RAssignmentStatement
+      // `MyClass` from `classObject <- MyClass$new()`
+      val usedClassVariable = r6ObjectCreationExpression?.assignedValue?.firstChild?.firstChild
+      // `MyClass <- R6Class(...)` from `MyClass`
+      val classDefinitionAssignment = usedClassVariable?.reference?.resolve() as? RAssignmentStatement
+
+      return classDefinitionAssignment?.assignedValue as? RCallExpression
+    }
+
+    return null
+  }
+
+  /**
+   * @param classDefinitionAssignment class definition expression `MyClass <- R6Class("MyClass", list( someField = 0))`
    * @return argument info containing all internal members of class
    */
-  private fun getClassDefinitionArgumentInfo(classDefinition: RAssignmentStatement?) : RArgumentInfo? {
-    if (classDefinition == null) return null
-
-    val r6ClassCall = classDefinition.children?.last() as RCallExpression
-    return RParameterInfoUtil.getArgumentInfo(r6ClassCall)
+  fun getClassDefinitionArgumentInfo(classDefinitionAssignment: RAssignmentStatement?) : RArgumentInfo? {
+    if (classDefinitionAssignment == null) return null
+    val classDefinitionCall = classDefinitionAssignment.children.last() as? RCallExpression
+    return getClassDefinitionArgumentInfo(classDefinitionCall)
   }
+
+  /**
+   * @param classDefinitionCall class definition expression `R6Class("MyClass", list( someField = 0))`
+   * @return argument info containing all internal members of class
+   */
+  fun getClassDefinitionArgumentInfo(classDefinitionCall: RCallExpression?) : RArgumentInfo? {
+    if (classDefinitionCall == null) return null
+    return RParameterInfoUtil.getArgumentInfo(classDefinitionCall)
+  }
+
+  /**
+   * @param argumentInfo information about arguments of R6 class definition call
+   * @param argumentName name of argument (i.e. `public`, `private`, `active`) from where to pick class members
+   */
+  private fun getClassMemberExpressionsOfArgument(argumentInfo: RArgumentInfo, argumentName: String) : List<RExpression>? {
+    val members = argumentInfo.getArgumentPassedToParameter(argumentName) as? RCallExpressionImpl
+    return members?.argumentList?.expressionList
+  }
+
+  /**
+   * @param dependantIdentifier `someMember` psi-element of expression `classObject$someMember$someMethod()$someActive$someMethod2()`
+   * @return RIdentifier of R6-class object
+   */
+  private fun getR6ObjectIdentifierFromChainedUsage(dependantIdentifier: RIdentifierExpression?): RIdentifierExpression? {
+    if (dependantIdentifier == null) return null
+
+    val usageExpression = dependantIdentifier.parent
+    if (usageExpression.elementType != R_MEMBER_EXPRESSION) return null
+
+    var r6Object = usageExpression.firstChild
+    while (r6Object != null && r6Object.elementType != R_IDENTIFIER_EXPRESSION){
+      r6Object = r6Object.firstChild
+    }
+
+    return r6Object as RIdentifierExpression
+  }
+
+  /**
+   * @param rMemberExpression `classObject$someMember$someMethod()$someActive()`
+   * @return `classObject` identifier as the most left psi-element in chained usage expression
+   */
+  private fun getClassIdentifierFromChainedUsages(rMemberExpression: RMemberExpression?) : RIdentifierExpression? {
+    if (rMemberExpression == null) return null
+    val classIdentifier = PsiTreeUtil.firstChild(rMemberExpression).parent as? RIdentifierExpression
+    if (classIdentifier?.parent.elementType != R_MEMBER_EXPRESSION) return null
+    return classIdentifier
+  }
+
+
 
   private fun extractNamedArgumentByName(elementName: String, namedArguments: List<RNamedArgument?>?) : RPsiElement? {
     namedArguments?.forEach {

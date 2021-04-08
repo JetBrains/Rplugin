@@ -138,22 +138,32 @@ class RCompletionContributor : CompletionContributor() {
         TODO("Not yet implemented")
       }
 
-      override fun addCompletionStatically(psiElement: RMemberExpression,
+      override fun addCompletionStatically(rMemberExpression: RMemberExpression,
                                            shownNames: MutableSet<String>,
                                            result: CompletionResultSet): Boolean {
-        psiElement.leftExpr?.reference?.multiResolve(false)?.forEach { resolveResult ->
+        // self$member expression
+        val className = R6ClassInfoUtil.getClassNameFromInternalClassMemberUsageExpression(rMemberExpression)
+        if (className != null){
+          LibraryClassNameIndex.findClassDefinitions(className, rMemberExpression.project, RSearchScopeUtil.getScope(rMemberExpression)).forEach {
+            return addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it), shownNames, result)
+          }
+        }
+
+        // classObject$member expression
+        rMemberExpression.leftExpr?.reference?.multiResolve(false)?.forEach { resolveResult ->
           val definition = resolveResult.element as? RAssignmentStatement ?: return@forEach
           (definition.assignedValue as? RCallExpression)?.let { call ->
             val className = R6ClassInfoUtil.getAssociatedClassNameFromInstantiationCall(call) ?: return@forEach
-            LibraryClassNameIndex.findClassDefinitions(className, psiElement.project, RSearchScopeUtil.getScope(psiElement)).forEach {
-              return addSlotsCompletion(R6ClassInfoUtil.getAllClassMembers(it), shownNames, result)
+            LibraryClassNameIndex.findClassDefinitions(className, rMemberExpression.project, RSearchScopeUtil.getScope(rMemberExpression)).forEach {
+              return addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it), shownNames, result)
             }
           }
         }
+
         return false
       }
 
-      private fun addSlotsCompletion(r6ClassMembers: List<R6ClassMember>?, shownNames: MutableSet<String>, result: CompletionResultSet): Boolean {
+      private fun addMembersCompletion(r6ClassMembers: List<R6ClassMember>?, shownNames: MutableSet<String>, result: CompletionResultSet): Boolean {
         var hasNewResults = false
         if (r6ClassMembers.isNullOrEmpty()) return hasNewResults
 

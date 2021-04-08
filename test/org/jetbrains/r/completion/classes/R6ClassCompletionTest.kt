@@ -26,12 +26,34 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), "someField" to "")
   }
 
+  fun testUserClassWithSingleFieldChainedUsage() {
+    doTest("""
+      MyClass <- R6Class("MyClass", list( someField = 0 ))
+      obj <- MyClass${"$"}new()
+      obj${'$'}someField${'$'}<caret>
+    """.trimIndent(), "someField" to "")
+  }
+
+  fun testUserClassForInternalUsage() {
+    doTest("""
+      MyClass <- R6Class("MyClass", list( someField = 0, add = function(x = 1) {  self$<caret> } ))
+    """.trimIndent(), "add" to "", "someField" to "")
+  }
+
   fun testUserClassWithSeveralMembers() {
     doTest("""
       MyClass <- R6Class("MyClass", list( someField = 0, someMethod = function (x = 1) { print(x) } ))
       obj <- MyClass${"$"}new()
       obj$<caret>
     """.trimIndent(), "someField" to "", "someMethod" to "")
+  }
+
+  fun testUserClassWithFieldMethodActiveBinding() {
+    doTest("""
+      MyClass <- R6Class("MyClass", list( someField = 0, someMethod = function (x = 1) { print(x) }, random = function() { print('it is a random active binding') } ))
+      obj <- MyClass${"$"}new()
+      obj$<caret>
+    """.trimIndent(), "random" to "", "someField" to "", "someMethod" to "")
   }
 
   private fun doWrongVariantsTest(text: String, vararg variants: String, withRuntimeInfo: Boolean = false, inConsole: Boolean = false) {

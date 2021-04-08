@@ -66,7 +66,7 @@ class R6ClassInfoUtilTests : RClassesUtilTestsBase() {
   fun testGetAssociatedClassName(){
     val rAssignmentStatement = getRootElementOfPsi(fullClassCodeDefinition) as RAssignmentStatement
     val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
-    val className = R6ClassInfoUtil.getAssociatedClassName(rCallExpression!!)
+    val className = R6ClassInfoUtil.getAssociatedClassNameFromR6ClassCall(rCallExpression!!)
     assertEquals("Car", className)
   }
 

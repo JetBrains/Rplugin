@@ -89,10 +89,10 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
   }
 
   private fun resolveDependantIdentifier(): Array<ResolveResult> {
-    val r6SearchedIdentifier = R6ClassPsiUtil.getSearchedIdentifier(element) ?: return emptyArray()
+    val r6SearchedIdentifierDefinition = R6ClassPsiUtil.getSearchedIdentifier(element) ?: return emptyArray()
 
     val result = ArrayList<ResolveResult>()
-    result.add(PsiElementResolveResult(r6SearchedIdentifier))
+    result.add(PsiElementResolveResult(r6SearchedIdentifierDefinition))
     return result.toTypedArray()
   }
 

@@ -7,5 +7,5 @@ Accumulator <- R6Class("Accumulator", list(
 )
 
 x <- Accumulator$new()
-x$add(4)$<caret>sum
+x$sum$add(4)$sum$add(4)$<caret>sum
 x$sum

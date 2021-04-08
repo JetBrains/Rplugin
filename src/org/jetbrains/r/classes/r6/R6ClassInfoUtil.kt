@@ -5,6 +5,7 @@
 package org.jetbrains.r.classes.r6
 
 import com.intellij.openapi.util.Key
+import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.packages.RPackageProjectManager
@@ -13,7 +14,6 @@ import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RCallExpressionImpl
 import org.jetbrains.r.psi.impl.RMemberExpressionImpl
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
-import java.util.*
 
 object R6ClassInfoUtil {
   const val R6PackageName = "R6"
@@ -36,14 +36,32 @@ object R6ClassInfoUtil {
                             portable = TRUE, lock_class = FALSE, cloneable = TRUE,
                             parent_env = parent.frame(), lock) {}""".trimIndent()
 
+  /**
+   * @param call expression `MyClass$new()`
+   * @return class name which type is instantiated
+   */
   fun getAssociatedClassNameFromInstantiationCall(call: RCallExpression) : String? {
     val callExpression = call.expression as? RMemberExpressionImpl ?: return null
     if (callExpression.rightExpr?.text != functionNew) return null
     return callExpression.leftExpr?.text
   }
 
-  fun getAssociatedClassName(callExpression: RCallExpression,
-                             argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)): String? {
+  /**
+   * @param rMemberExpression expression `self$someMember` or `obj$someMember`
+   * @return className of class where `self$...` is used or of which object is called
+   */
+  fun getClassNameFromInternalClassMemberUsageExpression(rMemberExpression: RMemberExpression?) : String? {
+    if (rMemberExpression == null) return null
+    val classDefinitionCall = R6ClassPsiUtil.getClassDefinitionCallFromMemberUsage(rMemberExpression) ?: return null
+    return getAssociatedClassNameFromR6ClassCall(classDefinitionCall)
+  }
+
+  /**
+   * @param callExpression expression `R6Class("MyClass", ...)`
+   * @return
+   */
+  fun getAssociatedClassNameFromR6ClassCall(callExpression: RCallExpression,
+                                            argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)): String? {
     argumentInfo ?: return null
     if (!callExpression.isFunctionFromLibrarySoft(R6CreateClassMethod, R6PackageName)) return null
     val arg = argumentInfo.getArgumentPassedToParameter(argumentClassName) as? RStringLiteralExpression
@@ -133,7 +151,7 @@ object R6ClassInfoUtil {
     }
 
     val argumentInfo = RParameterInfoUtil.getArgumentInfo(callExpression, definition) ?: return null
-    val className = getAssociatedClassName(callExpression, argumentInfo) ?: return null
+    val className = getAssociatedClassNameFromR6ClassCall(callExpression, argumentInfo) ?: return null
     val superClassName = getAssociatedSuperClassName(callExpression, argumentInfo) ?: ""
     val fields = getAssociatedFields(callExpression, argumentInfo) ?: emptyList()
     val methods = getAssociatedMethods(callExpression, argumentInfo) ?: emptyList()
