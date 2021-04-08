@@ -28,8 +28,8 @@ public final class VisualisationIcons {
     /** 16x16 */ public static final @NotNull Icon ConstraintProportions = load("icons/graphics/constraintProportions.svg", 5583708402552630410L, 2);
   }
 
-  /** 16x16 */ public static final @NotNull Icon OutputCollapse = load("icons/outputCollapse.svg", -7949245389732907831L, 2);
-  /** 16x16 */ public static final @NotNull Icon OutputExpand = load("icons/outputExpand.svg", -3355244271379584825L, 2);
+  /** 9x11 */ public static final @NotNull Icon OutputCollapse = load("icons/outputCollapse.svg", -3926295788535147289L, 2);
+  /** 11x9 */ public static final @NotNull Icon OutputExpand = load("icons/outputExpand.svg", 7986593833464125621L, 2);
 
   public static final class Table {
     /** 16x16 */ public static final @NotNull Icon Pagination = load("icons/table/pagination.svg", -8862976910242223129L, 2);
