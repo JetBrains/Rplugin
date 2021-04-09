@@ -13,7 +13,6 @@ import org.jetbrains.plugins.notebooks.editor.SwingClientProperty
 import org.jetbrains.plugins.notebooks.editor.notebookAppearance
 import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputComponentFactory.Companion.gutterPainter
 import org.jetbrains.plugins.notebooks.editor.outputs.impl.CollapsingComponent
-import org.jetbrains.plugins.notebooks.editor.outputs.impl.FixedWidthMaxHeightLayout
 import org.jetbrains.plugins.notebooks.editor.outputs.impl.InnerComponent
 import org.jetbrains.plugins.notebooks.editor.outputs.impl.SurroundingComponent
 import org.jetbrains.plugins.notebooks.editor.ui.addComponentInlay
@@ -175,7 +174,7 @@ class NotebookOutputInlayController private constructor(
 
     innerComponent.add(
       collapsingComponent,
-      FixedWidthMaxHeightLayout.Constraint(newComponent.widthStretching, newComponent.limitHeight),
+      InnerComponent.Constraint(newComponent.widthStretching, newComponent.limitHeight),
       pos,
     )
   }

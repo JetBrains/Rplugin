@@ -6,8 +6,6 @@ import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputInlayControl
 import java.awt.BorderLayout
 import javax.swing.JComponent
 
-internal var JComponent.layoutConstraints: FixedWidthMaxHeightLayout.Constraint? by SwingClientProperty()
-
 internal var EditorGutterComponentEx.hoveredCollapsingComponentRect: CollapsingComponent? by SwingClientProperty()
 
 // TODO It severely breaks encapsulation. At least, we should cover it with tests.
