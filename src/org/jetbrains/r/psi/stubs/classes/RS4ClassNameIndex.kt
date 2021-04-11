@@ -6,13 +6,19 @@ package org.jetbrains.r.psi.stubs.classes
 
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.stubs.IndexSink
+import com.intellij.psi.stubs.StringStubIndexExtension
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
 import com.intellij.util.Processor
 import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.psi.api.RCallExpression
 
-class RS4ClassNameIndex : LibraryClassNameIndex() {
+class RS4ClassNameIndex : StringStubIndexExtension<RCallExpression>() {
+  override fun getKey(): StubIndexKey<String, RCallExpression> {
+    return KEY
+  }
+
   companion object {
     private val KEY = StubIndexKey.createIndexKey<String, RCallExpression>("R.s4class.shortName")
 
@@ -27,6 +33,14 @@ class RS4ClassNameIndex : LibraryClassNameIndex() {
 
     fun findClassInfos(name: String, project: Project, scope: GlobalSearchScope?): List<RS4ClassInfo> {
       return StubIndex.getElements(KEY, name, project, scope, RCallExpression::class.java).mapNotNull { it.associatedS4ClassInfo }
+    }
+
+    fun findClassDefinitions(name: String, project: Project, scope: GlobalSearchScope?): Collection<RCallExpression> {
+      return StubIndex.getElements(KEY, name, project, scope, RCallExpression::class.java)
+    }
+
+    fun sink(sink: IndexSink, name: String) {
+      sink.occurrence(KEY, name)
     }
   }
 }

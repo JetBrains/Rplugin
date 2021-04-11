@@ -25,7 +25,7 @@ data class R6CreateClassNameContext(override val originalElement: RPsiElement,
                                     override val functionCall: RCallExpression,
                                     override val argumentInfo: RArgumentInfo) : R6CreateClassContext()
 
-class R6CreateClassContextProvider : R6ContextProvider() {
+class R6CreateClassContextProvider : R6ContextProvider<R6CreateClassContext>() {
   override fun getContext(element: RPsiElement): R6CreateClassContext? {
     return CachedValuesManager.getCachedValue(element) {
       CachedValueProvider.Result.create(getR6ContextInner(element), element)

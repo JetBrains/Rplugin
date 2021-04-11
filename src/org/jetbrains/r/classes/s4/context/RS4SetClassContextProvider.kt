@@ -35,7 +35,7 @@ data class RS4SetClassDependencyClassNameContext(override val originalElement: R
                                                  override val functionCall: RCallExpression,
                                                  override val argumentInfo: RArgumentInfo) : RS4SetClassContext()
 
-class RS4SetClassContextProvider : RS4ContextProvider() {
+class RS4SetClassContextProvider : RS4ContextProvider<RS4SetClassContext>() {
   override fun getContext(element: RPsiElement): RS4SetClassContext? {
     return CachedValuesManager.getCachedValue(element) {
       CachedValueProvider.Result.create(getS4ContextInner(element), element)

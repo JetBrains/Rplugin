@@ -20,9 +20,9 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.classes.common.context.LibraryContextProvider
 import org.jetbrains.r.classes.r6.R6ClassInfoUtil
 import org.jetbrains.r.classes.r6.R6ClassMember
+import org.jetbrains.r.classes.r6.context.R6ContextProvider
 import org.jetbrains.r.classes.r6.context.R6CreateClassContext
 import org.jetbrains.r.classes.r6.context.R6NewObjectContext
 import org.jetbrains.r.classes.s4.*
@@ -40,7 +40,7 @@ import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.*
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.classes.LibraryClassNameIndex
+import org.jetbrains.r.psi.stubs.classes.R6ClassNameIndex
 import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
 import org.jetbrains.r.refactoring.RNamesValidator
 import org.jetbrains.r.rinterop.RValueFunction
@@ -144,7 +144,7 @@ class RCompletionContributor : CompletionContributor() {
         // self$member expression
         val className = R6ClassInfoUtil.getClassNameFromInternalClassMemberUsageExpression(rMemberExpression)
         if (className != null){
-          LibraryClassNameIndex.findClassDefinitions(className, rMemberExpression.project, RSearchScopeUtil.getScope(rMemberExpression)).forEach {
+          R6ClassNameIndex.findClassDefinitions(className, rMemberExpression.project, RSearchScopeUtil.getScope(rMemberExpression)).forEach {
             return addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it), shownNames, result)
           }
         }
@@ -154,7 +154,7 @@ class RCompletionContributor : CompletionContributor() {
           val definition = resolveResult.element as? RAssignmentStatement ?: return@forEach
           (definition.assignedValue as? RCallExpression)?.let { call ->
             val className = R6ClassInfoUtil.getAssociatedClassNameFromInstantiationCall(call) ?: return@forEach
-            LibraryClassNameIndex.findClassDefinitions(className, rMemberExpression.project, RSearchScopeUtil.getScope(rMemberExpression)).forEach {
+            R6ClassNameIndex.findClassDefinitions(className, rMemberExpression.project, RSearchScopeUtil.getScope(rMemberExpression)).forEach {
               return addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it), shownNames, result)
             }
           }
@@ -214,7 +214,7 @@ class RCompletionContributor : CompletionContributor() {
           val definition = resolveResult.element as? RAssignmentStatement ?: return@forEach
           (definition.assignedValue as? RCallExpression)?.let { call ->
             val className = RS4ClassInfoUtil.getAssociatedClassName(call) ?: return@forEach
-            LibraryClassNameIndex.findClassDefinitions(className, psiElement.project, RSearchScopeUtil.getScope(psiElement)).forEach {
+            RS4ClassNameIndex.findClassDefinitions(className, psiElement.project, RSearchScopeUtil.getScope(psiElement)).forEach {
               return addSlotsCompletion(RS4ClassInfoUtil.getAllAssociatedSlots(it), shownNames, result)
             }
           }
@@ -506,7 +506,7 @@ class RCompletionContributor : CompletionContributor() {
     }
 
     private fun addS4SlotNameCompletion(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet) {
-      val s4Context = LibraryContextProvider.getContext(classNameExpression, RS4NewObjectContext::class.java) ?: return
+      val s4Context = RS4ContextProvider.getS4Context(classNameExpression, RS4NewObjectContext::class.java) ?: return
       if (s4Context !is RS4NewObjectSlotNameContext) return
 
       val newCall = s4Context.functionCall
@@ -528,7 +528,7 @@ class RCompletionContributor : CompletionContributor() {
         override fun addCompletionStatically(psiElement: RCallExpression,
                                              shownNames: MutableSet<String>,
                                              result: CompletionResultSet): Boolean {
-          LibraryClassNameIndex.findClassDefinitions(className, psiElement.project, RSearchScopeUtil.getScope(psiElement)).singleOrNull()?.let { definition ->
+          RS4ClassNameIndex.findClassDefinitions(className, psiElement.project, RSearchScopeUtil.getScope(psiElement)).singleOrNull()?.let { definition ->
             RS4ClassInfoUtil.getAllAssociatedSlots(definition).forEach {
               result.consume(RLookupElementFactory.createNamedArgumentLookupElement(it.name, it.type, SLOT_NAME_PRIORITY))
             }
@@ -540,7 +540,7 @@ class RCompletionContributor : CompletionContributor() {
     }
 
     private fun addS4ClassNameCompletion(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet) {
-      val s4Context = LibraryContextProvider.getContext(classNameExpression,
+      val s4Context = RS4ContextProvider.getS4Context(classNameExpression,
                                                         RS4NewObjectContext::class.java,
                                                         RS4SetClassContext::class.java) ?: return
       var omitVirtual = false
@@ -621,13 +621,13 @@ class RCompletionContributor : CompletionContributor() {
     }
 
     private fun addR6ClassNameCompletion(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet){
-      val r6Context = LibraryContextProvider.getContext(classNameExpression,
+      val r6Context = R6ContextProvider.getR6Context(classNameExpression,
                                                         R6NewObjectContext::class.java,
                                                         R6CreateClassContext::class.java) ?: return
     }
 
     private fun addR6MemberNameCompletion(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet){
-      val r6Context = LibraryContextProvider.getContext(classNameExpression,
+      val r6Context = R6ContextProvider.getR6Context(classNameExpression,
                                                         R6NewObjectContext::class.java,
                                                         R6CreateClassContext::class.java) ?: return
     }

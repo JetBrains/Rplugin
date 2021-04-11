@@ -27,7 +27,7 @@ data class RS4NewObjectSlotNameContext(override val originalElement: RPsiElement
                                        override val functionCall: RCallExpression,
                                        override val argumentInfo: RArgumentInfo) : RS4NewObjectContext()
 
-class RS4NewObjectContextProvider : RS4ContextProvider() {
+class RS4NewObjectContextProvider : RS4ContextProvider<RS4NewObjectContext>() {
   override fun getContext(element: RPsiElement): RS4NewObjectContext? {
     return CachedValuesManager.getCachedValue(element) {
       CachedValueProvider.Result.create(getS4ContextInner(element), element)
