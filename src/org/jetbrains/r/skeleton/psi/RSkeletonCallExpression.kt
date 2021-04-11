@@ -28,7 +28,7 @@ class RSkeletonCallExpression(private val myStub: RSkeletonCallExpressionStub) :
 
   override fun getElementType(): IStubElementType<out StubElement<*>, *> = stub.stubType
 
-  override fun getName(): String = myStub.s4ClassInfo!!.className
+  override fun getName(): String = myStub.s4ClassInfo?.className ?: ""
 
   override fun canNavigate(): Boolean = false
 

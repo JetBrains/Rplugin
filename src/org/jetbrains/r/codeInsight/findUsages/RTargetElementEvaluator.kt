@@ -14,9 +14,7 @@ class RTargetElementEvaluator: TargetElementEvaluatorEx2() {
     }
 
     return when (grandParent) {
-      is RParameter,
-      is RNamedArgument -> true
-
+      is RParameter, is RNamedArgument -> true
       else -> false
     }
   }
