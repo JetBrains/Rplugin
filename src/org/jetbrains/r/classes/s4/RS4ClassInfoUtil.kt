@@ -35,7 +35,7 @@ object RS4ClassInfoUtil {
     if (callExpression == null) return emptyList()
     if (callExpression is RSkeletonCallExpression) {
       // S4 classes from packages and so contains all slots
-      return callExpression.associatedS4ClassInfo!!.slots
+      return callExpression.associatedS4ClassInfo?.slots ?: emptyList()
     }
     if (!callExpression.isFunctionFromLibrary("setClass", "methods")) return emptyList()
     return CachedValuesManager.getProjectPsiDependentCache(callExpression) {
@@ -53,7 +53,7 @@ object RS4ClassInfoUtil {
     if (callExpression == null) return emptyList()
     if (callExpression is RSkeletonCallExpression) {
       // S4 classes from packages and so contains all super classes
-      return callExpression.associatedS4ClassInfo!!.superClasses
+      return callExpression.associatedS4ClassInfo?.superClasses ?: emptyList()
     }
     if (!callExpression.isFunctionFromLibrary("setClass", "methods")) return emptyList()
     return CachedValuesManager.getProjectPsiDependentCache(callExpression) {
