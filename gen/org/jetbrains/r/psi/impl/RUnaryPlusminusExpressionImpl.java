@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RUnaryPlusminusExpressionImpl extends ROperatorExpressionImpl implements RUnaryPlusminusExpression {
 
-  public RUnaryPlusminusExpressionImpl(@NotNull ASTNode node) {
-    super(node);
+  public RUnaryPlusminusExpressionImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

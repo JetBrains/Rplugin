@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RExpOperatorImpl extends ROperatorImpl implements RExpOperator {
 
-  public RExpOperatorImpl(@NotNull ASTNode node) {
-    super(node);
+  public RExpOperatorImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

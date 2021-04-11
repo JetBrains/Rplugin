@@ -3,8 +3,8 @@ package org.jetbrains.r.psi.api;
 
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.PsiNamedElement;
 
 public class RVisitor extends PsiElementVisitor {
 

@@ -56,6 +56,12 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), "random" to "", "someField" to "", "someMethod" to "")
   }
 
+  fun testUserClassNameSuggestion() {
+    doTest("""
+      MyClass <- R6Class(<caret>)
+    """.trimIndent(), "MyClass" to "string", containedInSuggestions = true)
+  }
+
   private fun doWrongVariantsTest(text: String, vararg variants: String, withRuntimeInfo: Boolean = false, inConsole: Boolean = false) {
     val result = doTestBase(text, withRuntimeInfo, inConsole)
     assertNotNull(result)
@@ -65,6 +71,7 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
 
   private fun doTest(text: String,
                      vararg variants: Pair<String, String>, // <name, type>
+                     containedInSuggestions: Boolean = false,
                      strict: Boolean = true,
                      withRuntimeInfo: Boolean = false,
                      inConsole: Boolean = false) {
@@ -75,11 +82,19 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
       it.renderElement(elementPresentation)
       elementPresentation.itemText to elementPresentation.typeText
     }
-    if (strict) {
-      assertOrderedEquals(lookupStrings, *variants)
-    }
-    else {
-      assertContainsOrdered(lookupStrings, *variants)
+
+    when {
+      containedInSuggestions -> {
+        variants.forEach { expectedSuggestion ->
+          assert(lookupStrings.any { it.first == expectedSuggestion.first })
+        }
+      }
+      strict -> {
+        assertOrderedEquals(lookupStrings, *variants)
+      }
+      else -> {
+        assertContainsOrdered(lookupStrings, *variants)
+      }
     }
   }
 

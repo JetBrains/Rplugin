@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class ROrOperatorImpl extends ROperatorImpl implements ROrOperator {
 
-  public ROrOperatorImpl(@NotNull ASTNode node) {
-    super(node);
+  public ROrOperatorImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

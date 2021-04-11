@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RNextStatementImpl extends RExpressionImpl implements RNextStatement {
 
-  public RNextStatementImpl(@NotNull ASTNode node) {
-    super(node);
+  public RNextStatementImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

@@ -7,7 +7,7 @@ package org.jetbrains.r.classes.r6.context
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.classes.common.context.LibraryClassContext
+import org.jetbrains.r.classes.common.context.ILibraryClassContext
 import org.jetbrains.r.classes.r6.R6ClassInfoUtil
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
@@ -15,7 +15,7 @@ import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.psi.isFunctionFromLibrary
 
-sealed class R6NewObjectContext : LibraryClassContext {
+sealed class R6NewObjectContext : ILibraryClassContext {
   override val functionName = "new"
 }
 

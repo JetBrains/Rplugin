@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RCompareOperatorImpl extends ROperatorImpl implements RCompareOperator {
 
-  public RCompareOperatorImpl(@NotNull ASTNode node) {
-    super(node);
+  public RCompareOperatorImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

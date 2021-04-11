@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RBoundaryLiteralImpl extends RExpressionImpl implements RBoundaryLiteral {
 
-  public RBoundaryLiteralImpl(@NotNull ASTNode node) {
-    super(node);
+  public RBoundaryLiteralImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RBooleanLiteralImpl extends RExpressionImpl implements RBooleanLiteral {
 
-  public RBooleanLiteralImpl(@NotNull ASTNode node) {
-    super(node);
+  public RBooleanLiteralImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

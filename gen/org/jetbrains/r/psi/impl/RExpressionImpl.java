@@ -14,8 +14,8 @@ import org.jetbrains.r.psi.references.RReferenceBase;
 
 public abstract class RExpressionImpl extends RElementImpl implements RExpression {
 
-  public RExpressionImpl(@NotNull ASTNode node) {
-    super(node);
+  public RExpressionImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   public void accept(@NotNull RVisitor visitor) {

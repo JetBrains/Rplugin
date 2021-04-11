@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RHelpExpressionImpl extends RExpressionImpl implements RHelpExpression {
 
-  public RHelpExpressionImpl(@NotNull ASTNode node) {
-    super(node);
+  public RHelpExpressionImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

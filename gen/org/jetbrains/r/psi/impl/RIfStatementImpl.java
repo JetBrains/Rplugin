@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RIfStatementImpl extends RExpressionImpl implements RIfStatement {
 
-  public RIfStatementImpl(@NotNull ASTNode node) {
-    super(node);
+  public RIfStatementImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

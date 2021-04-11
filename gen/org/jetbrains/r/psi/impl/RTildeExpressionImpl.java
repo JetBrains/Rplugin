@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RTildeExpressionImpl extends RExpressionImpl implements RTildeExpression {
 
-  public RTildeExpressionImpl(@NotNull ASTNode node) {
-    super(node);
+  public RTildeExpressionImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

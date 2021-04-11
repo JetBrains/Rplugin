@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RListSubsetOperatorImpl extends ROperatorImpl implements RListSubsetOperator {
 
-  public RListSubsetOperatorImpl(@NotNull ASTNode node) {
-    super(node);
+  public RListSubsetOperatorImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

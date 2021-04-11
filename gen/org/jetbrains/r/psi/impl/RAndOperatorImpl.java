@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RAndOperatorImpl extends ROperatorImpl implements RAndOperator {
 
-  public RAndOperatorImpl(@NotNull ASTNode node) {
-    super(node);
+  public RAndOperatorImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

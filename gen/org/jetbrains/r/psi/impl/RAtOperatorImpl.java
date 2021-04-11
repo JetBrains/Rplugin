@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RAtOperatorImpl extends ROperatorImpl implements RAtOperator {
 
-  public RAtOperatorImpl(@NotNull ASTNode node) {
-    super(node);
+  public RAtOperatorImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

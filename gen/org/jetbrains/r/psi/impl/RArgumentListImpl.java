@@ -13,8 +13,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RArgumentListImpl extends RElementImpl implements RArgumentList {
 
-  public RArgumentListImpl(@NotNull ASTNode node) {
-    super(node);
+  public RArgumentListImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   public void accept(@NotNull RVisitor visitor) {

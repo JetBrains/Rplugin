@@ -5,11 +5,11 @@
 package org.jetbrains.r.classes.r6.context
 
 import com.intellij.openapi.extensions.ExtensionPointName
-import org.jetbrains.r.classes.common.context.LibraryClassContext
+import org.jetbrains.r.classes.common.context.ILibraryClassContext
 import org.jetbrains.r.psi.api.RPsiElement
 import java.lang.reflect.ParameterizedType
 
-abstract class R6ContextProvider<T : LibraryClassContext> {
+abstract class R6ContextProvider<T : ILibraryClassContext> {
 
   abstract fun getContext(element: RPsiElement): T?
 
@@ -17,16 +17,16 @@ abstract class R6ContextProvider<T : LibraryClassContext> {
   private val contextClass = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>
 
   companion object {
-    private val EP_NAME: ExtensionPointName<R6ContextProvider<out LibraryClassContext>> =
+    private val EP_NAME: ExtensionPointName<R6ContextProvider<out ILibraryClassContext>> =
       ExtensionPointName.create("com.intellij.r6ContextProvider")
 
-    fun getProviders(): List<R6ContextProvider<out LibraryClassContext>> = EP_NAME.extensionList
+    fun getProviders(): List<R6ContextProvider<out ILibraryClassContext>> = EP_NAME.extensionList
 
-    fun getR6Context(element: RPsiElement): LibraryClassContext? {
-      return getR6Context(element, LibraryClassContext::class.java)
+    fun getR6Context(element: RPsiElement): ILibraryClassContext? {
+      return getR6Context(element, ILibraryClassContext::class.java)
     }
 
-    fun <T : LibraryClassContext> getR6Context(element: RPsiElement, vararg searchedContexts: Class<out T>): T? {
+    fun <T : ILibraryClassContext> getR6Context(element: RPsiElement, vararg searchedContexts: Class<out T>): T? {
       for (provider in getProviders()) {
         if (searchedContexts.any { it.isAssignableFrom(provider.contextClass) }) {
           val s4Context = provider.getContext(element)

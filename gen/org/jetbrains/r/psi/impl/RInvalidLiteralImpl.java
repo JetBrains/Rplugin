@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RInvalidLiteralImpl extends RExpressionImpl implements RInvalidLiteral {
 
-  public RInvalidLiteralImpl(@NotNull ASTNode node) {
-    super(node);
+  public RInvalidLiteralImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

@@ -8,7 +8,7 @@ import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RPsiElement
 
-interface LibraryClassContext {
+interface ILibraryClassContext {
   val functionName: String
   val functionCall: RCallExpression
   val argumentInfo: RArgumentInfo

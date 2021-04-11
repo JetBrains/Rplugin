@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RBreakStatementImpl extends RExpressionImpl implements RBreakStatement {
 
-  public RBreakStatementImpl(@NotNull ASTNode node) {
-    super(node);
+  public RBreakStatementImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override
