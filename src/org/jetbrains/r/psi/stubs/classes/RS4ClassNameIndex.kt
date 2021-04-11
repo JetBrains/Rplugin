@@ -4,43 +4,24 @@
 
 package org.jetbrains.r.psi.stubs.classes
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.stubs.IndexSink
-import com.intellij.psi.stubs.StringStubIndexExtension
-import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
 import com.intellij.util.Processor
 import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.psi.api.RCallExpression
 
-class RS4ClassNameIndex : StringStubIndexExtension<RCallExpression>() {
+class RS4ClassNameIndex : LibraryClassNameIndexBase<RS4ClassInfo>() {
+  override val classKey = StubIndexKey.createIndexKey<String, RCallExpression>("R.s4class.shortName")
+
   override fun getKey(): StubIndexKey<String, RCallExpression> {
-    return KEY
+    return classKey
   }
 
-  companion object {
-    private val KEY = StubIndexKey.createIndexKey<String, RCallExpression>("R.s4class.shortName")
+  override fun callProcessingForDeclaration(rCallExpression: RCallExpression,
+                                            processor: Processor<Pair<RCallExpression, RS4ClassInfo>>): Boolean {
+    return rCallExpression.associatedS4ClassInfo?.let { processor.process(rCallExpression to it) } ?: true
+  }
 
-    fun processAllClassInfos(project: Project, scope: GlobalSearchScope?, processor: Processor<Pair<RCallExpression, RS4ClassInfo>>) {
-      val stubIndex = StubIndex.getInstance()
-      stubIndex.processAllKeys(KEY, project) { key ->
-        stubIndex.processElements(KEY, key, project, scope, RCallExpression::class.java) { declaration ->
-          declaration.associatedS4ClassInfo?.let { processor.process(declaration to it) } ?: true
-        }
-      }
-    }
-
-    fun findClassInfos(name: String, project: Project, scope: GlobalSearchScope?): List<RS4ClassInfo> {
-      return StubIndex.getElements(KEY, name, project, scope, RCallExpression::class.java).mapNotNull { it.associatedS4ClassInfo }
-    }
-
-    fun findClassDefinitions(name: String, project: Project, scope: GlobalSearchScope?): Collection<RCallExpression> {
-      return StubIndex.getElements(KEY, name, project, scope, RCallExpression::class.java)
-    }
-
-    fun sink(sink: IndexSink, name: String) {
-      sink.occurrence(KEY, name)
-    }
+  override fun getClassInfoFromRCallExpression(rCallExpression: RCallExpression): RS4ClassInfo? {
+    return rCallExpression.associatedS4ClassInfo
   }
 }

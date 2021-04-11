@@ -15,6 +15,7 @@ import org.jetbrains.r.classes.r6.R6ClassInfo
 import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.stubs.RStubElementType
+import org.jetbrains.r.psi.stubs.classes.LibraryClassNameIndexProvider
 import org.jetbrains.r.psi.stubs.classes.R6ClassNameIndex
 import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
 
@@ -49,7 +50,7 @@ class RSkeletonCallExpressionElementType : RStubElementType<RSkeletonCallExpress
   }
 
   override fun indexStub(stub: RSkeletonCallExpressionStub, sink: IndexSink) {
-    if (stub.s4ClassInfo != null) { RS4ClassNameIndex.sink(sink, stub.s4ClassInfo.className) }
-    if (stub.r6ClassInfo != null) { R6ClassNameIndex.sink(sink, stub.r6ClassInfo.className) }
+    if (stub.s4ClassInfo != null) { LibraryClassNameIndexProvider.RS4ClassNameIndex.sink(sink, stub.s4ClassInfo.className) }
+    if (stub.r6ClassInfo != null) { LibraryClassNameIndexProvider.R6ClassNameIndex.sink(sink, stub.r6ClassInfo.className) }
   }
 }

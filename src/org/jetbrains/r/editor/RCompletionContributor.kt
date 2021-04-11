@@ -40,6 +40,7 @@ import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.*
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.references.RSearchScopeUtil
+import org.jetbrains.r.psi.stubs.classes.LibraryClassNameIndexProvider
 import org.jetbrains.r.psi.stubs.classes.R6ClassNameIndex
 import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
 import org.jetbrains.r.refactoring.RNamesValidator
@@ -144,7 +145,7 @@ class RCompletionContributor : CompletionContributor() {
         // self$member expression
         val className = R6ClassInfoUtil.getClassNameFromInternalClassMemberUsageExpression(rMemberExpression)
         if (className != null){
-          R6ClassNameIndex.findClassDefinitions(className, rMemberExpression.project, RSearchScopeUtil.getScope(rMemberExpression)).forEach {
+          LibraryClassNameIndexProvider.R6ClassNameIndex.findClassDefinitions(className, rMemberExpression.project, RSearchScopeUtil.getScope(rMemberExpression)).forEach {
             return addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it), shownNames, result)
           }
         }
@@ -154,7 +155,7 @@ class RCompletionContributor : CompletionContributor() {
           val definition = resolveResult.element as? RAssignmentStatement ?: return@forEach
           (definition.assignedValue as? RCallExpression)?.let { call ->
             val className = R6ClassInfoUtil.getAssociatedClassNameFromInstantiationCall(call) ?: return@forEach
-            R6ClassNameIndex.findClassDefinitions(className, rMemberExpression.project, RSearchScopeUtil.getScope(rMemberExpression)).forEach {
+            LibraryClassNameIndexProvider.R6ClassNameIndex.findClassDefinitions(className, rMemberExpression.project, RSearchScopeUtil.getScope(rMemberExpression)).forEach {
               return addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it), shownNames, result)
             }
           }
@@ -214,7 +215,7 @@ class RCompletionContributor : CompletionContributor() {
           val definition = resolveResult.element as? RAssignmentStatement ?: return@forEach
           (definition.assignedValue as? RCallExpression)?.let { call ->
             val className = RS4ClassInfoUtil.getAssociatedClassName(call) ?: return@forEach
-            RS4ClassNameIndex.findClassDefinitions(className, psiElement.project, RSearchScopeUtil.getScope(psiElement)).forEach {
+            LibraryClassNameIndexProvider.RS4ClassNameIndex.findClassDefinitions(className, psiElement.project, RSearchScopeUtil.getScope(psiElement)).forEach {
               return addSlotsCompletion(RS4ClassInfoUtil.getAllAssociatedSlots(it), shownNames, result)
             }
           }
@@ -528,7 +529,7 @@ class RCompletionContributor : CompletionContributor() {
         override fun addCompletionStatically(psiElement: RCallExpression,
                                              shownNames: MutableSet<String>,
                                              result: CompletionResultSet): Boolean {
-          RS4ClassNameIndex.findClassDefinitions(className, psiElement.project, RSearchScopeUtil.getScope(psiElement)).singleOrNull()?.let { definition ->
+          LibraryClassNameIndexProvider.RS4ClassNameIndex.findClassDefinitions(className, psiElement.project, RSearchScopeUtil.getScope(psiElement)).singleOrNull()?.let { definition ->
             RS4ClassInfoUtil.getAllAssociatedSlots(definition).forEach {
               result.consume(RLookupElementFactory.createNamedArgumentLookupElement(it.name, it.type, SLOT_NAME_PRIORITY))
             }
@@ -560,7 +561,7 @@ class RCompletionContributor : CompletionContributor() {
       val runtimeInfo = file.runtimeInfo
       val loadedPackages = runtimeInfo?.loadedPackages?.keys
       val shownNames = HashSet<String>()
-      RS4ClassNameIndex.processAllClassInfos(project, scope, Processor { (declaration, info) ->
+      LibraryClassNameIndexProvider.RS4ClassNameIndex.processAllClassInfos(project, scope, Processor { (declaration, info) ->
         if (omitVirtual && info.isVirtual) return@Processor true
         if (nameToOmit != info.className) {
           result.addS4ClassName(classNameExpression, declaration, info, shownNames, loadedPackages)
