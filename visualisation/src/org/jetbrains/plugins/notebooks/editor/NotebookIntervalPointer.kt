@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.notebooks.editor
 
-import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.Key
 
 /**
@@ -18,10 +18,10 @@ interface NotebookIntervalPointerFactory {
   fun create(interval: NotebookCellLines.Interval): NotebookIntervalPointer
 
   companion object {
-    fun get(editor: EditorImpl): NotebookIntervalPointerFactory =
+    fun get(editor: Editor): NotebookIntervalPointerFactory =
       key.get(editor) ?: install(editor)
 
-    private fun install(editor: EditorImpl): NotebookIntervalPointerFactory =
+    private fun install(editor: Editor): NotebookIntervalPointerFactory =
       NotebookIntervalPointerFactoryImpl(NotebookCellLines.get(editor)).also {
         key.set(editor, it)
       }
