@@ -50,7 +50,7 @@ message RLibrarySymbol {
       string name = 1;
     }
     string packageName = 1;
-    string superClass = 2;
+    repeated string superClasses = 2;
     repeated R6ClassField fields = 3;
     repeated R6ClassField methods = 4;
     repeated R6ClassField activeBindings = 5;
