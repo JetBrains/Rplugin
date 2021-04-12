@@ -881,7 +881,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   fun getLoadedShortR6ClassInfos(): List<R6ClassInfo>? {
     return try {
       executeWithCheckCancel(asyncStub::getLoadedShortR6ClassInfos, Empty.getDefaultInstance()).shortR6ClassInfosList.map {
-        R6ClassInfo(it.name, it.`package`, "", emptyList(), emptyList(), emptyList())
+        R6ClassInfo(it.name, it.`package`, emptyList(), emptyList(), emptyList(), emptyList())
       }
     } catch (e: RInteropTerminated) {
       null
@@ -891,7 +891,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   fun getR6ClassInfoByObjectName(ref: RReference): R6ClassInfo? {
     return try {
       val res = executeWithCheckCancel(asyncStub::getR6ClassInfoByObjectName, ref.proto)
-      R6ClassInfo(res.className, res.packageName, res.superClass, res.fieldsList.map { R6ClassField(it.name, it.isPublic) },
+      R6ClassInfo(res.className, res.packageName, res.superClassesList, res.fieldsList.map { R6ClassField(it.name, it.isPublic) },
                   res.methodsList.map { R6ClassMethod(it.name, it.isPublic) }, res.activeBindingsList.map { R6ClassActiveBinding(it.name) })
       null
     } catch (e: RInteropTerminated) {
@@ -902,7 +902,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   fun getR6ClassInfoByClassName(className: String): R6ClassInfo? {
     return try {
       val res = executeWithCheckCancel(asyncStub::getR6ClassInfoByClassName, StringValue.of(className))
-      R6ClassInfo(res.className, res.packageName, res.superClass, res.fieldsList.map { R6ClassField(it.name, it.isPublic) },
+      R6ClassInfo(res.className, res.packageName, res.superClassesList, res.fieldsList.map { R6ClassField(it.name, it.isPublic) },
                   res.methodsList.map { R6ClassMethod(it.name, it.isPublic) }, res.activeBindingsList.map { R6ClassActiveBinding(it.name) })
     } catch (e: RInteropTerminated) {
       null

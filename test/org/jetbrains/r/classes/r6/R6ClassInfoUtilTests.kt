@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.classes.r6
 
+import com.intellij.psi.util.PsiTreeUtil
 import junit.framework.TestCase
 import org.jetbrains.r.classes.RClassesUtilTestsBase
 import org.jetbrains.r.psi.api.RAssignmentStatement
@@ -80,11 +81,20 @@ class R6ClassInfoUtilTests : RClassesUtilTestsBase() {
     assertEquals("MyClass", className)
   }
 
-  fun testGetAssociatedSuperClassName(){
-    val rAssignmentStatement = getRootElementOfPsi(fullClassCodeDefinition) as RAssignmentStatement
-    val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
-    val superClassName = R6ClassInfoUtil.getAssociatedSuperClassName(rCallExpression!!)
-    assertEquals("Vehicle", superClassName)
+  fun testGetAssociatedSuperClasses(){
+    val psiTree = getRootElementOfPsi("""
+      SuperParentClass <- R6Class("SuperParentClass")
+      ParentClass <- R6Class("ParentClass", inherit = SuperParentClass)
+      ChildClass <- R6Class("ChildClass", inherit = ParentClass)
+    """.trimIndent()).parent
+
+    val lastClassAssignment = PsiTreeUtil.getChildrenOfType(psiTree, RAssignmentStatement::class.java).last() as RAssignmentStatement
+    val rCallExpression = getRCallExpressionFromAssignment(lastClassAssignment)
+    val superClassNames = R6ClassInfoUtil.getAssociatedSuperClassesHierarchy(rCallExpression!!)
+
+    assertNotNull(superClassNames)
+    assert(superClassNames!!.contains("ParentClass"))
+    assert(superClassNames.contains("SuperParentClass"))
   }
 
   fun testGetAssociatedFields(){
@@ -92,7 +102,7 @@ class R6ClassInfoUtilTests : RClassesUtilTestsBase() {
     val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
     val classFields = R6ClassInfoUtil.getAssociatedFields(rCallExpression!!)
 
-    TestCase.assertNotNull(classFields)
+    assertNotNull(classFields)
     assertEquals(classFields!!.size, 3)
 
     val classFieldsNames = classFields.map { it.name }

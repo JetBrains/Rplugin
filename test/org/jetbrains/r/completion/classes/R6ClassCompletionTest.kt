@@ -56,6 +56,17 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), "random" to "", "someField" to "", "someMethod" to "")
   }
 
+  fun testInheritedUserClass() {
+    // TODO finish
+
+    doTest("""
+      ParentClass <- R6Class("ParentClass", list( someField = 0 ))
+      ChildClass <- R6Class("ChildClass", inherit = ParentClass, list( add = function(x = 1) { print(x) } ))
+      obj <- ChildClass${"$"}new()
+      obj${'$'}someField${'$'}<caret>
+    """.trimIndent(), "add" to "", "someField" to "")
+  }
+
   fun testUserClassNameSuggestion() {
     doTest("""
       MyClass <- R6Class(<caret>)

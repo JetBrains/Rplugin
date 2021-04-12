@@ -143,19 +143,8 @@ class RCompletionContributor : CompletionContributor() {
         if (className != null) {
           LibraryClassNameIndexProvider.R6ClassNameIndex.findClassDefinitions(className, rMemberExpression.project,
                                                                               RSearchScopeUtil.getScope(rMemberExpression)).forEach {
-            return addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it), shownNames, result)
-          }
-        }
 
-        // classObject$member expression
-        rMemberExpression.leftExpr?.reference?.multiResolve(false)?.forEach { resolveResult ->
-          val definition = resolveResult.element as? RAssignmentStatement ?: return@forEach
-          (definition.assignedValue as? RCallExpression)?.let { call ->
-            val className = R6ClassInfoUtil.getAssociatedClassNameFromInstantiationCall(call) ?: return@forEach
-            LibraryClassNameIndexProvider.R6ClassNameIndex.findClassDefinitions(className, rMemberExpression.project,
-                                                                                RSearchScopeUtil.getScope(rMemberExpression)).forEach {
-              return addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it), shownNames, result)
-            }
+            return addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it), shownNames, result)
           }
         }
 

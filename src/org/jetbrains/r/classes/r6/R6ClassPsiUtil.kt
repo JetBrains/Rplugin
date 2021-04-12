@@ -170,8 +170,6 @@ object R6ClassPsiUtil {
     return classIdentifier
   }
 
-
-
   private fun extractNamedArgumentByName(elementName: String, namedArguments: List<RNamedArgument?>?) : RPsiElement? {
     namedArguments?.forEach {
       if (it != null) {

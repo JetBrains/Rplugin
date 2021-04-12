@@ -18,7 +18,7 @@ data class R6ClassActiveBinding(override val name: String) : R6ClassMember
 
 data class R6ClassInfo(val className: String,
                        val packageName: String,
-                       val superClass: String,
+                       val superClasses: List<String>,
                        val fields: List<R6ClassField>,
                        val methods: List<R6ClassMethod>,
                        val activeBindings: List<R6ClassActiveBinding>) {
@@ -26,7 +26,7 @@ data class R6ClassInfo(val className: String,
   fun serialize(dataStream: StubOutputStream) {
     dataStream.writeName(className)
     dataStream.writeName(packageName)
-    dataStream.writeName(superClass)
+    DataInputOutputUtilRt.writeSeq(dataStream, superClasses) { dataStream.writeName(it) }
 
     DataInputOutputUtilRt.writeSeq(dataStream, fields) {
       dataStream.writeName(it.name);
@@ -47,7 +47,7 @@ data class R6ClassInfo(val className: String,
     fun deserialize(dataStream: StubInputStream): R6ClassInfo {
       val className = StringRef.toString(dataStream.readName())
       val packageName = StringRef.toString(dataStream.readName())
-      val superClass = StringRef.toString(dataStream.readName())
+      val superClasses = DataInputOutputUtilRt.readSeq(dataStream) { StringRef.toString(dataStream.readName()) }
 
       val fields = DataInputOutputUtilRt.readSeq(dataStream) {
         val name = StringRef.toString(dataStream.readName())
@@ -66,7 +66,7 @@ data class R6ClassInfo(val className: String,
         R6ClassActiveBinding(name)
       }
 
-      return R6ClassInfo(className, packageName, superClass, fields, methods, activeBindings)
+      return R6ClassInfo(className, packageName, superClasses, fields, methods, activeBindings)
     }
   }
 
