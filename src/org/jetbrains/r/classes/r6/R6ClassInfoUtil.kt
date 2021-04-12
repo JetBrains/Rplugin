@@ -5,7 +5,7 @@
 package org.jetbrains.r.classes.r6
 
 import com.intellij.openapi.util.Key
-import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.CachedValuesManager
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.packages.RPackageProjectManager
@@ -14,6 +14,8 @@ import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RCallExpressionImpl
 import org.jetbrains.r.psi.impl.RMemberExpressionImpl
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
+import org.jetbrains.r.psi.references.RSearchScopeUtil
+import org.jetbrains.r.psi.stubs.classes.LibraryClassNameIndexProvider
 
 object R6ClassInfoUtil {
   const val R6PackageName = "R6"
@@ -106,21 +108,20 @@ object R6ClassInfoUtil {
     return (inheritClassDefinition?.reference?.resolve() as? RAssignmentStatement)?.assignedValue as? RCallExpression
   }
 
-  fun getAllClassMembers(callExpression: RCallExpression,
-                         argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression),
-                         onlyPublic: Boolean = false): List<R6ClassMember> {
-    val r6ClassMembers = mutableListOf<R6ClassMember>()
+  fun getAllClassMembers(callExpression: RCallExpression): List<R6ClassMember> {
+    val r6ClassInfo = CachedValuesManager.getProjectPsiDependentCache(callExpression) { callExpression.associatedR6ClassInfo } ?: return emptyList()
+    val allSuperClasses = getAssociatedSuperClassesHierarchy(callExpression)
 
-    val fields = getAssociatedFields(callExpression, argumentInfo, onlyPublic)
-    if (!fields.isNullOrEmpty()) r6ClassMembers.addAll(fields)
+    val callSearchScope = RSearchScopeUtil.getScope(callExpression)
+    val project = callExpression.project
 
-    val functions = getAssociatedMethods(callExpression, argumentInfo, onlyPublic)
-    if (!functions.isNullOrEmpty()) r6ClassMembers.addAll(functions)
+    if (allSuperClasses != null) {
+      return (r6ClassInfo.fields + r6ClassInfo.methods + r6ClassInfo.activeBindings + allSuperClasses.flatMap { superClassName ->
+        LibraryClassNameIndexProvider.R6ClassNameIndex.findClassInfos(superClassName, project, callSearchScope).flatMap { it.fields + it.methods + it.activeBindings }
+      }).distinctBy { it.name }
+    }
 
-    val activeBindings = getAssociatedActiveBindings(callExpression, argumentInfo)
-    if (!activeBindings.isNullOrEmpty()) r6ClassMembers.addAll(activeBindings)
-
-    return r6ClassMembers
+    return emptyList()
   }
 
   fun getAssociatedFields(callExpression: RCallExpression,

@@ -57,8 +57,6 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testInheritedUserClass() {
-    // TODO finish
-
     doTest("""
       ParentClass <- R6Class("ParentClass", list( someField = 0 ))
       ChildClass <- R6Class("ChildClass", inherit = ParentClass, list( add = function(x = 1) { print(x) } ))

@@ -143,7 +143,6 @@ class RCompletionContributor : CompletionContributor() {
         if (className != null) {
           LibraryClassNameIndexProvider.R6ClassNameIndex.findClassDefinitions(className, rMemberExpression.project,
                                                                               RSearchScopeUtil.getScope(rMemberExpression)).forEach {
-
             return addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it), shownNames, result)
           }
         }
