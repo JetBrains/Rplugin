@@ -93,7 +93,6 @@ class R6FindUsagesTest : FindUsagesTestBase() {
     """)
   }
 
-  /// Not working due to picked target element is `list(...)` and not `someField`
   fun testR6ClassFieldFromDefinition() {
     doTest("""
       MyClass <- R6Class("MyClass", list( <caret>someField = 0, someMethod = function(x = 1) { print(x) } ))
@@ -110,6 +109,24 @@ class R6FindUsagesTest : FindUsagesTestBase() {
            (2 usages)
            3obj${"$"}someField
            4obj${"$"}someField
+    """)
+  }
+
+  fun testR6ClassFieldWithSuperClass() {
+    doTest("""
+      ParentClass <- R6Class("ParentClass", list( someField = 0 ))
+      ChildClass <- R6Class("ChildClass", inherit = ParentClass, list( add = function(x = 1) { print(x) } ))
+      obj <- ChildClass${'$'}new()
+      obj${'$'}<caret>someField
+    """, """
+      Usage (1 usage)
+       Variable
+        someField = 0
+       Found usages (1 usage)
+        Unclassified (1 usage)
+         light_idea_test_case (1 usage)
+           (1 usage)
+           4obj${'$'}someField
     """)
   }
 }

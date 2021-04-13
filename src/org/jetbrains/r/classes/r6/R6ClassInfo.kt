@@ -23,6 +23,12 @@ data class R6ClassInfo(val className: String,
                        val methods: List<R6ClassMethod>,
                        val activeBindings: List<R6ClassActiveBinding>) {
 
+  fun containsMember(memberName: String) : Boolean {
+    return (fields.map { it.name }.contains(memberName) ||
+            methods.map { it.name }.contains(memberName) ||
+            activeBindings.map { it.name }.contains(memberName))
+  }
+
   fun serialize(dataStream: StubOutputStream) {
     dataStream.writeName(className)
     dataStream.writeName(packageName)

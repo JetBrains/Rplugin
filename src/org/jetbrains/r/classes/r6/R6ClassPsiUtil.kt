@@ -13,6 +13,8 @@ import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RCallExpressionImpl
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
+import org.jetbrains.r.psi.references.RSearchScopeUtil
+import org.jetbrains.r.psi.stubs.classes.LibraryClassNameIndexProvider
 
 object R6ClassPsiUtil {
 
@@ -23,8 +25,27 @@ object R6ClassPsiUtil {
   fun getSearchedIdentifier(dependantIdentifier: RIdentifierExpression?) : RPsiElement? {
     if (dependantIdentifier == null) return null
 
-    val classDefinitionCall = getClassDefinitionCallFromMemberUsage(dependantIdentifier)
-    val argumentInfo = getClassDefinitionArgumentInfo(classDefinitionCall) ?: return null
+    val classDefinitionCall = getClassDefinitionCallFromMemberUsage(dependantIdentifier) ?: return null
+    val className = R6ClassInfoUtil.getAssociatedClassNameFromR6ClassCall(classDefinitionCall) ?: return null
+    val classNamesHierarchy = R6ClassInfoUtil.getAssociatedSuperClassesHierarchy(classDefinitionCall)
+    classNamesHierarchy?.add(0, className)
+
+    val callSearchScope = RSearchScopeUtil.getScope(classDefinitionCall)
+    val project = classDefinitionCall.project
+
+    val r6ClassInfo = run findMemberDefinition@ {
+      (classNamesHierarchy)?.reversed()?.forEach {
+        val r6ClassInfo = LibraryClassNameIndexProvider.R6ClassNameIndex.findClassInfos(it, project, callSearchScope).firstOrNull()
+
+        if (r6ClassInfo != null) {
+          if (r6ClassInfo.containsMember(dependantIdentifier.name)) return@findMemberDefinition r6ClassInfo
+        }
+      }
+    } as R6ClassInfo?
+
+    r6ClassInfo ?: return null
+    val r6ClassDefinitionCall = LibraryClassNameIndexProvider.R6ClassNameIndex.findClassDefinitions(r6ClassInfo.className, project, callSearchScope).firstOrNull()
+    val argumentInfo = getClassDefinitionArgumentInfo(r6ClassDefinitionCall) ?: return null
 
     val publicMembers = getClassMemberExpressionsOfArgument(argumentInfo, R6ClassInfoUtil.argumentPublic)
     val privateMembers = getClassMemberExpressionsOfArgument(argumentInfo, R6ClassInfoUtil.argumentPrivate)

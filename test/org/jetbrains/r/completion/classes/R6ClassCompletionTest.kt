@@ -56,7 +56,7 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), "random" to "", "someField" to "", "someMethod" to "")
   }
 
-  fun testInheritedUserClass() {
+  fun testInheritedUserClassFieldsVisibility() {
     doTest("""
       ParentClass <- R6Class("ParentClass", list( someField = 0 ))
       ChildClass <- R6Class("ChildClass", inherit = ParentClass, list( add = function(x = 1) { print(x) } ))

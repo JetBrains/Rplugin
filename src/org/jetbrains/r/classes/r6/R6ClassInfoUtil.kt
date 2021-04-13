@@ -75,7 +75,7 @@ object R6ClassInfoUtil {
    * @return names of all inherited chain of parents
    */
   fun getAssociatedSuperClassesHierarchy(callExpression: RCallExpression,
-                                         argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)): List<String>? {
+                                         argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)): MutableList<String>? {
     argumentInfo ?: return null
 
     var classDeclarationExpression = callExpression
