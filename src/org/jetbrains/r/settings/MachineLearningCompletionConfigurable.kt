@@ -91,7 +91,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
           row {
             cell(isFullWidth = true) {
               label(RBundle.message("project.settings.ml.completion.host.label"))
-              textField({ settings.state.host ?: "" }, settings.state::host.setter)
+              textField({ settings.state.host ?: "" }, {}).enabled(false)
               label(RBundle.message("project.settings.ml.completion.port.label"))
               intTextField(settings.state::port, columns = PORT_FIELD_WIDTH, range = PORT_RANGE)
             }
