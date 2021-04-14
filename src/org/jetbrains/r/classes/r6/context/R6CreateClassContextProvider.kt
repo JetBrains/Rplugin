@@ -17,7 +17,7 @@ import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.psi.isFunctionFromLibrary
 
 sealed class R6CreateClassContext : ILibraryClassContext {
-  override val functionName = "R6Class"
+  override val functionName = R6ClassInfoUtil.R6CreateClassMethod
 }
 
 // R6Class(<caret>, )
@@ -48,7 +48,7 @@ class R6CreateClassContextProvider : R6ContextProvider<R6CreateClassContext>() {
     }
   }
 
-  private fun getR6ContextInner(element: RPsiElement): R6CreateClassContext? {
+  override fun getR6ContextInner(element: RPsiElement): R6CreateClassContext? {
     val parentCall = PsiTreeUtil.getParentOfType(element, RCallExpression::class.java) ?: return null
     return if (parentCall.isFunctionFromLibrary(R6ClassInfoUtil.R6CreateClassMethod, R6ClassInfoUtil.R6PackageName)) {
       val parentArgumentInfo = RParameterInfoUtil.getArgumentInfo(parentCall) ?: return null

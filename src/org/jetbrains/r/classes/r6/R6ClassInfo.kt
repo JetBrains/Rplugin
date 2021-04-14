@@ -82,3 +82,12 @@ data class R6ClassInfo(val className: String,
     }
   }
 }
+
+class R6ClassMemberProvider {
+  companion object {
+    val KeyMembers = listOf(
+      R6ClassMethod("clone", true),
+      R6ClassMethod("set", true)
+    )
+  }
+}

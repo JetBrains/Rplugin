@@ -10,7 +10,7 @@ import org.jetbrains.r.psi.api.RPsiElement
 import java.lang.reflect.ParameterizedType
 
 abstract class R6ContextProvider<T : ILibraryClassContext> {
-
+  abstract fun getR6ContextInner(element: RPsiElement): T?
   abstract fun getContext(element: RPsiElement): T?
 
   @Suppress("UNCHECKED_CAST")

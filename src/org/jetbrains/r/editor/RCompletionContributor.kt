@@ -22,6 +22,7 @@ import com.intellij.util.Processor
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.classes.r6.R6ClassInfoUtil
 import org.jetbrains.r.classes.r6.R6ClassMember
+import org.jetbrains.r.classes.r6.R6ClassMemberProvider
 import org.jetbrains.r.classes.r6.context.*
 import org.jetbrains.r.classes.s4.*
 import org.jetbrains.r.classes.s4.context.*
@@ -138,12 +139,12 @@ class RCompletionContributor : CompletionContributor() {
       override fun addCompletionStatically(rMemberExpression: RMemberExpression,
                                            shownNames: MutableSet<String>,
                                            result: CompletionResultSet): Boolean {
-        // self$member expression
         val className = R6ClassInfoUtil.getClassNameFromInternalClassMemberUsageExpression(rMemberExpression)
         if (className != null) {
           LibraryClassNameIndexProvider.R6ClassNameIndex.findClassDefinitions(className, rMemberExpression.project,
                                                                               RSearchScopeUtil.getScope(rMemberExpression)).forEach {
-            return addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it), shownNames, result)
+            addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it), shownNames, result)
+            return addMembersCompletion(R6ClassMemberProvider.KeyMembers, shownNames, result)
           }
         }
 
@@ -603,6 +604,7 @@ class RCompletionContributor : CompletionContributor() {
       val file = parameters.originalFile
       addR6ClassNameCompletion(expression, file, result)
       addR6MemberNameCompletion(expression, file, result)
+      addR6AdditionalMembersAfterCreation(expression, file, result)
     }
 
     private fun addR6ClassNameCompletion(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet) {
@@ -610,8 +612,8 @@ class RCompletionContributor : CompletionContributor() {
       val shownNames = HashSet<String>()
 
       when (r6Context) {
-        is R6CreateClassNameContext -> { // suggestion of name
-            result.addR6ClassName(classNameExpression, shownNames, file.runtimeInfo?.loadedPackages?.keys)
+        is R6CreateClassNameContext -> { // suggestion of name of `<- R6Class("")`
+            result.addR6ClassNameCompletion(classNameExpression, shownNames, file.runtimeInfo?.loadedPackages?.keys)
         }
 
         is R6CreateClassInheritContext -> TODO()
@@ -627,7 +629,37 @@ class RCompletionContributor : CompletionContributor() {
                                                      R6CreateClassContext::class.java) ?: return
     }
 
-    private fun CompletionResultSet.addR6ClassName(classNameExpression: RExpression,
+    private fun addR6AdditionalMembersAfterCreation(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet) {
+      val r6Context = R6ContextProvider.getR6Context(classNameExpression, R6SetClassMembersContext::class.java) ?: return
+      val shownNames = HashSet<String>()
+
+      when (r6Context) {
+        is R6SetClassMembersContextVisibility -> { // suggestion of name of `classObject$set("<caret>")`
+          result.addR6SetAdditionalMembersAfterCreationCompletion(classNameExpression, shownNames, file.runtimeInfo?.loadedPackages?.keys)
+        }
+
+        else -> return
+      }
+    }
+
+    private fun CompletionResultSet.addR6SetAdditionalMembersAfterCreationCompletion(classNameExpression: RExpression,
+                                                   shownNames: MutableSet<String>,
+                                                   loadedPackages: Set<String>?) {
+      val classAssignmentExpression = PsiTreeUtil.getParentOfType(classNameExpression, RAssignmentStatement::class.java) as RAssignmentStatement
+
+      val classNameToSuggest = classAssignmentExpression.assignee?.text ?: return
+      if (classNameToSuggest in shownNames) return
+      shownNames.add(classNameToSuggest)
+
+      val virtualFile = classNameExpression.containingFile.virtualFile
+      val projectDir = classNameExpression.project.guessProjectDir()
+      val location = if (virtualFile == null || projectDir == null) ""
+      else VfsUtil.getRelativePath(virtualFile, projectDir) ?: ""
+
+      addElement(rCompletionElementFactory.createQuotedLookupElement(classNameToSuggest, LANGUAGE_R6_CLASS_NAME, true, AllIcons.Nodes.Field, location))
+    }
+
+    private fun CompletionResultSet.addR6ClassNameCompletion(classNameExpression: RExpression,
                                                    shownNames: MutableSet<String>,
                                                    loadedPackages: Set<String>?) {
       val classAssignmentExpression = PsiTreeUtil.getParentOfType(classNameExpression,

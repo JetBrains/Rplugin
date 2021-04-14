@@ -23,7 +23,7 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
       MyClass <- R6Class("MyClass", list( someField = 0 ))
       obj <- MyClass${"$"}new()
       obj$<caret>
-    """.trimIndent(), "someField" to "")
+    """.trimIndent(), "clone" to "", "someField" to "")
   }
 
   fun testUserClassWithSingleFieldChainedUsage() {
@@ -31,13 +31,13 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
       MyClass <- R6Class("MyClass", list( someField = 0 ))
       obj <- MyClass${"$"}new()
       obj${'$'}someField${'$'}<caret>
-    """.trimIndent(), "someField" to "")
+    """.trimIndent(), "clone" to "", "someField" to "")
   }
 
   fun testUserClassForInternalUsage() {
     doTest("""
       MyClass <- R6Class("MyClass", list( someField = 0, add = function(x = 1) {  self$<caret> } ))
-    """.trimIndent(), "add" to "", "someField" to "")
+    """.trimIndent(), "add" to "", "clone" to "", "someField" to "")
   }
 
   fun testUserClassWithSeveralMembers() {
@@ -45,7 +45,7 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
       MyClass <- R6Class("MyClass", list( someField = 0, someMethod = function (x = 1) { print(x) } ))
       obj <- MyClass${"$"}new()
       obj$<caret>
-    """.trimIndent(), "someField" to "", "someMethod" to "")
+    """.trimIndent(), "clone" to "", "someField" to "", "someMethod" to "")
   }
 
   fun testUserClassWithFieldMethodActiveBinding() {
@@ -53,7 +53,7 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
       MyClass <- R6Class("MyClass", list( someField = 0, someMethod = function (x = 1) { print(x) }, random = function() { print('it is a random active binding') } ))
       obj <- MyClass${"$"}new()
       obj$<caret>
-    """.trimIndent(), "random" to "", "someField" to "", "someMethod" to "")
+    """.trimIndent(), "clone" to "", "random" to "", "someField" to "", "someMethod" to "")
   }
 
   fun testInheritedUserClassFieldsVisibility() {
@@ -62,13 +62,20 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
       ChildClass <- R6Class("ChildClass", inherit = ParentClass, list( add = function(x = 1) { print(x) } ))
       obj <- ChildClass${"$"}new()
       obj${'$'}someField${'$'}<caret>
-    """.trimIndent(), "add" to "", "someField" to "")
+    """.trimIndent(), "add" to "", "clone" to "", "someField" to "")
   }
 
   fun testUserClassNameSuggestion() {
     doTest("""
       MyClass <- R6Class(<caret>)
     """.trimIndent(), "MyClass" to "string", containedInSuggestions = true)
+  }
+
+  fun testSetMemberVisibilityModifierCompletionToUserClass() {
+    doTest("""
+      MyClass <- R6Class("MyClass", list(someField = 0))
+      MyClass${'$'}set(<caret>)
+    """.trimIndent(), "active" to "string", "public" to "string", "private" to "string", containedInSuggestions = true)
   }
 
   private fun doWrongVariantsTest(text: String, vararg variants: String, withRuntimeInfo: Boolean = false, inConsole: Boolean = false) {

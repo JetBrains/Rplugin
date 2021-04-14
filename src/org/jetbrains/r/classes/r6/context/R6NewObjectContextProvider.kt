@@ -31,7 +31,7 @@ class R6NewObjectContextProvider : R6ContextProvider<R6NewObjectContext>() {
     }
   }
 
-  private fun getR6ContextInner(element: RPsiElement): R6NewObjectContext? {
+  override fun getR6ContextInner(element: RPsiElement): R6NewObjectContext? {
     val parentCall = PsiTreeUtil.getParentOfType(element, RCallExpression::class.java) ?: return null
     if (!parentCall.isFunctionFromLibrary(R6ClassInfoUtil.functionNew, R6ClassInfoUtil.R6PackageName)) return null
     val parentArgumentInfo = RParameterInfoUtil.getArgumentInfo(parentCall) ?: return null
