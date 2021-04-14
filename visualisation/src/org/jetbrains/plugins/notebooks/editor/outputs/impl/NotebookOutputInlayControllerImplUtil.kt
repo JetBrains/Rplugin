@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.notebooks.editor.outputs.impl
 
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
+import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.notebooks.editor.SwingClientProperty
 import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputInlayController
 import java.awt.BorderLayout
@@ -18,3 +19,6 @@ internal val NotebookOutputInlayController.collapsingComponents: List<Collapsing
     .let { it as InnerComponent }
     .components
     .map { it as CollapsingComponent }
+
+val NotebookOutputInlayController.outputComponents: List<JComponent>
+  @TestOnly get() = collapsingComponents.map { it.mainComponent }
