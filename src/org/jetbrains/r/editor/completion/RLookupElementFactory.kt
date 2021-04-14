@@ -207,7 +207,8 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
     val priority = lookupElement.`as`(PrioritizedLookupElement.CLASS_CONDITION_KEY)?.run {
       maxOf(priority, mlVariant.score)
     } ?: mlVariant.score
-    val prioritized = createLookupElementWithPriority(lookupElement, BasicInsertHandler(), priority)
+    val prioritized = PrioritizedLookupElement.withPriority(lookupElement, priority)
+    lookupElement.copyUserDataTo(prioritized)
     return MachineLearningCompletionLookupDecorator.Merged(prioritized)
   }
 
