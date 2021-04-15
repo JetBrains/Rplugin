@@ -75,7 +75,7 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
     doTest("""
       MyClass <- R6Class("MyClass", list(someField = 0))
       MyClass${'$'}set(<caret>)
-    """.trimIndent(), "active" to "string", "public" to "string", "private" to "string", containedInSuggestions = true)
+    """.trimIndent(), "\"active\"" to "string", "\"public\"" to "string", "\"private\"" to "string", containedInSuggestions = true)
   }
 
   private fun doWrongVariantsTest(text: String, vararg variants: String, withRuntimeInfo: Boolean = false, inConsole: Boolean = false) {

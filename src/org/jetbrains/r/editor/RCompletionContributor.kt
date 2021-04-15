@@ -22,7 +22,7 @@ import com.intellij.util.Processor
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.classes.r6.R6ClassInfoUtil
 import org.jetbrains.r.classes.r6.R6ClassMember
-import org.jetbrains.r.classes.r6.R6ClassMemberProvider
+import org.jetbrains.r.classes.r6.R6ClassKeywordsProvider
 import org.jetbrains.r.classes.r6.context.*
 import org.jetbrains.r.classes.s4.*
 import org.jetbrains.r.classes.s4.context.*
@@ -143,8 +143,7 @@ class RCompletionContributor : CompletionContributor() {
         if (className != null) {
           LibraryClassNameIndexProvider.R6ClassNameIndex.findClassDefinitions(className, rMemberExpression.project,
                                                                               RSearchScopeUtil.getScope(rMemberExpression)).forEach {
-            addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it), shownNames, result)
-            return addMembersCompletion(R6ClassMemberProvider.KeyMembers, shownNames, result)
+            return addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it) + R6ClassKeywordsProvider.predefinedClassMethods, shownNames, result)
           }
         }
 
@@ -635,28 +634,24 @@ class RCompletionContributor : CompletionContributor() {
 
       when (r6Context) {
         is R6SetClassMembersContextVisibility -> { // suggestion of name of `classObject$set("<caret>")`
-          result.addR6SetAdditionalMembersAfterCreationCompletion(classNameExpression, shownNames, file.runtimeInfo?.loadedPackages?.keys)
+          result.addR6SetAdditionalMembersAfterCreationCompletion(classNameExpression, shownNames)
         }
 
         else -> return
       }
     }
 
-    private fun CompletionResultSet.addR6SetAdditionalMembersAfterCreationCompletion(classNameExpression: RExpression,
-                                                   shownNames: MutableSet<String>,
-                                                   loadedPackages: Set<String>?) {
-      val classAssignmentExpression = PsiTreeUtil.getParentOfType(classNameExpression, RAssignmentStatement::class.java) as RAssignmentStatement
-
-      val classNameToSuggest = classAssignmentExpression.assignee?.text ?: return
-      if (classNameToSuggest in shownNames) return
-      shownNames.add(classNameToSuggest)
-
+    private fun CompletionResultSet.addR6SetAdditionalMembersAfterCreationCompletion(classNameExpression: RExpression, shownNames: MutableSet<String>) {
       val virtualFile = classNameExpression.containingFile.virtualFile
       val projectDir = classNameExpression.project.guessProjectDir()
       val location = if (virtualFile == null || projectDir == null) ""
       else VfsUtil.getRelativePath(virtualFile, projectDir) ?: ""
 
-      addElement(rCompletionElementFactory.createQuotedLookupElement(classNameToSuggest, LANGUAGE_R6_CLASS_NAME, true, AllIcons.Nodes.Field, location))
+      R6ClassKeywordsProvider.visibilityModifiers.forEach { visibilityModifier ->
+        if (visibilityModifier in shownNames) return
+        shownNames.add(visibilityModifier)
+        addElement(rCompletionElementFactory.createQuotedLookupElement(visibilityModifier, LANGUAGE_R6_CLASS_NAME, true, AllIcons.Nodes.Field, location))
+      }
     }
 
     private fun CompletionResultSet.addR6ClassNameCompletion(classNameExpression: RExpression,

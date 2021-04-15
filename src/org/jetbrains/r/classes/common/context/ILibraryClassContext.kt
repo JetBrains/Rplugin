@@ -11,6 +11,6 @@ import org.jetbrains.r.psi.api.RPsiElement
 interface ILibraryClassContext {
   val functionName: String
   val functionCall: RCallExpression
-  val argumentInfo: RArgumentInfo
+  val argumentInfo: RArgumentInfo?
   val originalElement: RPsiElement
 }

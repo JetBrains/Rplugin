@@ -83,11 +83,16 @@ data class R6ClassInfo(val className: String,
   }
 }
 
-class R6ClassMemberProvider {
+class R6ClassKeywordsProvider {
   companion object {
-    val KeyMembers = listOf(
-      R6ClassMethod("clone", true),
-      R6ClassMethod("set", true)
+    val predefinedClassMethods = listOf(
+      R6ClassMethod("clone", true)
+    )
+
+    val visibilityModifiers = listOf(
+      R6ClassInfoUtil.argumentPrivate,
+      R6ClassInfoUtil.argumentPublic,
+      R6ClassInfoUtil.argumentActive,
     )
   }
 }
