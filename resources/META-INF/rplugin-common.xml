@@ -737,7 +737,7 @@ You can find the source code in the following repositories:
 
         <!-- R6 contexts -->
         <r6ContextProvider implementation="org.jetbrains.r.classes.r6.context.R6CreateClassContextProvider" />
-        <r6ContextProvider implementation="org.jetbrains.r.classes.r6.context.R6NewObjectContextProvider" />
+        <r6ContextProvider implementation="org.jetbrains.r.classes.r6.context.R6SetClassMembersContextProvider" />
 
       <notificationGroup id="RDataFrameViewer" displayType="BALLOON"/>
       <notificationGroup id="RMarkdownRenderError" displayType="BALLOON"/>
