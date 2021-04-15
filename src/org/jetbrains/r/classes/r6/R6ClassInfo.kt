@@ -75,12 +75,6 @@ data class R6ClassInfo(val className: String,
       return R6ClassInfo(className, packageName, superClasses, fields, methods, activeBindings)
     }
   }
-
-  override fun toString() : String {
-    return buildString {
-      // TODO build string from R6ClassInfo
-    }
-  }
 }
 
 class R6ClassKeywordsProvider {
