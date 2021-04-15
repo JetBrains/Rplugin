@@ -602,7 +602,6 @@ class RCompletionContributor : CompletionContributor() {
       val expression = PsiTreeUtil.getParentOfType(parameters.position, RExpression::class.java, false) ?: return
       val file = parameters.originalFile
       addR6ClassNameCompletion(expression, file, result)
-      addR6MemberNameCompletion(expression, file, result)
       addR6AdditionalMembersAfterCreation(expression, file, result)
     }
 
@@ -615,17 +614,8 @@ class RCompletionContributor : CompletionContributor() {
             result.addR6ClassNameCompletion(classNameExpression, shownNames, file.runtimeInfo?.loadedPackages?.keys)
         }
 
-        is R6CreateClassInheritContext -> TODO()
-        is R6CreateClassMembersContext -> TODO()
-
         else -> return
       }
-    }
-
-    private fun addR6MemberNameCompletion(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet) {
-      val r6Context = R6ContextProvider.getR6Context(classNameExpression,
-                                                     R6NewObjectContext::class.java,
-                                                     R6CreateClassContext::class.java) ?: return
     }
 
     private fun addR6AdditionalMembersAfterCreation(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet) {
