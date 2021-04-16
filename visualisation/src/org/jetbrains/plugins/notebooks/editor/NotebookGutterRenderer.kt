@@ -100,9 +100,9 @@ class NotebookGutterRenderer {
             ?.lines
             ?.takeIf { line in it }
           val reattach =
-            previousLines
-              ?.let { actualLines == null || !(actualLines hasIntersectionWith it) }
-              ?: actualLines != null
+            (previousLines
+               ?.let { actualLines == null || !(actualLines hasIntersectionWith it) }
+             ?: actualLines) != null
           if (reattach) {
             previousLines = actualLines
             instance.reattachHighlighter(editor)

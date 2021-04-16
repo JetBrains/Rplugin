@@ -39,7 +39,7 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
   fun getFileId(file: VirtualFile): String {
     fileToId[file]?.let { return it }
     val fileId = rInterop.interpreter.getFilePathAtHost(file)?.let { R_LOCAL_PREFIX + it }
-                 ?: IDE_PREFIX + file.url
+                 ?: (IDE_PREFIX + file.url)
     fileToId[file] = fileId
     files[fileId] = file
     return fileId

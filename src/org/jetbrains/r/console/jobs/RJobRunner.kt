@@ -67,7 +67,7 @@ class RJobRunner(private val project: Project) {
           override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
             if (rInterop.isAlive) {
               val variableName = if (task.exportGlobalEnv == ExportGlobalEnvPolicy.EXPORT_TO_VARIABLE)
-                exportEnvName ?: task.script.nameWithoutExtension + "_results"
+                exportEnvName ?: (task.script.nameWithoutExtension + "_results")
               else ""
               rInterop.loadEnvironment(exportRDataFile, variableName).then {
                 console.debuggerPanel?.onCommandExecuted()
