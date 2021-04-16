@@ -8,7 +8,7 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.util.ui.JBUI
-import icons.VisualisationIcons
+import com.intellij.util.ui.UIUtil
 import org.intellij.datavis.r.inlays.ResizeController
 import org.jetbrains.plugins.notebooks.editor.notebookAppearance
 import java.awt.*
@@ -95,9 +95,11 @@ internal class CollapsingComponent(
         )
       }
 
-      val icon = if (isSeen) VisualisationIcons.OutputCollapse else VisualisationIcons.OutputExpand
+      val icon = if (isSeen) UIUtil.getTreeExpandedIcon() else UIUtil.getTreeCollapsedIcon()
       val iconOffset = (COLLAPSING_RECT_WIDTH - icon.iconWidth) / 2
-      icon.paintIcon(this, g, x + iconOffset, yOffset + y + COLLAPSING_RECT_MARGIN_Y_BOTTOM + iconOffset)
+
+      // +1 -- just because the icons are not centered.
+      icon.paintIcon(this, g, x + iconOffset + 1, yOffset + y + COLLAPSING_RECT_MARGIN_Y_BOTTOM + iconOffset)
     }
   }
 
