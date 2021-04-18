@@ -21,7 +21,7 @@ import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.classes.r6.R6ClassInfoUtil
-import org.jetbrains.r.classes.r6.R6ClassMember
+import org.jetbrains.r.classes.r6.IR6ClassMember
 import org.jetbrains.r.classes.r6.R6ClassKeywordsProvider
 import org.jetbrains.r.classes.r6.context.*
 import org.jetbrains.r.classes.s4.*
@@ -150,7 +150,7 @@ class RCompletionContributor : CompletionContributor() {
         return false
       }
 
-      private fun addMembersCompletion(r6ClassMembers: List<R6ClassMember>?,
+      private fun addMembersCompletion(r6ClassMembers: List<IR6ClassMember>?,
                                        shownNames: MutableSet<String>,
                                        result: CompletionResultSet): Boolean {
         var hasNewResults = false

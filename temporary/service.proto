@@ -890,14 +890,9 @@ message ShortS4ClassInfoList {
 }
 
 message R6ClassInfo {
-  message R6ClassField {
+  message R6ClassMember {
     string name = 1;
-    bool isPublic = 3;
-  }
-
-  message R6ClassMethod {
-    string name = 1;
-    bool isPublic = 3;
+    bool isPublic = 2;
   }
 
   message R6ClassActiveBinding {
@@ -905,18 +900,14 @@ message R6ClassInfo {
   }
 
   string className = 1;
-  string packageName = 2;
-  string superClass = 3;
-  repeated R6ClassField fields = 4;
-  repeated R6ClassField methods = 5;
-  repeated R6ClassField activeBindings = 6;
+  repeated string superClasses = 2;
+  repeated R6ClassMember members = 3;
+  repeated R6ClassActiveBinding activeBindings = 4;
 }
 
 message ShortR6ClassInfoList {
   message ShortR6ClassInfo {
     string name = 1;
-    string package = 2;
-    bool isVirtual = 3;
   }
 
   repeated ShortR6ClassInfo shortR6ClassInfos = 1;

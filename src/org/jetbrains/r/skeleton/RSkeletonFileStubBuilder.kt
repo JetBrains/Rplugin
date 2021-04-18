@@ -8,10 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.stubs.BinaryFileStubBuilder
 import com.intellij.psi.stubs.Stub
 import com.intellij.util.indexing.FileContent
-import org.jetbrains.r.classes.r6.R6ClassActiveBinding
-import org.jetbrains.r.classes.r6.R6ClassField
-import org.jetbrains.r.classes.r6.R6ClassInfo
-import org.jetbrains.r.classes.r6.R6ClassMethod
+import org.jetbrains.r.classes.r6.*
 import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.classes.s4.RS4ClassSlot
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
@@ -54,10 +51,8 @@ class RSkeletonFileStubBuilder : BinaryFileStubBuilder {
                                       R_SKELETON_CALL_EXPRESSION,
                                       null,
                                       R6ClassInfo(symbol.name,
-                                                  r6ClassRepresentation.packageName,
                                                   r6ClassRepresentation.superClassesList,
-                                                  r6ClassRepresentation.fieldsList.map { R6ClassField(it.name, it.isPublic) },
-                                                  r6ClassRepresentation.methodsList.map { R6ClassMethod(it.name, it.isPublic) },
+                                                  r6ClassRepresentation.membersList.map { R6ClassMember(it.name, it.isPublic) },
                                                   r6ClassRepresentation.activeBindingsList.map { R6ClassActiveBinding(it.name) }))
         }
 
