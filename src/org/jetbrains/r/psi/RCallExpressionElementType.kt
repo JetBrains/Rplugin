@@ -19,8 +19,6 @@ import org.jetbrains.r.psi.stubs.RCallExpressionStub
 import org.jetbrains.r.psi.stubs.RCallExpressionStubImpl
 import org.jetbrains.r.psi.stubs.RStubElementType
 import org.jetbrains.r.psi.stubs.classes.LibraryClassNameIndexProvider
-import org.jetbrains.r.psi.stubs.classes.R6ClassNameIndex
-import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
 import java.io.IOException
 
 class RCallExpressionElementType(debugName: String) : RStubElementType<RCallExpressionStub, RCallExpression>(debugName) {

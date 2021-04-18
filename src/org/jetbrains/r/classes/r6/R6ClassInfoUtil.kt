@@ -46,7 +46,7 @@ object R6ClassInfoUtil {
   fun getAssociatedClassNameFromInstantiationCall(call: RCallExpression): String? {
     val callExpression = call.expression as? RMemberExpressionImpl ?: return null
     if (callExpression.rightExpr?.text != functionNew) return null
-    return callExpression.leftExpr?.text
+    return callExpression.leftExpr?.name
   }
 
   /**
@@ -67,8 +67,8 @@ object R6ClassInfoUtil {
                                             argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)): String? {
     argumentInfo ?: return null
     if (!callExpression.isFunctionFromLibrarySoft(R6CreateClassMethod, R6PackageName)) return null
-    val arg = argumentInfo.getArgumentPassedToParameter(argumentClassName) as? RStringLiteralExpression
-    return arg?.name
+    val rAssignmentStatement = callExpression.parent as? RAssignmentStatement ?: return null
+    return rAssignmentStatement.assignee?.name
   }
 
   /**

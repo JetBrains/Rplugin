@@ -133,16 +133,28 @@ class RCompletionContributor : CompletionContributor() {
                                             shownNames: MutableSet<String>,
                                             result: CompletionResultSet,
                                             runtimeInfo: RConsoleRuntimeInfo): Boolean {
-        TODO("Not yet implemented")
+        val obj = psiElement.leftExpr ?: return false
+        // obj$<caret>
+        // env$obj$<caret>
+        if (obj !is RIdentifierExpression &&
+            (obj !is RMemberExpression || obj.rightExpr !is RIdentifierExpression)) {
+          return false
+        }
+
+        val text = obj.text
+        runtimeInfo.loadR6ClassInfoByObjectName(text)?.let { info ->
+          return addMembersCompletion(info.members + info.activeBindings, shownNames, result)
+        }
+        return false
       }
 
-      override fun addCompletionStatically(rMemberExpression: RMemberExpression,
+      override fun addCompletionStatically(psiElement: RMemberExpression,
                                            shownNames: MutableSet<String>,
                                            result: CompletionResultSet): Boolean {
-        val className = R6ClassInfoUtil.getClassNameFromInternalClassMemberUsageExpression(rMemberExpression)
+        val className = R6ClassInfoUtil.getClassNameFromInternalClassMemberUsageExpression(psiElement)
         if (className != null) {
-          LibraryClassNameIndexProvider.R6ClassNameIndex.findClassDefinitions(className, rMemberExpression.project,
-                                                                              RSearchScopeUtil.getScope(rMemberExpression)).forEach {
+          LibraryClassNameIndexProvider.R6ClassNameIndex.findClassDefinitions(className, psiElement.project,
+                                                                              RSearchScopeUtil.getScope(psiElement)).forEach {
             return addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it) + R6ClassKeywordsProvider.predefinedClassMethods, shownNames, result)
           }
         }

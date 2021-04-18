@@ -890,7 +890,6 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     return try {
       val res = executeWithCheckCancel(asyncStub::getR6ClassInfoByObjectName, ref.proto)
       R6ClassInfo(res.className, res.superClassesList, res.membersList.map { R6ClassMember(it.name, it.isPublic) }, res.activeBindingsList.map { R6ClassActiveBinding(it.name) })
-      null
     } catch (e: RInteropTerminated) {
       null
     }
