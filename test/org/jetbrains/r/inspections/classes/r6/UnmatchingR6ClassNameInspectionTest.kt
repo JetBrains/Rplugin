@@ -6,7 +6,6 @@ package org.jetbrains.r.inspections.classes.r6
 
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.inspections.RInspectionTest
-import org.jetbrains.r.inspections.classes.s4.InstanceOfVirtualS4ClassInspection
 
 class UnmatchingR6ClassNameInspectionTest : RInspectionTest() {
   override fun setUp() {

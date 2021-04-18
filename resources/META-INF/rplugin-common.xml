@@ -683,13 +683,19 @@ You can find the source code in the following repositories:
                        bundle="messages.RPluginBundle" key="inspection.deprecated.double.starts.name"
                        implementationClass="org.jetbrains.r.inspections.DeprecatedDoubleStarts"/>
 
+      <!-- S4 Inspections -->
         <localInspection shortName="RDeprecatedSetClassArgsInspection" language="R" enabledByDefault="true" groupName="R"
                          bundle="messages.RPluginBundle" key="inspection.deprecated.setClass.args.name"
-                         implementationClass="org.jetbrains.r.inspections.s4class.DeprecatedSetClassArgsInspection"/>
+                         implementationClass="org.jetbrains.r.inspections.classes.s4.DeprecatedSetClassArgsInspection"/>
 
         <localInspection shortName="RInstanceOfVirtualS4ClassInspection" language="R" enabledByDefault="true" groupName="R"
                          bundle="messages.RPluginBundle" key="inspection.virtual.s4class.instance.name"
-                         implementationClass="org.jetbrains.r.inspections.s4class.InstanceOfVirtualS4ClassInspection"/>
+                         implementationClass="org.jetbrains.r.inspections.classes.s4.InstanceOfVirtualS4ClassInspection"/>
+
+      <!-- R6 Inspections -->
+        <localInspection shortName="UnmatchingR6ClassNameInspection" language="R" enabledByDefault="true" groupName="R"
+                       bundle="messages.RPluginBundle" key="inspection.r6class.naming.convention.classname"
+                       implementationClass="org.jetbrains.r.inspections.classes.r6.UnmatchingR6ClassNameInspection"/>
 
         <intentionAction>
             <category>R</category>
