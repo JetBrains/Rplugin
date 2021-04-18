@@ -1,11 +1,11 @@
 /*
- * Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ * Copyright 2000-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.inspections
+package org.jetbrains.r.inspections.classes.s4
 
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.inspections.s4class.DeprecatedSetClassArgsInspection
+import org.jetbrains.r.inspections.RInspectionTest
 
 class DeprecatedSetClassArgsInspectionTest : RInspectionTest() {
 
