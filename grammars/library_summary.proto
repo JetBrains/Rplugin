@@ -38,22 +38,18 @@ message RLibrarySymbol {
   }
 
   message R6ClassRepresentation {
-    message R6ClassField {
+    message R6ClassMember {
       string name = 1;
-      bool isPublic = 3;
+      bool isPublic = 2;
     }
-    message R6ClassMethod {
-      string name = 1;
-      bool isPublic = 3;
-    }
+
     message R6ClassActiveBinding {
       string name = 1;
     }
-    string packageName = 1;
+
     repeated string superClasses = 2;
-    repeated R6ClassField fields = 3;
-    repeated R6ClassField methods = 4;
-    repeated R6ClassField activeBindings = 5;
+    repeated R6ClassMember members = 3;
+    repeated R6ClassActiveBinding activeBindings = 4;
   }
 
   string name = 1;
