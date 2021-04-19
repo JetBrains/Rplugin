@@ -80,7 +80,7 @@ class MachineLearningCompletionServerService : Disposable {
                                             "--port=$port")
           .redirectOutput(ProcessBuilder.Redirect.DISCARD)
           .redirectError(ProcessBuilder.Redirect.DISCARD)
-          .directory(File(completionFiles.localServerModelDirectory!!))
+          .directory(File(completionFiles.localServerDirectory!!))
         processBuilder.environment()
           .putAll(MachineLearningCompletionLocalServerVariables.SERVER_ENVIRONMENT)
         localServer = processBuilder.start()
