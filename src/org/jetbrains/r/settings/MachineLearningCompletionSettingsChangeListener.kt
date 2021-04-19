@@ -19,7 +19,7 @@ fun interface MachineLearningCompletionSettingsChangeListener {
     }
 
     private fun subscribeToDefaultTopic(listener: MachineLearningCompletionSettingsChangeListener,
-                                        parentDisposable: Disposable?) =
+                                        parentDisposable: Disposable?): Unit =
       ApplicationManager.getApplication().messageBus.run {
         if (parentDisposable == null) connect() else connect(parentDisposable)
       }.subscribe(R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC, listener)
@@ -28,7 +28,7 @@ fun interface MachineLearningCompletionSettingsChangeListener {
   fun settingsChanged(beforeState: MachineLearningCompletionSettings.State,
                       afterState: MachineLearningCompletionSettings.State)
 
-  fun subscribe() = subscribeToDefaultTopic(this, null)
+  fun subscribe(): Unit = subscribeToDefaultTopic(this, null)
 
-  fun subscribe(parentDisposable: Disposable) = subscribeToDefaultTopic(this, parentDisposable)
+  fun subscribe(parentDisposable: Disposable): Unit = subscribeToDefaultTopic(this, parentDisposable)
 }

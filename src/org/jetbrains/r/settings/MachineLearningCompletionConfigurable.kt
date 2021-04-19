@@ -21,6 +21,7 @@ import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionNotif
 import java.awt.Component
 import java.awt.event.ActionEvent
 import javax.swing.AbstractAction
+import javax.swing.JButton
 import javax.swing.JLabel
 
 
@@ -57,7 +58,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
 
   private val modality = ModalityState.current()
 
-  private fun invokeLaterWithTabModality(action: () -> Unit) = ApplicationManager.getApplication().invokeLater(action, modality)
+  private fun invokeLaterWithTabModality(action: () -> Unit): Unit = ApplicationManager.getApplication().invokeLater(action, modality)
 
   override fun createPanel(): DialogPanel {
     return panel {
@@ -147,7 +148,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     MachineLearningCompletionSettingsChangeListener.notifySettingsChanged(beforeState, settings.state)
   }
 
-  private fun Cell.checkForUpdatesButton() = button(RBundle.message("project.settings.ml.completion.button.checkForUpdates")) {
+  private fun Cell.checkForUpdatesButton(): CellBuilder<JButton> = button(RBundle.message("project.settings.ml.completion.button.checkForUpdates")) {
     MachineLearningCompletionDownloadModelService.getInstance()
       .initiateUpdateCycle(isModal = true, reportIgnored = true, { showFailedToCheckForUpdatesDialog() }) { (artifacts, size) ->
         if (artifacts.isNotEmpty()) {
@@ -170,7 +171,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
   })
 
   private fun showUpdateDialog(artifacts: List<MachineLearningCompletionRemoteArtifact>,
-                               size: Long) =
+                               size: Long): Unit =
     dialog(displayName,
            panel = panel {
              row {
@@ -186,7 +187,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
            }
     ).showUpdateDialog()
 
-  private fun showInfoDialog(text: String) =
+  private fun showInfoDialog(text: String): Unit =
     dialog(displayName,
            panel = panel {
              row {
@@ -196,10 +197,10 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
            createActions = { listOf(ButtonAction(CommonBundle.getOkButtonText(), DialogWrapper.OK_EXIT_CODE)) }
     ).show()
 
-  private fun showNoAvailableUpdateDialog() =
+  private fun showNoAvailableUpdateDialog(): Unit =
     showInfoDialog(RBundle.message("project.settings.ml.completion.dialog.noUpdates"))
 
-  private fun showFailedToCheckForUpdatesDialog() =
+  private fun showFailedToCheckForUpdatesDialog(): Unit =
     showInfoDialog(IdeBundle.message("error.occurred.please.check.your.internet.connection"))
 
   private class ButtonAction(name: String,

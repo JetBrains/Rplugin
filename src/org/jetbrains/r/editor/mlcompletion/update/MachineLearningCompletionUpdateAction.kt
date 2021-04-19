@@ -65,7 +65,7 @@ class MachineLearningCompletionUpdateAction(val project: Project?,
         releaseFlagCallback()
       }
 
-      override fun onCancel() = releaseFlagCallback()
+      override fun onCancel(): Unit = releaseFlagCallback()
     }
   }
 
@@ -78,14 +78,14 @@ class MachineLearningCompletionUpdateAction(val project: Project?,
     val downloadTaskTitle = RBundle.message("rmlcompletion.task.download", artifactName)
     return object : MachineLearningCompletionDownloadModelService.DownloadArtifactTask(artifact, artifactTempFile, project,
                                                                                        downloadTaskTitle) {
-      override fun onSuccess() = unzipTask.queue()
+      override fun onSuccess(): Unit = unzipTask.queue()
 
       override fun onThrowable(error: Throwable) {
         MachineLearningCompletionNotifications.notifyUpdateFailed(project, artifact)
         releaseFlagCallback()
       }
 
-      override fun onCancel() = releaseFlagCallback()
+      override fun onCancel(): Unit = releaseFlagCallback()
     }
   }
 }

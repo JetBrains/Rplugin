@@ -31,6 +31,6 @@ class MachineLearningCompletionProjectOpenListener : ProjectManagerListener {
     }
   }
 
-  private fun isNotRProject(project: Project) =
+  private fun isNotRProject(project: Project): Boolean =
     ProjectFileIndex.getInstance(project).iterateContent { it.fileType != RFileType }
 }

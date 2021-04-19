@@ -69,7 +69,7 @@ class MachineLearningCompletionServerService : Disposable {
     return settings.state.isEnabled
   }
 
-  private fun launchServer(host: String, port: Int) = completionFilesService.tryRunActionOnFiles { completionFiles ->
+  private fun launchServer(host: String, port: Int): Boolean = completionFilesService.tryRunActionOnFiles { completionFiles ->
     completionFiles.localServerAppExecutableFile?.let { appFile ->
       try {
         setExecutablePermission(appFile)
@@ -102,7 +102,7 @@ class MachineLearningCompletionServerService : Disposable {
     }
   }
 
-  fun shutdownServer() = localServer?.run {
+  fun shutdownServer(): Unit? = localServer?.run {
     descendants().forEach(ProcessHandle::destroy)
     destroy()
   }

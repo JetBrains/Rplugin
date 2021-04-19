@@ -20,7 +20,7 @@ class MachineLearningCompletionDownloadModelService {
 
     private fun <T> submitBackgroundJob(job: () -> T,
                                         onThrowableCallback: ((Throwable) -> Unit)?,
-                                        onSuccessCallback: (T) -> Unit) =
+                                        onSuccessCallback: (T) -> Unit): Unit =
       AppExecutorUtil.getAppExecutorService().execute {
         try {
           onSuccessCallback(job())
@@ -34,7 +34,7 @@ class MachineLearningCompletionDownloadModelService {
     private fun <T : Any> submitModalJob(job: () -> T,
                                          title: String = "",
                                          onThrowableCallback: ((Throwable) -> Unit)?,
-                                         onSuccessCallback: (T) -> Unit) =
+                                         onSuccessCallback: (T) -> Unit): Unit =
       object : Task.Modal(null, title, true) {
 
         private lateinit var result: T
@@ -67,9 +67,9 @@ class MachineLearningCompletionDownloadModelService {
     }
   }
 
-  private fun getAllArtifactsToDownloadWithSize() = getArtifactsToDownloadWithSize(true)
+  private fun getAllArtifactsToDownloadWithSize(): ArtifactsWithSize = getArtifactsToDownloadWithSize(true)
 
-  private fun getArtifactsToDownloadWithSize() = getArtifactsToDownloadWithSize(false)
+  private fun getArtifactsToDownloadWithSize(): ArtifactsWithSize = getArtifactsToDownloadWithSize(false)
 
   private fun getArtifactsToDownloadWithSize(reportIgnored: Boolean): ArtifactsWithSize {
     val artifacts = getArtifactsToDownload().takeIf { artifacts ->
@@ -104,7 +104,7 @@ class MachineLearningCompletionDownloadModelService {
     project: Project?,
     title: String
   ) : Task.Backgroundable(project, title, true) {
-    override fun run(indicator: ProgressIndicator) =
+    override fun run(indicator: ProgressIndicator): Unit =
       HttpRequests.request(artifact.latestArtifactUrl).saveToFile(artifactLocalFile, indicator)
   }
 

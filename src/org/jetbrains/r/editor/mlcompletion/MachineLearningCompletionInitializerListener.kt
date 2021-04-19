@@ -20,7 +20,7 @@ class MachineLearningCompletionInitializerListener : AppLifecycleListener {
     }
   }
 
-  private fun registerOnEnabledListener() = MachineLearningCompletionSettingsChangeListener { beforeState, afterState ->
+  private fun registerOnEnabledListener(): Unit = MachineLearningCompletionSettingsChangeListener { beforeState, afterState ->
     val becameEnabled = !beforeState.isEnabled && afterState.isEnabled
     if (!becameEnabled || !MachineLearningCompletionUpdateAction.canInitiateUpdateAction.get()) {
       return@MachineLearningCompletionSettingsChangeListener

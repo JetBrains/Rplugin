@@ -75,7 +75,7 @@ class MachineLearningCompletionModelFilesService {
     private val deleteLocalFileOnFinish: Boolean = true,
     ): Task.Backgroundable(project, progressTitle, true) {
 
-    override fun run(indicator: ProgressIndicator) = getInstance().updateArtifact(indicator, artifact, artifactZipFile.toFile())
+    override fun run(indicator: ProgressIndicator): Unit = getInstance().updateArtifact(indicator, artifact, artifactZipFile.toFile())
 
     override fun onFinished() {
       if (deleteLocalFileOnFinish) {
@@ -84,7 +84,7 @@ class MachineLearningCompletionModelFilesService {
     }
   }
 
-  fun updateArtifact(progress: ProgressIndicator, artifact: MachineLearningCompletionLocalArtifact, zipFile: File) =
+  fun updateArtifact(progress: ProgressIndicator, artifact: MachineLearningCompletionLocalArtifact, zipFile: File): Unit =
     artifact.lock.withLock {
       MachineLearningCompletionModelFiles.updateArtifactFromArchive(progress, artifact, zipFile)
       artifact.localVersionProperty.reset()
@@ -114,7 +114,7 @@ class MachineLearningCompletionModelFilesService {
     }
   }
 
-  fun validate(artifact: MachineLearningCompletionLocalArtifact) =
+  fun validate(artifact: MachineLearningCompletionLocalArtifact): Boolean =
     artifact.lock.withLock {
       when (artifact) {
         is MachineLearningCompletionLocalArtifact.Model -> MachineLearningCompletionModelFiles.modelAvailable()
