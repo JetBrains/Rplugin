@@ -78,6 +78,15 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), "\"active\"" to "string", "\"public\"" to "string", "\"private\"" to "string", containedInSuggestions = true)
   }
 
+  fun testConsoleMembersSuggestion() {
+    rInterop.executeCode("""
+      library(R6)
+      MyClass <- R6Class("MyClass", list( someField = 0, someMethod = function (x = 1) { print(x) }, random = function() { print('it is a random active binding') } ))
+      obj <- MyClass${'$'}new()
+    """.trimIndent())
+    doTest("obj${'$'}<caret>", "clone" to "", "random" to "", "someField" to "", "someMethod" to "", withRuntimeInfo = true, inConsole = true, containedInSuggestions = true)
+  }
+
   private fun doWrongVariantsTest(text: String, vararg variants: String, withRuntimeInfo: Boolean = false, inConsole: Boolean = false) {
     val result = doTestBase(text, withRuntimeInfo, inConsole)
     assertNotNull(result)
