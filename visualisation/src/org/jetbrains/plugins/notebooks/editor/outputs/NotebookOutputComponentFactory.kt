@@ -8,7 +8,7 @@ import java.awt.Graphics
 import java.awt.Rectangle
 import javax.swing.JComponent
 
-interface NotebookOutputComponentFactory {
+interface NotebookOutputComponentFactory<C : JComponent, K : NotebookOutputDataKey> {
   /** Result type of [match]. Not intended to be used elsewhere. */
   enum class Match { NONE, COMPATIBLE, SAME }
 
@@ -39,14 +39,18 @@ interface NotebookOutputComponentFactory {
    *
    * [disposable] will be disposed when system destroys component. Default value is [component] itself if it implements [Disposable]
    */
-  data class CreatedComponent(
-    val component: JComponent,
+  data class CreatedComponent<C : JComponent> (
+    val component: C,
     val widthStretching: WidthStretching,
     val gutterPainter: GutterPainter?,
     val limitHeight: Boolean,
     val collapsedTextSupplier: () -> @Nls String,
     val disposable: Disposable? = component as? Disposable
   )
+
+  val componentClass: Class<C>
+
+  val outputDataKeyClass: Class<K>
 
   /**
    * Check if the [component] can update it's content with the [outputDataKey].
@@ -56,20 +60,20 @@ interface NotebookOutputComponentFactory {
    *  [Match.COMPATIBLE] if the [component] can represent the [outputDataKey] by calling [updateComponent].
    *  [Match.SAME] if the [component] already represents the [outputDataKey], and call of [updateComponent] would change nothing.
    */
-  fun match(component: JComponent, outputDataKey: NotebookOutputDataKey): Match
+  fun match(component: C, outputDataKey: K): Match
 
   /**
    * Updates the data representing by the component. Can never be called if [match] with the same arguments returned [Match.NONE].
    */
-  fun updateComponent(editor: EditorImpl, component: JComponent, outputDataKey: NotebookOutputDataKey)
+  fun updateComponent(editor: EditorImpl, component: C, outputDataKey: K)
 
   /**
    * May return `null` if the factory can't create any component for specific subtype of [NotebookOutputDataKey].
    */
-  fun createComponent(editor: EditorImpl, output: NotebookOutputDataKey): CreatedComponent?
+  fun createComponent(editor: EditorImpl, output: K): CreatedComponent<C>?
 
   companion object {
-    val EP_NAME: ExtensionPointName<NotebookOutputComponentFactory> =
+    val EP_NAME: ExtensionPointName<NotebookOutputComponentFactory<out JComponent, out NotebookOutputDataKey>> =
       ExtensionPointName.create("org.jetbrains.plugins.notebooks.editor.outputs.notebookOutputComponentFactory")
 
     var JComponent.gutterPainter: GutterPainter?

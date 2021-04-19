@@ -2,6 +2,9 @@ package org.jetbrains.plugins.notebooks.editor.outputs
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorImpl
@@ -97,14 +100,14 @@ class NotebookOutputInlayController private constructor(
   private fun rankCompatibility(outputDataKeys: List<NotebookOutputDataKey>): Int =
     getComponentsWithFactories().zip(outputDataKeys).sumBy { (pair, outputDataKey) ->
       val (component, factory) = pair
-      when (factory.match(component, outputDataKey)) {
+      when (factory.matchWithTypes(component, outputDataKey)) {
         NotebookOutputComponentFactory.Match.NONE -> 0
         NotebookOutputComponentFactory.Match.COMPATIBLE -> 1
         NotebookOutputComponentFactory.Match.SAME -> 1000
       }
     }
 
-  private fun getComponentsWithFactories() = mutableListOf<Pair<JComponent, NotebookOutputComponentFactory>>().also {
+  private fun getComponentsWithFactories() = mutableListOf<Pair<JComponent, NotebookOutputComponentFactory<*, *>>>().also {
     for (component in innerComponent.mainComponents) {
       val factory = component.outputComponentFactory
       if (factory != null) {
@@ -113,15 +116,24 @@ class NotebookOutputInlayController private constructor(
     }
   }
 
+  private fun <C : JComponent, K : NotebookOutputDataKey> NotebookOutputComponentFactory<C, K>.matchWithTypes(
+    component: JComponent, outputDataKey: NotebookOutputDataKey,
+  ) =
+    when {
+      !componentClass.isAssignableFrom(component.javaClass) -> NotebookOutputComponentFactory.Match.NONE  // TODO Is the method right?
+      !outputDataKeyClass.isAssignableFrom(outputDataKey.javaClass) -> NotebookOutputComponentFactory.Match.NONE
+      else -> @Suppress("UNCHECKED_CAST") match(component as C, outputDataKey as K)
+    }
+
   private fun updateData(newDataKeys: List<NotebookOutputDataKey>): Boolean {
     val newDataKeyIterator = newDataKeys.iterator()
     val oldComponentsWithFactories = getComponentsWithFactories().iterator()
     var isFilled = false
     for ((idx, pair1) in newDataKeyIterator.zip(oldComponentsWithFactories).withIndex()) {
       val (newDataKey, pair2) = pair1
-      val (oldComponent, oldFactory: NotebookOutputComponentFactory) = pair2
+      val (oldComponent: JComponent, oldFactory: NotebookOutputComponentFactory<*, *>) = pair2
       isFilled =
-        when (oldFactory.match(oldComponent, newDataKey)) {
+        when (oldFactory.matchWithTypes(oldComponent, newDataKey)) {
           NotebookOutputComponentFactory.Match.NONE -> {
             innerComponent.remove(idx)
             oldComponent.disposeComponent()
@@ -133,6 +145,7 @@ class NotebookOutputInlayController private constructor(
             else false
           }
           NotebookOutputComponentFactory.Match.COMPATIBLE -> {
+            @Suppress("UNCHECKED_CAST") (oldFactory as NotebookOutputComponentFactory<JComponent, NotebookOutputDataKey>)
             oldFactory.updateComponent(editor, oldComponent, newDataKey)
             true
           }
@@ -159,7 +172,7 @@ class NotebookOutputInlayController private constructor(
     return isFilled
   }
 
-  private fun addIntoInnerComponent(newComponent: NotebookOutputComponentFactory.CreatedComponent, pos: Int = -1) {
+  private fun addIntoInnerComponent(newComponent: NotebookOutputComponentFactory.CreatedComponent<*>, pos: Int = -1) {
     newComponent.apply {
       disposable?.let {
         component.addDisposable(it)
@@ -179,15 +192,18 @@ class NotebookOutputInlayController private constructor(
     )
   }
 
-  private fun createOutputGuessingFactory(outputDataKey: NotebookOutputDataKey): NotebookOutputComponentFactory.CreatedComponent? =
-    NotebookOutputComponentFactory.EP_NAME.extensionList.asSequence()
+  private fun <K : NotebookOutputDataKey> createOutputGuessingFactory(outputDataKey: K): NotebookOutputComponentFactory.CreatedComponent<*>? =
+    NotebookOutputComponentFactoryGetter.instance.list.asSequence()
+      .filter { factory ->
+        factory.outputDataKeyClass.isAssignableFrom(outputDataKey.javaClass)
+      }
       .mapNotNull { factory ->
-        createOutput(factory, outputDataKey)
+        createOutput(@Suppress("UNCHECKED_CAST") (factory as NotebookOutputComponentFactory<*, K>), outputDataKey)
       }
       .firstOrNull()
 
-  private fun createOutput(factory: NotebookOutputComponentFactory,
-                           outputDataKey: NotebookOutputDataKey): NotebookOutputComponentFactory.CreatedComponent? =
+  private fun <K : NotebookOutputDataKey> createOutput(factory: NotebookOutputComponentFactory<*, K>,
+                                                       outputDataKey: K): NotebookOutputComponentFactory.CreatedComponent<*>? =
     factory.createComponent(editor, outputDataKey)?.also {
       it.component.outputComponentFactory = factory
       it.component.gutterPainter = it.gutterPainter
@@ -219,9 +235,61 @@ class NotebookOutputInlayController private constructor(
   }
 }
 
+@Service
+private class NotebookOutputComponentFactoryGetter : Disposable, Runnable {
+  var list: List<NotebookOutputComponentFactory<*, *>> = emptyList()
+    get() =
+      field.ifEmpty {
+        field = makeValidatedList()
+        field
+      }
+    private set
+
+  init {
+    NotebookOutputComponentFactory.EP_NAME.addChangeListener(this, this)
+  }
+
+  override fun run() {
+    list = emptyList()
+  }
+
+  override fun dispose(): Unit = Unit
+
+  private fun makeValidatedList(): MutableList<NotebookOutputComponentFactory<*, *>> {
+    val newList = mutableListOf<NotebookOutputComponentFactory<*, *>>()
+    for (extension in NotebookOutputComponentFactory.EP_NAME.extensionList) {
+      val collidingExtension = newList
+        .firstOrNull {
+          (
+            it.componentClass.isAssignableFrom(extension.componentClass) ||
+            extension.componentClass.isAssignableFrom(it.componentClass)
+          ) &&
+          (
+            it.outputDataKeyClass.isAssignableFrom(extension.outputDataKeyClass) ||
+            extension.outputDataKeyClass.isAssignableFrom(it.outputDataKeyClass)
+          )
+        }
+      if (collidingExtension != null) {
+        LOG.error("Can't register $extension: it clashes with $collidingExtension by using similar component and data key classes.")
+      }
+      else {
+        newList += extension
+      }
+    }
+    return newList
+  }
+
+  companion object {
+    private val LOG = logger<NotebookOutputComponentFactoryGetter>()
+
+    @JvmStatic
+    val instance: NotebookOutputComponentFactoryGetter get() = service()
+  }
+}
+
 private fun <A, B> Iterator<A>.zip(other: Iterator<B>): Iterator<Pair<A, B>> = object : Iterator<Pair<A, B>> {
   override fun hasNext(): Boolean = this@zip.hasNext() && other.hasNext()
   override fun next(): Pair<A, B> = this@zip.next() to other.next()
 }
 
-private var JComponent.outputComponentFactory: NotebookOutputComponentFactory? by SwingClientProperty()
+private var JComponent.outputComponentFactory: NotebookOutputComponentFactory<*, *>? by SwingClientProperty()
