@@ -623,7 +623,7 @@ class RCompletionContributor : CompletionContributor() {
 
       when (r6Context) {
         is R6CreateClassNameContext -> { // suggestion of name of `<- R6Class("")`
-            result.addR6ClassNameCompletion(classNameExpression, shownNames, file.runtimeInfo?.loadedPackages?.keys)
+            result.addR6ClassNameCompletion(classNameExpression, shownNames)
         }
 
         else -> return
@@ -657,11 +657,9 @@ class RCompletionContributor : CompletionContributor() {
     }
 
     private fun CompletionResultSet.addR6ClassNameCompletion(classNameExpression: RExpression,
-                                                   shownNames: MutableSet<String>,
-                                                   loadedPackages: Set<String>?) {
+                                                   shownNames: MutableSet<String>) {
       val classAssignmentExpression = PsiTreeUtil.getParentOfType(classNameExpression,
                                                                   RAssignmentStatement::class.java) as RAssignmentStatement
-                                      ?: return
       val classNameToSuggest = classAssignmentExpression.assignee?.text ?: return
       if (classNameToSuggest in shownNames) return
       shownNames.add(classNameToSuggest)

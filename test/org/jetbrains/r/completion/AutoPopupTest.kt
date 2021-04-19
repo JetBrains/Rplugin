@@ -199,15 +199,7 @@ class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
       throw NotImplementedError()
     }
 
-    override fun loadShortR6ClassInfos(): List<R6ClassInfo> {
-      throw NotImplementedError()
-    }
-
     override fun loadR6ClassInfoByObjectName(objectName: String): R6ClassInfo? {
-      throw NotImplementedError()
-    }
-
-    override fun loadR6ClassInfoByClassName(className: String): R6ClassInfo? {
       throw NotImplementedError()
     }
 
