@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.ex.util.EditorScrollingPositionKeeper
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.DumbAware
 import com.intellij.util.castSafelyTo
@@ -23,10 +22,8 @@ internal class NotebookOutputCollapseAllAction private constructor() : ToggleAct
     !allCollapsingComponents(e).any { it.isSeen }
 
   override fun setSelected(e: AnActionEvent, state: Boolean) {
-    EditorScrollingPositionKeeper.perform(e.notebookEditor!!, true) {
-      for (component in allCollapsingComponents(e)) {
-        component.isSeen = !state
-      }
+    for (component in allCollapsingComponents(e)) {
+      component.isSeen = !state
     }
   }
 
@@ -51,10 +48,8 @@ internal class NotebookOutputCollapseAllInCellAction private constructor() : Tog
   }
 
   override fun setSelected(e: AnActionEvent, state: Boolean) {
-    EditorScrollingPositionKeeper.perform(e.notebookEditor!!, true) {
-      getCollapsingComponents(e)?.forEach {
-        it.isSeen = !state
-      }
+    getCollapsingComponents(e)?.forEach {
+      it.isSeen = !state
     }
   }
 }
@@ -69,9 +64,7 @@ internal class NotebookOutputCollapseSingleInCellAction private constructor() : 
     getExpectedComponent(e)?.isSeen?.let { !it } ?: false
 
   override fun setSelected(e: AnActionEvent, state: Boolean) {
-    EditorScrollingPositionKeeper.perform(e.notebookEditor!!, true) {
-      getExpectedComponent(e)?.isSeen = !state
-    }
+    getExpectedComponent(e)?.isSeen = !state
   }
 
   private fun getExpectedComponent(e: AnActionEvent): CollapsingComponent? =
