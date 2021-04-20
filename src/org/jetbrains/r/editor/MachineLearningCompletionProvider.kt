@@ -15,6 +15,7 @@ import com.intellij.openapi.progress.util.ProgressIndicatorUtils.withTimeout
 import com.intellij.util.ProcessingContext
 import com.intellij.util.concurrency.AppExecutorUtil.getAppExecutorService
 import com.intellij.util.io.HttpRequests
+import org.jetbrains.r.editor.completion.RLookupElement
 import org.jetbrains.r.editor.completion.RLookupElementFactory
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpRequest
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpResponse
@@ -60,6 +61,20 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
       getAppExecutorService())
   }
 
+  private fun mergeIfNeeded(result: CompletionResult,
+                            mlCompletionVariants: MutableMap<String, MachineLearningCompletionHttpResponse.CompletionVariant>?)
+    : CompletionResult {
+    val lookupElement = result.lookupElement
+    val mlVariant = mlCompletionVariants?.remove(result.lookupElement.lookupString)
+
+    if (mlVariant == null) {
+      return result
+    }
+
+    val mergedElement = lookupElementFactory.createMergedMachineLearningCompletionLookupElement(lookupElement, mlVariant)
+    return CompletionResult.wrap(mergedElement, result.prefixMatcher, result.sorter) ?: result
+  }
+
   private fun addFutureCompletions(parameters: CompletionParameters,
                                    futureResponse: CompletableFuture<MachineLearningCompletionHttpResponse?>,
                                    result: CompletionResultSet,
@@ -67,31 +82,20 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
     val mlCompletionVariantsMap = futureResponse.thenApply { response ->
       response?.completionVariants?.associateByTo(mutableMapOf()) { it.text }
     }
-    val otherCompletionVariants = HashSet<String>()
+    val unprocessedCompletionResults = HashSet<CompletionResult>()
 
     result.runRemainingContributors(parameters) {
       val lookupElement = it.lookupElement
 
-      // When running other completion contributors we don't want to wait for the response if it's not ready,
-      // except maybe for some small amount of time (e.g. 20 milliseconds total), so we use a non-blocking way to get value of Future
-      if (!mlCompletionVariantsMap.isDone) {
-        otherCompletionVariants.add(lookupElement.lookupString)
-        result.passResult(it)
-        return@runRemainingContributors
+      // We don't want to process element coming from contributors unrelated to R language
+      // If ml completion response is not ready yet we delay processing, otherwise try to merge and add
+      when {
+        lookupElement.`as`(RLookupElement::class.java) !is RLookupElement -> result.passResult(it)
+        !mlCompletionVariantsMap.isDone -> unprocessedCompletionResults.add(it)
+        else -> result.passResult(mergeIfNeeded(it, mlCompletionVariantsMap.get()))
       }
-
-      val mlVariant = mlCompletionVariantsMap.get()?.remove(lookupElement.lookupString)
-      if (mlVariant == null) {
-        result.passResult(it)
-        return@runRemainingContributors
-      }
-
-      val newLookupElement = lookupElementFactory.createMergedMachineLearningCompletionLookupElement(lookupElement, mlVariant)
-
-      result.addElement(newLookupElement)
     }
 
-    // After all contributors executed we can add our completion whenever we want, so we get value of Future in a blocking way with timeout
     val timeToWait = startTime - System.currentTimeMillis() + serverService.requestTimeoutMs
     // If request has been received then add completions anyway otherwise wait for result with checkCanceled
     val mlCompletionResult =
@@ -100,14 +104,23 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
         else -> withTimeout(timeToWait) {
           awaitWithCheckCanceled(mlCompletionVariantsMap)
         }
-      } ?: return
+      }
 
-    MachineLearningCompletionLookupStatistics.reportCompletionSuccessfullyFinished(parameters)
-    for (key in otherCompletionVariants) {
-      mlCompletionResult.remove(key)
+    if (mlCompletionResult == null) {
+      unprocessedCompletionResults.forEach {
+        result.passResult(it)
+      }
+      return
     }
+
+    unprocessedCompletionResults.forEach {
+      result.passResult(mergeIfNeeded(it, mlCompletionResult))
+    }
+
     result.addAllElements(mlCompletionResult.values.map(lookupElementFactory::createMachineLearningCompletionLookupElement))
     result.restartCompletionWhenNothingMatches()
+
+    MachineLearningCompletionLookupStatistics.reportCompletionSuccessfullyFinished(parameters)
   }
 
   override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
