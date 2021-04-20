@@ -72,7 +72,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
     }
 
     val mergedElement = lookupElementFactory.createMergedMachineLearningCompletionLookupElement(lookupElement, mlVariant)
-    return CompletionResult.wrap(mergedElement, result.prefixMatcher, result.sorter) ?: result
+    return result.withLookupElement(mergedElement)
   }
 
   private fun addFutureCompletions(parameters: CompletionParameters,
