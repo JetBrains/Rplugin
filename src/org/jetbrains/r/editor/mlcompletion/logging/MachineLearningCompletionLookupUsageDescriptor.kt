@@ -25,13 +25,13 @@ class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
                        ?: RLookupElementOrigin.ORIGINAL
 
     usageData.apply {
-      addData("rLookupElementOrigin", lookupOrigin.name)
+      addData("r_lookup_element_origin", lookupOrigin.name)
 
       MachineLearningCompletionLookupStatistics.get(lookup)?.let { statistics ->
-        addData("rMLCompletionEnabled", statistics.mlCompletionIsEnabled)
-        addData("rMLCompletionResponseReceived", statistics.mlCompletionResponseReceived)
-        addData("rMLCompletionAppVersion", statistics.mlCompletionAppVersion)
-        addData("rMLCompletionModelVersion", statistics.mlCompletionModelVersion)
+        addData("r_ml_completion_enabled", statistics.mlCompletionIsEnabled)
+        addData("r_ml_completion_response_received", statistics.mlCompletionResponseReceived)
+        addData("r_ml_completion_app_version", statistics.mlCompletionAppVersion)
+        addData("r_ml_completion_model_version", statistics.mlCompletionModelVersion)
       }
     }
   }
