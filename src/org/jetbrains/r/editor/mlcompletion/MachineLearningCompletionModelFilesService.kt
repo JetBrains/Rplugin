@@ -50,13 +50,13 @@ class MachineLearningCompletionModelFilesService {
     get() = MachineLearningCompletionModelFiles.localServerDirectory
 
   private val _modelVersion = AtomicLazyProperty {
-    MachineLearningCompletionModelFiles.modelVersionFilePath?.let { getArtifactVersion(it) }
+    MachineLearningCompletionModelFiles.modelVersionFilePath?.let(::getArtifactVersion)
   }
   val modelVersion
     get() = _modelVersion.get()
 
   private val _applicationVersion = AtomicLazyProperty {
-    MachineLearningCompletionModelFiles.applicationVersionFilePath?.let { getArtifactVersion(it) }
+    MachineLearningCompletionModelFiles.applicationVersionFilePath?.let(::getArtifactVersion)
   }
   val applicationVersion
     get() = _applicationVersion.get()
