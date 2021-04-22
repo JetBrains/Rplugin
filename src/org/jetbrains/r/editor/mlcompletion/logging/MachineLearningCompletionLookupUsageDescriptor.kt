@@ -1,14 +1,12 @@
 package org.jetbrains.r.editor.mlcompletion.logging
 
-import com.intellij.codeInsight.completion.BaseCompletionService
 import com.intellij.codeInsight.lookup.Lookup
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.impl.LookupImpl
 import com.intellij.codeInsight.lookup.impl.LookupUsageDescriptor
 import com.intellij.internal.statistic.eventLog.FeatureUsageData
-import org.jetbrains.r.editor.RCompletionContributor
-import org.jetbrains.r.editor.RMachineLearningCompletionContributor
 import org.jetbrains.r.editor.completion.MachineLearningCompletionLookupDecorator
+import org.jetbrains.r.editor.completion.RLookupElement
 
 class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
 
@@ -32,13 +30,13 @@ class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
       MachineLearningCompletionLookupStatistics.get(lookup)?.let { statistics ->
         addData("rMLCompletionEnabled", statistics.mlCompletionIsEnabled)
         addData("rMLCompletionResponseReceived", statistics.mlCompletionResponseReceived)
+        addData("rMLCompletionAppVersion", statistics.mlCompletionAppVersion)
+        addData("rMLCompletionModelVersion", statistics.mlCompletionModelVersion)
       }
     }
   }
 
-  private fun LookupElement.isRLookupElement(): Boolean = getUserData(BaseCompletionService.LOOKUP_ELEMENT_CONTRIBUTOR).let { contributor ->
-    contributor is RCompletionContributor || contributor is RMachineLearningCompletionContributor
-  }
+  private fun LookupElement.isRLookupElement(): Boolean = `as`(RLookupElement::class.java) is RLookupElement
 
   private val MachineLearningCompletionLookupDecorator.origin: RLookupElementOrigin
     get() = when (this) {
