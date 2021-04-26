@@ -43,7 +43,6 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
     // UI hacky hacks
     UIUtil.findComponentOfType(this, ActionToolbarImpl::class.java)?.let { actionToolbarImpl ->
       updateActionGroup(actionToolbarImpl.actionGroup as DefaultActionGroup)
-      actionToolbarImpl.secondaryActionsButton
       addSearchTextFieldListeners()
     }
   }
