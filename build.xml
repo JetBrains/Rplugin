@@ -12,7 +12,6 @@
             <include name="jdom.jar"/>
             <include name="openapi.jar"/>
             <include name="rt.jar"/>
-            <include name="trove4j.jar"/>
             <include name="util.jar"/>
             <include name="winp-*.jar"/>
         </fileset>
