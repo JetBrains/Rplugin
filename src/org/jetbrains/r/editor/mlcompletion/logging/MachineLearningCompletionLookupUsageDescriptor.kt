@@ -7,6 +7,7 @@ import com.intellij.codeInsight.lookup.impl.LookupUsageDescriptor
 import com.intellij.internal.statistic.eventLog.FeatureUsageData
 import org.jetbrains.r.editor.completion.MachineLearningCompletionLookupDecorator
 import org.jetbrains.r.editor.completion.RLookupElement
+import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupStatistics.Companion.rStatistics
 
 class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
 
@@ -27,9 +28,10 @@ class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
     usageData.apply {
       addData("r_lookup_element_origin", lookupOrigin.name)
 
-      MachineLearningCompletionLookupStatistics.get(lookup)?.let { statistics ->
-        addData("r_ml_enabled", statistics.mlCompletionIsEnabled)
+      lookup.rStatistics?.let { statistics ->
         addData("r_ml_response_received", statistics.mlCompletionResponseReceived)
+        addData("r_ml_context", statistics.mlCompletionContextType.name)
+        addData("r_ml_enabled", statistics.mlCompletionIsEnabled)
         addData("r_ml_app_version", statistics.mlCompletionAppVersion)
         addData("r_ml_model_version", statistics.mlCompletionModelVersion)
       }
