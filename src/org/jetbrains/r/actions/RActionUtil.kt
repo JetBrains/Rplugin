@@ -27,7 +27,7 @@ object RActionUtil {
     val action: AnAction = actionManager.getAction(id)
     val dataContext = DataManager.getInstance().getDataContext(SwingHelper.getComponentFromRecentMouseEvent())
     val event = AnActionEvent.createFromAnAction(action, null, place, dataContext)
-    actionManager.fireBeforeActionPerformed(action, dataContext, event)
+    actionManager.fireBeforeActionPerformed(action, event)
   }
 
   fun executeActionById(actionId: String, project: Project) {
@@ -46,7 +46,7 @@ object RActionUtil {
    * fire before action performed event for statistics and perform [action]
    */
   fun performDelegatedAction(anAction: AnAction, actionEvent: AnActionEvent) {
-    ActionManagerEx.getInstanceEx().fireBeforeActionPerformed(anAction, actionEvent.dataContext, actionEvent)
+    ActionManagerEx.getInstanceEx().fireBeforeActionPerformed(anAction, actionEvent)
     ActionUtil.performAction(anAction, actionEvent)
   }
 }
