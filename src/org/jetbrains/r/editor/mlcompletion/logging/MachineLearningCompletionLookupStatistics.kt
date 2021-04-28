@@ -8,6 +8,7 @@ import com.intellij.openapi.util.Version
 import com.intellij.patterns.ElementPattern
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.PsiElement
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpResponse
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
 import org.jetbrains.r.editor.mlcompletion.update.VersionConverter
 import org.jetbrains.r.psi.RElementFilters
@@ -38,7 +39,9 @@ class MachineLearningCompletionLookupStatistics {
   val mlCompletionIsEnabled: Boolean = MachineLearningCompletionSettings.getInstance().state.isEnabled
   val mlCompletionAppVersion: String = getVersionString(filesService.applicationVersion)
   val mlCompletionModelVersion: String = getVersionString(filesService.modelVersion)
-  var mlCompletionContextType: CompletionContextType = CompletionContextType.UNKNOWN
+  var completionContextType: CompletionContextType = CompletionContextType.UNKNOWN
+  var mlCompletionTimeMs: Int = 0
+  var mlCompletionNProposedVariants: Int = 0
 
   companion object {
     private val filesService = MachineLearningCompletionModelFilesService.getInstance()
@@ -59,11 +62,16 @@ class MachineLearningCompletionLookupStatistics {
       }
     }
 
-    fun reportCompletionSuccessfullyFinished(parameters: CompletionParameters) {
+    fun reportCompletionFinished(parameters: CompletionParameters,
+                                 response: MachineLearningCompletionHttpResponse?,
+                                 receivedResponseOnTime: Boolean,
+                                 time: Long) {
       val activeLookup = (parameters.process as? CompletionProgressIndicator)?.lookup
       activeLookup?.rStatistics?.apply {
-        mlCompletionContextType = CompletionContextType.getContext(parameters)
-        mlCompletionResponseReceived = true
+        completionContextType = CompletionContextType.getContext(parameters)
+        mlCompletionTimeMs = time.toInt()
+        mlCompletionNProposedVariants = response?.completionVariants?.size ?: 0
+        mlCompletionResponseReceived = receivedResponseOnTime
       }
     }
   }

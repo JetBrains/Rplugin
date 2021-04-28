@@ -78,7 +78,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
   private fun addFutureCompletions(parameters: CompletionParameters,
                                    futureResponse: CompletableFuture<MachineLearningCompletionHttpResponse?>,
                                    result: CompletionResultSet,
-                                   startTime: Long) {
+                                   startTime: Long): Boolean {
     val mlCompletionVariantsMap = futureResponse.thenApply { response ->
       response?.completionVariants?.associateByTo(mutableMapOf()) { it.text }
     }
@@ -110,7 +110,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
       unprocessedCompletionResults.forEach {
         result.passResult(it)
       }
-      return
+      return false
     }
 
     unprocessedCompletionResults.forEach {
@@ -120,7 +120,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
     result.addAllElements(mlCompletionResult.values.map(lookupElementFactory::createMachineLearningCompletionLookupElement))
     result.restartCompletionWhenNothingMatches()
 
-    MachineLearningCompletionLookupStatistics.reportCompletionSuccessfullyFinished(parameters)
+    return true
   }
 
   override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
@@ -131,9 +131,13 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
     val inputMessage = constructRequest(parameters)
     val futureResponse = processRequest(inputMessage)
 
-    addFutureCompletions(parameters, futureResponse, result, startTime)
+    val processedResponse = addFutureCompletions(parameters, futureResponse, result, startTime)
 
-    val endTime = System.currentTimeMillis()
-    LOG.info("R ML completion took ${endTime - startTime} ms")
+    val totalTime = System.currentTimeMillis() - startTime
+    LOG.info("R ML completion took ${totalTime} ms")
+
+    val response = futureResponse.takeIf { it.isDone && !it.isCompletedExceptionally }?.get()
+
+    MachineLearningCompletionLookupStatistics.reportCompletionFinished(parameters, response, processedResponse, totalTime)
   }
 }

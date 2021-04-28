@@ -30,7 +30,9 @@ class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
 
       lookup.rStatistics?.let { statistics ->
         addData("r_ml_response_received", statistics.mlCompletionResponseReceived)
-        addData("r_ml_context", statistics.mlCompletionContextType.name)
+        addData("r_context_type", statistics.completionContextType.name)
+        addData("r_ml_time_ms", statistics.mlCompletionTimeMs)
+        addData("r_ml_n_proposed_variants", statistics.mlCompletionNProposedVariants)
         addData("r_ml_enabled", statistics.mlCompletionIsEnabled)
         addData("r_ml_app_version", statistics.mlCompletionAppVersion)
         addData("r_ml_model_version", statistics.mlCompletionModelVersion)
