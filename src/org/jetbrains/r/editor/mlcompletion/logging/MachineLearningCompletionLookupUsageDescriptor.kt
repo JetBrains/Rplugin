@@ -12,7 +12,7 @@ class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
 
   private enum class RLookupElementOrigin { ORIGINAL, ML_COMPLETION, MERGED }
 
-  override fun getExtensionKey(): String = "rmlcompletion"
+  override fun getExtensionKey(): String = "r_ml"
 
   override fun fillUsageData(lookup: Lookup, usageData: FeatureUsageData) {
     val selectedElement = lookup.currentItem
@@ -28,10 +28,10 @@ class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
       addData("r_lookup_element_origin", lookupOrigin.name)
 
       MachineLearningCompletionLookupStatistics.get(lookup)?.let { statistics ->
-        addData("r_ml_completion_enabled", statistics.mlCompletionIsEnabled)
-        addData("r_ml_completion_response_received", statistics.mlCompletionResponseReceived)
-        addData("r_ml_completion_app_version", statistics.mlCompletionAppVersion)
-        addData("r_ml_completion_model_version", statistics.mlCompletionModelVersion)
+        addData("r_ml_enabled", statistics.mlCompletionIsEnabled)
+        addData("r_ml_response_received", statistics.mlCompletionResponseReceived)
+        addData("r_ml_app_version", statistics.mlCompletionAppVersion)
+        addData("r_ml_model_version", statistics.mlCompletionModelVersion)
       }
     }
   }
