@@ -233,7 +233,9 @@ open class NotebookOutputNonStickyScrollPane(
       // them. This makes the events invisible to the underlying parent components.
       // The code below ensures that events will reach parents that may be interested in them.
       e.takeUnless { it.isConsumed }?.source?.castSafelyTo<Component>()?.parent?.let {
-        it.dispatchEvent(MouseEvent(it, e.id, e.`when`, e.modifiersEx, e.x, e.y, e.clickCount, e.isPopupTrigger))
+        it.dispatchEvent(MouseEvent(
+          it, e.id, e.`when`, e.modifiersEx, e.x, e.y, e.xOnScreen, e.yOnScreen, e.clickCount, e.isPopupTrigger, e.button,
+        ))
       }
     }
 
