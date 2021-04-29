@@ -4,49 +4,16 @@
 
 package org.jetbrains.r.actions
 
-import com.intellij.ide.DataManager
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.ex.ActionManagerEx
 import com.intellij.openapi.actionSystem.ex.ActionUtil
-import com.intellij.openapi.actionSystem.ex.ActionUtil.performActionDumbAwareWithCallbacks
-import com.intellij.openapi.application.TransactionGuard
-import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.project.Project
-import com.intellij.util.ui.SwingHelper
 
 object RActionUtil {
-
-  /**
-   * used for triggering statistic recording on non-action events which should be treated as actions
-   */
-  fun fireBeforeActionById(id: String, place: String = ActionPlaces.UNKNOWN) {
-    val actionManager = ActionManagerEx.getInstanceEx()
-    val action: AnAction = actionManager.getAction(id)
-    val dataContext = DataManager.getInstance().getDataContext(SwingHelper.getComponentFromRecentMouseEvent())
-    val event = AnActionEvent.createFromAnAction(action, null, place, dataContext)
-    actionManager.fireBeforeActionPerformed(action, event)
-  }
-
-  fun executeActionById(actionId: String, project: Project) {
-    val action = ActionManager.getInstance().getAction(actionId) ?: throw IllegalStateException("No action ")
-    invokeLater {
-      DataManager.getInstance().dataContextFromFocusAsync.onSuccess { dataContext ->
-        TransactionGuard.submitTransaction(project, Runnable {
-          val event = AnActionEvent.createFromAnAction(action, null, ActionPlaces.UNKNOWN, dataContext)
-          performActionDumbAwareWithCallbacks(action, event)
-        })
-      }
-    }
-  }
 
   /**
    * fire before action performed event for statistics and perform [action]
    */
   fun performDelegatedAction(anAction: AnAction, actionEvent: AnActionEvent) {
-    ActionManagerEx.getInstanceEx().fireBeforeActionPerformed(anAction, actionEvent)
-    ActionUtil.performAction(anAction, actionEvent)
+    ActionUtil.performActionDumbAwareWithCallbacks(anAction, actionEvent)
   }
 }

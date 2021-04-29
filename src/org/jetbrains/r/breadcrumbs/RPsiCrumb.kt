@@ -4,22 +4,31 @@
 
 package org.jetbrains.r.breadcrumbs
 
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.IdeActions
+import com.intellij.openapi.actionSystem.ex.ActionUtil
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.psi.PsiElement
 import com.intellij.ui.breadcrumbs.BreadcrumbsProvider
 import com.intellij.xml.breadcrumbs.BreadcrumbsPanel
 import com.intellij.xml.breadcrumbs.BreadcrumbsXmlWrapper
 import com.intellij.xml.breadcrumbs.CrumbPresentation
-import org.jetbrains.r.actions.RActionUtil
 
 class RPsiCrumb(element: PsiElement, provider: BreadcrumbsProvider, presentation: CrumbPresentation?) :
   CommonPsiCrumb(element, provider, presentation) {
 
-  private val file = element.containingFile
-
   override fun navigate(editor: Editor, withSelection: Boolean) {
     unmuteCaretChangeUpdate(editor)
-    RActionUtil.executeActionById("FileStructurePopup", file.project)
+    val action = ActionManager.getInstance().getAction(IdeActions.ACTION_FILE_STRUCTURE_POPUP) ?: return
+    invokeLater {
+      val dataContext = (editor as? EditorEx)?.dataContext ?: return@invokeLater
+      val event = AnActionEvent.createFromAnAction(action, null, ActionPlaces.UNKNOWN, dataContext)
+      ActionUtil.performActionDumbAwareWithCallbacks(action, event)
+    }
   }
 
   private fun unmuteCaretChangeUpdate(editor: Editor) {

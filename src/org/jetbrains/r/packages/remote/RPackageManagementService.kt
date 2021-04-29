@@ -6,6 +6,11 @@
 package org.jetbrains.r.packages.remote
 
 import com.intellij.execution.ExecutionException
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -18,7 +23,6 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.common.emptyExpiringList
 import org.jetbrains.r.documentation.RDocumentationProvider
@@ -145,8 +149,11 @@ class RPackageManagementService(private val project: Project,
     installToUser: Boolean
   ) {
     val multiListener = convertToInstallMultiListener(listener)
-    RActionUtil.fireBeforeActionById(if (forceUpgrade) UPGRADE_PACKAGE_ACTION_ID else INSTALL_PACKAGE_ACTION_ID)
-    installPackages(listOf(repoPackage), forceUpgrade, multiListener)
+    val action = ActionManager.getInstance().getAction(if (forceUpgrade) UPGRADE_PACKAGE_ACTION_ID else INSTALL_PACKAGE_ACTION_ID)
+    val event = AnActionEvent.createFromAnAction(action, null, ActionPlaces.UNKNOWN, DataContext.EMPTY_CONTEXT)
+    ActionUtil.performDumbAwareWithCallbacks(action, event) {
+      installPackages(listOf(repoPackage), forceUpgrade, multiListener)
+    }
   }
 
 
