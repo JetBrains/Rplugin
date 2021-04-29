@@ -9,7 +9,6 @@
             <include name="forms_rt.jar"/>
             <include name="guava-*.jar"/>
             <include name="idea.jar"/>
-            <include name="jdom.jar"/>
             <include name="openapi.jar"/>
             <include name="rt.jar"/>
             <include name="util.jar"/>
@@ -20,7 +19,7 @@
     <path id="dep.javac2.classpath">
         <fileset dir="${dep.idea.lib.dir}">
             <include name="javac2.jar"/>
-            <include name="jdom.jar"/>
+            <include name="util.jar"/>
             <include name="asm-all.jar"/>
             <include name="jgoodies-forms.jar"/>
         </fileset>
