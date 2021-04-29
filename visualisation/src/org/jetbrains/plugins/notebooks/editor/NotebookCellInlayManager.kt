@@ -42,6 +42,11 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
   private val updateQueue = MergingUpdateQueue("NotebookCellInlayManager Interval Update", 20, true, null, editor.disposable, null, true)
   private var initialized = false
 
+  /**
+   * Listens for inlay changes (called after all inlays are updated). Feel free to convert it to the EP if you need another listener
+   */
+  var changedListener: InlaysChangedListener? = null
+
   fun inlaysForInterval(interval: NotebookCellLines.Interval): Iterable<NotebookCellInlayController> =
     getMatchingInlaysForLines(interval.lines)
 
@@ -123,6 +128,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
       }
     }
     addHighlighters(allCellLines)
+    inlaysChanged()
   }
 
   private fun addDocumentListener() {
@@ -175,6 +181,10 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
         ?.let { min(logicalLines.first, it.first().first)..max(it.last().last, logicalLines.last) }
       ?: logicalLines
     updateConsequentInlays(interestingRange)
+  }
+
+  private fun inlaysChanged() {
+    changedListener?.inlaysChanged()
   }
 
   private fun updateConsequentInlays(interestingRange: IntRange) {
@@ -231,6 +241,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
     for ((_, controller) in allMatchingInlays) {
       Disposer.dispose(controller.inlay, false)
     }
+    inlaysChanged()
   }
 
   private fun rememberController(controller: NotebookCellInlayController, interval: NotebookCellLines.Interval) {
