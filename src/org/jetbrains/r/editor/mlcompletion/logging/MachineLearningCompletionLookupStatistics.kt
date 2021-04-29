@@ -37,21 +37,19 @@ class MachineLearningCompletionLookupStatistics {
   var mlCompletionResponseReceived: Boolean = false
     private set
   val mlCompletionIsEnabled: Boolean = MachineLearningCompletionSettings.getInstance().state.isEnabled
-  val mlCompletionAppVersion: String = getVersionString(filesService.applicationVersion)
-  val mlCompletionModelVersion: String = getVersionString(filesService.modelVersion)
+  val mlCompletionAppVersion: String = MachineLearningCompletionModelFilesService.getInstance().applicationVersion.toVersionStringOrDefault()
+  val mlCompletionModelVersion: String = MachineLearningCompletionModelFilesService.getInstance().modelVersion.toVersionStringOrDefault()
   var completionContextType: CompletionContextType = CompletionContextType.UNKNOWN
   var mlCompletionTimeMs: Int = 0
   var mlCompletionNProposedVariants: Int = 0
 
   companion object {
-    private val filesService = MachineLearningCompletionModelFilesService.getInstance()
-
     private const val versionDefaultValue = "unknown"
 
     private val KEY =
       Key.create<MachineLearningCompletionLookupStatistics>("MACHINE_LEARNING_COMPLETION_LOOKUP_STATISTICS")
 
-    private fun getVersionString(version: Version?): String = version?.let(VersionConverter::toString) ?: versionDefaultValue
+    private fun Version?.toVersionStringOrDefault(): String = this?.let(VersionConverter::toString) ?: versionDefaultValue
 
     val LookupImpl.rStatistics: MachineLearningCompletionLookupStatistics?
       get() = getUserData(KEY)
