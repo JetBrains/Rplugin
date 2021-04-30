@@ -53,6 +53,7 @@ internal class InnerComponent(private val editor: EditorImpl) : JPanel() {
 
   override fun doLayout() {
     val editorVisibleYTop = editor.scrollingModel.visibleArea.y
+    val editorVisibleYBottom = editor.scrollingModel.visibleArea.run { y + height }
     val editorRelativeYTop = SwingUtilities.convertPoint(this, 0, 0, editor.contentComponent).y
     val oldInsets = insets
     val oldComponentHeights = components.map { it.height }
@@ -72,7 +73,8 @@ internal class InnerComponent(private val editor: EditorImpl) : JPanel() {
 
     // When components adjust their sizes, the code below compensates vertical scroll position. The topmost visible line should keep its
     // visual position.
-    val diff = run {
+    val (diff, animate) = run {
+      var animate = false
       var diff = insets.top - oldInsets.top
       var oldTop = editorRelativeYTop
       var newTop = editorRelativeYTop
@@ -85,18 +87,29 @@ internal class InnerComponent(private val editor: EditorImpl) : JPanel() {
         oldBottom = oldTop + oldHeight
         newBottom = newTop + newHeight
 
+        if (
+          oldTop <= editorVisibleYTop &&
+          editorVisibleYBottom <= oldBottom &&
+          editorRelativeYTop + diff <= newTop
+        ) {
+          // No code lines were visible. Centering the component.
+          diff += oldTop - editorVisibleYTop - editor.scrollingModel.visibleArea.height / 2
+          animate = true
+          break
+        }
+
         diff += newHeight - oldHeight
 
         oldTop = oldBottom
         newTop = newBottom
       }
-      diff
+      diff to animate
     }
 
     if (diff != 0) {
       (editor.scrollingModel as ScrollingModelImpl).run {
         val wasAnimationEnabled = isAnimationEnabled
-        disableAnimation()
+        if (!animate) disableAnimation()
         try {
           scrollVertically((verticalScrollOffset + diff).coerceIn(0, editor.contentComponent.height + visibleArea.height))
         }
