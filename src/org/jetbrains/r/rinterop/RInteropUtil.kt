@@ -265,7 +265,7 @@ object RInteropUtil {
     return RPluginUtil.findFileInRHelpers(filename).absolutePath
   }
 
-  private fun getSystemSuffix(operatingSystem: OperatingSystem): String = when (operatingSystem) {
+  fun getSystemSuffix(operatingSystem: OperatingSystem): String = when (operatingSystem) {
     OperatingSystem.LINUX -> "x64-linux"
     OperatingSystem.MAC_OS -> "x64-osx"
     OperatingSystem.WINDOWS -> "x64-windows.exe"
