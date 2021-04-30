@@ -37,6 +37,7 @@ interface NotebookEditorAppearanceSizes {
   fun getCellLeftLineWidth(): Int
   fun getCellLeftLineHoverWidth(): Int
   fun getLeftBorderWidth(): Int
+  val EXTRA_GUTTER_AREA_WIDTH_EXECUTION_COUNT: Int
 }
 
 
@@ -90,6 +91,7 @@ object DefaultNotebookEditorAppearanceSizes: NotebookEditorAppearanceSizes {
   override val NOTEBOOK_OUTPUT_INLAY_PRIORITY: Int = EditorInlaysManager.INLAY_PRIORITY + 5
 
   override val EXTRA_PADDING_EXECUTION_COUNT = 25
+  override val EXTRA_GUTTER_AREA_WIDTH_EXECUTION_COUNT = 40
 
   override fun getCellLeftLineWidth(): Int = EDIT_MODE_CELL_LEFT_LINE_WIDTH
   override fun getCellLeftLineHoverWidth(): Int = COMMAND_MODE_CELL_LEFT_LINE_WIDTH
