@@ -10,6 +10,7 @@ import com.intellij.ui.IdeBorderFactory
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import org.intellij.datavis.r.inlays.ResizeController
+import org.intellij.datavis.r.ui.UiCustomizer
 import org.jetbrains.plugins.notebooks.editor.notebookAppearance
 import java.awt.*
 import java.awt.event.MouseAdapter
@@ -87,6 +88,7 @@ internal class CollapsingComponent(
 
       if (!isSeen) {
         val outputAdjacentRectWidth = notebookAppearance.getLeftBorderWidth()
+        g.color = UiCustomizer.instance.getTextOutputBackground(editor)
         g.fillRect(
           editor.gutterComponentEx.width - outputAdjacentRectWidth,
           rectTop,
@@ -137,7 +139,7 @@ internal class CollapsingComponent(
     private fun updateUIFromEditor() {
       val attrs = editor.colorsScheme.getAttributes(EditorColors.FOLDED_TEXT_ATTRIBUTES)
       foreground = JBUI.CurrentTheme.ActionsList.MNEMONIC_FOREGROUND
-      background = editor.notebookAppearance.getCodeCellBackground(editor.colorsScheme) ?: editor.colorsScheme.defaultBackground
+      background = UiCustomizer.instance.getTextOutputBackground(editor)
       font = EditorUtil.fontForChar(text.first(), attrs.fontType, editor).font
     }
   }
