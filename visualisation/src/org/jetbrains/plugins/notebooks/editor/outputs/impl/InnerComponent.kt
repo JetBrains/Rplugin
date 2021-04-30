@@ -88,6 +88,7 @@ internal class InnerComponent(private val editor: EditorImpl) : JPanel() {
         newBottom = newTop + newHeight
 
         if (
+          newHeight < oldHeight &&
           oldTop <= editorVisibleYTop &&
           editorVisibleYBottom <= oldBottom &&
           editorRelativeYTop + diff <= newTop
