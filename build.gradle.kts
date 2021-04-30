@@ -31,7 +31,6 @@ buildscript {
     repositories {
         maven ("https://cache-redirector.jetbrains.com/repo1.maven.org/maven2" )
         maven ("https://oss.sonatype.org/content/repositories/snapshots/" )
-        maven ("https://cache-redirector.jetbrains.com/jetbrains.bintray.com/intellij-plugin-service" )
     }
     dependencies {
 //        classpath ("org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.5.0-SNAPSHOT")
