@@ -121,12 +121,12 @@ object RS4ClassInfoUtil {
   }
 
   private fun parseSlotsArgument(expr: RExpression?): List<RS4ClassSlot> {
-    if (expr == null) return emptyList()
+    if (expr == null || expr is REmptyExpression) return emptyList()
     val argumentList = parseCharacterVector(expr) ?: return emptyList()
     val slots = mutableListOf<RS4ClassSlot>()
     argumentList.forEach { arg ->
       when (arg) {
-        is RNamedArgument -> arg.toSlot()?.let { slots.add(it) }
+        is RNamedArgument -> slots.addAll(arg.toComplexSlots())
         is RStringLiteralExpression -> {
           val name = arg.name?.takeIf { it.isNotEmpty() } ?: return@forEach
           slots.add(RS4ClassSlot(name, "ANY"))
@@ -140,7 +140,7 @@ object RS4ClassInfoUtil {
   }
 
   private fun parseContainsArgument(expr: RExpression?): Pair<List<String>, Boolean> {
-    if (expr == null) return emptyList<String>() to false
+    if (expr == null || expr is REmptyExpression) return emptyList<String>() to false
 
     // Also `class representation` objects vector is suitable.
     // This is some rare use case which difficult to analyse statically
@@ -164,13 +164,14 @@ object RS4ClassInfoUtil {
   }
 
   private fun parseRepresentationArgument(expr: RExpression?): RS4ClassInfo {
-    if (expr == null) return EMPTY_CLASS_INFO
+    if (expr == null || expr is REmptyExpression) return EMPTY_CLASS_INFO
     val argumentList = when (expr) {
       is RCallExpression -> {
         // Any function that returns a `list` is suitable.
         // Arbitrary function is some rare use case which difficult to analyse statically
-        if (expr.isFunctionFromLibrarySoft("representation", "methods")
-            || expr.isFunctionFromLibrarySoft("list", "base")) {
+        if (expr.isFunctionFromLibrarySoft("representation", "methods") ||
+            expr.isFunctionFromLibrarySoft("list", "base") ||
+            expr.isFunctionFromLibrarySoft("c", "base")) {
           expr.argumentList.expressionList
         }
         else return EMPTY_CLASS_INFO
@@ -202,8 +203,14 @@ object RS4ClassInfoUtil {
       // Any function that returns a `vector` of `characters` is suitable.
       // Arbitrary function returns vector is some rare use case which difficult to analyse statically
       if (expr.isFunctionFromLibrarySoft("c", "base") ||
-          expr.isFunctionFromLibrarySoft("list", "base")) {
+          expr.isFunctionFromLibrarySoft("list", "base") ||
+          expr.isFunctionFromLibrarySoft("representation", "methods") ||
+          expr.isFunctionFromLibrarySoft("signature", "methods")) {
         expr.argumentList.expressionList
+      }
+      else if (expr.isFunctionFromLibrarySoft("character", "base") &&
+               expr.argumentList.text.let { it == "()" || it == "(0)" }) {
+        emptyList()
       }
       else null
     }
@@ -211,10 +218,41 @@ object RS4ClassInfoUtil {
     else -> null
   }
 
+  private fun RNamedArgument.toComplexSlots(): List<RS4ClassSlot> {
+    val namePrefix = name.takeIf { it.isNotEmpty() } ?: return emptyList()
+    val types = assignedValue?.let { parseCharacterVector(it) } ?: return emptyList()
+    return types.mapIndexed { ind, expr ->
+      when (expr) {
+        is RNamedArgument -> {
+          val suffix = expr.name
+          val type = expr.assignedValue?.toType() ?: ""
+          RS4ClassSlot("$namePrefix.$suffix", type)
+        }
+        else -> {
+          val type = expr.toType() ?: ""
+          val name = if (types.size == 1) namePrefix else "$namePrefix${ind + 1}"
+          RS4ClassSlot(name, type)
+        }
+      }
+    }
+  }
+
   private fun RNamedArgument.toSlot(): RS4ClassSlot? {
     val name = name.takeIf { it.isNotEmpty() } ?: return null
-    val type = (assignedValue as? RStringLiteralExpression)?.name ?: ""
+    val type = when (val typeExpr = assignedValue) {
+      is RCallExpression -> parseCharacterVector(typeExpr)?.firstOrNull()?.toType()
+      else -> typeExpr?.toType()
+    } ?: ""
     return RS4ClassSlot(name, type)
+  }
+
+  private fun RPsiElement.toType(): String? {
+    return when (this) {
+      is RStringLiteralExpression -> name
+      is RNaLiteral -> "NA"
+      is RNullLiteral -> "NULL"
+      else -> null
+    }
   }
 
   private val EMPTY_CLASS_INFO = RS4ClassInfo("", "", emptyList(), emptyList(), false)

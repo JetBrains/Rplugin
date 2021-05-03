@@ -257,6 +257,14 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
     doWrongVariantsTest("setClass('MyClass', 'My<caret>')", "MyClass")
   }
 
+  fun testComplexSlot() {
+    doTest("""
+      setClass('MyClass', slots = list(slot1 = 'type1', slot2 = c('type2', ext = 'type3', 'type4')))
+      obj <- new('MyClass')
+      obj@<caret>
+    """.trimIndent(), "slot1" to "type1", "slot2.ext" to "type3", "slot21" to "type2", "slot23" to "type4")
+  }
+
   fun testUserClassWithPackageProject() {
     myFixture.addFileToProject("DESCRIPTION", """
       Package: TestPackage
