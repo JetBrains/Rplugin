@@ -4,16 +4,20 @@
 
 package org.jetbrains.r.psi
 
+import com.intellij.lang.Language
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
+import com.intellij.pom.PomNamedTarget
 import com.intellij.pom.PomTarget
 import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.PomTargetPsiElementImpl
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.RLanguage
+import org.jetbrains.r.classes.s4.RSkeletonS4SlotPomTarget
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.psi.api.RFile
@@ -22,10 +26,13 @@ import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.rinterop.*
 import org.jetbrains.r.run.visualize.VisualizeTableHandler
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
+import org.jetbrains.r.skeleton.psi.RSkeletonCallExpression
 
-private class RPomTargetPsiElementImpl(pomTarget: PomTarget, project: Project): PomTargetPsiElementImpl(project, pomTarget), RPsiElement
+private class RPomTargetPsiElementImpl(pomTarget: PomTarget, project: Project): PomTargetPsiElementImpl(project, pomTarget), RPsiElement {
+  override fun getLanguage(): Language = RLanguage.INSTANCE
+}
 
-abstract class RPomTarget: PomTarget {
+abstract class RPomTarget: PomNamedTarget {
   override fun canNavigate(): Boolean = true
 
   override fun canNavigateToSource(): Boolean = true
@@ -82,6 +89,8 @@ internal class FunctionPomTarget(private val rVar: RVar) : RPomTarget() {
       Unit
     }
   }
+
+  override fun getName(): String = rVar.name
 }
 
 internal class VariablePomTarget(private val rVar: RVar) : RPomTarget() {
@@ -93,22 +102,28 @@ internal class VariablePomTarget(private val rVar: RVar) : RPomTarget() {
     }
     return promise
   }
+
+  override fun getName(): String = rVar.name
 }
 
 internal class DataFramePomTarget(private val rVar: RVar) : RPomTarget() {
   override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
     return VisualizeTableHandler.visualizeTable(rVar.ref.rInterop, rVar.ref, rVar.project, rVar.name)
   }
+
+  override fun getName(): String = rVar.name
 }
 
 internal class GraphPomTarget(private val rVar: RVar) : RPomTarget() {
   override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
     return rVar.ref.evaluateAsTextAsync().then { Unit }
   }
+
+  override fun getName(): String = rVar.name
 }
 
 internal class RSkeletonParameterPomTarget(val assignment: RSkeletonAssignmentStatement,
-                                           val name: String) : RPomTarget() {
+                                           val parameterName: String) : RPomTarget() {
 
   override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
     return RConsoleManager.getInstance(assignment.project).runAsync { console ->
@@ -125,6 +140,8 @@ internal class RSkeletonParameterPomTarget(val assignment: RSkeletonAssignmentSt
       }
     }
   }
+
+  override fun getName(): String = parameterName
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

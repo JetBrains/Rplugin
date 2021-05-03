@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.psi.references
 
+import com.intellij.pom.PomTargetPsiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.PsiPolyVariantReference
@@ -12,7 +13,11 @@ import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.packages.RPackage
+import org.jetbrains.r.psi.RSkeletonParameterPomTarget
+import org.jetbrains.r.psi.api.RIdentifierExpression
+import org.jetbrains.r.psi.api.RParameter
 import org.jetbrains.r.psi.api.RPsiElement
+import org.jetbrains.r.rinterop.RSourceFileManager
 import org.jetbrains.r.skeleton.RSkeletonFileType
 
 abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : PsiPolyVariantReference {
@@ -21,11 +26,15 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
   override fun bindToElement(element: PsiElement) = null
 
   override fun isReferenceTo(element: PsiElement): Boolean {
-    val resolve = resolve()
-    return if (resolve is PsiNameIdentifierOwner) {
-      resolve === element || resolve.identifyingElement === element
-    } else {
-      resolve === element
+    return when (val resolve = resolve()) {
+      is PomTargetPsiElement -> {
+        if (resolve.isEquivalentTo(element)) return true
+        if (!RSourceFileManager.isTemporary(element.containingFile.virtualFile)) return false
+        val target = resolve.target as? RSkeletonParameterPomTarget ?: return false
+        element is RIdentifierExpression && element.parent is RParameter && element.name == target.name
+      }
+      is PsiNameIdentifierOwner -> resolve === element || resolve.identifyingElement === element
+      else -> resolve === element
     }
   }
 
