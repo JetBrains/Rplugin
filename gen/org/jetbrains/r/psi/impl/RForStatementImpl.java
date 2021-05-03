@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RForStatementImpl extends RExpressionImpl implements RForStatement {
 
-  public RForStatementImpl(@NotNull ASTNode node) {
-    super(node);
+  public RForStatementImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

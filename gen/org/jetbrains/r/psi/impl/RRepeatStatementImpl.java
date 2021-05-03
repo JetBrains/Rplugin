@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RRepeatStatementImpl extends RExpressionImpl implements RRepeatStatement {
 
-  public RRepeatStatementImpl(@NotNull ASTNode node) {
-    super(node);
+  public RRepeatStatementImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

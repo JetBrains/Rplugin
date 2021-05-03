@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RPlusminusOperatorImpl extends ROperatorImpl implements RPlusminusOperator {
 
-  public RPlusminusOperatorImpl(@NotNull ASTNode node) {
-    super(node);
+  public RPlusminusOperatorImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

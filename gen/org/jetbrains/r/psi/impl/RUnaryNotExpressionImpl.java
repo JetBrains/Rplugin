@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RUnaryNotExpressionImpl extends ROperatorExpressionImpl implements RUnaryNotExpression {
 
-  public RUnaryNotExpressionImpl(@NotNull ASTNode node) {
-    super(node);
+  public RUnaryNotExpressionImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

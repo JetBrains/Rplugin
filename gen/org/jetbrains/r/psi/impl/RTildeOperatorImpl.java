@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RTildeOperatorImpl extends ROperatorImpl implements RTildeOperator {
 
-  public RTildeOperatorImpl(@NotNull ASTNode node) {
-    super(node);
+  public RTildeOperatorImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

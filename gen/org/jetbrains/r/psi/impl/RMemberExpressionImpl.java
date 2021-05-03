@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RMemberExpressionImpl extends ROperatorExpressionImpl implements RMemberExpression {
 
-  public RMemberExpressionImpl(@NotNull ASTNode node) {
-    super(node);
+  public RMemberExpressionImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

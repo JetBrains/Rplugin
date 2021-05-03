@@ -15,8 +15,8 @@ import org.jetbrains.r.psi.references.RReferenceBase;
 
 public class RNamedArgumentImpl extends RElementImpl implements RNamedArgument {
 
-  public RNamedArgumentImpl(@NotNull ASTNode node) {
-    super(node);
+  public RNamedArgumentImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   public void accept(@NotNull RVisitor visitor) {

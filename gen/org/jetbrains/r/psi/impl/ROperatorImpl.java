@@ -14,8 +14,8 @@ import org.jetbrains.r.psi.references.ROperatorReference;
 
 public class ROperatorImpl extends RElementImpl implements ROperator {
 
-  public ROperatorImpl(@NotNull ASTNode node) {
-    super(node);
+  public ROperatorImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   public void accept(@NotNull RVisitor visitor) {

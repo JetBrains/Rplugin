@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RSubscriptionExpressionImpl extends RExpressionImpl implements RSubscriptionExpression {
 
-  public RSubscriptionExpressionImpl(@NotNull ASTNode node) {
-    super(node);
+  public RSubscriptionExpressionImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

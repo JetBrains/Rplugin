@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RWhileStatementImpl extends RExpressionImpl implements RWhileStatement {
 
-  public RWhileStatementImpl(@NotNull ASTNode node) {
-    super(node);
+  public RWhileStatementImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

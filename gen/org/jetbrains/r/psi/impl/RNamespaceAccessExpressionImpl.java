@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RNamespaceAccessExpressionImpl extends RExpressionImpl implements RNamespaceAccessExpression {
 
-  public RNamespaceAccessExpressionImpl(@NotNull ASTNode node) {
-    super(node);
+  public RNamespaceAccessExpressionImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RNumericLiteralExpressionImpl extends RExpressionImpl implements RNumericLiteralExpression {
 
-  public RNumericLiteralExpressionImpl(@NotNull ASTNode node) {
-    super(node);
+  public RNumericLiteralExpressionImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

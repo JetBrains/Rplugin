@@ -13,8 +13,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RNoCommaTailImpl extends RElementImpl implements RNoCommaTail {
 
-  public RNoCommaTailImpl(@NotNull ASTNode node) {
-    super(node);
+  public RNoCommaTailImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   public void accept(@NotNull RVisitor visitor) {

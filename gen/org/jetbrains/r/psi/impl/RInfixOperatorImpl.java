@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RInfixOperatorImpl extends ROperatorImpl implements RInfixOperator {
 
-  public RInfixOperatorImpl(@NotNull ASTNode node) {
-    super(node);
+  public RInfixOperatorImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

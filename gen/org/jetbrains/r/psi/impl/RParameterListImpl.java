@@ -13,8 +13,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RParameterListImpl extends RElementImpl implements RParameterList {
 
-  public RParameterListImpl(@NotNull ASTNode node) {
-    super(node);
+  public RParameterListImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   public void accept(@NotNull RVisitor visitor) {

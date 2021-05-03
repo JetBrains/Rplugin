@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class ROperatorExpressionImpl extends RExpressionImpl implements ROperatorExpression {
 
-  public ROperatorExpressionImpl(@NotNull ASTNode node) {
-    super(node);
+  public ROperatorExpressionImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override
