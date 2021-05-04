@@ -8,7 +8,6 @@ import com.intellij.openapi.util.Key
 import com.intellij.psi.util.CachedValuesManager
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
-import org.jetbrains.r.packages.RPackageProjectManager
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RCallExpressionImpl
@@ -117,8 +116,8 @@ object R6ClassInfoUtil {
     val project = callExpression.project
 
     if (allSuperClasses != null) {
-      return (r6ClassInfo.members + r6ClassInfo.activeBindings + allSuperClasses.flatMap { superClassName ->
-        LibraryClassNameIndexProvider.R6ClassNameIndex.findClassInfos(superClassName, project, callSearchScope).flatMap { it.members + it.activeBindings }
+      return (r6ClassInfo.fields + r6ClassInfo.methods + r6ClassInfo.activeBindings + allSuperClasses.flatMap { superClassName ->
+        LibraryClassNameIndexProvider.R6ClassNameIndex.findClassInfos(superClassName, project, callSearchScope).flatMap { it.fields + it.methods + it.activeBindings }
       }).distinctBy { it.name }
     }
 
@@ -127,18 +126,51 @@ object R6ClassInfoUtil {
 
   fun getAssociatedMembers(callExpression: RCallExpression,
                            argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression),
-                           onlyPublic: Boolean = false): List<R6ClassMember>? {
+                           onlyPublic: Boolean = false): List<IR6ClassMember>? {
     argumentInfo ?: return null
     if (!callExpression.isFunctionFromLibrarySoft(R6CreateClassMethod, R6PackageName)) return null
 
-    val r6ClassMethods = mutableListOf<R6ClassMember>()
+    val r6ClassFields = getAssociatedFields(callExpression, argumentInfo, onlyPublic)
+    val r6ClassMethods = getAssociatedMethods(callExpression, argumentInfo, onlyPublic)
+
+    val r6ClassMembers = mutableListOf<IR6ClassMember>()
+    if (r6ClassFields != null) r6ClassMembers.addAll(r6ClassFields)
+    if (r6ClassMethods != null) r6ClassMembers.addAll(r6ClassMethods)
+
+    return r6ClassMembers
+  }
+
+  fun getAssociatedFields(callExpression: RCallExpression,
+                          argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression),
+                          onlyPublic: Boolean = false): List<R6ClassField>? {
+    argumentInfo ?: return null
+    if (!callExpression.isFunctionFromLibrarySoft(R6CreateClassMethod, R6PackageName)) return null
+
+    val r6ClassFields = mutableListOf<R6ClassField>()
     val publicContents = (argumentInfo.getArgumentPassedToParameter(argumentPublic) as? RCallExpressionImpl)?.argumentList?.expressionList
-    if (!publicContents.isNullOrEmpty()) getMembersFromExpressionList(r6ClassMethods, publicContents, true)
+    if (!publicContents.isNullOrEmpty()) getFieldsFromExpressionList(r6ClassFields, publicContents, true)
 
     if (!onlyPublic) {
-      val privateContents = (argumentInfo.getArgumentPassedToParameter(
-        argumentPrivate) as? RCallExpressionImpl)?.argumentList?.expressionList
-      if (!privateContents.isNullOrEmpty()) getMembersFromExpressionList(r6ClassMethods, privateContents, false)
+      val privateContents = (argumentInfo.getArgumentPassedToParameter(argumentPrivate) as? RCallExpressionImpl)?.argumentList?.expressionList
+      if (!privateContents.isNullOrEmpty()) getFieldsFromExpressionList(r6ClassFields, privateContents, false)
+    }
+
+    return r6ClassFields
+  }
+
+  fun getAssociatedMethods(callExpression: RCallExpression,
+                          argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression),
+                          onlyPublic: Boolean = false): List<R6ClassMethod>? {
+    argumentInfo ?: return null
+    if (!callExpression.isFunctionFromLibrarySoft(R6CreateClassMethod, R6PackageName)) return null
+
+    val r6ClassMethods = mutableListOf<R6ClassMethod>()
+    val publicContents = (argumentInfo.getArgumentPassedToParameter(argumentPublic) as? RCallExpressionImpl)?.argumentList?.expressionList
+    if (!publicContents.isNullOrEmpty()) getMethodsFromExpressionList(r6ClassMethods, publicContents, true)
+
+    if (!onlyPublic) {
+      val privateContents = (argumentInfo.getArgumentPassedToParameter(argumentPrivate) as? RCallExpressionImpl)?.argumentList?.expressionList
+      if (!privateContents.isNullOrEmpty()) getMethodsFromExpressionList(r6ClassMethods, privateContents, false)
     }
 
     return r6ClassMethods
@@ -170,18 +202,29 @@ object R6ClassInfoUtil {
     val argumentInfo = RParameterInfoUtil.getArgumentInfo(callExpression, definition) ?: return null
     val className = getAssociatedClassNameFromR6ClassCall(callExpression, argumentInfo) ?: return null
     val superClassesHierarchy = getAssociatedSuperClassesHierarchy(callExpression, argumentInfo) ?: emptyList()
-    val members = getAssociatedMembers(callExpression, argumentInfo) ?: emptyList()
+    val fields = getAssociatedFields(callExpression, argumentInfo) ?: emptyList()
+    val methods = getAssociatedMethods(callExpression, argumentInfo) ?: emptyList()
     val activeBindings = getAssociatedActiveBindings(callExpression, argumentInfo) ?: emptyList()
 
-    return R6ClassInfo(className, superClassesHierarchy, members, activeBindings)
+    return R6ClassInfo(className, superClassesHierarchy, fields, methods, activeBindings)
   }
 
-  private fun getMembersFromExpressionList(r6ClassFields: MutableList<R6ClassMember>,
+  private fun getFieldsFromExpressionList(r6ClassFields: MutableList<R6ClassField>,
                                           callExpressions: List<RExpression>,
-                                          isFromPublicScope: Boolean) {
+                                          isPublicScope: Boolean) {
     callExpressions.forEach {
-      if (it.lastChild != null && !it.name.isNullOrEmpty()) {
-        r6ClassFields.add(R6ClassMember(it.name!!, isFromPublicScope))
+      if (it.lastChild !is RFunctionExpression && !it.name.isNullOrEmpty()) {
+        r6ClassFields.add(R6ClassField(it.name!!, isPublicScope))
+      }
+    }
+  }
+
+  private fun getMethodsFromExpressionList(r6ClassMethods: MutableList<R6ClassMethod>,
+                                           callExpressions: List<RExpression>,
+                                           isPublicScope: Boolean) {
+    callExpressions.forEach {
+      if (it.lastChild is RFunctionExpression && !it.name.isNullOrEmpty()) {
+        r6ClassMethods.add(R6ClassMethod(it.name!!, isPublicScope))
       }
     }
   }

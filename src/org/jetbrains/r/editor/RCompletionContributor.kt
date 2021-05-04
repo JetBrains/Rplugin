@@ -20,9 +20,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.classes.r6.R6ClassInfoUtil
-import org.jetbrains.r.classes.r6.IR6ClassMember
-import org.jetbrains.r.classes.r6.R6ClassKeywordsProvider
+import org.jetbrains.r.classes.r6.*
 import org.jetbrains.r.classes.r6.context.*
 import org.jetbrains.r.classes.s4.*
 import org.jetbrains.r.classes.s4.context.*
@@ -142,8 +140,8 @@ class RCompletionContributor : CompletionContributor() {
         }
 
         val text = obj.text
-        runtimeInfo.loadR6ClassInfoByObjectName(text)?.let { info ->
-          return addMembersCompletion(info.members + info.activeBindings, shownNames, result)
+        runtimeInfo.loadR6ClassInfoByObjectName(text)?.let { classInfo ->
+          return addMembersCompletion(classInfo.fields + classInfo.methods + classInfo.activeBindings, shownNames, result)
         }
         return false
       }
@@ -170,7 +168,13 @@ class RCompletionContributor : CompletionContributor() {
 
         for (r6Member in r6ClassMembers) {
           if (r6Member.name in shownNames) continue
-          result.consume(rCompletionElementFactory.createAtAccess(r6Member.name))
+
+          when (r6Member){
+            // TODO fix specific rCompletionElementFactory
+            is R6ClassField -> result.consume(rCompletionElementFactory.createAtAccess(r6Member.name))
+            is R6ClassMethod -> result.consume(rCompletionElementFactory.createAtAccess(r6Member.name))
+          }
+
           shownNames.add(r6Member.name)
           hasNewResults = true
         }

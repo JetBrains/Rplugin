@@ -100,27 +100,37 @@ class R6ClassInfoUtilTests : RClassesUtilTestsBase() {
   fun testClassContainsFields(){
     val rAssignmentStatement = getRootElementOfPsi(fullClassCodeDefinition) as RAssignmentStatement
     val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
-    val classFields = R6ClassInfoUtil.getAssociatedMembers(rCallExpression!!)
+    val classFields = R6ClassInfoUtil.getAssociatedFields(rCallExpression!!)
 
     assertNotNull(classFields)
 
     val classFieldsNames = classFields!!.map { it.name }
     assertContainsElements(classFieldsNames, "weight")
+    assertEquals(true, classFields[0].isPublic)
+
     assertContainsElements(classFieldsNames, "speed")
+    assertEquals(true, classFields[1].isPublic)
+
     assertContainsElements(classFieldsNames, "engine_rpm")
+    assertEquals(false, classFields[2].isPublic)
   }
 
   fun testClassContainsMethods(){
     val rAssignmentStatement = getRootElementOfPsi(fullClassCodeDefinition) as RAssignmentStatement
     val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
-    val classMethods = R6ClassInfoUtil.getAssociatedMembers(rCallExpression!!)
+    val classMethods = R6ClassInfoUtil.getAssociatedMethods(rCallExpression!!)
 
-    TestCase.assertNotNull(classMethods)
+    assertNotNull(classMethods)
 
     val classMethodsNames = classMethods!!.map { it.name }
     assertContainsElements(classMethodsNames, "accelerate")
+    assertEquals(classMethods[0].isPublic, true)
+
     assertContainsElements(classMethodsNames, "slowDown")
+    assertEquals(classMethods[1].isPublic, true)
+
     assertContainsElements(classMethodsNames, "maximize")
+    assertEquals(classMethods[2].isPublic, false)
   }
 
   fun testGetAssociatedActiveBindings(){
@@ -128,7 +138,7 @@ class R6ClassInfoUtilTests : RClassesUtilTestsBase() {
     val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
     val classActiveBindings = R6ClassInfoUtil.getAssociatedActiveBindings(rCallExpression!!)
 
-    TestCase.assertNotNull(classActiveBindings)
+    assertNotNull(classActiveBindings)
     assertEquals(classActiveBindings!!.size, 1)
 
     val classActiveBindingsNames = classActiveBindings.map { it.name }
@@ -138,9 +148,9 @@ class R6ClassInfoUtilTests : RClassesUtilTestsBase() {
   fun testGetShortenedClassAssociatedFields(){
     val rAssignmentStatement = getRootElementOfPsi(shortedClassCodeDefinition) as RAssignmentStatement
     val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
-    val classFields = R6ClassInfoUtil.getAssociatedMembers(rCallExpression!!)
+    val classFields = R6ClassInfoUtil.getAssociatedFields(rCallExpression!!)
 
-    TestCase.assertNotNull(classFields)
+    assertNotNull(classFields)
 
     val classFieldsNames = classFields!!.map { it.name }
     assertContainsElements(classFieldsNames, "weight")
@@ -151,13 +161,29 @@ class R6ClassInfoUtilTests : RClassesUtilTestsBase() {
   fun testGetShortenedClassAssociatedMethods(){
     val rAssignmentStatement = getRootElementOfPsi(shortedClassCodeDefinition) as RAssignmentStatement
     val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
-    val classMethods = R6ClassInfoUtil.getAssociatedMembers(rCallExpression!!)
+    val classMethods = R6ClassInfoUtil.getAssociatedMethods(rCallExpression!!)
 
-    TestCase.assertNotNull(classMethods)
+    assertNotNull(classMethods)
 
     val classMethodsNames = classMethods!!.map { it.name }
     assertContainsElements(classMethodsNames, "accelerate")
     assertContainsElements(classMethodsNames, "slowDown")
     classMethods.forEach { assertEquals(true, it.isPublic) }
+  }
+
+  fun testGetMembers(){
+    val rAssignmentStatement = getRootElementOfPsi(fullClassCodeDefinition) as RAssignmentStatement
+    val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
+    val classMethods = R6ClassInfoUtil.getAssociatedMembers(rCallExpression!!)
+
+    assertNotNull(classMethods)
+
+    val classMethodsNames = classMethods!!.map { it.name }
+    assertContainsElements(classMethodsNames, "weight")
+    assertContainsElements(classMethodsNames, "speed")
+    assertContainsElements(classMethodsNames, "engine_rpm")
+    assertContainsElements(classMethodsNames, "maximize")
+    assertContainsElements(classMethodsNames, "accelerate")
+    assertContainsElements(classMethodsNames, "slowDown")
   }
 }
