@@ -38,7 +38,12 @@ message RLibrarySymbol {
   }
 
   message R6ClassRepresentation {
-    message R6ClassMember {
+    message R6ClassField {
+      string name = 1;
+      bool isPublic = 2;
+    }
+
+    message R6ClassMethod {
       string name = 1;
       bool isPublic = 2;
     }
@@ -47,8 +52,9 @@ message RLibrarySymbol {
       string name = 1;
     }
 
-    repeated string superClasses = 2;
-    repeated R6ClassMember members = 3;
+    repeated string superClasses = 1;
+    repeated R6ClassField fields = 2;
+    repeated R6ClassMethod methods = 3;
     repeated R6ClassActiveBinding activeBindings = 4;
   }
 
