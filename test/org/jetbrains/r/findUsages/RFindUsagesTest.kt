@@ -50,7 +50,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       }
     """, """
       <root> (2)
-       Variable
+       Function
         my.local.function
        Found usages (2)
         Unclassified (2)
@@ -68,7 +68,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       dplyr.package <- package<caret>Description("dplyr")      
     """, """
       <root> (2)
-       Variable
+       Function
         packageDescription(pkg, lib.loc = NULL, fields = NULL, drop = TRUE, encoding = "")
        Found usages (2)
         Unclassified (2)
@@ -91,7 +91,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       func(x = p)
     """, """
       <root> (2)
-       Variable
+       Function parameter
         x
        Found usages (2)
         Unclassified (2)
@@ -118,7 +118,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       }
     """, """
       <root> (2)
-       Variable
+       Function parameter
         x
        Found usages (2)
         Unclassified (1)
@@ -151,7 +151,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       ba<caret>r <- function(x) { x + 42 }
     """, """
       <root> (2)
-       Variable
+       Function
         bar
        Found usages (2)
         Unclassified (1)

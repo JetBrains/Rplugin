@@ -41,16 +41,31 @@ class RFindUsagesProvider : FindUsagesProvider {
 
   override fun getType(element: PsiElement): String {
     if (element is RAssignmentStatement) {
-      val assignedValue = element.assignedValue
-      if (assignedValue is RFunctionExpression) {
-        return RBundle.message("find.usages.function")
-      }
+      getAssignmentType(element)?.let { return it }
+    }
+    val parent = element.parent
+    if (parent is RAssignmentStatement) {
+      getAssignmentType(parent)?.let { return it }
     }
 
-    return if (element is RParameter) RBundle.message("find.usages.parameter") else RBundle.message("find.usages.variable")
-
+    return if (element is RParameter || parent is RParameter && parent.variable == element) {
+      RBundle.message("find.usages.parameter")
+    }
+    else RBundle.message("find.usages.variable")
   }
 
+  private fun getAssignmentType(assignment: RAssignmentStatement): String? {
+    if (assignment is RSkeletonAssignmentStatement) {
+      return when (assignment.stub.type) {
+        LibrarySummary.RLibrarySymbol.Type.FUNCTION -> RBundle.message("find.usages.function")
+        LibrarySummary.RLibrarySymbol.Type.DATASET -> RBundle.message("find.usages.dataset")
+        else -> null
+      }
+    }
+    val assignedValue = assignment.assignedValue
+    return if (assignedValue is RFunctionExpression) RBundle.message("find.usages.function")
+    else null
+  }
 
   override fun getDescriptiveName(element: PsiElement): String {
     if (element is RAssignmentStatement) {

@@ -450,6 +450,7 @@ You can find the source code in the following repositories:
                                  implementationClass="org.jetbrains.r.psi.RStringManipulator"/>
         <lang.findUsagesProvider implementationClass="org.jetbrains.r.psi.references.RFindUsagesProvider" language="R"/>
         <lang.findUsagesProvider implementationClass="org.jetbrains.r.roxygen.usage.RoxygenFindUsagesProvider" language="Roxygen"/>
+        <elementDescriptionProvider implementation="org.jetbrains.r.psi.references.RPomTargetDescriptionProvider"/>
         <usageTypeProvider implementation="org.jetbrains.r.roxygen.usage.RoxygenUsageTypeProvider"/>
         <targetElementEvaluator language="R" implementationClass="org.jetbrains.r.codeInsight.findUsages.RTargetElementEvaluator"/>
 
