@@ -1,5 +1,6 @@
 package org.jetbrains.r.rinterop.rstudioapi
 
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.internal.statistic.service.fus.collectors.FUCounterUsageLogger
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.content.Content
@@ -61,7 +62,7 @@ object TerminalUtils {
     val show = args.list.getRObjects(3).rBoolean.getBooleans(0)
 
     val terminalWidget = TerminalView.getInstance(rInterop.project).createLocalShellWidget(workingDir, null)
-    TerminalOptionsProvider.instance.setEnvData(com.intellij.execution.configuration.EnvironmentVariablesData.create(env, true))
+    TerminalProjectOptionsProvider.getInstance(rInterop.project).setEnvData(EnvironmentVariablesData.create(env, true))
     terminalWidget.executeCommand(command)
     return idFromTerminal(rInterop, terminalWidget)?.toRString() ?: getRNull()
   }
