@@ -46,7 +46,10 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
 
   fun testRenameNeedQuote() = doTestWithProject("New val")
 
-  fun testRenameLibraryFunction() = doTestWithProject("printt", false)
+  fun testRenameLibraryFunction() {
+    addLibraries()
+    doTestWithProject("printt", false)
+  }
 
   fun testRenameRedeclarationGlobalInFunction() = doTestWithProject("global")
 
