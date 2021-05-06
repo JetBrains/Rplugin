@@ -11,12 +11,15 @@ import com.intellij.psi.PsiPolyVariantReference
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.util.IncorrectOperationException
+import org.jetbrains.r.classes.s4.RS4ComplexSlotPomTarget
+import org.jetbrains.r.classes.s4.RS4SourceManager
+import org.jetbrains.r.classes.s4.RSkeletonS4ClassPomTarget
+import org.jetbrains.r.classes.s4.RSkeletonS4SlotPomTarget
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.packages.RPackage
+import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.RSkeletonParameterPomTarget
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.api.RParameter
-import org.jetbrains.r.psi.api.RPsiElement
+import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.rinterop.RSourceFileManager
 import org.jetbrains.r.skeleton.RSkeletonFileType
 
@@ -28,10 +31,37 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
   override fun isReferenceTo(element: PsiElement): Boolean {
     return when (val resolve = resolve()) {
       is PomTargetPsiElement -> {
+        if (element !is RPsiElement) return false
         if (resolve.isEquivalentTo(element)) return true
-        if (!RSourceFileManager.isTemporary(element.containingFile.virtualFile)) return false
-        val target = resolve.target as? RSkeletonParameterPomTarget ?: return false
-        element is RIdentifierExpression && element.parent is RParameter && element.name == target.name
+        val target = resolve.target
+        return when {
+          target is RS4ComplexSlotPomTarget -> {
+            val defIdentifier =
+              if (target.slotDefinition is RNamedArgument) target.slotDefinition.nameIdentifier
+              else target.slotDefinition
+            element === defIdentifier
+          }
+          element.containingFile?.virtualFile != null &&
+          RSourceFileManager.isTemporary(element.containingFile.virtualFile) -> {
+            target is RSkeletonParameterPomTarget &&
+            element is RIdentifierExpression &&
+            element.parent is RParameter &&
+            element.name == target.name
+          }
+          RS4SourceManager.isS4ClassSourceElement(element) -> {
+            when (target) {
+              is RSkeletonS4SlotPomTarget -> {
+                return RPsiUtil.getNamedArgumentByNameIdentifier(element) != null
+              }
+              is RSkeletonS4ClassPomTarget -> {
+                val className = (element.containingFile.firstChild as RCallExpression).argumentList.expressionList.first()
+                return element == className
+              }
+              else -> false
+            }
+          }
+          else -> false
+        }
       }
       is PsiNameIdentifierOwner -> resolve === element || resolve.identifyingElement === element
       else -> resolve === element

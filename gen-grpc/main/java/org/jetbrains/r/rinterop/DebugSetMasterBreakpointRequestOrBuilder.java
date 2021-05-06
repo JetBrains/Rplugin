@@ -30,6 +30,11 @@ public interface DebugSetMasterBreakpointRequestOrBuilder extends
 
   /**
    * <code>int32 masterId = 3;</code>
+   * @return Whether the masterId field is set.
+   */
+  boolean hasMasterId();
+  /**
+   * <code>int32 masterId = 3;</code>
    * @return The masterId.
    */
   int getMasterId();

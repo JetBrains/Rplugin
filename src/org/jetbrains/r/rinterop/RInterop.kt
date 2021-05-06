@@ -37,6 +37,7 @@ import org.jetbrains.concurrency.*
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.classes.s4.RS4ClassSlot
+import org.jetbrains.r.classes.s4.RS4SuperClass
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame
@@ -854,7 +855,10 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   fun getS4ClassInfoByObjectName(ref: RReference): RS4ClassInfo? {
     return try {
       val res = executeWithCheckCancel(asyncStub::getS4ClassInfoByObjectName, ref.proto)
-      RS4ClassInfo(res.className, res.packageName, res.slotsList.map { RS4ClassSlot(it.name, it.type) }, res.superClassesList,
+      if (res.className.isEmpty()) return null
+      RS4ClassInfo(res.className, res.packageName,
+                   res.slotsList.map { RS4ClassSlot(it.name, it.type, it.declarationClass) },
+                   res.superClassesList.map { RS4SuperClass(it.name, it.isDirectInheritance) },
                    res.isVirtual)
     } catch (e: RInteropTerminated) {
       null
@@ -864,7 +868,10 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   fun getS4ClassInfoByClassName(className: String): RS4ClassInfo? {
     return try {
       val res = executeWithCheckCancel(asyncStub::getS4ClassInfoByClassName, StringValue.of(className))
-      RS4ClassInfo(res.className, res.packageName, res.slotsList.map { RS4ClassSlot(it.name, it.type) }, res.superClassesList,
+      if (res.className.isEmpty()) return null
+      RS4ClassInfo(res.className, res.packageName,
+                   res.slotsList.map { RS4ClassSlot(it.name, it.type, it.declarationClass) },
+                   res.superClassesList.map { RS4SuperClass(it.name, it.isDirectInheritance) },
                    res.isVirtual)
     } catch (e: RInteropTerminated) {
       null

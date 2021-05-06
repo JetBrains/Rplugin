@@ -3178,6 +3178,14 @@ private static final long serialVersionUID = 0L;
   public static final int PERSISTENTINDEX_FIELD_NUMBER = 1;
   /**
    * <code>int32 persistentIndex = 1;</code>
+   * @return Whether the persistentIndex field is set.
+   */
+  @java.lang.Override
+  public boolean hasPersistentIndex() {
+    return refCase_ == 1;
+  }
+  /**
+   * <code>int32 persistentIndex = 1;</code>
    * @return The persistentIndex.
    */
   @java.lang.Override
@@ -3251,6 +3259,14 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int SYSFRAMEINDEX_FIELD_NUMBER = 4;
+  /**
+   * <code>int32 sysFrameIndex = 4;</code>
+   * @return Whether the sysFrameIndex field is set.
+   */
+  @java.lang.Override
+  public boolean hasSysFrameIndex() {
+    return refCase_ == 4;
+  }
   /**
    * <code>int32 sysFrameIndex = 4;</code>
    * @return The sysFrameIndex.
@@ -3388,6 +3404,14 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int ERRORSTACKSYSFRAMEINDEX_FIELD_NUMBER = 9;
+  /**
+   * <code>int32 errorStackSysFrameIndex = 9;</code>
+   * @return Whether the errorStackSysFrameIndex field is set.
+   */
+  @java.lang.Override
+  public boolean hasErrorStackSysFrameIndex() {
+    return refCase_ == 9;
+  }
   /**
    * <code>int32 errorStackSysFrameIndex = 9;</code>
    * @return The errorStackSysFrameIndex.
@@ -4004,6 +4028,13 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>int32 persistentIndex = 1;</code>
+     * @return Whether the persistentIndex field is set.
+     */
+    public boolean hasPersistentIndex() {
+      return refCase_ == 1;
+    }
+    /**
+     * <code>int32 persistentIndex = 1;</code>
      * @return The persistentIndex.
      */
     public int getPersistentIndex() {
@@ -4318,6 +4349,13 @@ private static final long serialVersionUID = 0L;
       return currentEnvBuilder_;
     }
 
+    /**
+     * <code>int32 sysFrameIndex = 4;</code>
+     * @return Whether the sysFrameIndex field is set.
+     */
+    public boolean hasSysFrameIndex() {
+      return refCase_ == 4;
+    }
     /**
      * <code>int32 sysFrameIndex = 4;</code>
      * @return The sysFrameIndex.
@@ -4916,6 +4954,13 @@ private static final long serialVersionUID = 0L;
       return listElementBuilder_;
     }
 
+    /**
+     * <code>int32 errorStackSysFrameIndex = 9;</code>
+     * @return Whether the errorStackSysFrameIndex field is set.
+     */
+    public boolean hasErrorStackSysFrameIndex() {
+      return refCase_ == 9;
+    }
     /**
      * <code>int32 errorStackSysFrameIndex = 9;</code>
      * @return The errorStackSysFrameIndex.

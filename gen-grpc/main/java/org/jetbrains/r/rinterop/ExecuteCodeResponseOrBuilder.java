@@ -24,6 +24,11 @@ public interface ExecuteCodeResponseOrBuilder extends
 
   /**
    * <code>string exception = 2;</code>
+   * @return Whether the exception field is set.
+   */
+  boolean hasException();
+  /**
+   * <code>string exception = 2;</code>
    * @return The exception.
    */
   java.lang.String getException();

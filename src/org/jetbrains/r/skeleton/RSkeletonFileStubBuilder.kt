@@ -10,6 +10,7 @@ import com.intellij.psi.stubs.Stub
 import com.intellij.util.indexing.FileContent
 import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.classes.s4.RS4ClassSlot
+import org.jetbrains.r.classes.s4.RS4SuperClass
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
 import org.jetbrains.r.packages.LibrarySummary
 import org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.RepresentationCase
@@ -37,8 +38,8 @@ class RSkeletonFileStubBuilder : BinaryFileStubBuilder {
                                     R_SKELETON_CALL_EXPRESSION,
                                     RS4ClassInfo(symbol.name,
                                                  s4ClassRepresentation.packageName,
-                                                 s4ClassRepresentation.slotsList.map { RS4ClassSlot(it.name, it.type) },
-                                                 s4ClassRepresentation.superClassesList,
+                                                 s4ClassRepresentation.slotsList.map { RS4ClassSlot(it.name, it.type, it.declarationClass) },
+                                                 s4ClassRepresentation.superClassesList.map { RS4SuperClass(it.name, it.isDirectInheritance) },
                                                  s4ClassRepresentation.isVirtual))
       }
       else {

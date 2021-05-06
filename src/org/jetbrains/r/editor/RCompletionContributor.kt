@@ -23,7 +23,15 @@ import org.jetbrains.r.RLanguage
 import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.classes.s4.RS4ClassInfoUtil
 import org.jetbrains.r.classes.s4.RS4ClassSlot
-import org.jetbrains.r.classes.s4.context.*
+import org.jetbrains.r.classes.s4.RS4Resolver
+import org.jetbrains.r.classes.s4.context.RS4ContextProvider
+import org.jetbrains.r.classes.s4.context.RS4ContextProvider.Companion.S4_CLASS_USAGE_CONTEXTS
+import org.jetbrains.r.classes.s4.context.RS4NewObjectClassNameContext
+import org.jetbrains.r.classes.s4.context.RS4NewObjectContext
+import org.jetbrains.r.classes.s4.context.RS4NewObjectSlotNameContext
+import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassContainsContext
+import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassDependencyClassNameContext
+import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassRepresentationContext
 import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
 import org.jetbrains.r.codeInsight.table.RTableColumnCollectProcessor
 import org.jetbrains.r.codeInsight.table.RTableContextManager
@@ -150,16 +158,12 @@ class RCompletionContributor : CompletionContributor() {
       override fun addCompletionStatically(psiElement: RAtExpression,
                                            shownNames: MutableSet<String>,
                                            result: CompletionResultSet): Boolean {
-        psiElement.leftExpr?.reference?.multiResolve(false)?.forEach { resolveResult ->
-          val definition = resolveResult.element as? RAssignmentStatement ?: return@forEach
-          (definition.assignedValue as? RCallExpression)?.let { call ->
-            val className = RS4ClassInfoUtil.getAssociatedClassName(call) ?: return@forEach
-            RS4ClassNameIndex.findClassDefinitions(className, psiElement.project, RSearchScopeUtil.getScope(psiElement)).forEach {
-              return addSlotsCompletion(RS4ClassInfoUtil.getAllAssociatedSlots(it), shownNames, result)
-            }
-          }
+        val owner = psiElement.leftExpr ?: return false
+        var res = false
+        RS4Resolver.findElementS4ClassDeclarations(owner).forEach {
+          res = res || addSlotsCompletion(RS4ClassInfoUtil.getAllAssociatedSlots(it), shownNames, result)
         }
-        return false
+        return res
       }
 
       private fun addSlotsCompletion(slots: List<RS4ClassSlot>, shownNames: MutableSet<String>, result: CompletionResultSet): Boolean {
@@ -446,11 +450,11 @@ class RCompletionContributor : CompletionContributor() {
     }
 
     private fun addS4SlotNameCompletion(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet) {
-      val s4Context = RS4ContextProvider.getS4Context(classNameExpression, RS4NewObjectContext::class.java) ?: return
+      val s4Context = RS4ContextProvider.getS4Context(classNameExpression, RS4NewObjectContext::class) ?: return
       if (s4Context !is RS4NewObjectSlotNameContext) return
 
-      val newCall = s4Context.functionCall
-      val className = RS4ClassInfoUtil.getAssociatedClassName(newCall, s4Context.argumentInfo) ?: return
+      val newCall = s4Context.contextFunctionCall
+      val className = RS4ClassInfoUtil.getAssociatedClassName(newCall) ?: return
       addStaticRuntimeCompletionDependsOfFile(newCall, file, result, object : RStaticRuntimeCompletionProvider<RCallExpression> {
         override fun addCompletionFromRuntime(psiElement: RCallExpression,
                                               shownNames: MutableSet<String>,
@@ -480,9 +484,7 @@ class RCompletionContributor : CompletionContributor() {
     }
 
     private fun addS4ClassNameCompletion(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet) {
-      val s4Context = RS4ContextProvider.getS4Context(classNameExpression,
-                                                      RS4NewObjectContext::class.java,
-                                                      RS4SetClassContext::class.java) ?: return
+      val s4Context = RS4ContextProvider.getS4Context(classNameExpression, *S4_CLASS_USAGE_CONTEXTS) ?: return
       var omitVirtual = false
       var nameToOmit: String? = null
       when (s4Context) {
@@ -490,7 +492,7 @@ class RCompletionContributor : CompletionContributor() {
           omitVirtual = true
         }
         is RS4SetClassRepresentationContext, is RS4SetClassContainsContext, is RS4SetClassDependencyClassNameContext -> {
-          nameToOmit = RS4ClassInfoUtil.getAssociatedClassName(s4Context.functionCall, s4Context.argumentInfo)
+          nameToOmit = RS4ClassInfoUtil.getAssociatedClassName(s4Context.contextFunctionCall)
         }
         else -> return
       }
@@ -529,7 +531,7 @@ class RCompletionContributor : CompletionContributor() {
       val isLoaded = loadedPackages?.contains(packageName) ?: true
       val priority =
         when {
-          classInfo.packageName == "methods" && "language" in classInfo.superClasses -> LANGUAGE_S4_CLASS_NAME
+          classInfo.packageName == "methods" && classInfo.superClasses.any { it.name == "language" } -> LANGUAGE_S4_CLASS_NAME
           isUser || isLoaded -> LOADED_S4_CLASS_NAME
           else -> NOT_LOADED_S4_CLASS_NAME
         }

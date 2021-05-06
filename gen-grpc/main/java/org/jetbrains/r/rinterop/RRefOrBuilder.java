@@ -9,6 +9,11 @@ public interface RRefOrBuilder extends
 
   /**
    * <code>int32 persistentIndex = 1;</code>
+   * @return Whether the persistentIndex field is set.
+   */
+  boolean hasPersistentIndex();
+  /**
+   * <code>int32 persistentIndex = 1;</code>
    * @return The persistentIndex.
    */
   int getPersistentIndex();
@@ -43,6 +48,11 @@ public interface RRefOrBuilder extends
    */
   com.google.protobuf.EmptyOrBuilder getCurrentEnvOrBuilder();
 
+  /**
+   * <code>int32 sysFrameIndex = 4;</code>
+   * @return Whether the sysFrameIndex field is set.
+   */
+  boolean hasSysFrameIndex();
   /**
    * <code>int32 sysFrameIndex = 4;</code>
    * @return The sysFrameIndex.
@@ -109,6 +119,11 @@ public interface RRefOrBuilder extends
    */
   org.jetbrains.r.rinterop.RRef.ListElementOrBuilder getListElementOrBuilder();
 
+  /**
+   * <code>int32 errorStackSysFrameIndex = 9;</code>
+   * @return Whether the errorStackSysFrameIndex field is set.
+   */
+  boolean hasErrorStackSysFrameIndex();
   /**
    * <code>int32 errorStackSysFrameIndex = 9;</code>
    * @return The errorStackSysFrameIndex.

@@ -5709,6 +5709,13 @@ private static final long serialVersionUID = 0L;
   public static final int ERROR_FIELD_NUMBER = 8;
   /**
    * <code>string error = 8;</code>
+   * @return Whether the error field is set.
+   */
+  public boolean hasError() {
+    return objectCase_ == 8;
+  }
+  /**
+   * <code>string error = 8;</code>
    * @return The error.
    */
   public java.lang.String getError() {
@@ -7260,6 +7267,14 @@ private static final long serialVersionUID = 0L;
       return namedListBuilder_;
     }
 
+    /**
+     * <code>string error = 8;</code>
+     * @return Whether the error field is set.
+     */
+    @java.lang.Override
+    public boolean hasError() {
+      return objectCase_ == 8;
+    }
     /**
      * <code>string error = 8;</code>
      * @return The error.

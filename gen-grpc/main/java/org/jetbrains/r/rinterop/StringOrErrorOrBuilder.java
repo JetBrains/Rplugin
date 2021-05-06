@@ -9,6 +9,11 @@ public interface StringOrErrorOrBuilder extends
 
   /**
    * <code>string value = 1;</code>
+   * @return Whether the value field is set.
+   */
+  boolean hasValue();
+  /**
+   * <code>string value = 1;</code>
    * @return The value.
    */
   java.lang.String getValue();
@@ -19,6 +24,11 @@ public interface StringOrErrorOrBuilder extends
   com.google.protobuf.ByteString
       getValueBytes();
 
+  /**
+   * <code>string error = 2;</code>
+   * @return Whether the error field is set.
+   */
+  boolean hasError();
   /**
    * <code>string error = 2;</code>
    * @return The error.

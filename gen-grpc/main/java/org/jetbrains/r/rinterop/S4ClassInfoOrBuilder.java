@@ -56,29 +56,28 @@ public interface S4ClassInfoOrBuilder extends
       int index);
 
   /**
-   * <code>repeated string superClasses = 4;</code>
-   * @return A list containing the superClasses.
+   * <code>repeated .rplugininterop.S4ClassInfo.S4SuperClass superClasses = 4;</code>
    */
-  java.util.List<java.lang.String>
+  java.util.List<org.jetbrains.r.rinterop.S4ClassInfo.S4SuperClass> 
       getSuperClassesList();
   /**
-   * <code>repeated string superClasses = 4;</code>
-   * @return The count of superClasses.
+   * <code>repeated .rplugininterop.S4ClassInfo.S4SuperClass superClasses = 4;</code>
+   */
+  org.jetbrains.r.rinterop.S4ClassInfo.S4SuperClass getSuperClasses(int index);
+  /**
+   * <code>repeated .rplugininterop.S4ClassInfo.S4SuperClass superClasses = 4;</code>
    */
   int getSuperClassesCount();
   /**
-   * <code>repeated string superClasses = 4;</code>
-   * @param index The index of the element to return.
-   * @return The superClasses at the given index.
+   * <code>repeated .rplugininterop.S4ClassInfo.S4SuperClass superClasses = 4;</code>
    */
-  java.lang.String getSuperClasses(int index);
+  java.util.List<? extends org.jetbrains.r.rinterop.S4ClassInfo.S4SuperClassOrBuilder> 
+      getSuperClassesOrBuilderList();
   /**
-   * <code>repeated string superClasses = 4;</code>
-   * @param index The index of the value to return.
-   * @return The bytes of the superClasses at the given index.
+   * <code>repeated .rplugininterop.S4ClassInfo.S4SuperClass superClasses = 4;</code>
    */
-  com.google.protobuf.ByteString
-      getSuperClassesBytes(int index);
+  org.jetbrains.r.rinterop.S4ClassInfo.S4SuperClassOrBuilder getSuperClassesOrBuilder(
+      int index);
 
   /**
    * <code>bool isVirtual = 5;</code>

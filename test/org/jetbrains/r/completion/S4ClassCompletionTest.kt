@@ -67,6 +67,24 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), "mySlot" to "character")
   }
 
+  fun testLibClassChainSlot() {
+    doTest("""
+      obj <- new('SealedMethodDefinition')
+      obj@target@<caret>
+    """.trimIndent(), ".Data" to "character", "names" to "character", "package" to "character")
+  }
+
+  fun testUserClassChainSlot() {
+    doTest("""
+      setClass('MyClass1', slots = c(slot1 = 'type1', slot2 = 'type2'))
+      setClass('MyClass2', slots = c(slot3 = 'MyClass1'))
+      setClass('MyClass3', slots = c(slot4 = 'MyClass2'))
+      setClass('MyClass4', slots = c(slot5 = 'MyClass3'))
+      obj <- new('MyClass4')
+      obj@slot5@slot4@slot3@<caret>
+    """.trimIndent(), "slot1" to "type1", "slot2" to "type2")
+  }
+
   fun testUserClassWithTypedSlots() {
     // In General, you can't mix typed and untyped slots at all, but why not try to produce a reasonable result?
     doTest("""
@@ -251,6 +269,14 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
       setClass('Test', slots = c(name = 'numeric'))
       new_test <- new(Tes<caret>)
     """.trimIndent(), "\"Test\"" to "foo.R", strict = false)
+  }
+
+  fun testClassNameInComplexSlot() {
+    doTest("""
+      setClass('MyClass1')
+      setClass('MyClass2')
+      setClass('MyClass3', slots = c(slot = c('type1', ext = 'My<caret>')))
+    """.trimIndent(), "MyClass1" to "foo.R", "MyClass2" to "foo.R", strict = false)
   }
 
   fun testOmitSetClassName() {

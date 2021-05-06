@@ -136,6 +136,13 @@ private static final long serialVersionUID = 0L;
   public static final int VALUE_FIELD_NUMBER = 1;
   /**
    * <code>string value = 1;</code>
+   * @return Whether the value field is set.
+   */
+  public boolean hasValue() {
+    return resultCase_ == 1;
+  }
+  /**
+   * <code>string value = 1;</code>
    * @return The value.
    */
   public java.lang.String getValue() {
@@ -179,6 +186,13 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int ERROR_FIELD_NUMBER = 2;
+  /**
+   * <code>string error = 2;</code>
+   * @return Whether the error field is set.
+   */
+  public boolean hasError() {
+    return resultCase_ == 2;
+  }
   /**
    * <code>string error = 2;</code>
    * @return The error.
@@ -588,6 +602,14 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string value = 1;</code>
+     * @return Whether the value field is set.
+     */
+    @java.lang.Override
+    public boolean hasValue() {
+      return resultCase_ == 1;
+    }
+    /**
+     * <code>string value = 1;</code>
      * @return The value.
      */
     @java.lang.Override
@@ -675,6 +697,14 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    /**
+     * <code>string error = 2;</code>
+     * @return Whether the error field is set.
+     */
+    @java.lang.Override
+    public boolean hasError() {
+      return resultCase_ == 2;
+    }
     /**
      * <code>string error = 2;</code>
      * @return The error.

@@ -4,8 +4,10 @@
 
 package org.jetbrains.r.classes.s4
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.psi.util.CachedValuesManager
+import com.intellij.util.Processor
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.packages.RPackageProjectManager
@@ -21,10 +23,34 @@ object RS4ClassInfoUtil {
 
   fun getAssociatedClassName(callExpression: RCallExpression,
                              argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)): String? {
+    return getAssociatedClassNameIdentifier(callExpression, argumentInfo)?.name
+  }
+
+  fun getAssociatedClassNameIdentifier(callExpression: RCallExpression,
+                                       argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)
+  ): RStringLiteralExpression? {
     argumentInfo ?: return null
     if (!callExpression.isFunctionFromLibrarySoft("setClass", "methods") &&
         !callExpression.isFunctionFromLibrarySoft("new", "methods")) return null
-    return (argumentInfo.getArgumentPassedToParameter("Class") as? RStringLiteralExpression)?.name
+    return argumentInfo.getArgumentPassedToParameter("Class") as? RStringLiteralExpression
+  }
+
+  fun findSlotInClassDefinition(setClass: RCallExpression, slotName: String): Pair<RS4ClassSlot, RExpression>? {
+    if (!setClass.isFunctionFromLibrarySoft("setClass", "methods")) return null
+    val argumentInfo = RParameterInfoUtil.getArgumentInfo(setClass, setClass.project.setClassDefinition) ?: return null
+    val className = getAssociatedClassName(setClass, argumentInfo) ?: return null
+    var res: Pair<RS4ClassSlot, RExpression>? = null
+    val slotProcessor = Processor<Pair<RS4ClassSlot, RExpression>> { slot ->
+      if (slot.first.name == slotName) {
+        res = slot
+        false
+      }
+      else true
+    }
+    processSlotsArgument(className, argumentInfo.getArgumentPassedToParameter("slots"), slotProcessor)
+    if (res != null) return res
+    processRepresentationArgument(className, argumentInfo.getArgumentPassedToParameter("representation"), slotProcessor)
+    return res
   }
 
   /**
@@ -49,7 +75,7 @@ object RS4ClassInfoUtil {
    * @param callExpression `setClass` definition expression
    * @return all superclasses associated with class including superclasses from superclasses
    */
-  fun getAllAssociatedSuperClasses(callExpression: RCallExpression?): List<String> {
+  fun getAllAssociatedSuperClasses(callExpression: RCallExpression?): List<RS4SuperClass> {
     if (callExpression == null) return emptyList()
     if (callExpression is RSkeletonCallExpression) {
       // S4 classes from packages and so contains all super classes
@@ -58,7 +84,7 @@ object RS4ClassInfoUtil {
     if (!callExpression.isFunctionFromLibrary("setClass", "methods")) return emptyList()
     return CachedValuesManager.getProjectPsiDependentCache(callExpression) {
       val info = callExpression.associatedS4ClassInfo
-      if (info == null) return@getProjectPsiDependentCache emptyList<String>()
+      if (info == null) return@getProjectPsiDependentCache emptyList<RS4SuperClass>()
       calcAllAssociatedSuperClasses(callExpression, info)
     }
   }
@@ -67,31 +93,32 @@ object RS4ClassInfoUtil {
     val allSuperClasses = calcAllAssociatedSuperClasses(callExpression, s4ClassInfo)
     val callSearchScope = RSearchScopeUtil.getScope(callExpression)
     val project = callExpression.project
-    return (s4ClassInfo.slots + allSuperClasses.flatMap { superClassName ->
+    return (s4ClassInfo.slots + allSuperClasses.flatMap { (superClassName, _) ->
       // Collect slots from super classes and data slot if needed
       RS4ClassNameIndex.findClassInfos(superClassName, project, callSearchScope).flatMap {
         val superClassSlots = it.slots
         when {
           // methods:::.InhSlotNames
-          DATA_SLOT_TYPES.containsKey(superClassName) -> superClassSlots + RS4ClassSlot(".Data", DATA_SLOT_TYPES.getValue(superClassName))
+          DATA_SLOT_TYPES.containsKey(superClassName) -> superClassSlots + RS4ClassSlot(".Data", DATA_SLOT_TYPES.getValue(superClassName),
+                                                                                        superClassName)
           // methods:::.InitSpecialTypesAndClasses
-          INDIRECT_ABNORMAL_CLASSES.contains(superClassName) -> superClassSlots + RS4ClassSlot(".xData", superClassName)
+          INDIRECT_ABNORMAL_CLASSES.contains(superClassName) -> superClassSlots + RS4ClassSlot(".xData", superClassName, superClassName)
           else -> superClassSlots
         }
       }
     }).distinctBy { it.name }
   }
 
-  private fun calcAllAssociatedSuperClasses(callExpression: RCallExpression, s4ClassInfo: RS4ClassInfo): List<String> {
+  private fun calcAllAssociatedSuperClasses(callExpression: RCallExpression, s4ClassInfo: RS4ClassInfo): List<RS4SuperClass> {
     val callSearchScope = RSearchScopeUtil.getScope(callExpression)
     val project = callExpression.project
-    return s4ClassInfo.superClasses.flatMap { superClassName ->
+    return s4ClassInfo.superClasses.flatMap { superClass ->
       // R keeps all superclasses together in the list, not as a tree
       // So, I don't see any reason to do anything else
-      val parentSuperClasses = RS4ClassNameIndex.findClassDefinitions(superClassName, project, callSearchScope).flatMap {
-        getAllAssociatedSuperClasses(it)
+      val parentSuperClasses = RS4ClassNameIndex.findClassDefinitions(superClass.name, project, callSearchScope).flatMap {
+        getAllAssociatedSuperClasses(it).map { RS4SuperClass(it.name, false) }
       }
-      listOf(superClassName) + parentSuperClasses
+      listOf(superClass) + parentSuperClasses
     }.distinct()
   }
 
@@ -101,16 +128,10 @@ object RS4ClassInfoUtil {
   fun parseS4ClassInfo(callExpression: RCallExpression): RS4ClassInfo? {
     if (!callExpression.isFunctionFromLibrarySoft("setClass", "methods")) return null
     val project = callExpression.project
-    var definition = project.getUserData(SET_CLASS_DEFINITION_KEY)
-    if (definition == null || !definition.isValid) {
-      val setClassDefinition =
-        RElementFactory.createRPsiElementFromText(callExpression.project, SET_CLASS_DEFINITION) as RAssignmentStatement
-      definition = setClassDefinition.also { project.putUserData(SET_CLASS_DEFINITION_KEY, it) }
-    }
-    val argumentInfo = RParameterInfoUtil.getArgumentInfo(callExpression, definition) ?: return null
+    val argumentInfo = RParameterInfoUtil.getArgumentInfo(callExpression, project.setClassDefinition) ?: return null
     val className = getAssociatedClassName(callExpression, argumentInfo) ?: return null
-    val representationInfo = parseRepresentationArgument(argumentInfo.getArgumentPassedToParameter("representation"))
-    val slots = parseSlotsArgument(argumentInfo.getArgumentPassedToParameter("slots"))
+    val representationInfo = parseRepresentationArgument(className, argumentInfo.getArgumentPassedToParameter("representation"))
+    val slots = parseSlotsArgument(className, argumentInfo.getArgumentPassedToParameter("slots"))
     val (superClasses, isVirtual) = parseContainsArgument(argumentInfo.getArgumentPassedToParameter("contains"))
 
     val allSuperClasses = (representationInfo.superClasses + superClasses).distinct()
@@ -120,40 +141,55 @@ object RS4ClassInfoUtil {
     return RS4ClassInfo(className, packageName, allSlots, allSuperClasses, isVirtual || representationInfo.isVirtual)
   }
 
-  private fun parseSlotsArgument(expr: RExpression?): List<RS4ClassSlot> {
-    if (expr == null || expr is REmptyExpression) return emptyList()
-    val argumentList = parseCharacterVector(expr) ?: return emptyList()
-    val slots = mutableListOf<RS4ClassSlot>()
-    argumentList.forEach { arg ->
-      when (arg) {
-        is RNamedArgument -> slots.addAll(arg.toComplexSlots())
-        is RStringLiteralExpression -> {
-          val name = arg.name?.takeIf { it.isNotEmpty() } ?: return@forEach
-          slots.add(RS4ClassSlot(name, "ANY"))
-        }
-        else -> {
-          // Most likely something strange and difficult to analyse statically
-        }
+  private val Project.setClassDefinition: RAssignmentStatement
+    get() {
+      var definition = getUserData(SET_CLASS_DEFINITION_KEY)
+      if (definition == null || !definition.isValid) {
+        val setClassDefinition = RElementFactory.createRPsiElementFromText(this, SET_CLASS_DEFINITION) as RAssignmentStatement
+        definition = setClassDefinition.also { putUserData(SET_CLASS_DEFINITION_KEY, it) }
       }
+      return definition
     }
+
+  private fun parseSlotsArgument(className: String, expr: RExpression?): List<RS4ClassSlot> {
+    val slots = mutableListOf<RS4ClassSlot>()
+    processSlotsArgument(className, expr) { (slot, _) -> slots.add(slot) }
     return slots
   }
 
-  private fun parseContainsArgument(expr: RExpression?): Pair<List<String>, Boolean> {
-    if (expr == null || expr is REmptyExpression) return emptyList<String>() to false
+  private fun processSlotsArgument(className: String, expr: RExpression?, processor: Processor<Pair<RS4ClassSlot, RExpression>>) {
+    if (expr == null || expr is REmptyExpression) return
+    val argumentList = parseCharacterVector(expr) ?: return
+    for (arg in argumentList) {
+      val slots = when (arg) {
+        is RNamedArgument -> arg.toComplexSlots(className)
+        is RStringLiteralExpression -> arg.toSlot(className)?.let { listOf(it) } ?: emptyList()
+        else -> {
+          // Most likely something strange and difficult to analyse statically
+          emptyList()
+        }
+      }
+      for (slot in slots) {
+        if (!processor.process(slot to arg)) return
+      }
+    }
+  }
+
+  private fun parseContainsArgument(expr: RExpression?): Pair<List<RS4SuperClass>, Boolean> {
+    if (expr == null || expr is REmptyExpression) return emptyList<RS4SuperClass>() to false
 
     // Also `class representation` objects vector is suitable.
     // This is some rare use case which difficult to analyse statically
-    val argumentList = parseCharacterVector(expr) ?: return emptyList<String>() to false
-    val contains = mutableListOf<String>()
+    val argumentList = parseCharacterVector(expr) ?: return emptyList<RS4SuperClass>() to false
+    val contains = mutableListOf<RS4SuperClass>()
     var isVirtual = false
     argumentList.forEach { arg ->
       when (arg) {
-        is RNamedArgument -> (arg.assignedValue as? RStringLiteralExpression)?.name?.let { contains.add(it) }
+        is RNamedArgument -> (arg.assignedValue as? RStringLiteralExpression)?.name?.let { contains.add(RS4SuperClass(it, true)) }
         is RStringLiteralExpression -> {
           val name = arg.name?.takeIf { it.isNotEmpty() } ?: return@forEach
           if (name == "VIRTUAL") isVirtual = true
-          else contains.add(name)
+          else contains.add(RS4SuperClass(name, true))
         }
         else -> {
           // Most likely something strange and difficult to analyse statically
@@ -163,8 +199,23 @@ object RS4ClassInfoUtil {
     return contains to isVirtual
   }
 
-  private fun parseRepresentationArgument(expr: RExpression?): RS4ClassInfo {
-    if (expr == null || expr is REmptyExpression) return EMPTY_CLASS_INFO
+  private fun parseRepresentationArgument(className: String, expr: RExpression?): RS4ClassInfo {
+    val slots = mutableListOf<RS4ClassSlot>()
+    val superClasses = mutableListOf<RS4SuperClass>()
+    var isVirtual = false
+    processRepresentationArgument(className, expr, { (slot, _) -> slots.add(slot) }) { (superClass, _) ->
+      if (superClass.name == "VIRTUAL") isVirtual = true
+      else superClasses.add(superClass)
+      true
+    }
+    return RS4ClassInfo("", "", slots, superClasses, isVirtual)
+  }
+
+  private fun processRepresentationArgument(className: String,
+                                            expr: RExpression?,
+                                            slotProcessor: Processor<Pair<RS4ClassSlot, RExpression>> = Processor { true },
+                                            superClassProcessor: Processor<Pair<RS4SuperClass, RStringLiteralExpression>> = Processor { true }) {
+    if (expr == null || expr is REmptyExpression) return
     val argumentList = when (expr) {
       is RCallExpression -> {
         // Any function that returns a `list` is suitable.
@@ -174,28 +225,20 @@ object RS4ClassInfoUtil {
             expr.isFunctionFromLibrarySoft("c", "base")) {
           expr.argumentList.expressionList
         }
-        else return EMPTY_CLASS_INFO
+        else return
       }
       is RStringLiteralExpression -> listOf(expr)
-      else -> return EMPTY_CLASS_INFO
+      else -> return
     }
-    val slots = mutableListOf<RS4ClassSlot>()
-    val superClasses = mutableListOf<String>()
-    var isVirtual = false
     argumentList.forEach { arg ->
       when (arg) {
-        is RNamedArgument -> arg.toSlot()?.let { slots.add(it) }
+        is RNamedArgument -> arg.toSlot(className)?.let { if (!slotProcessor.process(it to arg)) return }
         is RStringLiteralExpression -> {
           val name = arg.name?.takeIf { it.isNotEmpty() } ?: return@forEach
-          if (name == "VIRTUAL") isVirtual = true
-          else superClasses.add(name)
-        }
-        else -> {
-          // Most likely something strange and difficult to analyse statically
+          if (!superClassProcessor.process(RS4SuperClass(name, true) to arg)) return
         }
       }
     }
-    return RS4ClassInfo("", "", slots, superClasses, isVirtual)
   }
 
   private fun parseCharacterVector(expr: RExpression): List<RExpression>? = when (expr) {
@@ -218,7 +261,7 @@ object RS4ClassInfoUtil {
     else -> null
   }
 
-  private fun RNamedArgument.toComplexSlots(): List<RS4ClassSlot> {
+  fun RNamedArgument.toComplexSlots(className: String): List<RS4ClassSlot> {
     val namePrefix = name.takeIf { it.isNotEmpty() } ?: return emptyList()
     val types = assignedValue?.let { parseCharacterVector(it) } ?: return emptyList()
     return types.mapIndexed { ind, expr ->
@@ -226,24 +269,29 @@ object RS4ClassInfoUtil {
         is RNamedArgument -> {
           val suffix = expr.name
           val type = expr.assignedValue?.toType() ?: ""
-          RS4ClassSlot("$namePrefix.$suffix", type)
+          RS4ClassSlot("$namePrefix.$suffix", type, className)
         }
         else -> {
           val type = expr.toType() ?: ""
           val name = if (types.size == 1) namePrefix else "$namePrefix${ind + 1}"
-          RS4ClassSlot(name, type)
+          RS4ClassSlot(name, type, className)
         }
       }
     }
   }
 
-  private fun RNamedArgument.toSlot(): RS4ClassSlot? {
+  fun RNamedArgument.toSlot(className: String): RS4ClassSlot? {
     val name = name.takeIf { it.isNotEmpty() } ?: return null
     val type = when (val typeExpr = assignedValue) {
-      is RCallExpression -> parseCharacterVector(typeExpr)?.firstOrNull()?.toType()
-      else -> typeExpr?.toType()
-    } ?: ""
-    return RS4ClassSlot(name, type)
+                 is RCallExpression -> parseCharacterVector(typeExpr)?.firstOrNull()?.toType()
+                 else -> typeExpr?.toType()
+               } ?: ""
+    return RS4ClassSlot(name, type, className)
+  }
+
+  fun RStringLiteralExpression.toSlot(className: String): RS4ClassSlot? {
+    val name = name?.takeIf { it.isNotEmpty() } ?: return null
+    return RS4ClassSlot(name, "ANY", className)
   }
 
   private fun RPsiElement.toType(): String? {
@@ -254,8 +302,6 @@ object RS4ClassInfoUtil {
       else -> null
     }
   }
-
-  private val EMPTY_CLASS_INFO = RS4ClassInfo("", "", emptyList(), emptyList(), false)
 
   // see `methods:::.indirectAbnormalClasses`
   private val INDIRECT_ABNORMAL_CLASSES = listOf("environment", "externalptr", "name", "NULL")

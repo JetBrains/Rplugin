@@ -195,6 +195,14 @@ private static final long serialVersionUID = 0L;
   public static final int MASTERID_FIELD_NUMBER = 3;
   /**
    * <code>int32 masterId = 3;</code>
+   * @return Whether the masterId field is set.
+   */
+  @java.lang.Override
+  public boolean hasMasterId() {
+    return masterCase_ == 3;
+  }
+  /**
+   * <code>int32 masterId = 3;</code>
    * @return The masterId.
    */
   @java.lang.Override
@@ -790,6 +798,13 @@ private static final long serialVersionUID = 0L;
       return noneBuilder_;
     }
 
+    /**
+     * <code>int32 masterId = 3;</code>
+     * @return Whether the masterId field is set.
+     */
+    public boolean hasMasterId() {
+      return masterCase_ == 3;
+    }
     /**
      * <code>int32 masterId = 3;</code>
      * @return The masterId.

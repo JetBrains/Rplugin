@@ -63,6 +63,11 @@ public interface ExceptionInfoOrBuilder extends
 
   /**
    * <code>string packageNotFound = 5;</code>
+   * @return Whether the packageNotFound field is set.
+   */
+  boolean hasPackageNotFound();
+  /**
+   * <code>string packageNotFound = 5;</code>
    * @return The packageNotFound.
    */
   java.lang.String getPackageNotFound();

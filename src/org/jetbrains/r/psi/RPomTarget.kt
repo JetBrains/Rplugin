@@ -17,9 +17,13 @@ import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RLanguage
+import org.jetbrains.r.classes.s4.RS4ClassSlot
+import org.jetbrains.r.classes.s4.RS4ComplexSlotPomTarget
+import org.jetbrains.r.classes.s4.RSkeletonS4ClassPomTarget
 import org.jetbrains.r.classes.s4.RSkeletonS4SlotPomTarget
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.debugger.RDebuggerUtil
+import org.jetbrains.r.psi.api.RExpression
 import org.jetbrains.r.psi.api.RFile
 import org.jetbrains.r.psi.api.RFunctionExpression
 import org.jetbrains.r.psi.api.RPsiElement
@@ -51,6 +55,15 @@ abstract class RPomTarget: PomNamedTarget {
 
     fun createSkeletonParameterTarget(assignment: RSkeletonAssignmentStatement, name: String): RPsiElement =
       RPomTargetPsiElementImpl(RSkeletonParameterPomTarget(assignment, name), assignment.project)
+
+    fun createSkeletonS4SlotTarget(setClass: RSkeletonCallExpression, name: String): RPsiElement =
+      RPomTargetPsiElementImpl(RSkeletonS4SlotPomTarget(setClass, name), setClass.project)
+
+    fun createS4ComplexSlotTarget(slotDefinition: RExpression, slot: RS4ClassSlot): RPsiElement =
+      RPomTargetPsiElementImpl(RS4ComplexSlotPomTarget(slotDefinition, slot), slotDefinition.project)
+
+    fun createSkeletonS4ClassTarget(setClass: RSkeletonCallExpression): RPsiElement =
+      RPomTargetPsiElementImpl(RSkeletonS4ClassPomTarget(setClass), setClass.project)
 
     fun createPomTarget(rVar: RVar): RPomTarget = when (val value = rVar.value) {
       is RValueFunction -> createFunctionPomTarget(rVar)
@@ -133,7 +146,7 @@ internal class RSkeletonParameterPomTarget(val assignment: RSkeletonAssignmentSt
         val psiFile = PsiManager.getInstance(assignment.project).findFile(virtualFile)
         if (psiFile !is RFile) return@runReadAction
         val rFunctionExpression = PsiTreeUtil.findChildOfAnyType(psiFile, RFunctionExpression::class.java) ?: return@runReadAction
-        val parameter = rFunctionExpression.parameterList?.parameterList?.firstOrNull { it.name == name } ?: return@runReadAction
+        val parameter = rFunctionExpression.parameterList?.parameterList?.firstOrNull { it.name == parameterName } ?: return@runReadAction
         invokeLater {
           parameter.navigate(true)
         }
@@ -148,13 +161,13 @@ internal class RSkeletonParameterPomTarget(val assignment: RSkeletonAssignmentSt
     if (javaClass != other?.javaClass) return false
     other as RSkeletonParameterPomTarget
     if (assignment != other.assignment) return false
-    if (name != other.name) return false
+    if (parameterName != other.parameterName) return false
     return true
   }
 
   override fun hashCode(): Int {
     var result = assignment.hashCode()
-    result = 31 * result + name.hashCode()
+    result = 31 * result + parameterName.hashCode()
     return result
   }
 }

@@ -175,6 +175,13 @@ private static final long serialVersionUID = 0L;
   public static final int EXCEPTION_FIELD_NUMBER = 2;
   /**
    * <code>string exception = 2;</code>
+   * @return Whether the exception field is set.
+   */
+  public boolean hasException() {
+    return msgCase_ == 2;
+  }
+  /**
+   * <code>string exception = 2;</code>
    * @return The exception.
    */
   public java.lang.String getException() {
@@ -724,6 +731,14 @@ private static final long serialVersionUID = 0L;
       return outputBuilder_;
     }
 
+    /**
+     * <code>string exception = 2;</code>
+     * @return Whether the exception field is set.
+     */
+    @java.lang.Override
+    public boolean hasException() {
+      return msgCase_ == 2;
+    }
     /**
      * <code>string exception = 2;</code>
      * @return The exception.

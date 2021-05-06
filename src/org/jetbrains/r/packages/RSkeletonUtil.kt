@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit
 
 
 object RSkeletonUtil {
-  private const val CUR_SKELETON_VERSION = 10
+  private const val CUR_SKELETON_VERSION = 11
   const val SKELETON_DIR_NAME = "r_skeletons"
   private const val MAX_THREAD_POOL_SIZE = 4
   private const val FAILED_SUFFIX = ".failed"
@@ -266,13 +266,21 @@ object RSkeletonUtil {
         }
         val isVirtual = parts[superClassesEndIndex] == "TRUE"
 
-        for (i in slots.indices step 2) {
+        for (i in slots.indices step 3) {
           val slotBuilder = RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.newBuilder()
           slotBuilder.name = slots[i]
           slotBuilder.type = slots[i + 1]
+          slotBuilder.declarationClass = slots[i + 2]
           s4ClassRepresentationBuilder.addSlots(slotBuilder)
         }
-        s4ClassRepresentationBuilder.addAllSuperClasses(superClasses)
+
+        for (i in superClasses.indices step 2) {
+          val superClassBuilder = RLibrarySymbol.S4ClassRepresentation.S4SuperClass.newBuilder()
+          superClassBuilder.name = superClasses[i]
+          superClassBuilder.isDirectInheritance = superClasses[i + 1] == "TRUE"
+          s4ClassRepresentationBuilder.addSuperClasses(superClassBuilder)
+        }
+
         s4ClassRepresentationBuilder.isVirtual = isVirtual
         builder.setS4ClassRepresentation(s4ClassRepresentationBuilder)
       }

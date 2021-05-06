@@ -115,10 +115,20 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>int32 intValue = 2;</code>
+     * @return Whether the intValue field is set.
+     */
+    boolean hasIntValue();
+    /**
+     * <code>int32 intValue = 2;</code>
      * @return The intValue.
      */
     int getIntValue();
 
+    /**
+     * <code>double doubleValue = 3;</code>
+     * @return Whether the doubleValue field is set.
+     */
+    boolean hasDoubleValue();
     /**
      * <code>double doubleValue = 3;</code>
      * @return The doubleValue.
@@ -127,10 +137,20 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>bool booleanValue = 4;</code>
+     * @return Whether the booleanValue field is set.
+     */
+    boolean hasBooleanValue();
+    /**
+     * <code>bool booleanValue = 4;</code>
      * @return The booleanValue.
      */
     boolean getBooleanValue();
 
+    /**
+     * <code>string stringValue = 5;</code>
+     * @return Whether the stringValue field is set.
+     */
+    boolean hasStringValue();
     /**
      * <code>string stringValue = 5;</code>
      * @return The stringValue.
@@ -338,6 +358,14 @@ private static final long serialVersionUID = 0L;
     public static final int INTVALUE_FIELD_NUMBER = 2;
     /**
      * <code>int32 intValue = 2;</code>
+     * @return Whether the intValue field is set.
+     */
+    @java.lang.Override
+    public boolean hasIntValue() {
+      return valueCase_ == 2;
+    }
+    /**
+     * <code>int32 intValue = 2;</code>
      * @return The intValue.
      */
     @java.lang.Override
@@ -349,6 +377,14 @@ private static final long serialVersionUID = 0L;
     }
 
     public static final int DOUBLEVALUE_FIELD_NUMBER = 3;
+    /**
+     * <code>double doubleValue = 3;</code>
+     * @return Whether the doubleValue field is set.
+     */
+    @java.lang.Override
+    public boolean hasDoubleValue() {
+      return valueCase_ == 3;
+    }
     /**
      * <code>double doubleValue = 3;</code>
      * @return The doubleValue.
@@ -364,6 +400,14 @@ private static final long serialVersionUID = 0L;
     public static final int BOOLEANVALUE_FIELD_NUMBER = 4;
     /**
      * <code>bool booleanValue = 4;</code>
+     * @return Whether the booleanValue field is set.
+     */
+    @java.lang.Override
+    public boolean hasBooleanValue() {
+      return valueCase_ == 4;
+    }
+    /**
+     * <code>bool booleanValue = 4;</code>
      * @return The booleanValue.
      */
     @java.lang.Override
@@ -375,6 +419,13 @@ private static final long serialVersionUID = 0L;
     }
 
     public static final int STRINGVALUE_FIELD_NUMBER = 5;
+    /**
+     * <code>string stringValue = 5;</code>
+     * @return Whether the stringValue field is set.
+     */
+    public boolean hasStringValue() {
+      return valueCase_ == 5;
+    }
     /**
      * <code>string stringValue = 5;</code>
      * @return The stringValue.
@@ -1003,6 +1054,13 @@ private static final long serialVersionUID = 0L;
 
       /**
        * <code>int32 intValue = 2;</code>
+       * @return Whether the intValue field is set.
+       */
+      public boolean hasIntValue() {
+        return valueCase_ == 2;
+      }
+      /**
+       * <code>int32 intValue = 2;</code>
        * @return The intValue.
        */
       public int getIntValue() {
@@ -1035,6 +1093,13 @@ private static final long serialVersionUID = 0L;
         return this;
       }
 
+      /**
+       * <code>double doubleValue = 3;</code>
+       * @return Whether the doubleValue field is set.
+       */
+      public boolean hasDoubleValue() {
+        return valueCase_ == 3;
+      }
       /**
        * <code>double doubleValue = 3;</code>
        * @return The doubleValue.
@@ -1071,6 +1136,13 @@ private static final long serialVersionUID = 0L;
 
       /**
        * <code>bool booleanValue = 4;</code>
+       * @return Whether the booleanValue field is set.
+       */
+      public boolean hasBooleanValue() {
+        return valueCase_ == 4;
+      }
+      /**
+       * <code>bool booleanValue = 4;</code>
        * @return The booleanValue.
        */
       public boolean getBooleanValue() {
@@ -1103,6 +1175,14 @@ private static final long serialVersionUID = 0L;
         return this;
       }
 
+      /**
+       * <code>string stringValue = 5;</code>
+       * @return Whether the stringValue field is set.
+       */
+      @java.lang.Override
+      public boolean hasStringValue() {
+        return valueCase_ == 5;
+      }
       /**
        * <code>string stringValue = 5;</code>
        * @return The stringValue.

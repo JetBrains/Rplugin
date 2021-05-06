@@ -11,6 +11,9 @@ import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.ResolveResult
 import com.intellij.util.IncorrectOperationException
 import com.intellij.util.Processor
+import org.jetbrains.r.classes.s4.RS4Resolver
+import org.jetbrains.r.classes.s4.context.RS4ContextProvider
+import org.jetbrains.r.classes.s4.context.RS4NewObjectSlotNameContext
 import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
 import org.jetbrains.r.codeInsight.table.RTableContextManager
 import org.jetbrains.r.psi.*
@@ -20,8 +23,16 @@ import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifierExpression>(element) {
 
   override fun multiResolveInner(incompleteCode: Boolean): Array<ResolveResult> {
+    if (element.parent is RArgumentList && RS4ContextProvider.getS4Context(element, RS4NewObjectSlotNameContext::class) != null) {
+      return RS4Resolver.resolveSlot(element)
+    }
+
     RPsiUtil.getNamedArgumentByNameIdentifier(element)?.let {
-      return resolveNamedArgument(it, incompleteCode)
+      val argumentResult = resolveNamedArgument(it, incompleteCode)
+      if (argumentResult.isNotEmpty()) return argumentResult
+      if (RS4ContextProvider.getS4Context(element, RS4NewObjectSlotNameContext::class) != null) {
+        return RS4Resolver.resolveSlot(element)
+      }
     }
 
     for (extension in RLibrarySupportProvider.EP_NAME.extensions) {
@@ -31,7 +42,9 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
       }
     }
 
-    if (element.isDependantIdentifier) return emptyArray()
+    if (element.isDependantIdentifier) {
+      return resolveDependantIdentifier(element)
+    }
 
     return RResolver.resolveUsingSourcesAndRuntime(element, element.name, resolveLocally())
   }
@@ -84,6 +97,10 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
       }
       assignment.getParameters().firstOrNull { parameter -> parameter.name == element.name}?.let { PsiElementResolveResult(it) }
     }.toTypedArray()
+  }
+
+  private fun resolveDependantIdentifier(identifier: RIdentifierExpression): Array<ResolveResult> {
+    return RS4Resolver.resolveSlot(identifier)
   }
 
   @Throws(IncorrectOperationException::class)

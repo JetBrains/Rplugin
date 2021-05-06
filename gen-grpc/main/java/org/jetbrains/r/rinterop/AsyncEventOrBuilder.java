@@ -174,6 +174,11 @@ public interface AsyncEventOrBuilder extends
 
   /**
    * <code>string browseURLRequest = 12;</code>
+   * @return Whether the browseURLRequest field is set.
+   */
+  boolean hasBrowseURLRequest();
+  /**
+   * <code>string browseURLRequest = 12;</code>
    * @return The browseURLRequest.
    */
   java.lang.String getBrowseURLRequest();
@@ -199,6 +204,11 @@ public interface AsyncEventOrBuilder extends
    */
   org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequestOrBuilder getRStudioApiRequestOrBuilder();
 
+  /**
+   * <code>int32 debugRemoveBreakpointRequest = 14;</code>
+   * @return Whether the debugRemoveBreakpointRequest field is set.
+   */
+  boolean hasDebugRemoveBreakpointRequest();
   /**
    * <code>int32 debugRemoveBreakpointRequest = 14;</code>
    * @return The debugRemoveBreakpointRequest.

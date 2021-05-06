@@ -114,6 +114,11 @@ public interface RObjectOrBuilder extends
 
   /**
    * <code>string error = 8;</code>
+   * @return Whether the error field is set.
+   */
+  boolean hasError();
+  /**
+   * <code>string error = 8;</code>
    * @return The error.
    */
   java.lang.String getError();

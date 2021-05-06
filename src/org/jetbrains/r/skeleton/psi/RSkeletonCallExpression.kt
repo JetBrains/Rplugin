@@ -31,28 +31,7 @@ class RSkeletonCallExpression(private val myStub: RSkeletonCallExpressionStub) :
 
   override fun canNavigate(): Boolean = false
 
-  override fun getText(): String {
-    val info = stub.s4ClassInfo
-    return buildString {
-      append("setClass('").append(info.className).append("', ")
-      append("slots = c(")
-      info.slots.forEachIndexed { ind, slot ->
-        if (ind != 0) append(", ")
-        append(slot.name).append(" = '").append(slot.type).append("'")
-      }
-      append("), ")
-      append("contains = c(")
-      info.superClasses.forEachIndexed { ind, superClass ->
-        if (ind != 0) append(", ")
-        append("'").append(superClass).append("'")
-      }
-      if (info.isVirtual) {
-        if (info.superClasses.isNotEmpty()) append(", ")
-        append("'VIRTUAL'")
-      }
-      append("))")
-    }
-  }
+  override fun getText(): String = stub.s4ClassInfo.getDeclarationText(project)
 
   override fun getArgumentList(): RArgumentList {
     throw IncorrectOperationException("Operation not supported in: $javaClass")

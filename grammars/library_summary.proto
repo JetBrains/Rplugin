@@ -29,10 +29,15 @@ message RLibrarySymbol {
     message S4ClassSlot {
       string name = 1;
       string type = 2;
+      string declarationClass = 3;
+    }
+    message S4SuperClass {
+      string name = 1;
+      bool isDirectInheritance = 2;
     }
     string packageName = 1;
     repeated S4ClassSlot slots = 2;
-    repeated string superClasses = 3;
+    repeated S4SuperClass superClasses = 3;
     bool isVirtual = 4;
   }
 

@@ -2073,29 +2073,28 @@ public final class LibrarySummary {
           int index);
 
       /**
-       * <code>repeated string superClasses = 3;</code>
-       * @return A list containing the superClasses.
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
        */
-      java.util.List<java.lang.String>
+      java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass> 
           getSuperClassesList();
       /**
-       * <code>repeated string superClasses = 3;</code>
-       * @return The count of superClasses.
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
+       */
+      org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass getSuperClasses(int index);
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
        */
       int getSuperClassesCount();
       /**
-       * <code>repeated string superClasses = 3;</code>
-       * @param index The index of the element to return.
-       * @return The superClasses at the given index.
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
        */
-      java.lang.String getSuperClasses(int index);
+      java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClassOrBuilder> 
+          getSuperClassesOrBuilderList();
       /**
-       * <code>repeated string superClasses = 3;</code>
-       * @param index The index of the value to return.
-       * @return The bytes of the superClasses at the given index.
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
        */
-      com.google.protobuf.ByteString
-          getSuperClassesBytes(int index);
+      org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClassOrBuilder getSuperClassesOrBuilder(
+          int index);
 
       /**
        * <code>bool isVirtual = 4;</code>
@@ -2118,7 +2117,7 @@ public final class LibrarySummary {
       private S4ClassRepresentation() {
         packageName_ = "";
         slots_ = java.util.Collections.emptyList();
-        superClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        superClasses_ = java.util.Collections.emptyList();
       }
 
       @java.lang.Override
@@ -2168,12 +2167,12 @@ public final class LibrarySummary {
                 break;
               }
               case 26: {
-                java.lang.String s = input.readStringRequireUtf8();
                 if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-                  superClasses_ = new com.google.protobuf.LazyStringArrayList();
+                  superClasses_ = new java.util.ArrayList<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass>();
                   mutable_bitField0_ |= 0x00000002;
                 }
-                superClasses_.add(s);
+                superClasses_.add(
+                    input.readMessage(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.parser(), extensionRegistry));
                 break;
               }
               case 32: {
@@ -2200,7 +2199,7 @@ public final class LibrarySummary {
             slots_ = java.util.Collections.unmodifiableList(slots_);
           }
           if (((mutable_bitField0_ & 0x00000002) != 0)) {
-            superClasses_ = superClasses_.getUnmodifiableView();
+            superClasses_ = java.util.Collections.unmodifiableList(superClasses_);
           }
           this.unknownFields = unknownFields.build();
           makeExtensionsImmutable();
@@ -2246,6 +2245,18 @@ public final class LibrarySummary {
          */
         com.google.protobuf.ByteString
             getTypeBytes();
+
+        /**
+         * <code>string declarationClass = 3;</code>
+         * @return The declarationClass.
+         */
+        java.lang.String getDeclarationClass();
+        /**
+         * <code>string declarationClass = 3;</code>
+         * @return The bytes for declarationClass.
+         */
+        com.google.protobuf.ByteString
+            getDeclarationClassBytes();
       }
       /**
        * Protobuf type {@code library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot}
@@ -2262,6 +2273,7 @@ public final class LibrarySummary {
         private S4ClassSlot() {
           name_ = "";
           type_ = "";
+          declarationClass_ = "";
         }
 
         @java.lang.Override
@@ -2304,6 +2316,12 @@ public final class LibrarySummary {
                   java.lang.String s = input.readStringRequireUtf8();
 
                   type_ = s;
+                  break;
+                }
+                case 26: {
+                  java.lang.String s = input.readStringRequireUtf8();
+
+                  declarationClass_ = s;
                   break;
                 }
                 default: {
@@ -2414,6 +2432,44 @@ public final class LibrarySummary {
           }
         }
 
+        public static final int DECLARATIONCLASS_FIELD_NUMBER = 3;
+        private volatile java.lang.Object declarationClass_;
+        /**
+         * <code>string declarationClass = 3;</code>
+         * @return The declarationClass.
+         */
+        @java.lang.Override
+        public java.lang.String getDeclarationClass() {
+          java.lang.Object ref = declarationClass_;
+          if (ref instanceof java.lang.String) {
+            return (java.lang.String) ref;
+          } else {
+            com.google.protobuf.ByteString bs = 
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            declarationClass_ = s;
+            return s;
+          }
+        }
+        /**
+         * <code>string declarationClass = 3;</code>
+         * @return The bytes for declarationClass.
+         */
+        @java.lang.Override
+        public com.google.protobuf.ByteString
+            getDeclarationClassBytes() {
+          java.lang.Object ref = declarationClass_;
+          if (ref instanceof java.lang.String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            declarationClass_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+
         private byte memoizedIsInitialized = -1;
         @java.lang.Override
         public final boolean isInitialized() {
@@ -2434,6 +2490,9 @@ public final class LibrarySummary {
           if (!getTypeBytes().isEmpty()) {
             com.google.protobuf.GeneratedMessageV3.writeString(output, 2, type_);
           }
+          if (!getDeclarationClassBytes().isEmpty()) {
+            com.google.protobuf.GeneratedMessageV3.writeString(output, 3, declarationClass_);
+          }
           unknownFields.writeTo(output);
         }
 
@@ -2448,6 +2507,9 @@ public final class LibrarySummary {
           }
           if (!getTypeBytes().isEmpty()) {
             size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, type_);
+          }
+          if (!getDeclarationClassBytes().isEmpty()) {
+            size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, declarationClass_);
           }
           size += unknownFields.getSerializedSize();
           memoizedSize = size;
@@ -2468,6 +2530,8 @@ public final class LibrarySummary {
               .equals(other.getName())) return false;
           if (!getType()
               .equals(other.getType())) return false;
+          if (!getDeclarationClass()
+              .equals(other.getDeclarationClass())) return false;
           if (!unknownFields.equals(other.unknownFields)) return false;
           return true;
         }
@@ -2483,6 +2547,8 @@ public final class LibrarySummary {
           hash = (53 * hash) + getName().hashCode();
           hash = (37 * hash) + TYPE_FIELD_NUMBER;
           hash = (53 * hash) + getType().hashCode();
+          hash = (37 * hash) + DECLARATIONCLASS_FIELD_NUMBER;
+          hash = (53 * hash) + getDeclarationClass().hashCode();
           hash = (29 * hash) + unknownFields.hashCode();
           memoizedHashCode = hash;
           return hash;
@@ -2620,6 +2686,8 @@ public final class LibrarySummary {
 
             type_ = "";
 
+            declarationClass_ = "";
+
             return this;
           }
 
@@ -2648,6 +2716,7 @@ public final class LibrarySummary {
             org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot(this);
             result.name_ = name_;
             result.type_ = type_;
+            result.declarationClass_ = declarationClass_;
             onBuilt();
             return result;
           }
@@ -2702,6 +2771,10 @@ public final class LibrarySummary {
             }
             if (!other.getType().isEmpty()) {
               type_ = other.type_;
+              onChanged();
+            }
+            if (!other.getDeclarationClass().isEmpty()) {
+              declarationClass_ = other.declarationClass_;
               onChanged();
             }
             this.mergeUnknownFields(other.unknownFields);
@@ -2884,6 +2957,82 @@ public final class LibrarySummary {
             onChanged();
             return this;
           }
+
+          private java.lang.Object declarationClass_ = "";
+          /**
+           * <code>string declarationClass = 3;</code>
+           * @return The declarationClass.
+           */
+          public java.lang.String getDeclarationClass() {
+            java.lang.Object ref = declarationClass_;
+            if (!(ref instanceof java.lang.String)) {
+              com.google.protobuf.ByteString bs =
+                  (com.google.protobuf.ByteString) ref;
+              java.lang.String s = bs.toStringUtf8();
+              declarationClass_ = s;
+              return s;
+            } else {
+              return (java.lang.String) ref;
+            }
+          }
+          /**
+           * <code>string declarationClass = 3;</code>
+           * @return The bytes for declarationClass.
+           */
+          public com.google.protobuf.ByteString
+              getDeclarationClassBytes() {
+            java.lang.Object ref = declarationClass_;
+            if (ref instanceof String) {
+              com.google.protobuf.ByteString b = 
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                      (java.lang.String) ref);
+              declarationClass_ = b;
+              return b;
+            } else {
+              return (com.google.protobuf.ByteString) ref;
+            }
+          }
+          /**
+           * <code>string declarationClass = 3;</code>
+           * @param value The declarationClass to set.
+           * @return This builder for chaining.
+           */
+          public Builder setDeclarationClass(
+              java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  
+            declarationClass_ = value;
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string declarationClass = 3;</code>
+           * @return This builder for chaining.
+           */
+          public Builder clearDeclarationClass() {
+            
+            declarationClass_ = getDefaultInstance().getDeclarationClass();
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string declarationClass = 3;</code>
+           * @param value The bytes for declarationClass to set.
+           * @return This builder for chaining.
+           */
+          public Builder setDeclarationClassBytes(
+              com.google.protobuf.ByteString value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+            
+            declarationClass_ = value;
+            onChanged();
+            return this;
+          }
           @java.lang.Override
           public final Builder setUnknownFields(
               final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -2932,6 +3081,645 @@ public final class LibrarySummary {
 
         @java.lang.Override
         public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot getDefaultInstanceForType() {
+          return DEFAULT_INSTANCE;
+        }
+
+      }
+
+      public interface S4SuperClassOrBuilder extends
+          // @@protoc_insertion_point(interface_extends:library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass)
+          com.google.protobuf.MessageOrBuilder {
+
+        /**
+         * <code>string name = 1;</code>
+         * @return The name.
+         */
+        java.lang.String getName();
+        /**
+         * <code>string name = 1;</code>
+         * @return The bytes for name.
+         */
+        com.google.protobuf.ByteString
+            getNameBytes();
+
+        /**
+         * <code>bool isDirectInheritance = 2;</code>
+         * @return The isDirectInheritance.
+         */
+        boolean getIsDirectInheritance();
+      }
+      /**
+       * Protobuf type {@code library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass}
+       */
+      public static final class S4SuperClass extends
+          com.google.protobuf.GeneratedMessageV3 implements
+          // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass)
+          S4SuperClassOrBuilder {
+      private static final long serialVersionUID = 0L;
+        // Use S4SuperClass.newBuilder() to construct.
+        private S4SuperClass(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+          super(builder);
+        }
+        private S4SuperClass() {
+          name_ = "";
+        }
+
+        @java.lang.Override
+        @SuppressWarnings({"unused"})
+        protected java.lang.Object newInstance(
+            UnusedPrivateParameter unused) {
+          return new S4SuperClass();
+        }
+
+        @java.lang.Override
+        public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+          return this.unknownFields;
+        }
+        private S4SuperClass(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          this();
+          if (extensionRegistry == null) {
+            throw new java.lang.NullPointerException();
+          }
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder();
+          try {
+            boolean done = false;
+            while (!done) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  done = true;
+                  break;
+                case 10: {
+                  java.lang.String s = input.readStringRequireUtf8();
+
+                  name_ = s;
+                  break;
+                }
+                case 16: {
+
+                  isDirectInheritance_ = input.readBool();
+                  break;
+                }
+                default: {
+                  if (!parseUnknownField(
+                      input, unknownFields, extensionRegistry, tag)) {
+                    done = true;
+                  }
+                  break;
+                }
+              }
+            }
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            throw e.setUnfinishedMessage(this);
+          } catch (java.io.IOException e) {
+            throw new com.google.protobuf.InvalidProtocolBufferException(
+                e).setUnfinishedMessage(this);
+          } finally {
+            this.unknownFields = unknownFields.build();
+            makeExtensionsImmutable();
+          }
+        }
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4SuperClass_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4SuperClass_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.Builder.class);
+        }
+
+        public static final int NAME_FIELD_NUMBER = 1;
+        private volatile java.lang.Object name_;
+        /**
+         * <code>string name = 1;</code>
+         * @return The name.
+         */
+        @java.lang.Override
+        public java.lang.String getName() {
+          java.lang.Object ref = name_;
+          if (ref instanceof java.lang.String) {
+            return (java.lang.String) ref;
+          } else {
+            com.google.protobuf.ByteString bs = 
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            name_ = s;
+            return s;
+          }
+        }
+        /**
+         * <code>string name = 1;</code>
+         * @return The bytes for name.
+         */
+        @java.lang.Override
+        public com.google.protobuf.ByteString
+            getNameBytes() {
+          java.lang.Object ref = name_;
+          if (ref instanceof java.lang.String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            name_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+
+        public static final int ISDIRECTINHERITANCE_FIELD_NUMBER = 2;
+        private boolean isDirectInheritance_;
+        /**
+         * <code>bool isDirectInheritance = 2;</code>
+         * @return The isDirectInheritance.
+         */
+        @java.lang.Override
+        public boolean getIsDirectInheritance() {
+          return isDirectInheritance_;
+        }
+
+        private byte memoizedIsInitialized = -1;
+        @java.lang.Override
+        public final boolean isInitialized() {
+          byte isInitialized = memoizedIsInitialized;
+          if (isInitialized == 1) return true;
+          if (isInitialized == 0) return false;
+
+          memoizedIsInitialized = 1;
+          return true;
+        }
+
+        @java.lang.Override
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          if (!getNameBytes().isEmpty()) {
+            com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
+          }
+          if (isDirectInheritance_ != false) {
+            output.writeBool(2, isDirectInheritance_);
+          }
+          unknownFields.writeTo(output);
+        }
+
+        @java.lang.Override
+        public int getSerializedSize() {
+          int size = memoizedSize;
+          if (size != -1) return size;
+
+          size = 0;
+          if (!getNameBytes().isEmpty()) {
+            size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
+          }
+          if (isDirectInheritance_ != false) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeBoolSize(2, isDirectInheritance_);
+          }
+          size += unknownFields.getSerializedSize();
+          memoizedSize = size;
+          return size;
+        }
+
+        @java.lang.Override
+        public boolean equals(final java.lang.Object obj) {
+          if (obj == this) {
+           return true;
+          }
+          if (!(obj instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass)) {
+            return super.equals(obj);
+          }
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass other = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass) obj;
+
+          if (!getName()
+              .equals(other.getName())) return false;
+          if (getIsDirectInheritance()
+              != other.getIsDirectInheritance()) return false;
+          if (!unknownFields.equals(other.unknownFields)) return false;
+          return true;
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+          if (memoizedHashCode != 0) {
+            return memoizedHashCode;
+          }
+          int hash = 41;
+          hash = (19 * hash) + getDescriptor().hashCode();
+          hash = (37 * hash) + NAME_FIELD_NUMBER;
+          hash = (53 * hash) + getName().hashCode();
+          hash = (37 * hash) + ISDIRECTINHERITANCE_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+              getIsDirectInheritance());
+          hash = (29 * hash) + unknownFields.hashCode();
+          memoizedHashCode = hash;
+          return hash;
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass parseFrom(
+            java.nio.ByteBuffer data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass parseFrom(
+            java.nio.ByteBuffer data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass parseDelimitedFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass parseDelimitedFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        @java.lang.Override
+        public Builder newBuilderForType() { return newBuilder(); }
+        public static Builder newBuilder() {
+          return DEFAULT_INSTANCE.toBuilder();
+        }
+        public static Builder newBuilder(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass prototype) {
+          return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+        }
+        @java.lang.Override
+        public Builder toBuilder() {
+          return this == DEFAULT_INSTANCE
+              ? new Builder() : new Builder().mergeFrom(this);
+        }
+
+        @java.lang.Override
+        protected Builder newBuilderForType(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          Builder builder = new Builder(parent);
+          return builder;
+        }
+        /**
+         * Protobuf type {@code library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass}
+         */
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+            // @@protoc_insertion_point(builder_implements:library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass)
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClassOrBuilder {
+          public static final com.google.protobuf.Descriptors.Descriptor
+              getDescriptor() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4SuperClass_descriptor;
+          }
+
+          @java.lang.Override
+          protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+              internalGetFieldAccessorTable() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4SuperClass_fieldAccessorTable
+                .ensureFieldAccessorsInitialized(
+                    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.Builder.class);
+          }
+
+          // Construct using org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.newBuilder()
+          private Builder() {
+            maybeForceBuilderInitialization();
+          }
+
+          private Builder(
+              com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+            super(parent);
+            maybeForceBuilderInitialization();
+          }
+          private void maybeForceBuilderInitialization() {
+            if (com.google.protobuf.GeneratedMessageV3
+                    .alwaysUseFieldBuilders) {
+            }
+          }
+          @java.lang.Override
+          public Builder clear() {
+            super.clear();
+            name_ = "";
+
+            isDirectInheritance_ = false;
+
+            return this;
+          }
+
+          @java.lang.Override
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4SuperClass_descriptor;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass getDefaultInstanceForType() {
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.getDefaultInstance();
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass build() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass result = buildPartial();
+            if (!result.isInitialized()) {
+              throw newUninitializedMessageException(result);
+            }
+            return result;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass buildPartial() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass(this);
+            result.name_ = name_;
+            result.isDirectInheritance_ = isDirectInheritance_;
+            onBuilt();
+            return result;
+          }
+
+          @java.lang.Override
+          public Builder clone() {
+            return super.clone();
+          }
+          @java.lang.Override
+          public Builder setField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.setField(field, value);
+          }
+          @java.lang.Override
+          public Builder clearField(
+              com.google.protobuf.Descriptors.FieldDescriptor field) {
+            return super.clearField(field);
+          }
+          @java.lang.Override
+          public Builder clearOneof(
+              com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+            return super.clearOneof(oneof);
+          }
+          @java.lang.Override
+          public Builder setRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              int index, java.lang.Object value) {
+            return super.setRepeatedField(field, index, value);
+          }
+          @java.lang.Override
+          public Builder addRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.addRepeatedField(field, value);
+          }
+          @java.lang.Override
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass) {
+              return mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+
+          public Builder mergeFrom(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass other) {
+            if (other == org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.getDefaultInstance()) return this;
+            if (!other.getName().isEmpty()) {
+              name_ = other.name_;
+              onChanged();
+            }
+            if (other.getIsDirectInheritance() != false) {
+              setIsDirectInheritance(other.getIsDirectInheritance());
+            }
+            this.mergeUnknownFields(other.unknownFields);
+            onChanged();
+            return this;
+          }
+
+          @java.lang.Override
+          public final boolean isInitialized() {
+            return true;
+          }
+
+          @java.lang.Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass parsedMessage = null;
+            try {
+              parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+              parsedMessage = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass) e.getUnfinishedMessage();
+              throw e.unwrapIOException();
+            } finally {
+              if (parsedMessage != null) {
+                mergeFrom(parsedMessage);
+              }
+            }
+            return this;
+          }
+
+          private java.lang.Object name_ = "";
+          /**
+           * <code>string name = 1;</code>
+           * @return The name.
+           */
+          public java.lang.String getName() {
+            java.lang.Object ref = name_;
+            if (!(ref instanceof java.lang.String)) {
+              com.google.protobuf.ByteString bs =
+                  (com.google.protobuf.ByteString) ref;
+              java.lang.String s = bs.toStringUtf8();
+              name_ = s;
+              return s;
+            } else {
+              return (java.lang.String) ref;
+            }
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @return The bytes for name.
+           */
+          public com.google.protobuf.ByteString
+              getNameBytes() {
+            java.lang.Object ref = name_;
+            if (ref instanceof String) {
+              com.google.protobuf.ByteString b = 
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                      (java.lang.String) ref);
+              name_ = b;
+              return b;
+            } else {
+              return (com.google.protobuf.ByteString) ref;
+            }
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @param value The name to set.
+           * @return This builder for chaining.
+           */
+          public Builder setName(
+              java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  
+            name_ = value;
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @return This builder for chaining.
+           */
+          public Builder clearName() {
+            
+            name_ = getDefaultInstance().getName();
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @param value The bytes for name to set.
+           * @return This builder for chaining.
+           */
+          public Builder setNameBytes(
+              com.google.protobuf.ByteString value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+            
+            name_ = value;
+            onChanged();
+            return this;
+          }
+
+          private boolean isDirectInheritance_ ;
+          /**
+           * <code>bool isDirectInheritance = 2;</code>
+           * @return The isDirectInheritance.
+           */
+          @java.lang.Override
+          public boolean getIsDirectInheritance() {
+            return isDirectInheritance_;
+          }
+          /**
+           * <code>bool isDirectInheritance = 2;</code>
+           * @param value The isDirectInheritance to set.
+           * @return This builder for chaining.
+           */
+          public Builder setIsDirectInheritance(boolean value) {
+            
+            isDirectInheritance_ = value;
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>bool isDirectInheritance = 2;</code>
+           * @return This builder for chaining.
+           */
+          public Builder clearIsDirectInheritance() {
+            
+            isDirectInheritance_ = false;
+            onChanged();
+            return this;
+          }
+          @java.lang.Override
+          public final Builder setUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.setUnknownFields(unknownFields);
+          }
+
+          @java.lang.Override
+          public final Builder mergeUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.mergeUnknownFields(unknownFields);
+          }
+
+
+          // @@protoc_insertion_point(builder_scope:library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass)
+        }
+
+        // @@protoc_insertion_point(class_scope:library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass)
+        private static final org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass DEFAULT_INSTANCE;
+        static {
+          DEFAULT_INSTANCE = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass();
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass getDefaultInstance() {
+          return DEFAULT_INSTANCE;
+        }
+
+        private static final com.google.protobuf.Parser<S4SuperClass>
+            PARSER = new com.google.protobuf.AbstractParser<S4SuperClass>() {
+          @java.lang.Override
+          public S4SuperClass parsePartialFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new S4SuperClass(input, extensionRegistry);
+          }
+        };
+
+        public static com.google.protobuf.Parser<S4SuperClass> parser() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Parser<S4SuperClass> getParserForType() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass getDefaultInstanceForType() {
           return DEFAULT_INSTANCE;
         }
 
@@ -3016,38 +3804,43 @@ public final class LibrarySummary {
       }
 
       public static final int SUPERCLASSES_FIELD_NUMBER = 3;
-      private com.google.protobuf.LazyStringList superClasses_;
+      private java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass> superClasses_;
       /**
-       * <code>repeated string superClasses = 3;</code>
-       * @return A list containing the superClasses.
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
        */
-      public com.google.protobuf.ProtocolStringList
-          getSuperClassesList() {
+      @java.lang.Override
+      public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass> getSuperClassesList() {
         return superClasses_;
       }
       /**
-       * <code>repeated string superClasses = 3;</code>
-       * @return The count of superClasses.
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
        */
+      @java.lang.Override
+      public java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClassOrBuilder> 
+          getSuperClassesOrBuilderList() {
+        return superClasses_;
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
+       */
+      @java.lang.Override
       public int getSuperClassesCount() {
         return superClasses_.size();
       }
       /**
-       * <code>repeated string superClasses = 3;</code>
-       * @param index The index of the element to return.
-       * @return The superClasses at the given index.
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
        */
-      public java.lang.String getSuperClasses(int index) {
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass getSuperClasses(int index) {
         return superClasses_.get(index);
       }
       /**
-       * <code>repeated string superClasses = 3;</code>
-       * @param index The index of the value to return.
-       * @return The bytes of the superClasses at the given index.
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
        */
-      public com.google.protobuf.ByteString
-          getSuperClassesBytes(int index) {
-        return superClasses_.getByteString(index);
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClassOrBuilder getSuperClassesOrBuilder(
+          int index) {
+        return superClasses_.get(index);
       }
 
       public static final int ISVIRTUAL_FIELD_NUMBER = 4;
@@ -3082,7 +3875,7 @@ public final class LibrarySummary {
           output.writeMessage(2, slots_.get(i));
         }
         for (int i = 0; i < superClasses_.size(); i++) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 3, superClasses_.getRaw(i));
+          output.writeMessage(3, superClasses_.get(i));
         }
         if (isVirtual_ != false) {
           output.writeBool(4, isVirtual_);
@@ -3103,13 +3896,9 @@ public final class LibrarySummary {
           size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(2, slots_.get(i));
         }
-        {
-          int dataSize = 0;
-          for (int i = 0; i < superClasses_.size(); i++) {
-            dataSize += computeStringSizeNoTag(superClasses_.getRaw(i));
-          }
-          size += dataSize;
-          size += 1 * getSuperClassesList().size();
+        for (int i = 0; i < superClasses_.size(); i++) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(3, superClasses_.get(i));
         }
         if (isVirtual_ != false) {
           size += com.google.protobuf.CodedOutputStream
@@ -3291,6 +4080,7 @@ public final class LibrarySummary {
           if (com.google.protobuf.GeneratedMessageV3
                   .alwaysUseFieldBuilders) {
             getSlotsFieldBuilder();
+            getSuperClassesFieldBuilder();
           }
         }
         @java.lang.Override
@@ -3304,8 +4094,12 @@ public final class LibrarySummary {
           } else {
             slotsBuilder_.clear();
           }
-          superClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-          bitField0_ = (bitField0_ & ~0x00000002);
+          if (superClassesBuilder_ == null) {
+            superClasses_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000002);
+          } else {
+            superClassesBuilder_.clear();
+          }
           isVirtual_ = false;
 
           return this;
@@ -3345,11 +4139,15 @@ public final class LibrarySummary {
           } else {
             result.slots_ = slotsBuilder_.build();
           }
-          if (((bitField0_ & 0x00000002) != 0)) {
-            superClasses_ = superClasses_.getUnmodifiableView();
-            bitField0_ = (bitField0_ & ~0x00000002);
+          if (superClassesBuilder_ == null) {
+            if (((bitField0_ & 0x00000002) != 0)) {
+              superClasses_ = java.util.Collections.unmodifiableList(superClasses_);
+              bitField0_ = (bitField0_ & ~0x00000002);
+            }
+            result.superClasses_ = superClasses_;
+          } else {
+            result.superClasses_ = superClassesBuilder_.build();
           }
-          result.superClasses_ = superClasses_;
           result.isVirtual_ = isVirtual_;
           onBuilt();
           return result;
@@ -3429,15 +4227,31 @@ public final class LibrarySummary {
               }
             }
           }
-          if (!other.superClasses_.isEmpty()) {
-            if (superClasses_.isEmpty()) {
-              superClasses_ = other.superClasses_;
-              bitField0_ = (bitField0_ & ~0x00000002);
-            } else {
-              ensureSuperClassesIsMutable();
-              superClasses_.addAll(other.superClasses_);
+          if (superClassesBuilder_ == null) {
+            if (!other.superClasses_.isEmpty()) {
+              if (superClasses_.isEmpty()) {
+                superClasses_ = other.superClasses_;
+                bitField0_ = (bitField0_ & ~0x00000002);
+              } else {
+                ensureSuperClassesIsMutable();
+                superClasses_.addAll(other.superClasses_);
+              }
+              onChanged();
             }
-            onChanged();
+          } else {
+            if (!other.superClasses_.isEmpty()) {
+              if (superClassesBuilder_.isEmpty()) {
+                superClassesBuilder_.dispose();
+                superClassesBuilder_ = null;
+                superClasses_ = other.superClasses_;
+                bitField0_ = (bitField0_ & ~0x00000002);
+                superClassesBuilder_ = 
+                  com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                     getSuperClassesFieldBuilder() : null;
+              } else {
+                superClassesBuilder_.addAllMessages(other.superClasses_);
+              }
+            }
           }
           if (other.getIsVirtual() != false) {
             setIsVirtual(other.getIsVirtual());
@@ -3788,114 +4602,244 @@ public final class LibrarySummary {
           return slotsBuilder_;
         }
 
-        private com.google.protobuf.LazyStringList superClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        private java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass> superClasses_ =
+          java.util.Collections.emptyList();
         private void ensureSuperClassesIsMutable() {
           if (!((bitField0_ & 0x00000002) != 0)) {
-            superClasses_ = new com.google.protobuf.LazyStringArrayList(superClasses_);
+            superClasses_ = new java.util.ArrayList<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass>(superClasses_);
             bitField0_ |= 0x00000002;
            }
         }
+
+        private com.google.protobuf.RepeatedFieldBuilderV3<
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClassOrBuilder> superClassesBuilder_;
+
         /**
-         * <code>repeated string superClasses = 3;</code>
-         * @return A list containing the superClasses.
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
          */
-        public com.google.protobuf.ProtocolStringList
-            getSuperClassesList() {
-          return superClasses_.getUnmodifiableView();
+        public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass> getSuperClassesList() {
+          if (superClassesBuilder_ == null) {
+            return java.util.Collections.unmodifiableList(superClasses_);
+          } else {
+            return superClassesBuilder_.getMessageList();
+          }
         }
         /**
-         * <code>repeated string superClasses = 3;</code>
-         * @return The count of superClasses.
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
          */
         public int getSuperClassesCount() {
-          return superClasses_.size();
+          if (superClassesBuilder_ == null) {
+            return superClasses_.size();
+          } else {
+            return superClassesBuilder_.getCount();
+          }
         }
         /**
-         * <code>repeated string superClasses = 3;</code>
-         * @param index The index of the element to return.
-         * @return The superClasses at the given index.
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
          */
-        public java.lang.String getSuperClasses(int index) {
-          return superClasses_.get(index);
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass getSuperClasses(int index) {
+          if (superClassesBuilder_ == null) {
+            return superClasses_.get(index);
+          } else {
+            return superClassesBuilder_.getMessage(index);
+          }
         }
         /**
-         * <code>repeated string superClasses = 3;</code>
-         * @param index The index of the value to return.
-         * @return The bytes of the superClasses at the given index.
-         */
-        public com.google.protobuf.ByteString
-            getSuperClassesBytes(int index) {
-          return superClasses_.getByteString(index);
-        }
-        /**
-         * <code>repeated string superClasses = 3;</code>
-         * @param index The index to set the value at.
-         * @param value The superClasses to set.
-         * @return This builder for chaining.
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
          */
         public Builder setSuperClasses(
-            int index, java.lang.String value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureSuperClassesIsMutable();
-          superClasses_.set(index, value);
-          onChanged();
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass value) {
+          if (superClassesBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureSuperClassesIsMutable();
+            superClasses_.set(index, value);
+            onChanged();
+          } else {
+            superClassesBuilder_.setMessage(index, value);
+          }
           return this;
         }
         /**
-         * <code>repeated string superClasses = 3;</code>
-         * @param value The superClasses to add.
-         * @return This builder for chaining.
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
+         */
+        public Builder setSuperClasses(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.Builder builderForValue) {
+          if (superClassesBuilder_ == null) {
+            ensureSuperClassesIsMutable();
+            superClasses_.set(index, builderForValue.build());
+            onChanged();
+          } else {
+            superClassesBuilder_.setMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
+         */
+        public Builder addSuperClasses(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass value) {
+          if (superClassesBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureSuperClassesIsMutable();
+            superClasses_.add(value);
+            onChanged();
+          } else {
+            superClassesBuilder_.addMessage(value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
          */
         public Builder addSuperClasses(
-            java.lang.String value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureSuperClassesIsMutable();
-          superClasses_.add(value);
-          onChanged();
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass value) {
+          if (superClassesBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureSuperClassesIsMutable();
+            superClasses_.add(index, value);
+            onChanged();
+          } else {
+            superClassesBuilder_.addMessage(index, value);
+          }
           return this;
         }
         /**
-         * <code>repeated string superClasses = 3;</code>
-         * @param values The superClasses to add.
-         * @return This builder for chaining.
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
+         */
+        public Builder addSuperClasses(
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.Builder builderForValue) {
+          if (superClassesBuilder_ == null) {
+            ensureSuperClassesIsMutable();
+            superClasses_.add(builderForValue.build());
+            onChanged();
+          } else {
+            superClassesBuilder_.addMessage(builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
+         */
+        public Builder addSuperClasses(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.Builder builderForValue) {
+          if (superClassesBuilder_ == null) {
+            ensureSuperClassesIsMutable();
+            superClasses_.add(index, builderForValue.build());
+            onChanged();
+          } else {
+            superClassesBuilder_.addMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
          */
         public Builder addAllSuperClasses(
-            java.lang.Iterable<java.lang.String> values) {
-          ensureSuperClassesIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, superClasses_);
-          onChanged();
+            java.lang.Iterable<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass> values) {
+          if (superClassesBuilder_ == null) {
+            ensureSuperClassesIsMutable();
+            com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                values, superClasses_);
+            onChanged();
+          } else {
+            superClassesBuilder_.addAllMessages(values);
+          }
           return this;
         }
         /**
-         * <code>repeated string superClasses = 3;</code>
-         * @return This builder for chaining.
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
          */
         public Builder clearSuperClasses() {
-          superClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-          bitField0_ = (bitField0_ & ~0x00000002);
-          onChanged();
+          if (superClassesBuilder_ == null) {
+            superClasses_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000002);
+            onChanged();
+          } else {
+            superClassesBuilder_.clear();
+          }
           return this;
         }
         /**
-         * <code>repeated string superClasses = 3;</code>
-         * @param value The bytes of the superClasses to add.
-         * @return This builder for chaining.
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
          */
-        public Builder addSuperClassesBytes(
-            com.google.protobuf.ByteString value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-          ensureSuperClassesIsMutable();
-          superClasses_.add(value);
-          onChanged();
+        public Builder removeSuperClasses(int index) {
+          if (superClassesBuilder_ == null) {
+            ensureSuperClassesIsMutable();
+            superClasses_.remove(index);
+            onChanged();
+          } else {
+            superClassesBuilder_.remove(index);
+          }
           return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.Builder getSuperClassesBuilder(
+            int index) {
+          return getSuperClassesFieldBuilder().getBuilder(index);
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClassOrBuilder getSuperClassesOrBuilder(
+            int index) {
+          if (superClassesBuilder_ == null) {
+            return superClasses_.get(index);  } else {
+            return superClassesBuilder_.getMessageOrBuilder(index);
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
+         */
+        public java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClassOrBuilder> 
+             getSuperClassesOrBuilderList() {
+          if (superClassesBuilder_ != null) {
+            return superClassesBuilder_.getMessageOrBuilderList();
+          } else {
+            return java.util.Collections.unmodifiableList(superClasses_);
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.Builder addSuperClassesBuilder() {
+          return getSuperClassesFieldBuilder().addBuilder(
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.getDefaultInstance());
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.Builder addSuperClassesBuilder(
+            int index) {
+          return getSuperClassesFieldBuilder().addBuilder(
+              index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.getDefaultInstance());
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass superClasses = 3;</code>
+         */
+        public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.Builder> 
+             getSuperClassesBuilderList() {
+          return getSuperClassesFieldBuilder().getBuilderList();
+        }
+        private com.google.protobuf.RepeatedFieldBuilderV3<
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClassOrBuilder> 
+            getSuperClassesFieldBuilder() {
+          if (superClassesBuilder_ == null) {
+            superClassesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClassOrBuilder>(
+                    superClasses_,
+                    ((bitField0_ & 0x00000002) != 0),
+                    getParentForChildren(),
+                    isClean());
+            superClasses_ = null;
+          }
+          return superClassesBuilder_;
         }
 
         private boolean isVirtual_ ;
@@ -6278,6 +7222,11 @@ public final class LibrarySummary {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4ClassSlot_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4SuperClass_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4SuperClass_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_library_summary_RLibraryPackage_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -6292,7 +7241,7 @@ public final class LibrarySummary {
   static {
     java.lang.String[] descriptorData = {
       "\n\025library_summary.proto\022\017library_summary" +
-      "\"\235\006\n\016RLibrarySymbol\022\014\n\004name\030\001 \001(\t\0222\n\004typ" +
+      "\"\266\007\n\016RLibrarySymbol\022\014\n\004name\030\001 \001(\t\0222\n\004typ" +
       "e\030\002 \001(\0162$.library_summary.RLibrarySymbol" +
       ".Type\022\020\n\010exported\030\003 \001(\010\022X\n\026functionRepre" +
       "sentation\030\004 \001(\01326.library_summary.RLibra" +
@@ -6304,21 +7253,25 @@ public final class LibrarySummary {
       "library_summary.RLibrarySymbol.FunctionR" +
       "epresentation.ExtraNamedArguments\032<\n\023Ext" +
       "raNamedArguments\022\020\n\010argNames\030\001 \003(\t\022\023\n\013fu" +
-      "nArgNames\030\002 \003(\t\032\322\001\n\025S4ClassRepresentatio" +
+      "nArgNames\030\002 \003(\t\032\353\002\n\025S4ClassRepresentatio" +
       "n\022\023\n\013packageName\030\001 \001(\t\022P\n\005slots\030\002 \003(\0132A." +
       "library_summary.RLibrarySymbol.S4ClassRe" +
-      "presentation.S4ClassSlot\022\024\n\014superClasses" +
-      "\030\003 \003(\t\022\021\n\tisVirtual\030\004 \001(\010\032)\n\013S4ClassSlot" +
-      "\022\014\n\004name\030\001 \001(\t\022\014\n\004type\030\002 \001(\t\"H\n\004Type\022\t\n\005" +
-      "OTHER\020\000\022\014\n\010FUNCTION\020\001\022\r\n\tPRIMITIVE\020\002\022\013\n\007" +
-      "DATASET\020\003\022\013\n\007S4CLASS\020\004B\020\n\016representation" +
-      "\"\330\001\n\017RLibraryPackage\022\014\n\004name\030\001 \001(\t\022;\n\010pr" +
-      "iority\030\002 \001(\0162).library_summary.RLibraryP" +
-      "ackage.Priority\0220\n\007symbols\030\003 \003(\0132\037.libra" +
-      "ry_summary.RLibrarySymbol\"H\n\010Priority\022\013\n" +
-      "\007UNKNOWN\020\000\022\006\n\002NA\020\001\022\017\n\013RECOMMENDED\020\002\022\010\n\004B" +
-      "ASE\020\003\022\014\n\010OPTIONAL\020\004B\032\n\030org.jetbrains.r.p" +
-      "ackagesb\006proto3"
+      "presentation.S4ClassSlot\022X\n\014superClasses" +
+      "\030\003 \003(\0132B.library_summary.RLibrarySymbol." +
+      "S4ClassRepresentation.S4SuperClass\022\021\n\tis" +
+      "Virtual\030\004 \001(\010\032C\n\013S4ClassSlot\022\014\n\004name\030\001 \001" +
+      "(\t\022\014\n\004type\030\002 \001(\t\022\030\n\020declarationClass\030\003 \001" +
+      "(\t\0329\n\014S4SuperClass\022\014\n\004name\030\001 \001(\t\022\033\n\023isDi" +
+      "rectInheritance\030\002 \001(\010\"H\n\004Type\022\t\n\005OTHER\020\000" +
+      "\022\014\n\010FUNCTION\020\001\022\r\n\tPRIMITIVE\020\002\022\013\n\007DATASET" +
+      "\020\003\022\013\n\007S4CLASS\020\004B\020\n\016representation\"\330\001\n\017RL" +
+      "ibraryPackage\022\014\n\004name\030\001 \001(\t\022;\n\010priority\030" +
+      "\002 \001(\0162).library_summary.RLibraryPackage." +
+      "Priority\0220\n\007symbols\030\003 \003(\0132\037.library_summ" +
+      "ary.RLibrarySymbol\"H\n\010Priority\022\013\n\007UNKNOW" +
+      "N\020\000\022\006\n\002NA\020\001\022\017\n\013RECOMMENDED\020\002\022\010\n\004BASE\020\003\022\014" +
+      "\n\010OPTIONAL\020\004B\032\n\030org.jetbrains.r.packages" +
+      "b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -6353,7 +7306,13 @@ public final class LibrarySummary {
     internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4ClassSlot_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4ClassSlot_descriptor,
-        new java.lang.String[] { "Name", "Type", });
+        new java.lang.String[] { "Name", "Type", "DeclarationClass", });
+    internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4SuperClass_descriptor =
+      internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_descriptor.getNestedTypes().get(1);
+    internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4SuperClass_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4SuperClass_descriptor,
+        new java.lang.String[] { "Name", "IsDirectInheritance", });
     internal_static_library_summary_RLibraryPackage_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_library_summary_RLibraryPackage_fieldAccessorTable = new

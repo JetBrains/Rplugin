@@ -9,10 +9,20 @@ public interface CopyToPersistentRefResponseOrBuilder extends
 
   /**
    * <code>int32 persistentIndex = 1;</code>
+   * @return Whether the persistentIndex field is set.
+   */
+  boolean hasPersistentIndex();
+  /**
+   * <code>int32 persistentIndex = 1;</code>
    * @return The persistentIndex.
    */
   int getPersistentIndex();
 
+  /**
+   * <code>string error = 2;</code>
+   * @return Whether the error field is set.
+   */
+  boolean hasError();
   /**
    * <code>string error = 2;</code>
    * @return The error.

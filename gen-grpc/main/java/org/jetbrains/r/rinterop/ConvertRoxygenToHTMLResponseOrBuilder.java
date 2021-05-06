@@ -9,6 +9,11 @@ public interface ConvertRoxygenToHTMLResponseOrBuilder extends
 
   /**
    * <code>string text = 1;</code>
+   * @return Whether the text field is set.
+   */
+  boolean hasText();
+  /**
+   * <code>string text = 1;</code>
    * @return The text.
    */
   java.lang.String getText();
@@ -19,6 +24,11 @@ public interface ConvertRoxygenToHTMLResponseOrBuilder extends
   com.google.protobuf.ByteString
       getTextBytes();
 
+  /**
+   * <code>string error = 2;</code>
+   * @return Whether the error field is set.
+   */
+  boolean hasError();
   /**
    * <code>string error = 2;</code>
    * @return The error.

@@ -12,13 +12,16 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.tree.TokenSet
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.classes.s4.context.RS4ContextProvider
+import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassClassNameContext
+import org.jetbrains.r.classes.s4.context.setClass.RS4SlotDeclarationContext
 import org.jetbrains.r.lexer.RLexer
+import org.jetbrains.r.packages.LibrarySummary
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.parsing.RParserDefinition
-import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.api.RFunctionExpression
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.api.RParameter
+import org.jetbrains.r.psi.RPsiUtil
+import org.jetbrains.r.psi.api.*
+import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 
 class RFindUsagesProvider : FindUsagesProvider {
   override fun getWordsScanner(): WordsScanner? {
@@ -48,10 +51,26 @@ class RFindUsagesProvider : FindUsagesProvider {
       getAssignmentType(parent)?.let { return it }
     }
 
-    return if (element is RParameter || parent is RParameter && parent.variable == element) {
-      RBundle.message("find.usages.parameter")
+    if (element is RParameter || parent is RParameter && parent.variable == element) {
+      return RBundle.message("find.usages.parameter")
     }
-    else RBundle.message("find.usages.variable")
+
+    if (element is RStringLiteralExpression &&
+        RS4ContextProvider.getS4Context(element, RS4SetClassClassNameContext::class) != null) {
+      return RBundle.message("find.usages.s4.class")
+    }
+
+    if (element is RStringLiteralExpression &&
+        RS4ContextProvider.getS4Context(element, RS4SetClassClassNameContext::class) != null) {
+      return RBundle.message("find.usages.s4.class")
+    }
+
+    if (RPsiUtil.getNamedArgumentByNameIdentifier(element as RPsiElement) != null &&
+        RS4ContextProvider.getS4Context(element, RS4SlotDeclarationContext::class) != null) {
+      return RBundle.message("find.usages.s4.slot")
+    }
+
+    return RBundle.message("find.usages.variable")
   }
 
   private fun getAssignmentType(assignment: RAssignmentStatement): String? {
@@ -72,12 +91,19 @@ class RFindUsagesProvider : FindUsagesProvider {
       return element.assignee?.text ?: element.name
     }
 
+    if (element is RStringLiteralExpression) {
+      return element.name ?: element.text
+    }
+
     // this will be used e.g. when renaming function parameters
     return element.text
   }
 
 
   override fun getNodeText(element: PsiElement, useFullName: Boolean): String {
-    return element.text
+    return when (element) {
+      is RStringLiteralExpression -> element.name ?: element.text
+      else -> element.text
+    }
   }
 }

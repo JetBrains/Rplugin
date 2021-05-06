@@ -5672,6 +5672,13 @@ private static final long serialVersionUID = 0L;
   public static final int BROWSEURLREQUEST_FIELD_NUMBER = 12;
   /**
    * <code>string browseURLRequest = 12;</code>
+   * @return Whether the browseURLRequest field is set.
+   */
+  public boolean hasBrowseURLRequest() {
+    return eventCase_ == 12;
+  }
+  /**
+   * <code>string browseURLRequest = 12;</code>
    * @return The browseURLRequest.
    */
   public java.lang.String getBrowseURLRequest() {
@@ -5746,6 +5753,14 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int DEBUGREMOVEBREAKPOINTREQUEST_FIELD_NUMBER = 14;
+  /**
+   * <code>int32 debugRemoveBreakpointRequest = 14;</code>
+   * @return Whether the debugRemoveBreakpointRequest field is set.
+   */
+  @java.lang.Override
+  public boolean hasDebugRemoveBreakpointRequest() {
+    return eventCase_ == 14;
+  }
   /**
    * <code>int32 debugRemoveBreakpointRequest = 14;</code>
    * @return The debugRemoveBreakpointRequest.
@@ -8101,6 +8116,14 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string browseURLRequest = 12;</code>
+     * @return Whether the browseURLRequest field is set.
+     */
+    @java.lang.Override
+    public boolean hasBrowseURLRequest() {
+      return eventCase_ == 12;
+    }
+    /**
+     * <code>string browseURLRequest = 12;</code>
      * @return The browseURLRequest.
      */
     @java.lang.Override
@@ -8329,6 +8352,13 @@ private static final long serialVersionUID = 0L;
       return rStudioApiRequestBuilder_;
     }
 
+    /**
+     * <code>int32 debugRemoveBreakpointRequest = 14;</code>
+     * @return Whether the debugRemoveBreakpointRequest field is set.
+     */
+    public boolean hasDebugRemoveBreakpointRequest() {
+      return eventCase_ == 14;
+    }
     /**
      * <code>int32 debugRemoveBreakpointRequest = 14;</code>
      * @return The debugRemoveBreakpointRequest.

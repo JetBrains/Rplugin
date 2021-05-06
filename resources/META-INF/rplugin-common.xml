@@ -451,6 +451,7 @@ You can find the source code in the following repositories:
         <lang.findUsagesProvider implementationClass="org.jetbrains.r.psi.references.RFindUsagesProvider" language="R"/>
         <lang.findUsagesProvider implementationClass="org.jetbrains.r.roxygen.usage.RoxygenFindUsagesProvider" language="Roxygen"/>
         <elementDescriptionProvider implementation="org.jetbrains.r.psi.references.RPomTargetDescriptionProvider"/>
+        <elementDescriptionProvider implementation="org.jetbrains.r.classes.s4.RS4PomTargetDescriptionProvider"/>
         <usageTypeProvider implementation="org.jetbrains.r.roxygen.usage.RoxygenUsageTypeProvider"/>
         <targetElementEvaluator language="R" implementationClass="org.jetbrains.r.codeInsight.findUsages.RTargetElementEvaluator"/>
 
@@ -470,6 +471,8 @@ You can find the source code in the following repositories:
         <controlFlowProvider implementation="org.jetbrains.r.psi.cfg.RControlFlowProvider"/>
 
         <psi.referenceContributor language="R" implementation="org.jetbrains.r.psi.references.RReferenceContributor"/>
+        <psi.referenceContributor language="R" implementation="org.jetbrains.r.classes.s4.RS4ReferenceContributor"/>
+        <referencesSearch implementation="org.jetbrains.r.classes.s4.RS4ReferenceSearcher"/>
 
         <typedHandler implementation="org.jetbrains.r.editor.RCompletionAutoPopupHandler" order="first, before completionAutoPopup"/>
         <typedHandler implementation="org.jetbrains.r.roxygen.RoxygenTypedHandler"/>
@@ -738,7 +741,8 @@ You can find the source code in the following repositories:
 
         <!-- S4 contexts-->
         <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.RS4NewObjectContextProvider"/>
-        <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.RS4SetClassContextProvider"/>
+        <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.setClass.RS4SetClassTypeContextProvider"/>
+        <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.setClass.RS4SlotDeclarationContextProvider"/>
 
       <notificationGroup id="RDataFrameViewer" displayType="BALLOON"/>
       <notificationGroup id="RMarkdownRenderError" displayType="BALLOON"/>

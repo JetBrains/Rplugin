@@ -135,6 +135,14 @@ private static final long serialVersionUID = 0L;
   public static final int PERSISTENTINDEX_FIELD_NUMBER = 1;
   /**
    * <code>int32 persistentIndex = 1;</code>
+   * @return Whether the persistentIndex field is set.
+   */
+  @java.lang.Override
+  public boolean hasPersistentIndex() {
+    return responseCase_ == 1;
+  }
+  /**
+   * <code>int32 persistentIndex = 1;</code>
    * @return The persistentIndex.
    */
   @java.lang.Override
@@ -146,6 +154,13 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int ERROR_FIELD_NUMBER = 2;
+  /**
+   * <code>string error = 2;</code>
+   * @return Whether the error field is set.
+   */
+  public boolean hasError() {
+    return responseCase_ == 2;
+  }
   /**
    * <code>string error = 2;</code>
    * @return The error.
@@ -556,6 +571,13 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>int32 persistentIndex = 1;</code>
+     * @return Whether the persistentIndex field is set.
+     */
+    public boolean hasPersistentIndex() {
+      return responseCase_ == 1;
+    }
+    /**
+     * <code>int32 persistentIndex = 1;</code>
      * @return The persistentIndex.
      */
     public int getPersistentIndex() {
@@ -588,6 +610,14 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    /**
+     * <code>string error = 2;</code>
+     * @return Whether the error field is set.
+     */
+    @java.lang.Override
+    public boolean hasError() {
+      return responseCase_ == 2;
+    }
     /**
      * <code>string error = 2;</code>
      * @return The error.

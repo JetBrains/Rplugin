@@ -312,6 +312,13 @@ private static final long serialVersionUID = 0L;
   public static final int PACKAGENOTFOUND_FIELD_NUMBER = 5;
   /**
    * <code>string packageNotFound = 5;</code>
+   * @return Whether the packageNotFound field is set.
+   */
+  public boolean hasPackageNotFound() {
+    return detailsCase_ == 5;
+  }
+  /**
+   * <code>string packageNotFound = 5;</code>
    * @return The packageNotFound.
    */
   public java.lang.String getPackageNotFound() {
@@ -1214,6 +1221,14 @@ private static final long serialVersionUID = 0L;
       return interruptedBuilder_;
     }
 
+    /**
+     * <code>string packageNotFound = 5;</code>
+     * @return Whether the packageNotFound field is set.
+     */
+    @java.lang.Override
+    public boolean hasPackageNotFound() {
+      return detailsCase_ == 5;
+    }
     /**
      * <code>string packageNotFound = 5;</code>
      * @return The packageNotFound.
