@@ -9,6 +9,7 @@ import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.classes.common.context.ILibraryClassContext
 import org.jetbrains.r.classes.r6.R6ClassInfoUtil
+import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.psi.api.RCallExpression
@@ -96,5 +97,10 @@ class R6CreateClassContextProvider : R6ContextProvider<R6CreateClassContext>() {
         else -> null
       }
     }
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other !is R6ContextProvider<*>) return false
+    return this::class.java.name == other::class.java.name
   }
 }

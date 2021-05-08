@@ -65,4 +65,9 @@ class R6SetClassMembersContextProvider : R6ContextProvider<R6SetClassMembersCont
                                                         RSearchScopeUtil.getScope(rCallExpression))
     return (!cachedClasses.isNullOrEmpty())
   }
+
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other !is R6ContextProvider<*>) return false
+    return this::class.java.name == other::class.java.name
+  }
 }

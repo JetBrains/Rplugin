@@ -55,4 +55,9 @@ class RS4NewObjectContextProvider : RS4ContextProvider<RS4NewObjectContext>() {
       }
     }
   }
+
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other !is RS4ContextProvider<*>) return false
+    return this::class.java.name == other::class.java.name
+  }
 }

@@ -77,12 +77,6 @@ You can find the source code in the following repositories:
 
       <extensionPoint qualifiedName="com.intellij.rInterpreterSettingsProvider"
                       interface="org.jetbrains.r.settings.RInterpreterSettingsProvider" dynamic="true"/>
-
-      <extensionPoint qualifiedName="com.intellij.rS4ContextProvider"
-                      interface="org.jetbrains.r.classes.s4.context.RS4ContextProvider" dynamic="true"/>
-
-      <extensionPoint qualifiedName="com.intellij.r6ContextProvider"
-                      interface="org.jetbrains.r.classes.r6.context.R6ContextProvider" dynamic="true"/>
     </extensionPoints>
 
     <resource-bundle>messages.RPluginBundle</resource-bundle>

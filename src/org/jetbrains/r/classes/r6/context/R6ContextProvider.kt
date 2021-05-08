@@ -17,10 +17,10 @@ abstract class R6ContextProvider<T : ILibraryClassContext> {
   private val contextClass = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>
 
   companion object {
-    private val EP_NAME: ExtensionPointName<R6ContextProvider<out ILibraryClassContext>> =
-      ExtensionPointName.create("com.intellij.r6ContextProvider")
-
-    fun getProviders(): List<R6ContextProvider<out ILibraryClassContext>> = EP_NAME.extensionList
+    fun getProviders(): List<R6ContextProvider<out ILibraryClassContext>> = listOf(
+      R6CreateClassContextProvider(),
+      R6SetClassMembersContextProvider()
+    )
 
     fun getR6Context(element: RPsiElement): ILibraryClassContext? {
       return getR6Context(element, ILibraryClassContext::class.java)
