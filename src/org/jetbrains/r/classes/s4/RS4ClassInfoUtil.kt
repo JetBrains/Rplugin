@@ -14,7 +14,6 @@ import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isFunctionFromLibrary
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.classes.LibraryClassNameIndexProvider
 import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
 import org.jetbrains.r.skeleton.psi.RSkeletonCallExpression
 
@@ -70,7 +69,7 @@ object RS4ClassInfoUtil {
     val project = callExpression.project
     return (s4ClassInfo.slots + allSuperClasses.flatMap { superClassName ->
       // Collect slots from super classes and data slot if needed
-      LibraryClassNameIndexProvider.RS4ClassNameIndex.findClassInfos(superClassName, project, callSearchScope).flatMap {
+      RS4ClassNameIndex.findClassInfos(superClassName, project, callSearchScope).flatMap {
         val superClassSlots = it.slots
         when {
           // methods:::.InhSlotNames
@@ -89,7 +88,7 @@ object RS4ClassInfoUtil {
     return s4ClassInfo.superClasses.flatMap { superClassName ->
       // R keeps all superclasses together in the list, not as a tree
       // So, I don't see any reason to do anything else
-      val parentSuperClasses = LibraryClassNameIndexProvider.RS4ClassNameIndex.findClassDefinitions(superClassName, project, callSearchScope).flatMap {
+      val parentSuperClasses = RS4ClassNameIndex.findClassDefinitions(superClassName, project, callSearchScope).flatMap {
         getAllAssociatedSuperClasses(it)
       }
       listOf(superClassName) + parentSuperClasses

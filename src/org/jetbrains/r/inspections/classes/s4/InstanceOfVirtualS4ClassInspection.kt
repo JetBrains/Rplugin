@@ -15,7 +15,7 @@ import org.jetbrains.r.psi.api.RStringLiteralExpression
 import org.jetbrains.r.psi.api.RVisitor
 import org.jetbrains.r.psi.isFunctionFromLibrary
 import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.classes.LibraryClassNameIndexProvider
+import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
 
 class InstanceOfVirtualS4ClassInspection : RInspection() {
   override fun getDisplayName() = RBundle.message("inspection.virtual.s4class.instance.name")
@@ -29,7 +29,7 @@ class InstanceOfVirtualS4ClassInspection : RInspection() {
       if (!call.isFunctionFromLibrary("new", "methods")) return
       val classNameExpression = call.argumentList.expressionList.firstOrNull() as? RStringLiteralExpression ?: return
       val className = classNameExpression.name ?: return
-      val infos = LibraryClassNameIndexProvider.RS4ClassNameIndex.findClassInfos(className, call.project, RSearchScopeUtil.getScope(call))
+      val infos = RS4ClassNameIndex.findClassInfos(className, call.project, RSearchScopeUtil.getScope(call))
       if (infos.isNotEmpty() && infos.all { it.isVirtual }) {
         myProblemHolder.registerProblem(classNameExpression,
                                         RBundle.message("inspection.virtual.s4class.instance.description", className),

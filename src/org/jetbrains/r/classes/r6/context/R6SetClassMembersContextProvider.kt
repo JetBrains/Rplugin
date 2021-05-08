@@ -14,7 +14,7 @@ import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RMemberExpression
 import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.classes.LibraryClassNameIndexProvider
+import org.jetbrains.r.psi.stubs.classes.R6ClassNameIndex
 
 sealed class R6SetClassMembersContext : ILibraryClassContext {
   override val functionName = R6ClassInfoUtil.functionSet
@@ -61,8 +61,8 @@ class R6SetClassMembersContextProvider : R6ContextProvider<R6SetClassMembersCont
     if (!memberExpression.lastChild.textMatches(R6ClassInfoUtil.functionSet)) return false
 
     val r6ClassIdentifier = memberExpression.firstChild
-    val cachedClasses = LibraryClassNameIndexProvider.R6ClassNameIndex.findClassInfos(r6ClassIdentifier.text, memberExpression.project,
-                                                                                      RSearchScopeUtil.getScope(rCallExpression))
+    val cachedClasses = R6ClassNameIndex.findClassInfos(r6ClassIdentifier.text, memberExpression.project,
+                                                        RSearchScopeUtil.getScope(rCallExpression))
     return (!cachedClasses.isNullOrEmpty())
   }
 }

@@ -68,14 +68,14 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
   fun testUserClassNameSuggestion() {
     doTest("""
       MyClass <- R6Class(<caret>)
-    """.trimIndent(), "MyClass" to "string", containedInSuggestions = true)
+    """.trimIndent(), "MyClass" to "string")
   }
 
   fun testSetMemberVisibilityModifierCompletionToUserClass() {
     doTest("""
       MyClass <- R6Class("MyClass", list(someField = 0))
       MyClass${'$'}set(<caret>)
-    """.trimIndent(), "\"active\"" to "string", "\"public\"" to "string", "\"private\"" to "string", containedInSuggestions = true)
+    """.trimIndent(), "\"active\"" to "string", "\"public\"" to "string", "\"private\"" to "string")
   }
 
   fun testConsoleMembersSuggestion() {
@@ -84,7 +84,7 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
       MyClass <- R6Class("MyClass", list( someField = 0, someMethod = function (x = 1) { print(x) }, random = function() { print('it is a random active binding') } ))
       obj <- MyClass${'$'}new()
     """.trimIndent())
-    doTest("obj${'$'}<caret>", "clone" to "", "random" to "", "someField" to "", "someMethod" to "", withRuntimeInfo = true, inConsole = true, containedInSuggestions = true)
+    doTest("obj${'$'}<caret>", "clone" to "", "random" to "", "someField" to "", "someMethod" to "", withRuntimeInfo = true, inConsole = true)
   }
 
   private fun doWrongVariantsTest(text: String, vararg variants: String, withRuntimeInfo: Boolean = false, inConsole: Boolean = false) {
@@ -96,8 +96,6 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
 
   private fun doTest(text: String,
                      vararg variants: Pair<String, String>, // <name, type>
-                     containedInSuggestions: Boolean = false,
-                     strict: Boolean = true,
                      withRuntimeInfo: Boolean = false,
                      inConsole: Boolean = false) {
     val result = doTestBase(text, withRuntimeInfo, inConsole)
@@ -108,18 +106,8 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
       elementPresentation.itemText to elementPresentation.typeText
     }
 
-    when {
-      containedInSuggestions -> {
-        variants.forEach { expectedSuggestion ->
-          assert(lookupStrings.any { it.first == expectedSuggestion.first })
-        }
-      }
-      strict -> {
-        assertOrderedEquals(lookupStrings, *variants)
-      }
-      else -> {
-        assertContainsOrdered(lookupStrings, *variants)
-      }
+    variants.forEach { expectedSuggestion ->
+      assert(lookupStrings.any { it.first == expectedSuggestion.first })
     }
   }
 

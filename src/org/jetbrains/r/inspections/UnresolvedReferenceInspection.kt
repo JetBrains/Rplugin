@@ -20,7 +20,6 @@ import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isFunctionFromLibrary
 import org.jetbrains.r.psi.references.RReferenceBase
 import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.classes.LibraryClassNameIndexProvider
 import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
 
 class UnresolvedReferenceInspection : RInspection() {
@@ -66,7 +65,7 @@ class UnresolvedReferenceInspection : RInspection() {
       val classNameExpr = element.argumentList.expressionList.firstOrNull() as? RStringLiteralExpression ?: return
       val className = classNameExpr.name
       val packageNames = className?.let {
-        LibraryClassNameIndexProvider.RS4ClassNameIndex.findClassInfos(it, element.project, RSearchScopeUtil.getScope(element))
+        RS4ClassNameIndex.findClassInfos(it, element.project, RSearchScopeUtil.getScope(element))
       }?.map { it.packageName }?.filter { it.isNotBlank() } ?: return
       if (packageNames.isEmpty() || packageNames.any { it in loadedPackages }) return
       registerMissingPackages(classNameExpr, className, packageNames, runtimeInfo)

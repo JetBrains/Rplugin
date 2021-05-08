@@ -14,7 +14,7 @@ import org.jetbrains.r.psi.impl.RCallExpressionImpl
 import org.jetbrains.r.psi.impl.RMemberExpressionImpl
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.classes.LibraryClassNameIndexProvider
+import org.jetbrains.r.psi.stubs.classes.R6ClassNameIndex
 
 object R6ClassInfoUtil {
   const val R6PackageName = "R6"
@@ -117,7 +117,7 @@ object R6ClassInfoUtil {
 
     if (allSuperClasses != null) {
       return (r6ClassInfo.fields + r6ClassInfo.methods + r6ClassInfo.activeBindings + allSuperClasses.flatMap { superClassName ->
-        LibraryClassNameIndexProvider.R6ClassNameIndex.findClassInfos(superClassName, project, callSearchScope).flatMap { it.fields + it.methods + it.activeBindings }
+        R6ClassNameIndex.findClassInfos(superClassName, project, callSearchScope).flatMap { it.fields + it.methods + it.activeBindings }
       }).distinctBy { it.name }
     }
 

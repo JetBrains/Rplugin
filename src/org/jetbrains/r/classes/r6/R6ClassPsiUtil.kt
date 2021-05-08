@@ -14,7 +14,7 @@ import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RCallExpressionImpl
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.classes.LibraryClassNameIndexProvider
+import org.jetbrains.r.psi.stubs.classes.R6ClassNameIndex
 
 object R6ClassPsiUtil {
 
@@ -35,7 +35,7 @@ object R6ClassPsiUtil {
 
     val r6ClassInfo = run findMemberDefinition@ {
       (classNamesHierarchy)?.reversed()?.forEach {
-        val r6ClassInfo = LibraryClassNameIndexProvider.R6ClassNameIndex.findClassInfos(it, project, callSearchScope).firstOrNull()
+        val r6ClassInfo = R6ClassNameIndex.findClassInfos(it, project, callSearchScope).firstOrNull()
 
         if (r6ClassInfo != null) {
           if (r6ClassInfo.containsMember(dependantIdentifier.name)) return@findMemberDefinition r6ClassInfo
@@ -44,7 +44,7 @@ object R6ClassPsiUtil {
     } as R6ClassInfo?
 
     r6ClassInfo ?: return null
-    val r6ClassDefinitionCall = LibraryClassNameIndexProvider.R6ClassNameIndex.findClassDefinitions(r6ClassInfo.className, project, callSearchScope).firstOrNull()
+    val r6ClassDefinitionCall = R6ClassNameIndex.findClassDefinitions(r6ClassInfo.className, project, callSearchScope).firstOrNull()
     val argumentInfo = getClassDefinitionArgumentInfo(r6ClassDefinitionCall) ?: return null
 
     val publicMembers = getClassMemberExpressionsOfArgument(argumentInfo, R6ClassInfoUtil.argumentPublic)
