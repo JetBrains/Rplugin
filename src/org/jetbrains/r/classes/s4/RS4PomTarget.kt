@@ -42,7 +42,7 @@ data class RSkeletonS4ClassPomTarget(val setClass: RSkeletonCallExpression) : RP
       runReadAction {
         val rCall = RS4SourceManager.getCallFromSkeleton(setClass)
         val className = rCall.argumentList.expressionList.first() as RStringLiteralExpression
-        invokeLater { className.navigate(true) }
+        invokeLater { RStringLiteralPomTarget(className).navigate(true) }
       }
     }
   }
