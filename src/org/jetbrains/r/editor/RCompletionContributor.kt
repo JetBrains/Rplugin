@@ -176,8 +176,11 @@ class RCompletionContributor : CompletionContributor() {
           if (r6Member.name in shownNames) continue
 
           when (r6Member){
-            is R6ClassField -> result.consume(rCompletionElementFactory.createAtAccess(r6Member.name))
-            is R6ClassMethod -> result.consume(rCompletionElementFactory.createFunctionLookupElement(r6Member.name))
+            is R6ClassField,
+            is R6ClassActiveBinding
+              -> result.consume(rCompletionElementFactory.createAtAccess(r6Member.name))
+            is R6ClassMethod
+              -> result.consume(rCompletionElementFactory.createFunctionLookupElement(r6Member.name))
           }
 
           shownNames.add(r6Member.name)

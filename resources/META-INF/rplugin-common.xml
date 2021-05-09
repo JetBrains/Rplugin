@@ -731,14 +731,6 @@ You can find the source code in the following repositories:
         <!-- Interpreter -->
         <rInterpreterSettingsProvider implementation="org.jetbrains.r.settings.RLocalInterpreterSettingsProvider"/>
 
-        <!-- S4 contexts-->
-        <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.RS4NewObjectContextProvider"/>
-        <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.RS4SetClassContextProvider"/>
-
-        <!-- R6 contexts -->
-        <r6ContextProvider implementation="org.jetbrains.r.classes.r6.context.R6CreateClassContextProvider" />
-        <r6ContextProvider implementation="org.jetbrains.r.classes.r6.context.R6SetClassMembersContextProvider" />
-
       <notificationGroup id="RDataFrameViewer" displayType="BALLOON"/>
       <notificationGroup id="RMarkdownRenderError" displayType="BALLOON"/>
       <notificationGroup id="RMarkdownRunChunkStatus" displayType="BALLOON"/>

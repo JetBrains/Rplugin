@@ -81,10 +81,14 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
   fun testConsoleMembersSuggestion() {
     rInterop.executeCode("""
       library(R6)
-      MyClass <- R6Class("MyClass", list( someField = 0, someMethod = function (x = 1) { print(x) }, random = function() { print('it is a random active binding') } ))
+      MyClass <- R6Class("MyClass", public  = list(someField = 0, someMethod = function (x = 1) { print(x) }, random = function() { print('it is a random active binding') } ),
+                                    private = list(somePrivateField = 0, somePrivateMethod = function(x = 1) { print(x) } ),
+                                    active  = list(someActiveFunction = function(x) { print(x) } )
+                        )
       obj <- MyClass${'$'}new()
     """.trimIndent())
-    doTest("obj${'$'}<caret>", "clone" to "", "random" to "", "someField" to "", "someMethod" to "", withRuntimeInfo = true, inConsole = true)
+    doTest("obj${'$'}<caret>", "clone" to "", "random" to "", "someField" to "", "someMethod" to "", "someActiveFunction" to "",
+           withRuntimeInfo = true, inConsole = true,)
   }
 
   private fun doWrongVariantsTest(text: String, vararg variants: String, withRuntimeInfo: Boolean = false, inConsole: Boolean = false) {
