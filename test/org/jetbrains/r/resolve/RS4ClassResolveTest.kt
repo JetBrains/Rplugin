@@ -86,7 +86,8 @@ class RS4ClassResolveTest : RConsoleBaseTestCase() {
     myFixture.configureByText(RFileType, "new('MyClas<caret>s')")
     val resolve = resolve().mapNotNull { it.element }
     assertEquals(1, resolve.size)
-    assertEquals((another.firstChild as RCallExpression).classNameLiteral, resolve.single())
+    val literal = ((resolve.single() as PomTargetPsiElement).target as RStringLiteralPomTarget).literal
+    assertEquals((another.firstChild as RCallExpression).classNameLiteral, literal)
   }
 
   fun testUserClassSlot() =
@@ -131,6 +132,11 @@ class RS4ClassResolveTest : RConsoleBaseTestCase() {
     doSlotTest("setClass('MyClass', slots = c(slot = 'numeric'))",
                "new('MyClass', sl<caret>ot)",
                RS4ClassSlot("slot", "numeric", "MyClass"))
+
+  fun testStringSlot() =
+    doSlotTest("setClass('MyClass', slots = c('slot'))",
+               "new('MyClass', sl<caret>ot)",
+               RS4ClassSlot("slot", "ANY", "MyClass"))
 
   fun testLibClassSlot() =
     doSlotTest("""
@@ -187,20 +193,27 @@ class RS4ClassResolveTest : RConsoleBaseTestCase() {
     assertEquals(1, resolveResults.size)
     val result = resolveResults.single()
     val slot = if (isUserDefined) {
-      assertTrue(result is RStringLiteralExpression ||
-                 result is RNamedArgument ||
-                 result is PomTargetPsiElement && result.target is RS4ComplexSlotPomTarget)
+      assertTrue(result is RNamedArgument || result is PomTargetPsiElement)
       val decl = getDeclarationWithClassName(className)
       val argInfo = RParameterInfoUtil.getArgumentInfo(decl)!!
       val slotDecl = when (result) {
-        is RStringLiteralExpression, is RNamedArgument -> result
-        else -> ((result as PomTargetPsiElement).target as RS4ComplexSlotPomTarget).slotDefinition
+        is RNamedArgument -> result
+        is PomTargetPsiElement -> when (val target = result.target) {
+          is RS4ComplexSlotPomTarget -> target.slotDefinition
+          is RStringLiteralPomTarget -> target.literal
+          else -> error("Unexpected resolve target type: $target")
+        }
+        else -> error("Unexpected resolve type: $result")
       }
       assertTrue(PsiTreeUtil.isAncestor(argInfo.getArgumentPassedToParameter("slots"), slotDecl, false))
       when (result) {
-        is RStringLiteralExpression -> result.toSlot(className)
         is RNamedArgument -> result.toSlot(className)
-        else -> ((result as PomTargetPsiElement).target as RS4ComplexSlotPomTarget).slot
+        is PomTargetPsiElement -> when (val target = result.target) {
+          is RS4ComplexSlotPomTarget -> target.slot
+          is RStringLiteralPomTarget -> target.literal.toSlot(className)
+          else -> error("Unexpected resolve target type: $target")
+        }
+        else -> error("Unexpected resolve type: $result")
       }
     }
     else {
@@ -230,22 +243,20 @@ class RS4ClassResolveTest : RConsoleBaseTestCase() {
     assertEquals(1, resolveResults.size)
     val result = resolveResults.single()
     if (isUserDefined) {
-      assertInstanceOf(result, RStringLiteralExpression::class.java)
-      assertEquals(getDeclarationWithClassName(className).classNameLiteral, result)
+      assertInstanceOf(result, PomTargetPsiElement::class.java)
+      val target = (result as PomTargetPsiElement).target
+      assertInstanceOf(target, RStringLiteralPomTarget::class.java)
+      assertEquals(getDeclarationWithClassName(className).classNameLiteral, (target as RStringLiteralPomTarget).literal)
     }
     else {
-      val declText = when (result) {
-        is PomTargetPsiElement -> {
-          val target = result.target
-          assertInstanceOf(target, RSkeletonS4ClassPomTarget::class.java)
-          val decl = (target as RSkeletonS4ClassPomTarget).setClass
-          decl.text
-        }
-        is RStringLiteralExpression -> {
-          assertTrue(RS4SourceManager.isS4ClassSourceElement(result))
+      assertInstanceOf(result, PomTargetPsiElement::class.java)
+      val declText = when (val target = (result as PomTargetPsiElement).target) {
+        is RStringLiteralPomTarget -> {
+          assertTrue(RS4SourceManager.isS4ClassSourceElement(target.literal))
           result.containingFile.text
         }
-        else -> error("Unexpected resolve type: $result")
+        is RSkeletonS4ClassPomTarget -> target.setClass.text
+        else -> error("Unexpected resolve target type: $target")
       }
       assertEquals(classDeclaration, declText)
     }
