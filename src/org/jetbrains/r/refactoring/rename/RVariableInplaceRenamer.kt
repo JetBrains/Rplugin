@@ -11,7 +11,7 @@ import com.intellij.pom.PomTargetPsiElement
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.refactoring.rename.inplace.VariableInplaceRenamer
-import org.jetbrains.r.classes.s4.RS4ClassPomTarget
+import org.jetbrains.r.classes.s4.RStringLiteralPomTarget
 import org.jetbrains.r.psi.api.RIdentifierExpression
 import org.jetbrains.r.psi.api.RStringLiteralExpression
 
@@ -43,7 +43,7 @@ class RVariableInplaceRenamer : VariableInplaceRenamer {
     val element = myElementToRename
     if (element is RStringLiteralExpression) return element
     if (element is PomTargetPsiElement) {
-      (element.target as? RS4ClassPomTarget)?.let { return it.literal }
+      (element.target as? RStringLiteralPomTarget)?.let { return it.literal }
     }
     return super.getNameIdentifier()
   }

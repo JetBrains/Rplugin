@@ -12,7 +12,7 @@ import com.intellij.refactoring.rename.UnresolvableCollisionUsageInfo
 import com.intellij.usageView.UsageInfo
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.classes.s4.RS4ClassPomTarget
+import org.jetbrains.r.classes.s4.RStringLiteralPomTarget
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassClassNameContext
 import org.jetbrains.r.psi.RPsiUtil
@@ -29,15 +29,15 @@ class RenameRPsiElementProcessor : RenamePsiElementProcessor() {
         val parent = element.parent
         when {
           parent is RForStatement && parent.target == element -> element
-          parent is RAssignmentStatement || parent is RParameter -> parent
+          parent is RAssignmentStatement || parent is RParameter || parent is RNamedArgument -> parent
           else -> null
         }
       }
       is RForStatement -> element.target
-      is RAssignmentStatement, is RParameter, is RFile -> element
+      is RAssignmentStatement, is RParameter, is RNamedArgument, is RFile -> element
       is PomTargetPsiElement -> {
         val target = element.target
-        if (target is RS4ClassPomTarget) target.literal
+        if (target is RStringLiteralPomTarget) target.literal
         else null
       }
       is RStringLiteralExpression -> {

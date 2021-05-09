@@ -103,6 +103,18 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
 
   fun testRenameLibS4Class() = doTestWithProject("number", false)
 
+  fun testRenameS4Slot() = doTestWithProject("address")
+
+  fun testRenameS4SlotFromNew() = doTestWithProject("address")
+
+  fun testRenameS4SlotFromAtExpr() = doTestWithProject("address")
+
+  fun testRenameS4StringSlot() = doTestWithProject("address")
+
+  fun testRenameS4StringSlotFromAtExpr() = doTestWithProject("address")
+
+  fun testRenameLibS4Slot() = doTestWithProject("source", false)
+
   private fun doTestWithProject(newName: String, isInlineAvailable: Boolean = true, isRmd: Boolean = false, isSourceTest: Boolean = false) {
     val dotFileExtension = getDotExtension(isRmd)
     lateinit var startFiles: List<String>

@@ -18,23 +18,22 @@ import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.classes.s4.RS4ClassSlot
-import org.jetbrains.r.classes.s4.RS4ComplexSlotPomTarget
-import org.jetbrains.r.classes.s4.RSkeletonS4ClassPomTarget
-import org.jetbrains.r.classes.s4.RSkeletonS4SlotPomTarget
+import org.jetbrains.r.classes.s4.*
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.debugger.RDebuggerUtil
-import org.jetbrains.r.psi.api.RExpression
-import org.jetbrains.r.psi.api.RFile
-import org.jetbrains.r.psi.api.RFunctionExpression
-import org.jetbrains.r.psi.api.RPsiElement
+import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.rinterop.*
 import org.jetbrains.r.run.visualize.VisualizeTableHandler
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 import org.jetbrains.r.skeleton.psi.RSkeletonCallExpression
 
-private class RPomTargetPsiElementImpl(pomTarget: PomTarget, project: Project): PomTargetPsiElementImpl(project, pomTarget), RPsiElement {
+private open class RPomTargetPsiElementImpl(pomTarget: PomTarget, project: Project): PomTargetPsiElementImpl(project, pomTarget), RPsiElement {
   override fun getLanguage(): Language = RLanguage.INSTANCE
+}
+
+private class RStringLiteralPomTargetPsiElementImpl(literal: RStringLiteralExpression) :
+  RPomTargetPsiElementImpl(RStringLiteralPomTarget(literal), literal.project) {
+  override fun getNavigationElement() = this // hack for use RStringLiteralManipulator#getRangeInElement as target TextRange
 }
 
 abstract class RPomTarget: PomNamedTarget {
@@ -65,6 +64,9 @@ abstract class RPomTarget: PomNamedTarget {
 
     fun createSkeletonS4ClassTarget(setClass: RSkeletonCallExpression): RPsiElement =
       RPomTargetPsiElementImpl(RSkeletonS4ClassPomTarget(setClass), setClass.project)
+
+    fun createStringLiteralTarget(literal: RStringLiteralExpression): RPsiElement =
+      RStringLiteralPomTargetPsiElementImpl(literal)
 
     fun createPomTarget(rVar: RVar): RPomTarget = when (val value = rVar.value) {
       is RValueFunction -> createFunctionPomTarget(rVar)

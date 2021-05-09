@@ -11,9 +11,10 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiNamedElement
 import com.intellij.refactoring.rename.inplace.VariableInplaceRenameHandler
 import com.intellij.refactoring.rename.inplace.VariableInplaceRenamer
-import org.jetbrains.r.classes.s4.RS4ClassPomTarget
+import org.jetbrains.r.classes.s4.RStringLiteralPomTarget
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassClassNameContext
+import org.jetbrains.r.classes.s4.context.setClass.RS4SlotDeclarationContext
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.RForStatement
 import org.jetbrains.r.psi.api.RIdentifierExpression
@@ -31,8 +32,10 @@ class RVariableInplaceRenameHandler : VariableInplaceRenameHandler() {
     val parent = element.parent
     return when {
       element is RIdentifierExpression && parent is RForStatement && parent.target == element -> true
-      element is PomTargetPsiElement && element.target is RS4ClassPomTarget -> true
-      element is RStringLiteralExpression && RS4ContextProvider.getS4Context(element, RS4SetClassClassNameContext::class) != null -> true
+      element is PomTargetPsiElement && element.target is RStringLiteralPomTarget -> true
+      element is RStringLiteralExpression && RS4ContextProvider.getS4Context(element,
+                                                                             RS4SetClassClassNameContext::class,
+                                                                             RS4SlotDeclarationContext::class) != null -> true
       else -> super.isAvailable(element, editor, file)
     }
   }

@@ -31,8 +31,11 @@ object RS4Resolver {
         val element = when (declarationClassDef) {
           is RSkeletonCallExpression -> RPomTarget.createSkeletonS4SlotTarget(declarationClassDef, name)
           else -> RS4ClassInfoUtil.findSlotInClassDefinition(declarationClassDef, name)?.let { (slot, def) ->
-            if (def.name != slot.name) RPomTarget.createS4ComplexSlotTarget(def, slot)
-            else def
+            when {
+              def.name != slot.name -> RPomTarget.createS4ComplexSlotTarget(def, slot)
+              def is RStringLiteralExpression -> RPomTarget.createStringLiteralTarget(def)
+              else -> def
+            }
           }
         }
         element?.let { res.add(PsiElementResolveResult(it)) }
@@ -75,6 +78,7 @@ object RS4Resolver {
                 when (val target = resolveElement.target) {
                   is RSkeletonS4SlotPomTarget -> target.setClass.stub.s4ClassInfo.slots.firstOrNull { it.name == target.name }?.type
                   is RS4ComplexSlotPomTarget -> target.slot.type
+                  is RStringLiteralPomTarget -> "ANY"
                   else -> null
                 }
               }

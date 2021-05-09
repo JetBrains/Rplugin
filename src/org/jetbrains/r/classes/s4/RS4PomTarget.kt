@@ -34,7 +34,7 @@ data class RS4ComplexSlotPomTarget(val slotDefinition: RExpression, val slot: RS
   override fun getName(): String = slot.name
 }
 
-data class RS4ClassPomTarget(val literal: RStringLiteralExpression) : ManipulatableTarget(literal)
+data class RStringLiteralPomTarget(val literal: RStringLiteralExpression) : ManipulatableTarget(literal)
 
 data class RSkeletonS4ClassPomTarget(val setClass: RSkeletonCallExpression) : RPomTarget() {
   override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {

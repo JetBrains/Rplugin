@@ -7,14 +7,13 @@ package org.jetbrains.r.classes.s4
 import com.intellij.openapi.util.TextRange
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.*
-import com.intellij.psi.impl.PomTargetPsiElementImpl
 import com.intellij.util.IncorrectOperationException
 import com.intellij.util.ProcessingContext
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider.Companion.S4_CLASS_USAGE_CONTEXTS
 import org.jetbrains.r.psi.RElementFilters
-import org.jetbrains.r.psi.api.RPsiElement
+import org.jetbrains.r.psi.RPomTarget
 import org.jetbrains.r.psi.api.RStringLiteralExpression
 import org.jetbrains.r.psi.references.RReferenceBase
 
@@ -22,10 +21,7 @@ class RS4ClassReference(literal: RStringLiteralExpression) : RReferenceBase<RStr
   override fun multiResolveInner(incompleteCode: Boolean): Array<ResolveResult> = RS4Resolver.resolveS4ClassName(element).map {
     val element = it.element
     if (element is RStringLiteralExpression) {
-      val pomElement = object : PomTargetPsiElementImpl(RS4ClassPomTarget(element)), RPsiElement {
-        override fun getNavigationElement() = this // hack for use RStringLiteralManipulator#getRangeInElement as target TextRange
-      }
-      PsiElementResolveResult(pomElement)
+      PsiElementResolveResult(RPomTarget.createStringLiteralTarget(element))
     }
     else it
   }.toTypedArray()
