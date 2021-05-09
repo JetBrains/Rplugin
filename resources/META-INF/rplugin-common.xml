@@ -369,6 +369,8 @@ You can find the source code in the following repositories:
     </extensions>
 
     <extensions defaultExtensionNs="com.intellij">
+        <lang.elementManipulator forClass="org.jetbrains.r.psi.api.RStringLiteralExpression"
+                                 implementationClass="org.jetbrains.r.psi.impl.RStringLiteralManipulator"/>
         <additionalTextAttributes scheme="Default" file="colorSchemes/RMarkdownChunkDefault.xml"/>
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/RMarkdownChunkDarcula.xml"/>
         <additionalTextAttributes scheme="Default" file="colorSchemes/RLanguageDefault.xml"/>

@@ -20,6 +20,11 @@ import java.io.File
 
 class RRenameTest : RLightCodeInsightFixtureTestCase() {
 
+  override fun setUp() {
+    super.setUp()
+    addLibraries()
+  }
+
   fun testRenameFunction() = doTestWithProject("test_function1")
 
   fun testRenameFunctionUsage() = doTestWithProject("test_function1")
@@ -46,10 +51,7 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
 
   fun testRenameNeedQuote() = doTestWithProject("New val")
 
-  fun testRenameLibraryFunction() {
-    addLibraries()
-    doTestWithProject("printt", false)
-  }
+  fun testRenameLibraryFunction() = doTestWithProject("printt", false)
 
   fun testRenameRedeclarationGlobalInFunction() = doTestWithProject("global")
 
@@ -92,6 +94,14 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
   fun testRenameDocumentationParam() = doTestWithProject("aaaa")
 
   fun testRenameDocumentationFunctionLink() = doTestWithProject("baz")
+
+  fun testRenameS4Class() = doTestWithProject("YourClass")
+
+  fun testRenameS4ClassFromContains() = doTestWithProject("Fruit")
+
+  fun testRenameS4ClassFromNew() = doTestWithProject("Fruit")
+
+  fun testRenameLibS4Class() = doTestWithProject("number", false)
 
   private fun doTestWithProject(newName: String, isInlineAvailable: Boolean = true, isRmd: Boolean = false, isSourceTest: Boolean = false) {
     val dotFileExtension = getDotExtension(isRmd)

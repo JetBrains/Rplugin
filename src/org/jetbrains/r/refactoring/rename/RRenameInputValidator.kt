@@ -13,6 +13,7 @@ import com.intellij.util.ProcessingContext
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RIdentifierExpression
 import org.jetbrains.r.psi.api.RParameter
+import org.jetbrains.r.psi.api.RStringLiteralExpression
 import org.jetbrains.r.refactoring.RNamesValidator
 
 
@@ -21,7 +22,8 @@ class RRenameInputValidator : RenameInputValidator {
     return StandardPatterns.or(
       PlatformPatterns.psiElement(RAssignmentStatement::class.java),
       PlatformPatterns.psiElement(RParameter::class.java),
-      PlatformPatterns.psiElement(RIdentifierExpression::class.java)
+      PlatformPatterns.psiElement(RIdentifierExpression::class.java),
+      PlatformPatterns.psiElement(RStringLiteralExpression::class.java)
     )
   }
 

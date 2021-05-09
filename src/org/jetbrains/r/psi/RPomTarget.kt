@@ -11,6 +11,7 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.pom.PomNamedTarget
 import com.intellij.pom.PomTarget
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.PomTargetPsiElementImpl
 import com.intellij.psi.util.PsiTreeUtil
@@ -80,6 +81,11 @@ abstract class RPomTarget: PomNamedTarget {
       else -> createVariablePomTarget(rVar)
     }
 
+    fun isSkeletonPomTargetPsi(element: PsiElement): Boolean {
+      if (element !is RPomTargetPsiElementImpl) return false
+      val target = element.target
+      return target is RSkeletonParameterPomTarget || target is RSkeletonS4ClassPomTarget || target is RSkeletonS4SlotPomTarget
+    }
   }
 }
 

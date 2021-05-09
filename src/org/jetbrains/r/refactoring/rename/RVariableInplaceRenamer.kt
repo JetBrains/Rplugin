@@ -7,13 +7,13 @@ package org.jetbrains.r.refactoring.rename
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiNamedElement
-import com.intellij.psi.PsiReference
+import com.intellij.pom.PomTargetPsiElement
+import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.refactoring.rename.inplace.VariableInplaceRenamer
+import org.jetbrains.r.classes.s4.RS4ClassPomTarget
 import org.jetbrains.r.psi.api.RIdentifierExpression
+import org.jetbrains.r.psi.api.RStringLiteralExpression
 
 class RVariableInplaceRenamer : VariableInplaceRenamer {
 
@@ -39,6 +39,15 @@ class RVariableInplaceRenamer : VariableInplaceRenamer {
     return super.getVariable()
   }
 
+  override fun getNameIdentifier(): PsiElement? {
+    val element = myElementToRename
+    if (element is RStringLiteralExpression) return element
+    if (element is PomTargetPsiElement) {
+      (element.target as? RS4ClassPomTarget)?.let { return it.literal }
+    }
+    return super.getNameIdentifier()
+  }
+
   override fun acceptReference(reference: PsiReference): Boolean {
     return RenameUtil.acceptReference(reference, myElementToRename)
   }
@@ -48,6 +57,9 @@ class RVariableInplaceRenamer : VariableInplaceRenamer {
   }
 
   override fun getRangeToRename(element: PsiElement): TextRange {
+    if (element is RStringLiteralExpression) {
+      return ElementManipulators.getValueTextRange(element)
+    }
     return RenameUtil.fixTextRange(super.getRangeToRename(element), element)
   }
 

@@ -5,12 +5,16 @@
 package org.jetbrains.r.refactoring.rename
 
 import com.intellij.openapi.editor.Editor
+import com.intellij.pom.PomTargetPsiElement
 import com.intellij.psi.PsiElement
 import com.intellij.refactoring.rename.RenamePsiElementProcessor
 import com.intellij.refactoring.rename.UnresolvableCollisionUsageInfo
 import com.intellij.usageView.UsageInfo
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
+import org.jetbrains.r.classes.s4.RS4ClassPomTarget
+import org.jetbrains.r.classes.s4.context.RS4ContextProvider
+import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassClassNameContext
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.refactoring.RRefactoringUtil
@@ -31,6 +35,15 @@ class RenameRPsiElementProcessor : RenamePsiElementProcessor() {
       }
       is RForStatement -> element.target
       is RAssignmentStatement, is RParameter, is RFile -> element
+      is PomTargetPsiElement -> {
+        val target = element.target
+        if (target is RS4ClassPomTarget) target.literal
+        else null
+      }
+      is RStringLiteralExpression -> {
+        val context = RS4ContextProvider.getS4Context(element, RS4SetClassClassNameContext::class)
+        if (context != null) element else null
+      }
       else -> null
     }
   }

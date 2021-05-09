@@ -72,7 +72,7 @@ object RPsiUtil {
   }
 
   fun isLibraryElement(element: PsiElement): Boolean {
-    return element is RSkeletonBase
+    return element is RSkeletonBase || RPomTarget.isSkeletonPomTargetPsi(element)
   }
 
   fun isImportStatement(psiElement: PsiElement): Boolean {

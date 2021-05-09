@@ -7,14 +7,38 @@ package org.jetbrains.r.classes.s4
 import com.intellij.openapi.util.TextRange
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.*
+import com.intellij.psi.impl.PomTargetPsiElementImpl
+import com.intellij.util.IncorrectOperationException
 import com.intellij.util.ProcessingContext
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider.Companion.S4_CLASS_USAGE_CONTEXTS
 import org.jetbrains.r.psi.RElementFilters
+import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.psi.api.RStringLiteralExpression
 import org.jetbrains.r.psi.references.RReferenceBase
 
+class RS4ClassReference(literal: RStringLiteralExpression) : RReferenceBase<RStringLiteralExpression>(literal) {
+  override fun multiResolveInner(incompleteCode: Boolean): Array<ResolveResult> = RS4Resolver.resolveS4ClassName(element).map {
+    val element = it.element
+    if (element is RStringLiteralExpression) {
+      val pomElement = object : PomTargetPsiElementImpl(RS4ClassPomTarget(element)), RPsiElement {
+        override fun getNavigationElement() = this // hack for use RStringLiteralManipulator#getRangeInElement as target TextRange
+      }
+      PsiElementResolveResult(pomElement)
+    }
+    else it
+  }.toTypedArray()
+
+  override fun getRangeInElement(): TextRange {
+    return ElementManipulators.getValueTextRange(element)
+  }
+
+  @Throws(IncorrectOperationException::class)
+  override fun handleElementRename(newElementName: String): PsiElement {
+    return element.setName(newElementName)
+  }
+}
 
 class RS4ReferenceContributor : PsiReferenceContributor() {
   override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
@@ -29,18 +53,6 @@ class RS4ReferenceContributor : PsiReferenceContributor() {
       val stringLiteral = element as? RStringLiteralExpression ?: return PsiReference.EMPTY_ARRAY
       RS4ContextProvider.getS4Context(stringLiteral, *S4_CLASS_USAGE_CONTEXTS) ?: return PsiReference.EMPTY_ARRAY
       return arrayOf(RS4ClassReference(stringLiteral))
-    }
-  }
-
-  companion object {
-    private class RS4ClassReference(literal: RStringLiteralExpression) : RReferenceBase<RStringLiteralExpression>(literal) {
-      override fun multiResolveInner(incompleteCode: Boolean): Array<ResolveResult> {
-        return RS4Resolver.resolveS4ClassName(element)
-      }
-
-      override fun getRangeInElement(): TextRange {
-        return super.getRangeInElement().shiftRight(1).grown(-2)
-      }
     }
   }
 }

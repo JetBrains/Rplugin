@@ -2,6 +2,7 @@ package org.jetbrains.r.classes.s4
 
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runReadAction
+import com.intellij.psi.ManipulatableTarget
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.psi.RPomTarget
@@ -32,6 +33,8 @@ data class RS4ComplexSlotPomTarget(val slotDefinition: RExpression, val slot: RS
   }
   override fun getName(): String = slot.name
 }
+
+data class RS4ClassPomTarget(val literal: RStringLiteralExpression) : ManipulatableTarget(literal)
 
 data class RSkeletonS4ClassPomTarget(val setClass: RSkeletonCallExpression) : RPomTarget() {
   override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
