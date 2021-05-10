@@ -270,12 +270,8 @@ object RunChunkHandler {
                                    project: Project,
                                    promise: AsyncPromise<Boolean>): Boolean {
     if (console.executeActionHandler.state != RConsoleExecuteActionHandler.State.PROMPT) {
-      val notification = Notification(
-        "RMarkdownRunChunkStatus",
-        RBundle.message("run.chunk.notification.title"),
-        RBundle.message("console.previous.command.still.running"),
-        NotificationType.WARNING, null)
-      notification.notify(project)
+      Notification("RMarkdownRunChunkStatus", RBundle.message("run.chunk.notification.title"), RBundle.message("console.previous.command.still.running"), NotificationType.WARNING)
+        .notify(project)
       promise.setError(RBundle.message("console.previous.command.still.running"))
       return false
     }
@@ -306,10 +302,8 @@ object RunChunkHandler {
       saveOutputs(outputs, element)
     }
     else {
-      val notification = Notification(
-        "RMarkdownRunChunkStatus", RBundle.message("run.chunk.notification.title"),
-        RBundle.message("run.chunk.notification.stopped"), NotificationType.INFORMATION, null)
-      notification.notify(element.project)
+      Notification("RMarkdownRunChunkStatus", RBundle.message("run.chunk.notification.title"), RBundle.message("run.chunk.notification.stopped"), NotificationType.INFORMATION)
+        .notify(element.project)
     }
     val success = result != null && result.exception == null
     promise.setResult(success)

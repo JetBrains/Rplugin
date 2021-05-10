@@ -347,9 +347,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
         }
       } catch (e: IOException) {
         val details = e.message?.takeIf { it.isNotEmpty() }?.let { ":\n$it" }.orEmpty()
-        Notification("RDataFrameViewer", RBundle.message("data.frame.viewer.error.title"),
-                     RBundle.message("data.frame.export.error.message") + details,
-                     NotificationType.ERROR, null)
+        Notification("RDataFrameViewer", RBundle.message("data.frame.viewer.error.title"), RBundle.message("data.frame.export.error.message") + details, NotificationType.ERROR)
           .notify(viewer.project)
       }
     }

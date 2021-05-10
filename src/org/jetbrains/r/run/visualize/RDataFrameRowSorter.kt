@@ -112,8 +112,7 @@ class RDataFrameRowSorter(private var model: RDataFrameTableModel, private val j
       } catch (e: RDataFrameException) {
         if (!errorWasReported) {
           errorWasReported = true
-          Notification("RDataFrameViewer", RBundle.message("data.frame.viewer.error.title"),
-                       e.message.orEmpty(), NotificationType.ERROR, null)
+          Notification("RDataFrameViewer", RBundle.message("data.frame.viewer.error.title"), e.message.orEmpty(), NotificationType.ERROR)
             .notify(initialViewer.project)
         }
       } catch (e: CancellationException) {

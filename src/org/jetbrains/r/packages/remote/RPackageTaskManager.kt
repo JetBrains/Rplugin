@@ -139,11 +139,11 @@ class RPackageTaskManager(
             PackagesNotificationPanel.showError(title, description)
           }
           val content = exception.message ?: RBundle.message("notification.content.check.console.output.for.details")
-          Notification(PACKAGING_GROUP_ID, action.failureTitle, content, NotificationType.ERROR, listener)
+          Notification(PACKAGING_GROUP_ID, action.failureTitle, content, NotificationType.ERROR).setListener(listener)
         }
       }
       else {
-        Notification(PACKAGING_GROUP_ID, action.successTitle, action.successDescription, NotificationType.INFORMATION, null)
+        Notification(PACKAGING_GROUP_ID, action.successTitle, action.successDescription, NotificationType.INFORMATION)
       }
       notification?.notify(myProject)
     }
@@ -154,12 +154,12 @@ class RPackageTaskManager(
         if (numExceptions == 0) {
           val title = RBundle.message("package.task.manager.finished.success.title", title)
           val content = RBundle.message("package.task.manager.finished.success.content", actions.count())
-          Notification(PACKAGING_GROUP_ID, title, content, NotificationType.INFORMATION, null)
+          Notification(PACKAGING_GROUP_ID, title, content, NotificationType.INFORMATION)
         }
         else {
           val title = RBundle.message("package.task.manager.finished.failed.title", title)
           val content = RBundle.message("package.task.manager.finished.failed.content", numExceptions, actions.size - numExceptions)
-          Notification(PACKAGING_GROUP_ID, title, content, NotificationType.ERROR, null)
+          Notification(PACKAGING_GROUP_ID, title, content, NotificationType.ERROR)
         }
       }
       else {

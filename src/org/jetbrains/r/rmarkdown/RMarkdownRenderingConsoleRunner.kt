@@ -114,9 +114,8 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
   }
 
   private fun renderingErrorNotification() {
-    val notification = Notification("RMarkdownRenderError", RBundle.message("notification.title.rendering.status"),
-                                    RBundle.message("notification.content.error.occurred.during.rendering"), NotificationType.ERROR, null)
-    notification.notify(project)
+    Notification("RMarkdownRenderError", RBundle.message("notification.title.rendering.status"), RBundle.message("notification.content.error.occurred.during.rendering"), NotificationType.ERROR)
+      .notify(project)
   }
 
   private fun makeKnitListener(interpreter: RInterpreter, file: VirtualFile, promise: AsyncPromise<Unit>, resultTmpFileOnHost: String,
