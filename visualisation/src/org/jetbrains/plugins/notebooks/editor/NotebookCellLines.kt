@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.notebooks.editor
 
+import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.editor.Editor
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.util.EventDispatcher
 import org.jetbrains.annotations.TestOnly
 import java.util.*
+
+val NOTEBOOK_CELL_LINES_INTERVAL_DATA_KEY = DataKey.create<NotebookCellLines.Interval>("NOTEBOOK_CELL_LINES_INTERVAL")
 
 /**
  * Incrementally iterates over Notebook document, calculates line ranges of cells using lexer.
@@ -16,7 +18,7 @@ import java.util.*
  * We haven't decided which model is correct and which should be fixed. So, for now avoid using stem cells in tests,
  * while UI of PyCharm DS doesn't allow to create a stem cell at all.
  */
-interface NotebookCellLines{
+interface NotebookCellLines {
   enum class CellType {
     CODE, MARKDOWN, RAW
   }
@@ -75,12 +77,9 @@ interface NotebookCellLines{
   val modificationStamp: Long
 
   companion object {
-    fun get(editor: Editor): NotebookCellLines {
-      val psiDocumentManager = PsiDocumentManager.getInstance(editor.project!!)
-      val document = editor.document
-      val psiFile = psiDocumentManager.getPsiFile(document) ?: error("document ${document} doesn't have PSI file")
-      return NotebookCellLinesProvider.forLanguage(psiFile.language).create(document)
-    }
+    fun get(editor: Editor): NotebookCellLines =
+      editor.notebookCellLinesProvider?.create(editor.document)
+      ?: error("Can't get for $editor with document ${editor.document}")
 
     /** It's uneasy to change a registry value inside tests. */   // TODO Lies! See SshX11ForwardingTest.
     @TestOnly

@@ -7,9 +7,9 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.DumbAware
 import com.intellij.util.castSafelyTo
-import org.jetbrains.plugins.notebooks.editor.NOTEBOOK_CELL_LINES_INTERVAL_DATA_KEY
 import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayManager
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
+import org.jetbrains.plugins.notebooks.editor.notebookCellLinesInterval
 import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputInlayController
 
 internal class NotebookOutputCollapseAllAction private constructor() : ToggleAction(), DumbAware {
@@ -76,7 +76,7 @@ internal class NotebookOutputCollapseSingleInCellAction private constructor() : 
 }
 
 private fun getCollapsingComponents(e: AnActionEvent): List<CollapsingComponent>? {
-  val interval = e.getData(NOTEBOOK_CELL_LINES_INTERVAL_DATA_KEY) ?: return null
+  val interval = e.dataContext.notebookCellLinesInterval ?: return null
   return e.getData(PlatformDataKeys.EDITOR)?.let { getCollapsingComponents(it, interval) }
 }
 
