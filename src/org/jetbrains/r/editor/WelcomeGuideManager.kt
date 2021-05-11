@@ -3,7 +3,6 @@ package org.jetbrains.r.editor
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditorWithPreview
 import com.intellij.openapi.project.Project
 import com.intellij.testFramework.LightVirtualFile
@@ -25,8 +24,7 @@ class WelcomeGuideManager(private val project: Project) {
       val welcomeText = String(javaClass.getResourceAsStream("/fileTemplates/internal/welcome.md").readAllBytes())
       val welcomeFile = LightVirtualFile("R plugin - Welcome.md", welcomeText)
       invokeLater {
-        welcomeFile.putUserData(TextEditorWithPreview.DEFAULT_LAYOUT_FOR_FILE, TextEditorWithPreview.Layout.SHOW_PREVIEW)
-        FileEditorManager.getInstance(project).openFile(welcomeFile, true)
+        TextEditorWithPreview.openPreviewForFile(project, welcomeFile)
       }
     }
   }
