@@ -1,12 +1,11 @@
 package org.jetbrains.r.editor.mlcompletion.logging
 
 import com.intellij.codeInsight.lookup.Lookup
-import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.impl.LookupImpl
 import com.intellij.codeInsight.lookup.impl.LookupUsageDescriptor
 import com.intellij.internal.statistic.eventLog.FeatureUsageData
 import org.jetbrains.r.editor.completion.MachineLearningCompletionLookupDecorator
-import org.jetbrains.r.editor.completion.RLookupElement
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.isRLookupElement
 import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupStatistics.Companion.rStatistics
 
 class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
@@ -39,8 +38,6 @@ class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
       }
     }
   }
-
-  private fun LookupElement.isRLookupElement(): Boolean = `as`(RLookupElement::class.java) is RLookupElement
 
   private val MachineLearningCompletionLookupDecorator.origin: RLookupElementOrigin
     get() = when (this) {

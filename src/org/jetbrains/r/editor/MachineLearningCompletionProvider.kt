@@ -15,11 +15,11 @@ import com.intellij.openapi.progress.util.ProgressIndicatorUtils.withTimeout
 import com.intellij.util.ProcessingContext
 import com.intellij.util.concurrency.AppExecutorUtil.getAppExecutorService
 import com.intellij.util.io.HttpRequests
-import org.jetbrains.r.editor.completion.RLookupElement
 import org.jetbrains.r.editor.completion.RLookupElementFactory
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpRequest
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpResponse
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerService
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.isRLookupElement
 import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupStatistics
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
@@ -90,7 +90,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
       // We don't want to process element coming from contributors unrelated to R language
       // If ml completion response is not ready yet we delay processing, otherwise try to merge and add
       when {
-        lookupElement.`as`(RLookupElement::class.java) !is RLookupElement -> result.passResult(it)
+        !lookupElement.isRLookupElement() -> result.passResult(it)
         !mlCompletionVariantsMap.isDone -> unprocessedCompletionResults.add(it)
         else -> result.passResult(mergeIfNeeded(it, mlCompletionVariantsMap.get()))
       }
