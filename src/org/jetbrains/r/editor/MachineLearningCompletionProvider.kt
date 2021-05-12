@@ -4,7 +4,8 @@
 
 package org.jetbrains.r.editor
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonParseException
 import com.intellij.codeInsight.completion.CompletionInitializationContext
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
@@ -15,6 +16,7 @@ import com.intellij.openapi.progress.util.ProgressIndicatorUtils.withTimeout
 import com.intellij.util.ProcessingContext
 import com.intellij.util.concurrency.AppExecutorUtil.getAppExecutorService
 import com.intellij.util.io.HttpRequests
+import org.jetbrains.io.mandatory.NullCheckingFactory
 import org.jetbrains.r.editor.completion.RLookupElementFactory
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpRequest
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpResponse
@@ -24,12 +26,11 @@ import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLook
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
 
-
 internal class MachineLearningCompletionProvider : CompletionProvider<CompletionParameters>() {
 
   companion object {
     private val serverService = MachineLearningCompletionServerService.getInstance()
-    private val GSON = Gson()
+    private val GSON = GsonBuilder().registerTypeAdapterFactory(NullCheckingFactory.INSTANCE).create()
     private val LOG = Logger.getInstance(MachineLearningCompletionProvider::class.java)
     private val lookupElementFactory = RLookupElementFactory()
   }
@@ -55,6 +56,9 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
         }
         catch (e: IOException) {
           serverService.tryRelaunchServer()
+          null
+        }
+        catch (e: JsonParseException) {
           null
         }
       },

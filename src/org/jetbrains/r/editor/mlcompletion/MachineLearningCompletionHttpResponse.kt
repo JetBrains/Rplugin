@@ -1,5 +1,10 @@
 package org.jetbrains.r.editor.mlcompletion
 
-data class MachineLearningCompletionHttpResponse(val completionVariants: List<CompletionVariant>) {
-  data class CompletionVariant(val text: String, val score: Double)
+import org.jetbrains.io.mandatory.Mandatory
+import org.jetbrains.io.mandatory.RestModel
+
+@RestModel
+data class MachineLearningCompletionHttpResponse(@Mandatory val completionVariants: List<CompletionVariant>) {
+  @RestModel
+  data class CompletionVariant(@Mandatory val text: String, @Mandatory val score: Double)
 }
