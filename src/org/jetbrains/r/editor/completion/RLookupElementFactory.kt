@@ -17,6 +17,7 @@ import com.intellij.openapi.util.TextRange
 import icons.RIcons
 import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.associatedS4GenericInfo
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpResponse
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.priority
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.psi.TableColumnInfo
@@ -204,9 +205,8 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
 
   fun createMergedMachineLearningCompletionLookupElement(lookupElement: LookupElement,
                                                          mlVariant: MachineLearningCompletionHttpResponse.CompletionVariant): LookupElement {
-    val priority = lookupElement.`as`(PrioritizedLookupElement.CLASS_CONDITION_KEY)?.run {
-      maxOf(priority, mlVariant.score)
-    } ?: mlVariant.score
+    val mlPriority = mlVariant.score
+    val priority = lookupElement.priority?.let { maxOf(it, mlPriority) } ?: mlPriority
     val prioritized = PrioritizedLookupElement.withPriority(lookupElement, priority)
     lookupElement.copyUserDataTo(prioritized)
     return MachineLearningCompletionLookupDecorator.Merged(prioritized)

@@ -18,11 +18,9 @@ import com.intellij.util.concurrency.AppExecutorUtil.getAppExecutorService
 import com.intellij.util.io.HttpRequests
 import org.jetbrains.io.mandatory.NullCheckingFactory
 import org.jetbrains.r.editor.completion.RLookupElementFactory
-import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpRequest
-import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpResponse
-import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerService
-import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.isRLookupElement
+import org.jetbrains.r.editor.mlcompletion.*
 import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupStatistics
+import org.jetbrains.r.editor.mlcompletion.sorting.MachineLearningCompletionSorter
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
 
@@ -65,63 +63,24 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
       getAppExecutorService())
   }
 
-  private fun mergeIfNeeded(result: CompletionResult,
-                            mlCompletionVariants: MutableMap<String, MachineLearningCompletionHttpResponse.CompletionVariant>?)
-    : CompletionResult {
-    val lookupElement = result.lookupElement
-    val mlVariant = mlCompletionVariants?.remove(result.lookupElement.lookupString)
-
-    if (mlVariant == null) {
-      return result
-    }
-
-    val mergedElement = lookupElementFactory.createMergedMachineLearningCompletionLookupElement(lookupElement, mlVariant)
-    return result.withLookupElement(mergedElement)
-  }
-
   private fun addFutureCompletions(parameters: CompletionParameters,
                                    futureResponse: CompletableFuture<MachineLearningCompletionHttpResponse?>,
                                    result: CompletionResultSet,
                                    startTime: Long): Boolean {
-    val mlCompletionVariantsMap = futureResponse.thenApply { response ->
-      response?.completionVariants?.associateByTo(mutableMapOf()) { it.text }
-    }
-    val unprocessedCompletionResults = HashSet<CompletionResult>()
-
-    result.runRemainingContributors(parameters) {
-      val lookupElement = it.lookupElement
-
-      // We don't want to process element coming from contributors unrelated to R language
-      // If ml completion response is not ready yet we delay processing, otherwise try to merge and add
-      when {
-        !lookupElement.isRLookupElement() -> result.passResult(it)
-        !mlCompletionVariantsMap.isDone -> unprocessedCompletionResults.add(it)
-        else -> result.passResult(mergeIfNeeded(it, mlCompletionVariantsMap.get()))
-      }
-    }
+    val sorter = MachineLearningCompletionSorter.createSorter(parameters, result.prefixMatcher)
+    result.runRemainingContributors(parameters, result::passResult, true, sorter)
 
     val timeToWait = startTime - System.currentTimeMillis() + serverService.requestTimeoutMs
     // If request has been received then add completions anyway otherwise wait for result with checkCanceled
-    val mlCompletionResult =
+    val mlCompletionResponse =
       when {
-        mlCompletionVariantsMap.isDone -> mlCompletionVariantsMap.get()
+        futureResponse.isDone -> futureResponse.get()
         else -> withTimeout(timeToWait) {
-          awaitWithCheckCanceled(mlCompletionVariantsMap)
+          awaitWithCheckCanceled(futureResponse)
         }
-      }
+      } ?: return false
 
-    if (mlCompletionResult == null) {
-      unprocessedCompletionResults.forEach {
-        result.passResult(it)
-      }
-      return false
-    }
-
-    unprocessedCompletionResults.forEach {
-      result.passResult(mergeIfNeeded(it, mlCompletionResult))
-    }
-
-    result.addAllElements(mlCompletionResult.values.map(lookupElementFactory::createMachineLearningCompletionLookupElement))
+    result.addAllElements(mlCompletionResponse.completionVariants.map(lookupElementFactory::createMachineLearningCompletionLookupElement))
     result.restartCompletionWhenNothingMatches()
 
     return true
@@ -135,7 +94,8 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
     val inputMessage = constructRequest(parameters)
     val futureResponse = processRequest(inputMessage)
 
-    val processedResponse = addFutureCompletions(parameters, futureResponse, result, startTime)
+    val resultWithSorter = result.withRelevanceSorter(MachineLearningCompletionSorter.createSorter(parameters, result.prefixMatcher))
+    val processedResponse = addFutureCompletions(parameters, futureResponse, resultWithSorter, startTime)
 
     val totalTime = System.currentTimeMillis() - startTime
     LOG.info("R ML completion took ${totalTime} ms")
