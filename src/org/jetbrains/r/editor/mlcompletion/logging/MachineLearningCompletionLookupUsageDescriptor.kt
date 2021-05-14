@@ -4,8 +4,9 @@ import com.intellij.codeInsight.lookup.Lookup
 import com.intellij.codeInsight.lookup.impl.LookupImpl
 import com.intellij.codeInsight.lookup.impl.LookupUsageDescriptor
 import com.intellij.internal.statistic.eventLog.FeatureUsageData
-import org.jetbrains.r.editor.completion.MachineLearningCompletionLookupDecorator
+import org.jetbrains.r.editor.completion.RMachineLearningCompletionLookupElement
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.isRLookupElement
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.isRMachineLearningLookupElement
 import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupStatistics.Companion.rStatistics
 
 class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
@@ -21,7 +22,7 @@ class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
       return
     }
 
-    val lookupOrigin = selectedElement.`as`(MachineLearningCompletionLookupDecorator.CLASS_CONDITION_KEY)?.origin
+    val lookupOrigin = selectedElement.`as`(RMachineLearningCompletionLookupElement.CLASS_CONDITION_KEY)?.origin
                        ?: RLookupElementOrigin.ORIGINAL
 
     usageData.apply {
@@ -39,9 +40,9 @@ class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
     }
   }
 
-  private val MachineLearningCompletionLookupDecorator.origin: RLookupElementOrigin
-    get() = when (this) {
-      is MachineLearningCompletionLookupDecorator.New -> RLookupElementOrigin.ML_COMPLETION
-      is MachineLearningCompletionLookupDecorator.Merged -> RLookupElementOrigin.MERGED
+  private val RMachineLearningCompletionLookupElement.origin: RLookupElementOrigin
+    get() = when {
+      isRMachineLearningLookupElement() -> RLookupElementOrigin.ML_COMPLETION
+      else -> RLookupElementOrigin.ORIGINAL
     }
 }
