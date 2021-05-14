@@ -7,6 +7,7 @@ import com.intellij.util.ProcessingContext
 import com.intellij.util.SmartList
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.isRLookupElement
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.isRMachineLearningLookupElement
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.markAsMergedLookupElement
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.priority
 import java.util.stream.Collectors
 import java.util.stream.StreamSupport
@@ -53,6 +54,8 @@ class MachineLearningCompletionClassifier(next: Classifier<LookupElement>)
 
     val mlPriority = elements.removeAt(mlElementIndex).priority ?: DEFAULT_PRIORITY
     mlScores.putIfAbsent(lookupString, mlPriority)
+
+    elements.forEach { it.markAsMergedLookupElement() }
 
     return elements
   }
