@@ -7,12 +7,10 @@ package org.jetbrains.r.packages.remote.ui;
 import com.google.common.collect.Lists;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.ActivityTracker;
+import com.intellij.ide.DataManager;
 import com.intellij.ide.browsers.BrowserLauncher;
-import com.intellij.openapi.actionSystem.ActionToolbarPosition;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonShortcuts;
-import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.actionSystem.ex.ActionManagerEx;
+import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
@@ -647,9 +645,12 @@ public class RInstalledPackagesPanelBase extends JPanel {
     return PackageVersionComparator.VERSION_COMPARATOR.compare(currentVersion, availableVersion) < 0;
   }
 
-  private static void doRecorded(@NotNull String actionId, @NotNull MouseEvent event, @NotNull Runnable runnable) {
-    ActionManagerEx.getInstanceEx().fireBeforeActionPerformed(actionId, event, "RInstalledPackagesPanel");
-    runnable.run();
+  private static void doRecorded(@NotNull String actionId, @NotNull MouseEvent mouseEvent, @NotNull Runnable runnable) {
+    AnAction action = ActionManager.getInstance().getAction(actionId);
+    if (action == null) throw new AssertionError("'" + actionId + "' action not found");
+    DataContext dataContext = DataManager.getInstance().getDataContext(mouseEvent.getComponent());
+    AnActionEvent event = AnActionEvent.createFromAnAction(action, mouseEvent, "RInstalledPackagesPanel", dataContext);
+    ActionUtil.performDumbAwareWithCallbacks(action, event, runnable);
   }
 
   private final class MyTableCellRenderer extends DefaultTableCellRenderer {
