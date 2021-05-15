@@ -12,7 +12,7 @@ import com.intellij.refactoring.rename.UnresolvableCollisionUsageInfo
 import com.intellij.usageView.UsageInfo
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.classes.s4.RStringLiteralPomTarget
+import org.jetbrains.r.classes.s4.classInfo.RStringLiteralPomTarget
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassClassNameContext
 import org.jetbrains.r.psi.RPsiUtil

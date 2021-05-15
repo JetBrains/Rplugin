@@ -11,7 +11,7 @@ import com.intellij.psi.stubs.StringStubIndexExtension
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
 import com.intellij.util.Processor
-import org.jetbrains.r.classes.s4.RS4ClassInfo
+import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfo
 import org.jetbrains.r.psi.api.RCallExpression
 
   class RS4ClassNameIndex : StringStubIndexExtension<RCallExpression>() {

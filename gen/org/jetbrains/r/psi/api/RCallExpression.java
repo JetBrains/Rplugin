@@ -6,7 +6,7 @@ import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.StubBasedPsiElement;
 import org.jetbrains.r.psi.stubs.RCallExpressionStub;
-import org.jetbrains.r.classes.s4.RS4ClassInfo;
+import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfo;
 
 public interface RCallExpression extends RExpression, StubBasedPsiElement<RCallExpressionStub> {
 

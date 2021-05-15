@@ -11,7 +11,7 @@ import com.intellij.pom.PomTargetPsiElement
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.refactoring.rename.inplace.VariableInplaceRenamer
-import org.jetbrains.r.classes.s4.RStringLiteralPomTarget
+import org.jetbrains.r.classes.s4.classInfo.RStringLiteralPomTarget
 import org.jetbrains.r.psi.api.RIdentifierExpression
 import org.jetbrains.r.psi.api.RStringLiteralExpression
 

@@ -18,7 +18,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.classes.s4.*
+import org.jetbrains.r.classes.s4.classInfo.*
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.psi.api.*

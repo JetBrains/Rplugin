@@ -9,8 +9,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.RFileType
-import org.jetbrains.r.classes.s4.*
-import org.jetbrains.r.classes.s4.RS4ClassInfoUtil.toSlot
+import org.jetbrains.r.classes.s4.RS4SourceManager
+import org.jetbrains.r.classes.s4.classInfo.*
+import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfoUtil.toSlot
 import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.console.RConsoleView

@@ -2,11 +2,11 @@ package org.jetbrains.r.classes.s4.context.setClass
 
 import com.intellij.pom.PomTargetPsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.classes.s4.RS4ClassInfoUtil
-import org.jetbrains.r.classes.s4.RS4ClassInfoUtil.toComplexSlots
-import org.jetbrains.r.classes.s4.RS4ClassInfoUtil.toSlot
-import org.jetbrains.r.classes.s4.RS4ClassSlot
-import org.jetbrains.r.classes.s4.RSkeletonS4SlotPomTarget
+import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfoUtil
+import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfoUtil.toComplexSlots
+import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfoUtil.toSlot
+import org.jetbrains.r.classes.s4.classInfo.RS4ClassSlot
+import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4SlotPomTarget
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.psi.api.*

@@ -4,7 +4,7 @@
 package org.jetbrains.r.psi.stubs
 
 import com.intellij.psi.stubs.StubElement
-import org.jetbrains.r.classes.s4.RS4ClassInfo
+import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfo
 import org.jetbrains.r.psi.api.RCallExpression
 
 interface RCallExpressionStub : StubElement<RCallExpression> {

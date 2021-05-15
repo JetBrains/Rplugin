@@ -11,7 +11,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiNamedElement
 import com.intellij.refactoring.rename.inplace.VariableInplaceRenameHandler
 import com.intellij.refactoring.rename.inplace.VariableInplaceRenamer
-import org.jetbrains.r.classes.s4.RStringLiteralPomTarget
+import org.jetbrains.r.classes.s4.classInfo.RStringLiteralPomTarget
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassClassNameContext
 import org.jetbrains.r.classes.s4.context.setClass.RS4SlotDeclarationContext

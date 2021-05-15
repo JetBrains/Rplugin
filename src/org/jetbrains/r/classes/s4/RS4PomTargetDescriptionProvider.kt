@@ -8,6 +8,9 @@ import com.intellij.usageView.UsageViewNodeTextLocation
 import com.intellij.usageView.UsageViewShortNameLocation
 import com.intellij.usageView.UsageViewTypeLocation
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.classes.s4.classInfo.RS4ComplexSlotPomTarget
+import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4ClassPomTarget
+import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4SlotPomTarget
 
 class RS4PomTargetDescriptionProvider : PomDescriptionProvider() {
   override fun getElementDescription(element: PomTarget, location: ElementDescriptionLocation): String? = when (location) {

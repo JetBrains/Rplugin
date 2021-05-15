@@ -1,10 +1,11 @@
-package org.jetbrains.r.classes.s4
+package org.jetbrains.r.classes.s4.classInfo
 
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runReadAction
 import com.intellij.psi.ManipulatableTarget
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.classes.s4.RS4SourceManager
 import org.jetbrains.r.psi.RPomTarget
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RExpression

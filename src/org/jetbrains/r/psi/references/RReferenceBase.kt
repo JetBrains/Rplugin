@@ -11,10 +11,10 @@ import com.intellij.psi.PsiPolyVariantReference
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.util.IncorrectOperationException
-import org.jetbrains.r.classes.s4.RS4ComplexSlotPomTarget
 import org.jetbrains.r.classes.s4.RS4SourceManager
-import org.jetbrains.r.classes.s4.RSkeletonS4ClassPomTarget
-import org.jetbrains.r.classes.s4.RSkeletonS4SlotPomTarget
+import org.jetbrains.r.classes.s4.classInfo.RS4ComplexSlotPomTarget
+import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4ClassPomTarget
+import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4SlotPomTarget
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.psi.RPsiUtil

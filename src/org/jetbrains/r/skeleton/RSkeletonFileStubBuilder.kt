@@ -8,11 +8,13 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.stubs.BinaryFileStubBuilder
 import com.intellij.psi.stubs.Stub
 import com.intellij.util.indexing.FileContent
-import org.jetbrains.r.classes.s4.RS4ClassInfo
-import org.jetbrains.r.classes.s4.RS4ClassSlot
-import org.jetbrains.r.classes.s4.RS4SuperClass
+import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfo
+import org.jetbrains.r.classes.s4.classInfo.RS4ClassSlot
+import org.jetbrains.r.classes.s4.classInfo.RS4SuperClass
+import org.jetbrains.r.classes.s4.methods.RS4MethodParameterInfo
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
 import org.jetbrains.r.packages.LibrarySummary
+import org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol
 import org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.RepresentationCase
 import org.jetbrains.r.parsing.RParserDefinition
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStub

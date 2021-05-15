@@ -20,10 +20,10 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.classes.s4.RS4ClassInfo
-import org.jetbrains.r.classes.s4.RS4ClassInfoUtil
-import org.jetbrains.r.classes.s4.RS4ClassSlot
 import org.jetbrains.r.classes.s4.RS4Resolver
+import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfo
+import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfoUtil
+import org.jetbrains.r.classes.s4.classInfo.RS4ClassSlot
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider.Companion.S4_CLASS_USAGE_CONTEXTS
 import org.jetbrains.r.classes.s4.context.RS4NewObjectClassNameContext

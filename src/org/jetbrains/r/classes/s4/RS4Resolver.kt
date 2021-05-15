@@ -6,6 +6,10 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.search.GlobalSearchScope
+import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfoUtil
+import org.jetbrains.r.classes.s4.classInfo.RS4ComplexSlotPomTarget
+import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4SlotPomTarget
+import org.jetbrains.r.classes.s4.classInfo.RStringLiteralPomTarget
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.classes.s4.context.RS4NewObjectSlotNameContext
 import org.jetbrains.r.console.runtimeInfo

@@ -11,7 +11,7 @@ import com.intellij.psi.stubs.StubElement
 import com.intellij.psi.stubs.StubInputStream
 import com.intellij.psi.stubs.StubOutputStream
 import com.intellij.util.IncorrectOperationException
-import org.jetbrains.r.classes.s4.RS4ClassInfo
+import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfo
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.stubs.RS4ClassNameIndex
 import org.jetbrains.r.psi.stubs.RStubElementType

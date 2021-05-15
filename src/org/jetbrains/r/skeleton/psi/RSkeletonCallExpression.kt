@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.stubs.StubElement
 import com.intellij.util.IncorrectOperationException
-import org.jetbrains.r.classes.s4.RS4ClassInfo
+import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfo
 import org.jetbrains.r.psi.api.RArgumentList
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RExpression
