@@ -10,6 +10,7 @@ import com.intellij.psi.stubs.IndexSink
 import com.intellij.psi.stubs.StringStubIndexExtension
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
+import com.intellij.util.Processor
 import org.jetbrains.r.psi.api.RS4GenericOrMethodHolder
 
 class RS4GenericIndex : StringStubIndexExtension<RS4GenericOrMethodHolder>() {
@@ -22,6 +23,12 @@ class RS4GenericIndex : StringStubIndexExtension<RS4GenericOrMethodHolder>() {
 
     fun findDefinitionsByName(name: String, project: Project, scope: GlobalSearchScope?): Collection<RS4GenericOrMethodHolder> {
       return StubIndex.getElements(KEY, name, project, scope, RS4GenericOrMethodHolder::class.java)
+    }
+
+    fun processAll(project: Project, scope: GlobalSearchScope, processor: Processor<in RS4GenericOrMethodHolder>) {
+      StubIndex.getInstance().getAllKeys(KEY, project).forEach {
+        StubIndex.getInstance().processElements(KEY, it, project, scope, RS4GenericOrMethodHolder::class.java, processor)
+      }
     }
 
     fun sink(sink: IndexSink, name: String) {

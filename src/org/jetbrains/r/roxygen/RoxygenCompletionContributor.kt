@@ -102,7 +102,11 @@ class RoxygenCompletionContributor : CompletionContributor() {
                                                                             RoxygenConstantLinkInsertHandler)
 
     private object RoxygenFunctionLinkInsertHandler : RLookupElementInsertHandler {
-      override fun getInsertHandlerForAssignment(assignment: RAssignmentStatement) = InsertHandler<LookupElement> { context, _ ->
+      override fun getInsertHandlerForAssignment(assignment: RAssignmentStatement): InsertHandler<LookupElement> {
+        return getInsertHandlerForFunctionCall("")
+      }
+
+      override fun getInsertHandlerForFunctionCall(functionParameters: String) = InsertHandler<LookupElement> { context, _ ->
         val offset = context.tailOffset
         val document = context.document
         insertSpaceAfterLinkIfNeeded(document, offset)

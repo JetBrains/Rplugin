@@ -616,7 +616,11 @@ class RCompletionContributor : CompletionContributor() {
 
     private object RFunctionCompletionInsertHandler : RLookupElementInsertHandler {
       override fun getInsertHandlerForAssignment(assignment: RAssignmentStatement): InsertHandler<LookupElement> {
-        val noArgs = assignment.functionParameters == "()"
+        return getInsertHandlerForFunctionCall(assignment.functionParameters)
+      }
+
+      override fun getInsertHandlerForFunctionCall(functionParameters: String): InsertHandler<LookupElement> {
+        val noArgs = functionParameters == "()"
         return InsertHandler { context, _ ->
           val document = context.document
           val findParentheses = findParentheses(document.text, context.tailOffset)

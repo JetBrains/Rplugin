@@ -77,7 +77,9 @@ object RS4TypeResolver {
         element.isFunctionFromLibrarySoft("list", "base") -> LIST
         element.isFunctionFromLibrarySoft("c", "base") ->
           element.argumentList.expressionList.asSequence().map { resolveS4TypeClass(it) }.filter { it.isNotEmpty() }.firstOrNull()
-        element.isFunctionFromLibrarySoft("list", "base") -> LIST
+        element.isFunctionFromLibrarySoft("data.frame", "base") -> DATA_FRAME
+        element.isFunctionFromLibrarySoft("tibble", "tibble") -> TBL
+        element.isFunctionFromLibrarySoft("data.table", "data.table") -> DATA_TABLE
         else -> null
       }
       is ROperatorExpression -> when(element.operator) {
@@ -104,4 +106,6 @@ object RS4TypeResolver {
   private val LOGICAL = listOf("logical")
   private val LIST = listOf("list")
   private val DATA_FRAME = listOf("data.frame")
+  private val TBL = listOf("tbl_df", "tbl", "data.frame")
+  private val DATA_TABLE = listOf("data.table", "data.frame")
 }

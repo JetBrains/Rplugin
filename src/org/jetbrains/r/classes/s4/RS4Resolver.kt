@@ -82,7 +82,10 @@ object RS4Resolver {
       val methodName = generic.methodName ?: return@map generic
       RS4MethodsIndex.findDefinitionsByName(methodName, generic.project, globalSearchScope)
         .mapNotNull { def ->
-          val info = def.associatedS4MethodInfo?.getParameters(globalSearchScope)?.sortedBy { it.name } ?: return@mapNotNull null
+          val info = def.associatedS4MethodInfo?.getParameters(globalSearchScope)
+                       ?.sortedBy { it.name }
+                       ?.takeIf { it.isNotEmpty() }
+                     ?: return@mapNotNull null
           def.takeIf {
             if (info.size != types.size) return@takeIf false
             info.zip(types).all { (a, b) ->

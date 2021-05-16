@@ -372,6 +372,18 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), "digit1", "digit2", "digits", withRuntimeInfo = true)
   }
 
+  fun testLibS4Generic() {
+    doTest("sho<caret>", "show")
+  }
+
+  fun testUserS4Generic() {
+    doTest("""
+      setGeneric("myShow", "obj", function(obj) standartGeneric("myShow"))
+      setGeneric("myShow1", "obj1", function(obj1) standartGeneric("myShow1"))
+      mySho<caret>
+    """.trimIndent(), "myShow", "myShow1")
+  }
+
   fun testCompletionForLocalVariableNames() {
     doTest("""
       foo_oo <- 31312

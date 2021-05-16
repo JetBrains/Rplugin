@@ -19,6 +19,7 @@ import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex
 import org.jetbrains.r.psi.stubs.RInternalAssignmentCompletionIndex
+import org.jetbrains.r.psi.stubs.RS4GenericIndex
 
 object RPackageCompletionUtil {
 
@@ -109,6 +110,10 @@ object RPackageCompletionUtil {
     val indexAccessor = if (isInternalAccess) RInternalAssignmentCompletionIndex else RAssignmentCompletionIndex
     indexAccessor.process("", project, scope, Processor { assignment ->
       consumer(elementFactory.createGlobalLookupElement(assignment), assignment.containingFile.virtualFile)
+      return@Processor true
+    })
+    RS4GenericIndex.processAll(project, scope, Processor {
+      consumer(elementFactory.createS4GenericLookupElement(it), it.containingFile.virtualFile)
       return@Processor true
     })
   }

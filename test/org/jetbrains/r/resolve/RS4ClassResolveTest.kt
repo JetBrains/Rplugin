@@ -12,6 +12,7 @@ import org.jetbrains.r.RFileType
 import org.jetbrains.r.classes.s4.RS4SourceManager
 import org.jetbrains.r.classes.s4.classInfo.*
 import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfoUtil.toSlot
+import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.methodNameIdentifier
 import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.console.RConsoleView
@@ -157,6 +158,44 @@ class RS4ClassResolveTest : RConsoleBaseTestCase() {
      new('MethodDefinition', targ<caret>et = ) 
     """.trimIndent(), RS4ClassSlot("target", "signature", "MethodDefinition"))
 
+  fun testGeneric() = doMethodTest(1, emptyList(), "fo<caret>o(10)", null)
+
+  fun testSingleMethod() =
+    doMethodTest(
+      1,
+      listOf(
+        listOf("'numeric'")
+      ),
+      "fo<caret>o(10)",
+      listOf("'numeric'")
+    )
+
+  fun testManyMethods() =
+    doMethodTest(
+      2,
+      listOf(
+        listOf("'numeric'", "'numeric'"),
+        listOf("'numeric'", "'character'"),
+        listOf("'character'", "'numeric'"),
+        listOf("'character'", "'character'")
+      ),
+      "fo<caret>o(10, 'hello')",
+      listOf("'numeric'", "'character'")
+    )
+
+  fun testManyMethodsNamed() =
+    doMethodTest(
+      2,
+      listOf(
+        listOf("p2 = 'numeric'", "'numeric'"),
+        listOf("p2 = 'numeric'", "'character'"),
+        listOf("p2 = 'character'", "'numeric'"),
+        listOf("p2 = 'character'", "'character'")
+      ),
+      "fo<caret>o(10, 'hello')",
+      listOf("p2 = 'character'", "'numeric'")
+    )
+
   fun testNoSlotResolveOnDeclaration() =
     doNoResolveTest("setClass('MyClass', slots = c(slot = 'numeric'))",
                     "setClass('MyClass', slots = c(sl<caret>ot = 'numeric'))")
@@ -261,6 +300,38 @@ class RS4ClassResolveTest : RConsoleBaseTestCase() {
       }
       assertEquals(classDeclaration, declText)
     }
+  }
+
+  private fun doMethodTest(genericParamsCnt: Int,
+                           methodSignatures: List<List<String>>,
+                           text: String,
+                           matchingSignature: List<String>?) {
+    val params = (1..genericParamsCnt).joinToString(", ") { "p$it" }
+    val srcText = """
+      | setGeneric('foo', function($params) standardGeneric('foo'))
+      ${
+      methodSignatures.map {
+        "| setMethod('foo', c(${it.joinToString(", ")}), function($params) {})"
+      }.joinToString("\n")
+    }
+    """.trimMargin()
+    val resolveResults = doBaseTest(srcText, text, true, false)
+    assertEquals(1, resolveResults.size)
+    val result = resolveResults.single()
+    assertInstanceOf(result, PomTargetPsiElement::class.java)
+    val target = (result as PomTargetPsiElement).target
+    assertInstanceOf(target, RStringLiteralPomTarget::class.java)
+    val literal = (target as RStringLiteralPomTarget).literal
+
+    val callChildren = myFixture.file.children.filterIsInstance<RCallExpression>()
+    val call =
+      if (matchingSignature == null) callChildren.first()
+      else {
+        val matchingInd = methodSignatures.indexOf(matchingSignature)
+        if (matchingInd == -1) error("Bad signature")
+        callChildren[matchingInd + 1]
+      }
+    assertEquals(call.methodNameIdentifier, literal)
   }
 
   private fun doNoResolveTest(classDeclaration: String, text: String, isUserDefined: Boolean = true, inConsole: Boolean = false) {

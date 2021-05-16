@@ -382,6 +382,50 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
     doTest("new('OldDevice', ime<caret>)", "imei" to "character", strict = false, withRuntimeInfo = true, inConsole = true)
   }
 
+  fun testSetGenericValueClasses() {
+    doTest("""
+      setClass('MyClass')
+      setClass('MyClass1')
+      setGeneric('Foo', 'obj', valueClass = c('MyCla<caret>'))
+    """.trimIndent(), "MyClass" to "foo.R", "MyClass1" to "foo.R")
+  }
+
+  fun testSetGenericSignature() {
+    doWrongVariantsTest("""
+      setClass('MyClass')
+      setClass('MyClass1')
+      setGeneric('Foo', 'MyCla<caret>')
+    """.trimIndent(), "MyClass", "MyClass1")
+  }
+
+  fun testSetMethodsParamTypes() {
+    doTest("""
+      setClass('MyClass')
+      setClass('MyClass1')
+      setMethod('Foo', c('MyCla<caret>'))
+    """.trimIndent(), "MyClass" to "foo.R", "MyClass1" to "foo.R")
+    doTest("""
+      setClass('MyClass')
+      setClass('MyClass1')
+      setMethod('Foo', c(obj = 'MyCla<caret>'))
+    """.trimIndent(), "MyClass" to "foo.R", "MyClass1" to "foo.R")
+    doWrongVariantsTest("""
+      setClass('MyClass')
+      setClass('MyClass1')
+      setMethod('Foo', c(MyCla<caret> = 'type'))
+    """.trimIndent(), "MyClass", "MyClass1")
+  }
+
+  fun testSlotInSetMethodDef() {
+    doTest("""
+      setClass('MyClass', slots = c(aaa = "aaa_t", bbb = "bbb_t"))
+      setGeneric('Foo', function(cnt, cls) standardGeneric("Foo"))
+      setMethod('Foo', c('numeric', 'MyClass'), function(cnt, cls) {
+        cls@<caret>
+      })
+    """.trimIndent(), "aaa" to "aaa_t", "bbb" to "bbb_t")
+  }
+
   // Trying to test case when class names like "<-" place somewhere at the end of the completion list
   fun testLanguageClassNamePriority() {
     val result = doTestBase("setClass('MyClass', slots = c(slotName = '<caret>'))")
