@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.hints.parameterInfo
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.DataInputOutputUtilRt
 import com.intellij.psi.stubs.StubInputStream
@@ -12,6 +13,7 @@ import com.intellij.psi.util.CachedValue
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.util.io.StringRef
+import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 
@@ -146,6 +148,15 @@ class RArgumentInfo private constructor(argumentList: RArgumentHolder, val param
         result = info
       }
       return result
+    }
+
+    /**
+     * **ATTENTION**: no caching here
+     */
+    @JvmStatic
+    fun getParameterInfo(arguments: List<RExpression>, parameterNames: List<String>, project: Project): RArgumentInfo {
+      val call = RElementFactory.createFuncallFromText(project, "tmp(${arguments.joinToString(", ") { it.text }})")
+      return getParameterInfo(call.argumentList, parameterNames)
     }
 
     private const val PIPE_OPERATOR = "%>%"

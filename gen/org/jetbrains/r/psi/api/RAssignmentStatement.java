@@ -9,7 +9,7 @@ import com.intellij.psi.StubBasedPsiElement;
 import org.jetbrains.r.psi.stubs.RAssignmentStub;
 import com.intellij.psi.PsiNamedElement;
 
-public interface RAssignmentStatement extends RExpression, PsiNameIdentifierOwner, StubBasedPsiElement<RAssignmentStub> {
+public interface RAssignmentStatement extends RExpression, PsiNameIdentifierOwner, RS4GenericOrMethodHolder, StubBasedPsiElement<RAssignmentStub> {
 
   boolean isLeft();
 

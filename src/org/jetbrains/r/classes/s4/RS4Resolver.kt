@@ -1,30 +1,37 @@
 package org.jetbrains.r.classes.s4
 
 import com.intellij.openapi.project.Project
-import com.intellij.pom.PomTargetPsiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.search.GlobalSearchScope
 import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfoUtil
-import org.jetbrains.r.classes.s4.classInfo.RS4ComplexSlotPomTarget
-import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4SlotPomTarget
-import org.jetbrains.r.classes.s4.classInfo.RStringLiteralPomTarget
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.classes.s4.context.RS4NewObjectSlotNameContext
+import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.associatedS4GenericInfo
+import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.associatedS4MethodInfo
+import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.methodName
+import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.methodNameIdentifier
+import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.toS4MethodParameters
 import org.jetbrains.r.console.runtimeInfo
+import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.RPomTarget
-import org.jetbrains.r.psi.api.*
+import org.jetbrains.r.psi.api.RAtExpression
+import org.jetbrains.r.psi.api.RCallExpression
+import org.jetbrains.r.psi.api.RPsiElement
+import org.jetbrains.r.psi.api.RStringLiteralExpression
 import org.jetbrains.r.psi.references.RSearchScopeUtil
 import org.jetbrains.r.psi.stubs.RS4ClassNameIndex
+import org.jetbrains.r.psi.stubs.RS4GenericIndex
+import org.jetbrains.r.psi.stubs.RS4MethodsIndex
 import org.jetbrains.r.skeleton.psi.RSkeletonCallExpression
 
 object RS4Resolver {
 
   fun resolveSlot(identifier: RPsiElement): Array<ResolveResult> {
     val owner =
-      if (RS4ContextProvider.getS4Context(identifier, RS4NewObjectSlotNameContext::class)!= null) identifier
-      else (identifier.parent as? RAtExpression) ?.leftExpr ?: return emptyArray()
+      if (RS4ContextProvider.getS4Context(identifier, RS4NewObjectSlotNameContext::class) != null) identifier
+      else (identifier.parent as? RAtExpression)?.leftExpr ?: return emptyArray()
     val name = identifier.name ?: return emptyArray()
     val res = mutableListOf<ResolveResult>()
     val project = identifier.project
@@ -58,41 +65,41 @@ object RS4Resolver {
     }.toTypedArray()
   }
 
-  fun findElementS4ClassDeclarations(element: RPsiElement): List<RCallExpression> {
-    val classNames =
-      when (element) {
-        is RIdentifierExpression -> {
-          val newSlotContext = RS4ContextProvider.getS4Context(element, RS4NewObjectSlotNameContext::class)
-          if (newSlotContext != null) {
-            RS4ClassInfoUtil.getAssociatedClassName(newSlotContext.contextFunctionCall)?.let { listOf(it) }
-          }
-          else element.reference.multiResolve(false).mapNotNull {
-            val assignment = it.element as? RAssignmentStatement ?: return@mapNotNull null
-            val definition = assignment.assignedValue as? RCallExpression ?: return@mapNotNull null
-            RS4ClassInfoUtil.getAssociatedClassName(definition) ?:
-              element.containingFile.runtimeInfo?.loadS4ClassInfoByObjectName(assignment.name)?.className
-          }
-        }
-        is RAtExpression -> {
-          val ownerIdentifier = element.rightExpr as? RIdentifierExpression ?: return emptyList()
-          ownerIdentifier.reference.multiResolve(false).mapNotNull { resolveResult ->
-            when (val resolveElement = resolveResult.element) {
-              is RNamedArgument -> resolveElement.assignedValue?.name
-              is PomTargetPsiElement -> {
-                when (val target = resolveElement.target) {
-                  is RSkeletonS4SlotPomTarget -> target.setClass.stub.s4ClassInfo.slots.firstOrNull { it.name == target.name }?.type
-                  is RS4ComplexSlotPomTarget -> target.slot.type
-                  is RStringLiteralPomTarget -> "ANY"
-                  else -> null
-                }
-              }
-              else -> null
+  fun resolveS4GenericOrMethods(element: PsiElement,
+                                name: String,
+                                result: MutableList<ResolveResult>,
+                                globalSearchScope: GlobalSearchScope) {
+    val call = element.parent as? RCallExpression ?: return
+    RS4GenericIndex.findDefinitionsByName(name, element.project, globalSearchScope).map { generic ->
+      val genericInfo = generic.associatedS4GenericInfo ?: return@map generic
+      val argumentInfo = RArgumentInfo.getParameterInfo(call.argumentList, genericInfo.signature.parameters)
+      val types = argumentInfo.toS4MethodParameters(false)
+
+      val methodName = generic.methodName ?: return@map generic
+      RS4MethodsIndex.findDefinitionsByName(methodName, generic.project, globalSearchScope)
+        .mapNotNull { def ->
+          val info = def.associatedS4MethodInfo?.getParameters(globalSearchScope)?.sortedBy { it.name } ?: return@mapNotNull null
+          def.takeIf {
+            if (info.size != types.size) return@takeIf false
+            info.zip(types).all { (a, b) ->
+              a.name == b.name &&
+              RS4ClassInfoUtil.isSubclass(b.type, a.type, element.project, globalSearchScope)
             }
           }
         }
-        else -> null
-      } ?: return emptyList()
+        .firstOrNull() ?: generic
+    }.forEach {
+      val target = when (val methodNameIdentifier = it.methodNameIdentifier) {
+        null -> it
+        is RStringLiteralExpression -> RPomTarget.createStringLiteralTarget(methodNameIdentifier)
+        else -> methodNameIdentifier
+      }
+      result.add(PsiElementResolveResult(target))
+    }
+  }
 
+  fun findElementS4ClassDeclarations(element: RPsiElement): List<RCallExpression> {
+    val classNames = RS4TypeResolver.resolveS4TypeClass(element)
     val project = element.project
     val scope = RSearchScopeUtil.getScope(element)
     return classNames.flatMap { findClassDeclarations(it, element, project, scope) }

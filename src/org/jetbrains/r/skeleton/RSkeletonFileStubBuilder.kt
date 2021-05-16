@@ -11,11 +11,13 @@ import com.intellij.util.indexing.FileContent
 import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfo
 import org.jetbrains.r.classes.s4.classInfo.RS4ClassSlot
 import org.jetbrains.r.classes.s4.classInfo.RS4SuperClass
+import org.jetbrains.r.classes.s4.methods.RS4GenericInfo
+import org.jetbrains.r.classes.s4.methods.RS4GenericSignature
 import org.jetbrains.r.classes.s4.methods.RS4MethodParameterInfo
+import org.jetbrains.r.classes.s4.methods.RS4RawMethodInfo
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
 import org.jetbrains.r.packages.LibrarySummary
-import org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol
-import org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.RepresentationCase
+import org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.*
 import org.jetbrains.r.parsing.RParserDefinition
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStub
 import org.jetbrains.r.skeleton.psi.RSkeletonCallExpressionStub
@@ -40,21 +42,38 @@ class RSkeletonFileStubBuilder : BinaryFileStubBuilder {
                                     R_SKELETON_CALL_EXPRESSION,
                                     RS4ClassInfo(symbol.name,
                                                  s4ClassRepresentation.packageName,
-                                                 s4ClassRepresentation.slotsList.map { RS4ClassSlot(it.name, it.type, it.declarationClass) },
-                                                 s4ClassRepresentation.superClassesList.map { RS4SuperClass(it.name, it.isDirectInheritance) },
+                                                 s4ClassRepresentation.slotsList.map {
+                                                   RS4ClassSlot(it.name, it.type, it.declarationClass)
+                                                 },
+                                                 s4ClassRepresentation.superClassesList.map {
+                                                   RS4SuperClass(it.name, it.isDirectInheritance)
+                                                 },
                                                  s4ClassRepresentation.isVirtual))
       }
       else {
         val functionRepresentation = symbol.functionRepresentation
-        val extraNamedArguments = functionRepresentation.extraNamedArguments
+        val (s4GenericOrMethodInfo, extraNamedArguments) =
+          when (symbol.type) {
+            Type.S4GENERIC -> {
+              val signature = functionRepresentation.s4GenericSignature.let { RS4GenericSignature(it.parametersList, it.valueClassesList, false) }
+              RS4GenericInfo(symbol.name, signature) to FunctionRepresentation.ExtraNamedArguments.getDefaultInstance()
+            }
+            Type.S4METHOD -> {
+              val methodsParameters = functionRepresentation.s4ParametersInfo.s4MethodParametersList.map {
+                RS4MethodParameterInfo(it.name, it.type)
+              }
+              RS4RawMethodInfo(symbol.name, methodsParameters) to FunctionRepresentation.ExtraNamedArguments.getDefaultInstance()
+            }
+            else -> null to functionRepresentation.extraNamedArguments
+          }
         RSkeletonAssignmentStub(skeletonFileStub,
                                 R_SKELETON_ASSIGNMENT_STATEMENT,
                                 symbol.name,
                                 symbol.type,
                                 functionRepresentation.parameters,
                                 symbol.exported,
-                                RExtraNamedArgumentsInfo(extraNamedArguments.argNamesList,
-                                                         extraNamedArguments.funArgNamesList))
+                                RExtraNamedArgumentsInfo(extraNamedArguments.argNamesList, extraNamedArguments.funArgNamesList),
+                                s4GenericOrMethodInfo)
       }
     }
     return skeletonFileStub

@@ -6,8 +6,10 @@ package org.jetbrains.r.skeleton.psi
 
 import com.intellij.psi.stubs.StubBase
 import com.intellij.psi.stubs.StubElement
+import org.jetbrains.r.classes.s4.methods.RS4GenericOrMethodInfo
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
 import org.jetbrains.r.packages.LibrarySummary
+import org.jetbrains.r.packages.isFunctionDeclaration
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.stubs.RAssignmentStub
 
@@ -19,7 +21,8 @@ class RSkeletonAssignmentStub(parent: StubElement<*>,
                               val type: RSkeletonSymbolType,
                               val parameters: String,
                               val exported: Boolean,
-                              val extraNamedArguments: RExtraNamedArgumentsInfo
+                              val extraNamedArguments: RExtraNamedArgumentsInfo,
+                              val s4GenericOrMethodInfo: RS4GenericOrMethodInfo?
 ) : StubBase<RAssignmentStatement>(parent, elementType), RAssignmentStub {
   override fun isRight(): Boolean = true
 
@@ -27,7 +30,7 @@ class RSkeletonAssignmentStub(parent: StubElement<*>,
 
   override fun getName(): String = myName
 
-  override fun isFunctionDeclaration(): Boolean = type == RSkeletonSymbolType.FUNCTION
+  override fun isFunctionDeclaration(): Boolean = type.isFunctionDeclaration
 
   override fun isPrimitiveFunctionDeclaration(): Boolean = type == RSkeletonSymbolType.PRIMITIVE
 }

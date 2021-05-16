@@ -23,6 +23,7 @@ public class RVisitor extends PsiElementVisitor {
   public void visitAssignmentStatement(@NotNull RAssignmentStatement o) {
     visitExpression(o);
     // visitPsiNameIdentifierOwner(o);
+    // visitS4GenericOrMethodHolder(o);
   }
 
   public void visitAtExpression(@NotNull RAtExpression o) {
@@ -51,6 +52,7 @@ public class RVisitor extends PsiElementVisitor {
 
   public void visitCallExpression(@NotNull RCallExpression o) {
     visitExpression(o);
+    // visitS4GenericOrMethodHolder(o);
   }
 
   public void visitColonOperator(@NotNull RColonOperator o) {

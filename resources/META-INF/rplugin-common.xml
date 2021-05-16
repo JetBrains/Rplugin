@@ -439,6 +439,8 @@ You can find the source code in the following repositories:
         <stubIndex implementation="org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex"/>
         <stubIndex implementation="org.jetbrains.r.psi.stubs.RInternalAssignmentCompletionIndex"/>
         <stubIndex implementation="org.jetbrains.r.psi.stubs.RS4ClassNameIndex"/>
+        <stubIndex implementation="org.jetbrains.r.psi.stubs.RS4GenericIndex"/>
+        <stubIndex implementation="org.jetbrains.r.psi.stubs.RS4MethodsIndex"/>
         <stubElementTypeHolder class="org.jetbrains.r.parsing.RElementTypes"/>
 
         <lang.commenter language="R" implementationClass="org.jetbrains.r.editor.RCommenter"/>
@@ -745,6 +747,8 @@ You can find the source code in the following repositories:
         <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.RS4NewObjectContextProvider"/>
         <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.setClass.RS4SetClassTypeContextProvider"/>
         <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.setClass.RS4SlotDeclarationContextProvider"/>
+        <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.methods.RS4SetGenericProvider" />
+        <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.methods.RS4SetMethodProvider" />
 
       <notificationGroup id="RDataFrameViewer" displayType="BALLOON"/>
       <notificationGroup id="RMarkdownRenderError" displayType="BALLOON"/>

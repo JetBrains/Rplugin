@@ -15,6 +15,9 @@ import org.jetbrains.r.classes.s4.RS4SourceManager
 import org.jetbrains.r.classes.s4.classInfo.RS4ComplexSlotPomTarget
 import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4ClassPomTarget
 import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4SlotPomTarget
+import org.jetbrains.r.classes.s4.classInfo.RStringLiteralPomTarget
+import org.jetbrains.r.classes.s4.context.RS4ContextProvider
+import org.jetbrains.r.classes.s4.context.methods.RS4SetMethodFunctionNameContext
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.psi.RPsiUtil
@@ -34,6 +37,11 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
         if (element !is RPsiElement) return false
         if (resolve.isEquivalentTo(element)) return true
         val target = resolve.target
+        if (target is RStringLiteralPomTarget &&
+            element is PomTargetPsiElement && element.target is RStringLiteralPomTarget) {
+          val context = RS4ContextProvider.getS4Context(target.literal, RS4SetMethodFunctionNameContext::class)
+          if (context != null && target.literal.name == (element.target as RStringLiteralPomTarget).literal.name) return true
+        }
         return when {
           target is RS4ComplexSlotPomTarget -> {
             val defIdentifier =

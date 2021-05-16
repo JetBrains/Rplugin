@@ -77,6 +77,8 @@ class RFindUsagesProvider : FindUsagesProvider {
     if (assignment is RSkeletonAssignmentStatement) {
       return when (assignment.stub.type) {
         LibrarySummary.RLibrarySymbol.Type.FUNCTION -> RBundle.message("find.usages.function")
+        LibrarySummary.RLibrarySymbol.Type.S4GENERIC -> RBundle.message("find.usages.s4.generic")
+        LibrarySummary.RLibrarySymbol.Type.S4METHOD -> RBundle.message("find.usages.s4.method")
         LibrarySummary.RLibrarySymbol.Type.DATASET -> RBundle.message("find.usages.dataset")
         else -> null
       }

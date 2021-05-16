@@ -12,12 +12,12 @@ import com.intellij.psi.stubs.StubInputStream
 import com.intellij.psi.stubs.StubOutputStream
 import com.intellij.util.IncorrectOperationException
 import com.intellij.util.io.StringRef
+import org.jetbrains.r.classes.s4.methods.RS4GenericOrMethodInfo
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
+import org.jetbrains.r.packages.LibrarySummary
+import org.jetbrains.r.packages.isFunctionDeclaration
 import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex
-import org.jetbrains.r.psi.stubs.RAssignmentNameIndex
-import org.jetbrains.r.psi.stubs.RInternalAssignmentCompletionIndex
-import org.jetbrains.r.psi.stubs.RStubElementType
+import org.jetbrains.r.psi.stubs.*
 
 class RSkeletonAssignmentElementType : RStubElementType<RSkeletonAssignmentStub, RAssignmentStatement>("R bin assignment") {
   override fun createPsi(stub: RSkeletonAssignmentStub): RAssignmentStatement {
@@ -27,11 +27,13 @@ class RSkeletonAssignmentElementType : RStubElementType<RSkeletonAssignmentStub,
   override fun serialize(stub: RSkeletonAssignmentStub, dataStream: StubOutputStream) {
     dataStream.writeName(stub.name)
     dataStream.writeInt(stub.type.number)
+    dataStream.writeBoolean(stub.exported)
     if (stub.isFunctionDeclaration) {
       dataStream.writeName(stub.parameters)
+      stub.extraNamedArguments.serialize(dataStream)
+      dataStream.writeBoolean(stub.s4GenericOrMethodInfo != null)
+      stub.s4GenericOrMethodInfo?.serialize(dataStream)
     }
-    dataStream.writeBoolean(stub.exported)
-    stub.extraNamedArguments.serialize(dataStream)
   }
 
   override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>): RSkeletonAssignmentStub {
@@ -39,10 +41,19 @@ class RSkeletonAssignmentElementType : RStubElementType<RSkeletonAssignmentStub,
     val typeNumber = dataStream.readInt()
     val type: RSkeletonSymbolType = RSkeletonSymbolType.forNumber(typeNumber) ?:
                                     throw IllegalStateException("Unknown type number $typeNumber")
-    val parameters = if (type == RSkeletonSymbolType.FUNCTION) StringRef.toString(dataStream.readName()) else ""
     val exported = dataStream.readBoolean()
-    val extraNamedArguments = RExtraNamedArgumentsInfo.deserialize(dataStream)
-    return RSkeletonAssignmentStub(parentStub, this, name, type, parameters, exported, extraNamedArguments)
+    val (parameters, extraNamedArguments, s4MethodArgumentTypes) =
+      if (type.isFunctionDeclaration) {
+        val parameters = StringRef.toString(dataStream.readName())
+        val extraNamedArguments = RExtraNamedArgumentsInfo.deserialize(dataStream)
+        val isS4GenericOrMethodInfoExists = dataStream.readBoolean()
+        val s4GenericOrMethodInfo =
+          if (isS4GenericOrMethodInfoExists) RS4GenericOrMethodInfo.deserialize(dataStream)
+          else null
+        Triple(parameters, extraNamedArguments, s4GenericOrMethodInfo)
+      }
+      else Triple("", RExtraNamedArgumentsInfo(emptyList(), emptyList()), null)
+    return RSkeletonAssignmentStub(parentStub, this, name, type, parameters, exported, extraNamedArguments, s4MethodArgumentTypes)
   }
 
   override fun createStub(psi: RAssignmentStatement, parentStub: StubElement<*>?): RSkeletonAssignmentStub {
@@ -55,13 +66,19 @@ class RSkeletonAssignmentElementType : RStubElementType<RSkeletonAssignmentStub,
 
   override fun indexStub(stub: RSkeletonAssignmentStub, sink: IndexSink) {
     val name = stub.name
-    RAssignmentNameIndex.sink(sink, name)
-    if (stub.exported) {
-      RAssignmentCompletionIndex.sink(sink, "")
-    }
-    if (stub.type != RSkeletonSymbolType.DATASET) {
-      // data sets cannot be accessed by `:::` operator
-      RInternalAssignmentCompletionIndex.sink(sink, "")
+    when (stub.type) {
+      LibrarySummary.RLibrarySymbol.Type.S4GENERIC -> RS4GenericIndex.sink(sink, name)
+      LibrarySummary.RLibrarySymbol.Type.S4METHOD -> RS4MethodsIndex.sink(sink, name)
+      else -> {
+        RAssignmentNameIndex.sink(sink, name)
+        if (stub.exported) {
+          RAssignmentCompletionIndex.sink(sink, "")
+        }
+        if (stub.type != RSkeletonSymbolType.DATASET) {
+          // data sets cannot be accessed by `:::` operator
+          RInternalAssignmentCompletionIndex.sink(sink, "")
+        }
+      }
     }
   }
 }

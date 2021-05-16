@@ -88,6 +88,8 @@
   implements("function_expression")="org.jetbrains.r.psi.api.RExpression"
   implements("named_argument")="org.jetbrains.r.psi.api.RExpression"
   implements("argument_list|subscription_expression")="org.jetbrains.r.psi.api.RArgumentHolder"
+  implements("assignment_statement")="org.jetbrains.r.psi.api.RS4GenericOrMethodHolder"
+  implements("call_expression")="org.jetbrains.r.psi.api.RS4GenericOrMethodHolder"
 
   generateTokenAccessors=false
 }

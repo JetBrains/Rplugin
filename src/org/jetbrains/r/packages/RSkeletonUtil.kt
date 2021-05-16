@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit
 
 
 object RSkeletonUtil {
-  private const val CUR_SKELETON_VERSION = 11
+  private const val CUR_SKELETON_VERSION = 12
   const val SKELETON_DIR_NAME = "r_skeletons"
   private const val MAX_THREAD_POOL_SIZE = 4
   private const val FAILED_SUFFIX = ".failed"
@@ -183,7 +183,7 @@ object RSkeletonUtil {
 
   private const val invalidPackageFormat = "Invalid package summary format"
 
-  private fun convertToBinFormat(packageName: String, packageSummary: String ): RLibraryPackage {
+  private fun convertToBinFormat(packageName: String, packageSummary: String): RLibraryPackage {
     val packageBuilder = newBuilder().setName(packageName)
     packageBuilder.setName(packageName)
     val lines: List<String> = packageSummary.lines()
@@ -229,10 +229,48 @@ object RSkeletonUtil {
       if (types.contains("function")) {
         if (typesEndIndex < parts.size) {
           //No "function" description for exported symbols like `something <- .Primitive("some_primitive")`
-          builder.type = RLibrarySymbol.Type.FUNCTION
-          val functionRepresentationBuilder = RLibrarySymbol.FunctionRepresentation.newBuilder()
 
-          val signature = parts[typesEndIndex]
+          val functionRepresentationBuilder = RLibrarySymbol.FunctionRepresentation.newBuilder()
+          val functionSignatureStartIndex =
+            when {
+              types.contains("standardGeneric") -> {
+                builder.type = RLibrarySymbol.Type.S4GENERIC
+                val (argNames, argNamesEndIndex) = readRepeatedAttribute(parts, typesEndIndex) {
+                  throw IOException("Expected $it argument names in line $lineNum: $line")
+                }
+                val (valueClasses, valueClassesEndIndex) = readRepeatedAttribute(parts, argNamesEndIndex) {
+                  throw IOException("Expected $it value classes in line $lineNum: $line")
+                }
+                val s4GenericSignature = RLibrarySymbol.FunctionRepresentation.S4GenericSignature.newBuilder()
+                  .addAllParameters(argNames)
+                  .addAllValueClasses(valueClasses)
+                  .build()
+                functionRepresentationBuilder.s4GenericSignature = s4GenericSignature
+                valueClassesEndIndex
+              }
+              types.contains("MethodDefinition") -> {
+                builder.type = RLibrarySymbol.Type.S4METHOD
+                val (argNames, argNamesEndIndex) = readRepeatedAttribute(parts, typesEndIndex) {
+                  throw IOException("Expected $it argument names in line $lineNum: $line")
+                }
+                val (argTypes, argTypesEndIndex) = readRepeatedAttribute(parts, argNamesEndIndex) {
+                  throw IOException("Expected $it argument types in line $lineNum: $line")
+                }
+                val s4MethodTypes = (argNames zip argTypes).map { (name, type) ->
+                  RLibrarySymbol.FunctionRepresentation.S4MethodParameter.newBuilder().setName(name).setType(type).build()
+                }
+                val parametersWrapper = RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.newBuilder()
+                parametersWrapper.addAllS4MethodParameters(s4MethodTypes)
+                functionRepresentationBuilder.s4ParametersInfo = parametersWrapper.build()
+                argTypesEndIndex
+              }
+              else -> {
+                builder.type = RLibrarySymbol.Type.FUNCTION
+                typesEndIndex
+              }
+            }
+
+          val signature = parts[functionSignatureStartIndex]
           val prefix = "function ("
           if (!signature.startsWith(prefix) || !signature.endsWith(") ")) {
             throw IOException("Invalid function description at $lineNum: " + signature)
@@ -241,11 +279,11 @@ object RSkeletonUtil {
           val parameters = signature.substring(prefix.length, signature.length - 2)
           functionRepresentationBuilder.parameters = parameters
 
-          if (parts.size > typesEndIndex + 1) {
+          if (builder.type == RLibrarySymbol.Type.FUNCTION && parts.size > functionSignatureStartIndex + 1) {
             val extraNamedArgsBuilder = RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.newBuilder()
-            extraNamedArgsBuilder.addAllArgNames(parts[typesEndIndex + 1].split(";"))
-            extraNamedArgsBuilder.addAllFunArgNames(parts[typesEndIndex + 2].split(";"))
-            functionRepresentationBuilder.setExtraNamedArguments(extraNamedArgsBuilder)
+            extraNamedArgsBuilder.addAllArgNames(parts[functionSignatureStartIndex + 1].split(";"))
+            extraNamedArgsBuilder.addAllFunArgNames(parts[functionSignatureStartIndex + 2].split(";"))
+            functionRepresentationBuilder.extraNamedArguments = extraNamedArgsBuilder.build()
           }
           builder.setFunctionRepresentation(functionRepresentationBuilder)
         }
@@ -352,7 +390,8 @@ object RSkeletonUtil {
         """.trimIndent()
         if (curPackage < rPackages.size) {
           LOG.error("Failed to generate skeleton for '" + rPackages[curPackage] + "'. $errorSuffix")
-        } else {
+        }
+        else {
           LOG.error("Skeleton generation has not zero exit code. $errorSuffix")
         }
         if (curPackage < rPackages.size - 1) {
@@ -405,3 +444,6 @@ data class RPackage(val name: String, val version: String) {
     }
   }
 }
+
+val RLibrarySymbol.Type.isFunctionDeclaration
+  get() = this == RLibrarySymbol.Type.FUNCTION || this == RLibrarySymbol.Type.S4GENERIC || this == RLibrarySymbol.Type.S4METHOD

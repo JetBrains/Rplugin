@@ -15,6 +15,8 @@ message RLibrarySymbol {
     PRIMITIVE = 2;
     DATASET = 3;
     S4CLASS = 4;
+    S4GENERIC = 5;
+    S4METHOD = 6;
   }
   message FunctionRepresentation {
     message ExtraNamedArguments {
@@ -22,8 +24,23 @@ message RLibrarySymbol {
       repeated string argNames = 1;
       repeated string funArgNames = 2;
     }
+    message S4GenericSignature {
+      repeated string parameters = 1;
+      repeated string valueClasses = 2;
+    }
+    message S4MethodParameter {
+      string name = 1;
+      string type = 2;
+    }
+    message S4MethodParametersWrapper {
+      repeated S4MethodParameter s4MethodParameters = 1;
+    }
     string parameters = 1;
-    ExtraNamedArguments extraNamedArguments = 2;
+    oneof extraParametersInfo {
+      ExtraNamedArguments extraNamedArguments = 2;
+      S4MethodParametersWrapper s4ParametersInfo = 3;
+      S4GenericSignature s4GenericSignature = 4;
+    }
   }
   message S4ClassRepresentation {
     message S4ClassSlot {

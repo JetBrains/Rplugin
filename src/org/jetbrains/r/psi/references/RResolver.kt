@@ -12,6 +12,7 @@ import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
+import org.jetbrains.r.classes.s4.RS4Resolver
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.interpreter.RInterpreterStateManager
@@ -19,10 +20,12 @@ import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.psi.RPomTarget
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.RPsiUtil.getFunction
-import org.jetbrains.r.psi.api.*
+import org.jetbrains.r.psi.api.RCallExpression
+import org.jetbrains.r.psi.api.RControlFlowHolder
+import org.jetbrains.r.psi.api.RParameterList
+import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.psi.stubs.RAssignmentNameIndex
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
-import java.util.*
 import java.util.function.Predicate
 
 object RResolver {
@@ -72,6 +75,7 @@ object RResolver {
     val statements = RAssignmentNameIndex.find(name, element.project, globalSearchScope)
     val exported = statements.filter { it !is RSkeletonAssignmentStatement || it.stub.exported }
     addResolveResults(result, exported)
+    RS4Resolver.resolveS4GenericOrMethods(element, name, result, globalSearchScope)
   }
 
   fun resolveInFilesOrLibrary(element: PsiElement,
@@ -87,7 +91,7 @@ object RResolver {
     resolveBase(element, name, result, GlobalSearchScope.fileScope(element.project, file))
   }
 
-  fun resolveUsingSourcesAndRuntime(element: RPsiElement, name: String, localResolveResult: ResolveResult?):  Array<ResolveResult> {
+  fun resolveUsingSourcesAndRuntime(element: RPsiElement, name: String, localResolveResult: ResolveResult?): Array<ResolveResult> {
     val result = ArrayList<ResolveResult>()
     val controlFlowHolder = PsiTreeUtil.getParentOfType(element, RControlFlowHolder::class.java)
     if (controlFlowHolder?.getIncludedSources(element)?.resolveInSources(element, name, result, localResolveResult?.element) != true) {
@@ -124,8 +128,7 @@ object RResolver {
     override fun isValidResult(): Boolean = false
   }
 
-  private fun addResolveResults(result: MutableList<ResolveResult>,
-                                statements: Collection<RAssignmentStatement>) {
+  private fun addResolveResults(result: MutableList<ResolveResult>, statements: Collection<RPsiElement>) {
     for (statement in statements) {
       result.add(PsiElementResolveResult(statement))
     }

@@ -6,6 +6,8 @@ import com.intellij.pom.PomTargetPsiElement
 import com.intellij.psi.util.CachedValue
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
+import org.jetbrains.r.classes.s4.context.methods.RS4SetGenericValueClassesContext
+import org.jetbrains.r.classes.s4.context.methods.RS4SetMethodSignatureClassNameContext
 import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassTypeUsageContext
 import org.jetbrains.r.psi.api.RPsiElement
 import java.lang.reflect.ParameterizedType
@@ -55,6 +57,9 @@ abstract class RS4ContextProvider<T : RS4Context> {
       return null
     }
 
-    val S4_CLASS_USAGE_CONTEXTS = arrayOf(RS4NewObjectClassNameContext::class, RS4SetClassTypeUsageContext::class)
+    val S4_CLASS_USAGE_CONTEXTS = arrayOf(RS4NewObjectClassNameContext::class,
+                                          RS4SetClassTypeUsageContext::class,
+                                          RS4SetGenericValueClassesContext::class,
+                                          RS4SetMethodSignatureClassNameContext::class)
   }
 }

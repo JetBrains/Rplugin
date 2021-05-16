@@ -228,6 +228,14 @@ public final class LibrarySummary {
        * <code>S4CLASS = 4;</code>
        */
       S4CLASS(4),
+      /**
+       * <code>S4GENERIC = 5;</code>
+       */
+      S4GENERIC(5),
+      /**
+       * <code>S4METHOD = 6;</code>
+       */
+      S4METHOD(6),
       UNRECOGNIZED(-1),
       ;
 
@@ -251,6 +259,14 @@ public final class LibrarySummary {
        * <code>S4CLASS = 4;</code>
        */
       public static final int S4CLASS_VALUE = 4;
+      /**
+       * <code>S4GENERIC = 5;</code>
+       */
+      public static final int S4GENERIC_VALUE = 5;
+      /**
+       * <code>S4METHOD = 6;</code>
+       */
+      public static final int S4METHOD_VALUE = 6;
 
 
       public final int getNumber() {
@@ -282,6 +298,8 @@ public final class LibrarySummary {
           case 2: return PRIMITIVE;
           case 3: return DATASET;
           case 4: return S4CLASS;
+          case 5: return S4GENERIC;
+          case 6: return S4METHOD;
           default: return null;
         }
       }
@@ -368,6 +386,38 @@ public final class LibrarySummary {
        * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
        */
       org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArgumentsOrBuilder getExtraNamedArgumentsOrBuilder();
+
+      /**
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper s4ParametersInfo = 3;</code>
+       * @return Whether the s4ParametersInfo field is set.
+       */
+      boolean hasS4ParametersInfo();
+      /**
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper s4ParametersInfo = 3;</code>
+       * @return The s4ParametersInfo.
+       */
+      org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper getS4ParametersInfo();
+      /**
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper s4ParametersInfo = 3;</code>
+       */
+      org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapperOrBuilder getS4ParametersInfoOrBuilder();
+
+      /**
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature s4GenericSignature = 4;</code>
+       * @return Whether the s4GenericSignature field is set.
+       */
+      boolean hasS4GenericSignature();
+      /**
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature s4GenericSignature = 4;</code>
+       * @return The s4GenericSignature.
+       */
+      org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature getS4GenericSignature();
+      /**
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature s4GenericSignature = 4;</code>
+       */
+      org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignatureOrBuilder getS4GenericSignatureOrBuilder();
+
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraParametersInfoCase getExtraParametersInfoCase();
     }
     /**
      * Protobuf type {@code library_summary.RLibrarySymbol.FunctionRepresentation}
@@ -423,15 +473,44 @@ public final class LibrarySummary {
               }
               case 18: {
                 org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.Builder subBuilder = null;
-                if (extraNamedArguments_ != null) {
-                  subBuilder = extraNamedArguments_.toBuilder();
+                if (extraParametersInfoCase_ == 2) {
+                  subBuilder = ((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments) extraParametersInfo_).toBuilder();
                 }
-                extraNamedArguments_ = input.readMessage(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.parser(), extensionRegistry);
+                extraParametersInfo_ =
+                    input.readMessage(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.parser(), extensionRegistry);
                 if (subBuilder != null) {
-                  subBuilder.mergeFrom(extraNamedArguments_);
-                  extraNamedArguments_ = subBuilder.buildPartial();
+                  subBuilder.mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments) extraParametersInfo_);
+                  extraParametersInfo_ = subBuilder.buildPartial();
                 }
-
+                extraParametersInfoCase_ = 2;
+                break;
+              }
+              case 26: {
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.Builder subBuilder = null;
+                if (extraParametersInfoCase_ == 3) {
+                  subBuilder = ((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper) extraParametersInfo_).toBuilder();
+                }
+                extraParametersInfo_ =
+                    input.readMessage(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.parser(), extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper) extraParametersInfo_);
+                  extraParametersInfo_ = subBuilder.buildPartial();
+                }
+                extraParametersInfoCase_ = 3;
+                break;
+              }
+              case 34: {
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.Builder subBuilder = null;
+                if (extraParametersInfoCase_ == 4) {
+                  subBuilder = ((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature) extraParametersInfo_).toBuilder();
+                }
+                extraParametersInfo_ =
+                    input.readMessage(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.parser(), extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature) extraParametersInfo_);
+                  extraParametersInfo_ = subBuilder.buildPartial();
+                }
+                extraParametersInfoCase_ = 4;
                 break;
               }
               default: {
@@ -1389,6 +1468,2415 @@ public final class LibrarySummary {
 
       }
 
+      public interface S4GenericSignatureOrBuilder extends
+          // @@protoc_insertion_point(interface_extends:library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature)
+          com.google.protobuf.MessageOrBuilder {
+
+        /**
+         * <code>repeated string parameters = 1;</code>
+         * @return A list containing the parameters.
+         */
+        java.util.List<java.lang.String>
+            getParametersList();
+        /**
+         * <code>repeated string parameters = 1;</code>
+         * @return The count of parameters.
+         */
+        int getParametersCount();
+        /**
+         * <code>repeated string parameters = 1;</code>
+         * @param index The index of the element to return.
+         * @return The parameters at the given index.
+         */
+        java.lang.String getParameters(int index);
+        /**
+         * <code>repeated string parameters = 1;</code>
+         * @param index The index of the value to return.
+         * @return The bytes of the parameters at the given index.
+         */
+        com.google.protobuf.ByteString
+            getParametersBytes(int index);
+
+        /**
+         * <code>repeated string valueClasses = 2;</code>
+         * @return A list containing the valueClasses.
+         */
+        java.util.List<java.lang.String>
+            getValueClassesList();
+        /**
+         * <code>repeated string valueClasses = 2;</code>
+         * @return The count of valueClasses.
+         */
+        int getValueClassesCount();
+        /**
+         * <code>repeated string valueClasses = 2;</code>
+         * @param index The index of the element to return.
+         * @return The valueClasses at the given index.
+         */
+        java.lang.String getValueClasses(int index);
+        /**
+         * <code>repeated string valueClasses = 2;</code>
+         * @param index The index of the value to return.
+         * @return The bytes of the valueClasses at the given index.
+         */
+        com.google.protobuf.ByteString
+            getValueClassesBytes(int index);
+      }
+      /**
+       * Protobuf type {@code library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature}
+       */
+      public static final class S4GenericSignature extends
+          com.google.protobuf.GeneratedMessageV3 implements
+          // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature)
+          S4GenericSignatureOrBuilder {
+      private static final long serialVersionUID = 0L;
+        // Use S4GenericSignature.newBuilder() to construct.
+        private S4GenericSignature(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+          super(builder);
+        }
+        private S4GenericSignature() {
+          parameters_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+          valueClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        }
+
+        @java.lang.Override
+        @SuppressWarnings({"unused"})
+        protected java.lang.Object newInstance(
+            UnusedPrivateParameter unused) {
+          return new S4GenericSignature();
+        }
+
+        @java.lang.Override
+        public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+          return this.unknownFields;
+        }
+        private S4GenericSignature(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          this();
+          if (extensionRegistry == null) {
+            throw new java.lang.NullPointerException();
+          }
+          int mutable_bitField0_ = 0;
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder();
+          try {
+            boolean done = false;
+            while (!done) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  done = true;
+                  break;
+                case 10: {
+                  java.lang.String s = input.readStringRequireUtf8();
+                  if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                    parameters_ = new com.google.protobuf.LazyStringArrayList();
+                    mutable_bitField0_ |= 0x00000001;
+                  }
+                  parameters_.add(s);
+                  break;
+                }
+                case 18: {
+                  java.lang.String s = input.readStringRequireUtf8();
+                  if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                    valueClasses_ = new com.google.protobuf.LazyStringArrayList();
+                    mutable_bitField0_ |= 0x00000002;
+                  }
+                  valueClasses_.add(s);
+                  break;
+                }
+                default: {
+                  if (!parseUnknownField(
+                      input, unknownFields, extensionRegistry, tag)) {
+                    done = true;
+                  }
+                  break;
+                }
+              }
+            }
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            throw e.setUnfinishedMessage(this);
+          } catch (java.io.IOException e) {
+            throw new com.google.protobuf.InvalidProtocolBufferException(
+                e).setUnfinishedMessage(this);
+          } finally {
+            if (((mutable_bitField0_ & 0x00000001) != 0)) {
+              parameters_ = parameters_.getUnmodifiableView();
+            }
+            if (((mutable_bitField0_ & 0x00000002) != 0)) {
+              valueClasses_ = valueClasses_.getUnmodifiableView();
+            }
+            this.unknownFields = unknownFields.build();
+            makeExtensionsImmutable();
+          }
+        }
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4GenericSignature_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4GenericSignature_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.Builder.class);
+        }
+
+        public static final int PARAMETERS_FIELD_NUMBER = 1;
+        private com.google.protobuf.LazyStringList parameters_;
+        /**
+         * <code>repeated string parameters = 1;</code>
+         * @return A list containing the parameters.
+         */
+        public com.google.protobuf.ProtocolStringList
+            getParametersList() {
+          return parameters_;
+        }
+        /**
+         * <code>repeated string parameters = 1;</code>
+         * @return The count of parameters.
+         */
+        public int getParametersCount() {
+          return parameters_.size();
+        }
+        /**
+         * <code>repeated string parameters = 1;</code>
+         * @param index The index of the element to return.
+         * @return The parameters at the given index.
+         */
+        public java.lang.String getParameters(int index) {
+          return parameters_.get(index);
+        }
+        /**
+         * <code>repeated string parameters = 1;</code>
+         * @param index The index of the value to return.
+         * @return The bytes of the parameters at the given index.
+         */
+        public com.google.protobuf.ByteString
+            getParametersBytes(int index) {
+          return parameters_.getByteString(index);
+        }
+
+        public static final int VALUECLASSES_FIELD_NUMBER = 2;
+        private com.google.protobuf.LazyStringList valueClasses_;
+        /**
+         * <code>repeated string valueClasses = 2;</code>
+         * @return A list containing the valueClasses.
+         */
+        public com.google.protobuf.ProtocolStringList
+            getValueClassesList() {
+          return valueClasses_;
+        }
+        /**
+         * <code>repeated string valueClasses = 2;</code>
+         * @return The count of valueClasses.
+         */
+        public int getValueClassesCount() {
+          return valueClasses_.size();
+        }
+        /**
+         * <code>repeated string valueClasses = 2;</code>
+         * @param index The index of the element to return.
+         * @return The valueClasses at the given index.
+         */
+        public java.lang.String getValueClasses(int index) {
+          return valueClasses_.get(index);
+        }
+        /**
+         * <code>repeated string valueClasses = 2;</code>
+         * @param index The index of the value to return.
+         * @return The bytes of the valueClasses at the given index.
+         */
+        public com.google.protobuf.ByteString
+            getValueClassesBytes(int index) {
+          return valueClasses_.getByteString(index);
+        }
+
+        private byte memoizedIsInitialized = -1;
+        @java.lang.Override
+        public final boolean isInitialized() {
+          byte isInitialized = memoizedIsInitialized;
+          if (isInitialized == 1) return true;
+          if (isInitialized == 0) return false;
+
+          memoizedIsInitialized = 1;
+          return true;
+        }
+
+        @java.lang.Override
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          for (int i = 0; i < parameters_.size(); i++) {
+            com.google.protobuf.GeneratedMessageV3.writeString(output, 1, parameters_.getRaw(i));
+          }
+          for (int i = 0; i < valueClasses_.size(); i++) {
+            com.google.protobuf.GeneratedMessageV3.writeString(output, 2, valueClasses_.getRaw(i));
+          }
+          unknownFields.writeTo(output);
+        }
+
+        @java.lang.Override
+        public int getSerializedSize() {
+          int size = memoizedSize;
+          if (size != -1) return size;
+
+          size = 0;
+          {
+            int dataSize = 0;
+            for (int i = 0; i < parameters_.size(); i++) {
+              dataSize += computeStringSizeNoTag(parameters_.getRaw(i));
+            }
+            size += dataSize;
+            size += 1 * getParametersList().size();
+          }
+          {
+            int dataSize = 0;
+            for (int i = 0; i < valueClasses_.size(); i++) {
+              dataSize += computeStringSizeNoTag(valueClasses_.getRaw(i));
+            }
+            size += dataSize;
+            size += 1 * getValueClassesList().size();
+          }
+          size += unknownFields.getSerializedSize();
+          memoizedSize = size;
+          return size;
+        }
+
+        @java.lang.Override
+        public boolean equals(final java.lang.Object obj) {
+          if (obj == this) {
+           return true;
+          }
+          if (!(obj instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature)) {
+            return super.equals(obj);
+          }
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature other = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature) obj;
+
+          if (!getParametersList()
+              .equals(other.getParametersList())) return false;
+          if (!getValueClassesList()
+              .equals(other.getValueClassesList())) return false;
+          if (!unknownFields.equals(other.unknownFields)) return false;
+          return true;
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+          if (memoizedHashCode != 0) {
+            return memoizedHashCode;
+          }
+          int hash = 41;
+          hash = (19 * hash) + getDescriptor().hashCode();
+          if (getParametersCount() > 0) {
+            hash = (37 * hash) + PARAMETERS_FIELD_NUMBER;
+            hash = (53 * hash) + getParametersList().hashCode();
+          }
+          if (getValueClassesCount() > 0) {
+            hash = (37 * hash) + VALUECLASSES_FIELD_NUMBER;
+            hash = (53 * hash) + getValueClassesList().hashCode();
+          }
+          hash = (29 * hash) + unknownFields.hashCode();
+          memoizedHashCode = hash;
+          return hash;
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature parseFrom(
+            java.nio.ByteBuffer data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature parseFrom(
+            java.nio.ByteBuffer data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature parseDelimitedFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature parseDelimitedFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        @java.lang.Override
+        public Builder newBuilderForType() { return newBuilder(); }
+        public static Builder newBuilder() {
+          return DEFAULT_INSTANCE.toBuilder();
+        }
+        public static Builder newBuilder(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature prototype) {
+          return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+        }
+        @java.lang.Override
+        public Builder toBuilder() {
+          return this == DEFAULT_INSTANCE
+              ? new Builder() : new Builder().mergeFrom(this);
+        }
+
+        @java.lang.Override
+        protected Builder newBuilderForType(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          Builder builder = new Builder(parent);
+          return builder;
+        }
+        /**
+         * Protobuf type {@code library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature}
+         */
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+            // @@protoc_insertion_point(builder_implements:library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature)
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignatureOrBuilder {
+          public static final com.google.protobuf.Descriptors.Descriptor
+              getDescriptor() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4GenericSignature_descriptor;
+          }
+
+          @java.lang.Override
+          protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+              internalGetFieldAccessorTable() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4GenericSignature_fieldAccessorTable
+                .ensureFieldAccessorsInitialized(
+                    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.Builder.class);
+          }
+
+          // Construct using org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.newBuilder()
+          private Builder() {
+            maybeForceBuilderInitialization();
+          }
+
+          private Builder(
+              com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+            super(parent);
+            maybeForceBuilderInitialization();
+          }
+          private void maybeForceBuilderInitialization() {
+            if (com.google.protobuf.GeneratedMessageV3
+                    .alwaysUseFieldBuilders) {
+            }
+          }
+          @java.lang.Override
+          public Builder clear() {
+            super.clear();
+            parameters_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+            bitField0_ = (bitField0_ & ~0x00000001);
+            valueClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+            bitField0_ = (bitField0_ & ~0x00000002);
+            return this;
+          }
+
+          @java.lang.Override
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4GenericSignature_descriptor;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature getDefaultInstanceForType() {
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.getDefaultInstance();
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature build() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature result = buildPartial();
+            if (!result.isInitialized()) {
+              throw newUninitializedMessageException(result);
+            }
+            return result;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature buildPartial() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature(this);
+            int from_bitField0_ = bitField0_;
+            if (((bitField0_ & 0x00000001) != 0)) {
+              parameters_ = parameters_.getUnmodifiableView();
+              bitField0_ = (bitField0_ & ~0x00000001);
+            }
+            result.parameters_ = parameters_;
+            if (((bitField0_ & 0x00000002) != 0)) {
+              valueClasses_ = valueClasses_.getUnmodifiableView();
+              bitField0_ = (bitField0_ & ~0x00000002);
+            }
+            result.valueClasses_ = valueClasses_;
+            onBuilt();
+            return result;
+          }
+
+          @java.lang.Override
+          public Builder clone() {
+            return super.clone();
+          }
+          @java.lang.Override
+          public Builder setField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.setField(field, value);
+          }
+          @java.lang.Override
+          public Builder clearField(
+              com.google.protobuf.Descriptors.FieldDescriptor field) {
+            return super.clearField(field);
+          }
+          @java.lang.Override
+          public Builder clearOneof(
+              com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+            return super.clearOneof(oneof);
+          }
+          @java.lang.Override
+          public Builder setRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              int index, java.lang.Object value) {
+            return super.setRepeatedField(field, index, value);
+          }
+          @java.lang.Override
+          public Builder addRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.addRepeatedField(field, value);
+          }
+          @java.lang.Override
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature) {
+              return mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+
+          public Builder mergeFrom(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature other) {
+            if (other == org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.getDefaultInstance()) return this;
+            if (!other.parameters_.isEmpty()) {
+              if (parameters_.isEmpty()) {
+                parameters_ = other.parameters_;
+                bitField0_ = (bitField0_ & ~0x00000001);
+              } else {
+                ensureParametersIsMutable();
+                parameters_.addAll(other.parameters_);
+              }
+              onChanged();
+            }
+            if (!other.valueClasses_.isEmpty()) {
+              if (valueClasses_.isEmpty()) {
+                valueClasses_ = other.valueClasses_;
+                bitField0_ = (bitField0_ & ~0x00000002);
+              } else {
+                ensureValueClassesIsMutable();
+                valueClasses_.addAll(other.valueClasses_);
+              }
+              onChanged();
+            }
+            this.mergeUnknownFields(other.unknownFields);
+            onChanged();
+            return this;
+          }
+
+          @java.lang.Override
+          public final boolean isInitialized() {
+            return true;
+          }
+
+          @java.lang.Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature parsedMessage = null;
+            try {
+              parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+              parsedMessage = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature) e.getUnfinishedMessage();
+              throw e.unwrapIOException();
+            } finally {
+              if (parsedMessage != null) {
+                mergeFrom(parsedMessage);
+              }
+            }
+            return this;
+          }
+          private int bitField0_;
+
+          private com.google.protobuf.LazyStringList parameters_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+          private void ensureParametersIsMutable() {
+            if (!((bitField0_ & 0x00000001) != 0)) {
+              parameters_ = new com.google.protobuf.LazyStringArrayList(parameters_);
+              bitField0_ |= 0x00000001;
+             }
+          }
+          /**
+           * <code>repeated string parameters = 1;</code>
+           * @return A list containing the parameters.
+           */
+          public com.google.protobuf.ProtocolStringList
+              getParametersList() {
+            return parameters_.getUnmodifiableView();
+          }
+          /**
+           * <code>repeated string parameters = 1;</code>
+           * @return The count of parameters.
+           */
+          public int getParametersCount() {
+            return parameters_.size();
+          }
+          /**
+           * <code>repeated string parameters = 1;</code>
+           * @param index The index of the element to return.
+           * @return The parameters at the given index.
+           */
+          public java.lang.String getParameters(int index) {
+            return parameters_.get(index);
+          }
+          /**
+           * <code>repeated string parameters = 1;</code>
+           * @param index The index of the value to return.
+           * @return The bytes of the parameters at the given index.
+           */
+          public com.google.protobuf.ByteString
+              getParametersBytes(int index) {
+            return parameters_.getByteString(index);
+          }
+          /**
+           * <code>repeated string parameters = 1;</code>
+           * @param index The index to set the value at.
+           * @param value The parameters to set.
+           * @return This builder for chaining.
+           */
+          public Builder setParameters(
+              int index, java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureParametersIsMutable();
+            parameters_.set(index, value);
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>repeated string parameters = 1;</code>
+           * @param value The parameters to add.
+           * @return This builder for chaining.
+           */
+          public Builder addParameters(
+              java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureParametersIsMutable();
+            parameters_.add(value);
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>repeated string parameters = 1;</code>
+           * @param values The parameters to add.
+           * @return This builder for chaining.
+           */
+          public Builder addAllParameters(
+              java.lang.Iterable<java.lang.String> values) {
+            ensureParametersIsMutable();
+            com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                values, parameters_);
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>repeated string parameters = 1;</code>
+           * @return This builder for chaining.
+           */
+          public Builder clearParameters() {
+            parameters_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+            bitField0_ = (bitField0_ & ~0x00000001);
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>repeated string parameters = 1;</code>
+           * @param value The bytes of the parameters to add.
+           * @return This builder for chaining.
+           */
+          public Builder addParametersBytes(
+              com.google.protobuf.ByteString value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+            ensureParametersIsMutable();
+            parameters_.add(value);
+            onChanged();
+            return this;
+          }
+
+          private com.google.protobuf.LazyStringList valueClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+          private void ensureValueClassesIsMutable() {
+            if (!((bitField0_ & 0x00000002) != 0)) {
+              valueClasses_ = new com.google.protobuf.LazyStringArrayList(valueClasses_);
+              bitField0_ |= 0x00000002;
+             }
+          }
+          /**
+           * <code>repeated string valueClasses = 2;</code>
+           * @return A list containing the valueClasses.
+           */
+          public com.google.protobuf.ProtocolStringList
+              getValueClassesList() {
+            return valueClasses_.getUnmodifiableView();
+          }
+          /**
+           * <code>repeated string valueClasses = 2;</code>
+           * @return The count of valueClasses.
+           */
+          public int getValueClassesCount() {
+            return valueClasses_.size();
+          }
+          /**
+           * <code>repeated string valueClasses = 2;</code>
+           * @param index The index of the element to return.
+           * @return The valueClasses at the given index.
+           */
+          public java.lang.String getValueClasses(int index) {
+            return valueClasses_.get(index);
+          }
+          /**
+           * <code>repeated string valueClasses = 2;</code>
+           * @param index The index of the value to return.
+           * @return The bytes of the valueClasses at the given index.
+           */
+          public com.google.protobuf.ByteString
+              getValueClassesBytes(int index) {
+            return valueClasses_.getByteString(index);
+          }
+          /**
+           * <code>repeated string valueClasses = 2;</code>
+           * @param index The index to set the value at.
+           * @param value The valueClasses to set.
+           * @return This builder for chaining.
+           */
+          public Builder setValueClasses(
+              int index, java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureValueClassesIsMutable();
+            valueClasses_.set(index, value);
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>repeated string valueClasses = 2;</code>
+           * @param value The valueClasses to add.
+           * @return This builder for chaining.
+           */
+          public Builder addValueClasses(
+              java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureValueClassesIsMutable();
+            valueClasses_.add(value);
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>repeated string valueClasses = 2;</code>
+           * @param values The valueClasses to add.
+           * @return This builder for chaining.
+           */
+          public Builder addAllValueClasses(
+              java.lang.Iterable<java.lang.String> values) {
+            ensureValueClassesIsMutable();
+            com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                values, valueClasses_);
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>repeated string valueClasses = 2;</code>
+           * @return This builder for chaining.
+           */
+          public Builder clearValueClasses() {
+            valueClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+            bitField0_ = (bitField0_ & ~0x00000002);
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>repeated string valueClasses = 2;</code>
+           * @param value The bytes of the valueClasses to add.
+           * @return This builder for chaining.
+           */
+          public Builder addValueClassesBytes(
+              com.google.protobuf.ByteString value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+            ensureValueClassesIsMutable();
+            valueClasses_.add(value);
+            onChanged();
+            return this;
+          }
+          @java.lang.Override
+          public final Builder setUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.setUnknownFields(unknownFields);
+          }
+
+          @java.lang.Override
+          public final Builder mergeUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.mergeUnknownFields(unknownFields);
+          }
+
+
+          // @@protoc_insertion_point(builder_scope:library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature)
+        }
+
+        // @@protoc_insertion_point(class_scope:library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature)
+        private static final org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature DEFAULT_INSTANCE;
+        static {
+          DEFAULT_INSTANCE = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature();
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature getDefaultInstance() {
+          return DEFAULT_INSTANCE;
+        }
+
+        private static final com.google.protobuf.Parser<S4GenericSignature>
+            PARSER = new com.google.protobuf.AbstractParser<S4GenericSignature>() {
+          @java.lang.Override
+          public S4GenericSignature parsePartialFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new S4GenericSignature(input, extensionRegistry);
+          }
+        };
+
+        public static com.google.protobuf.Parser<S4GenericSignature> parser() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Parser<S4GenericSignature> getParserForType() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature getDefaultInstanceForType() {
+          return DEFAULT_INSTANCE;
+        }
+
+      }
+
+      public interface S4MethodParameterOrBuilder extends
+          // @@protoc_insertion_point(interface_extends:library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter)
+          com.google.protobuf.MessageOrBuilder {
+
+        /**
+         * <code>string name = 1;</code>
+         * @return The name.
+         */
+        java.lang.String getName();
+        /**
+         * <code>string name = 1;</code>
+         * @return The bytes for name.
+         */
+        com.google.protobuf.ByteString
+            getNameBytes();
+
+        /**
+         * <code>string type = 2;</code>
+         * @return The type.
+         */
+        java.lang.String getType();
+        /**
+         * <code>string type = 2;</code>
+         * @return The bytes for type.
+         */
+        com.google.protobuf.ByteString
+            getTypeBytes();
+      }
+      /**
+       * Protobuf type {@code library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter}
+       */
+      public static final class S4MethodParameter extends
+          com.google.protobuf.GeneratedMessageV3 implements
+          // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter)
+          S4MethodParameterOrBuilder {
+      private static final long serialVersionUID = 0L;
+        // Use S4MethodParameter.newBuilder() to construct.
+        private S4MethodParameter(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+          super(builder);
+        }
+        private S4MethodParameter() {
+          name_ = "";
+          type_ = "";
+        }
+
+        @java.lang.Override
+        @SuppressWarnings({"unused"})
+        protected java.lang.Object newInstance(
+            UnusedPrivateParameter unused) {
+          return new S4MethodParameter();
+        }
+
+        @java.lang.Override
+        public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+          return this.unknownFields;
+        }
+        private S4MethodParameter(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          this();
+          if (extensionRegistry == null) {
+            throw new java.lang.NullPointerException();
+          }
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder();
+          try {
+            boolean done = false;
+            while (!done) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  done = true;
+                  break;
+                case 10: {
+                  java.lang.String s = input.readStringRequireUtf8();
+
+                  name_ = s;
+                  break;
+                }
+                case 18: {
+                  java.lang.String s = input.readStringRequireUtf8();
+
+                  type_ = s;
+                  break;
+                }
+                default: {
+                  if (!parseUnknownField(
+                      input, unknownFields, extensionRegistry, tag)) {
+                    done = true;
+                  }
+                  break;
+                }
+              }
+            }
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            throw e.setUnfinishedMessage(this);
+          } catch (java.io.IOException e) {
+            throw new com.google.protobuf.InvalidProtocolBufferException(
+                e).setUnfinishedMessage(this);
+          } finally {
+            this.unknownFields = unknownFields.build();
+            makeExtensionsImmutable();
+          }
+        }
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParameter_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParameter_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.Builder.class);
+        }
+
+        public static final int NAME_FIELD_NUMBER = 1;
+        private volatile java.lang.Object name_;
+        /**
+         * <code>string name = 1;</code>
+         * @return The name.
+         */
+        @java.lang.Override
+        public java.lang.String getName() {
+          java.lang.Object ref = name_;
+          if (ref instanceof java.lang.String) {
+            return (java.lang.String) ref;
+          } else {
+            com.google.protobuf.ByteString bs = 
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            name_ = s;
+            return s;
+          }
+        }
+        /**
+         * <code>string name = 1;</code>
+         * @return The bytes for name.
+         */
+        @java.lang.Override
+        public com.google.protobuf.ByteString
+            getNameBytes() {
+          java.lang.Object ref = name_;
+          if (ref instanceof java.lang.String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            name_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+
+        public static final int TYPE_FIELD_NUMBER = 2;
+        private volatile java.lang.Object type_;
+        /**
+         * <code>string type = 2;</code>
+         * @return The type.
+         */
+        @java.lang.Override
+        public java.lang.String getType() {
+          java.lang.Object ref = type_;
+          if (ref instanceof java.lang.String) {
+            return (java.lang.String) ref;
+          } else {
+            com.google.protobuf.ByteString bs = 
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            type_ = s;
+            return s;
+          }
+        }
+        /**
+         * <code>string type = 2;</code>
+         * @return The bytes for type.
+         */
+        @java.lang.Override
+        public com.google.protobuf.ByteString
+            getTypeBytes() {
+          java.lang.Object ref = type_;
+          if (ref instanceof java.lang.String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            type_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+
+        private byte memoizedIsInitialized = -1;
+        @java.lang.Override
+        public final boolean isInitialized() {
+          byte isInitialized = memoizedIsInitialized;
+          if (isInitialized == 1) return true;
+          if (isInitialized == 0) return false;
+
+          memoizedIsInitialized = 1;
+          return true;
+        }
+
+        @java.lang.Override
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          if (!getNameBytes().isEmpty()) {
+            com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
+          }
+          if (!getTypeBytes().isEmpty()) {
+            com.google.protobuf.GeneratedMessageV3.writeString(output, 2, type_);
+          }
+          unknownFields.writeTo(output);
+        }
+
+        @java.lang.Override
+        public int getSerializedSize() {
+          int size = memoizedSize;
+          if (size != -1) return size;
+
+          size = 0;
+          if (!getNameBytes().isEmpty()) {
+            size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
+          }
+          if (!getTypeBytes().isEmpty()) {
+            size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, type_);
+          }
+          size += unknownFields.getSerializedSize();
+          memoizedSize = size;
+          return size;
+        }
+
+        @java.lang.Override
+        public boolean equals(final java.lang.Object obj) {
+          if (obj == this) {
+           return true;
+          }
+          if (!(obj instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter)) {
+            return super.equals(obj);
+          }
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter other = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter) obj;
+
+          if (!getName()
+              .equals(other.getName())) return false;
+          if (!getType()
+              .equals(other.getType())) return false;
+          if (!unknownFields.equals(other.unknownFields)) return false;
+          return true;
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+          if (memoizedHashCode != 0) {
+            return memoizedHashCode;
+          }
+          int hash = 41;
+          hash = (19 * hash) + getDescriptor().hashCode();
+          hash = (37 * hash) + NAME_FIELD_NUMBER;
+          hash = (53 * hash) + getName().hashCode();
+          hash = (37 * hash) + TYPE_FIELD_NUMBER;
+          hash = (53 * hash) + getType().hashCode();
+          hash = (29 * hash) + unknownFields.hashCode();
+          memoizedHashCode = hash;
+          return hash;
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter parseFrom(
+            java.nio.ByteBuffer data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter parseFrom(
+            java.nio.ByteBuffer data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter parseDelimitedFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter parseDelimitedFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        @java.lang.Override
+        public Builder newBuilderForType() { return newBuilder(); }
+        public static Builder newBuilder() {
+          return DEFAULT_INSTANCE.toBuilder();
+        }
+        public static Builder newBuilder(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter prototype) {
+          return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+        }
+        @java.lang.Override
+        public Builder toBuilder() {
+          return this == DEFAULT_INSTANCE
+              ? new Builder() : new Builder().mergeFrom(this);
+        }
+
+        @java.lang.Override
+        protected Builder newBuilderForType(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          Builder builder = new Builder(parent);
+          return builder;
+        }
+        /**
+         * Protobuf type {@code library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter}
+         */
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+            // @@protoc_insertion_point(builder_implements:library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter)
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameterOrBuilder {
+          public static final com.google.protobuf.Descriptors.Descriptor
+              getDescriptor() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParameter_descriptor;
+          }
+
+          @java.lang.Override
+          protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+              internalGetFieldAccessorTable() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParameter_fieldAccessorTable
+                .ensureFieldAccessorsInitialized(
+                    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.Builder.class);
+          }
+
+          // Construct using org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.newBuilder()
+          private Builder() {
+            maybeForceBuilderInitialization();
+          }
+
+          private Builder(
+              com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+            super(parent);
+            maybeForceBuilderInitialization();
+          }
+          private void maybeForceBuilderInitialization() {
+            if (com.google.protobuf.GeneratedMessageV3
+                    .alwaysUseFieldBuilders) {
+            }
+          }
+          @java.lang.Override
+          public Builder clear() {
+            super.clear();
+            name_ = "";
+
+            type_ = "";
+
+            return this;
+          }
+
+          @java.lang.Override
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParameter_descriptor;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter getDefaultInstanceForType() {
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.getDefaultInstance();
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter build() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter result = buildPartial();
+            if (!result.isInitialized()) {
+              throw newUninitializedMessageException(result);
+            }
+            return result;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter buildPartial() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter(this);
+            result.name_ = name_;
+            result.type_ = type_;
+            onBuilt();
+            return result;
+          }
+
+          @java.lang.Override
+          public Builder clone() {
+            return super.clone();
+          }
+          @java.lang.Override
+          public Builder setField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.setField(field, value);
+          }
+          @java.lang.Override
+          public Builder clearField(
+              com.google.protobuf.Descriptors.FieldDescriptor field) {
+            return super.clearField(field);
+          }
+          @java.lang.Override
+          public Builder clearOneof(
+              com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+            return super.clearOneof(oneof);
+          }
+          @java.lang.Override
+          public Builder setRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              int index, java.lang.Object value) {
+            return super.setRepeatedField(field, index, value);
+          }
+          @java.lang.Override
+          public Builder addRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.addRepeatedField(field, value);
+          }
+          @java.lang.Override
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter) {
+              return mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+
+          public Builder mergeFrom(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter other) {
+            if (other == org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.getDefaultInstance()) return this;
+            if (!other.getName().isEmpty()) {
+              name_ = other.name_;
+              onChanged();
+            }
+            if (!other.getType().isEmpty()) {
+              type_ = other.type_;
+              onChanged();
+            }
+            this.mergeUnknownFields(other.unknownFields);
+            onChanged();
+            return this;
+          }
+
+          @java.lang.Override
+          public final boolean isInitialized() {
+            return true;
+          }
+
+          @java.lang.Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter parsedMessage = null;
+            try {
+              parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+              parsedMessage = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter) e.getUnfinishedMessage();
+              throw e.unwrapIOException();
+            } finally {
+              if (parsedMessage != null) {
+                mergeFrom(parsedMessage);
+              }
+            }
+            return this;
+          }
+
+          private java.lang.Object name_ = "";
+          /**
+           * <code>string name = 1;</code>
+           * @return The name.
+           */
+          public java.lang.String getName() {
+            java.lang.Object ref = name_;
+            if (!(ref instanceof java.lang.String)) {
+              com.google.protobuf.ByteString bs =
+                  (com.google.protobuf.ByteString) ref;
+              java.lang.String s = bs.toStringUtf8();
+              name_ = s;
+              return s;
+            } else {
+              return (java.lang.String) ref;
+            }
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @return The bytes for name.
+           */
+          public com.google.protobuf.ByteString
+              getNameBytes() {
+            java.lang.Object ref = name_;
+            if (ref instanceof String) {
+              com.google.protobuf.ByteString b = 
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                      (java.lang.String) ref);
+              name_ = b;
+              return b;
+            } else {
+              return (com.google.protobuf.ByteString) ref;
+            }
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @param value The name to set.
+           * @return This builder for chaining.
+           */
+          public Builder setName(
+              java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  
+            name_ = value;
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @return This builder for chaining.
+           */
+          public Builder clearName() {
+            
+            name_ = getDefaultInstance().getName();
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @param value The bytes for name to set.
+           * @return This builder for chaining.
+           */
+          public Builder setNameBytes(
+              com.google.protobuf.ByteString value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+            
+            name_ = value;
+            onChanged();
+            return this;
+          }
+
+          private java.lang.Object type_ = "";
+          /**
+           * <code>string type = 2;</code>
+           * @return The type.
+           */
+          public java.lang.String getType() {
+            java.lang.Object ref = type_;
+            if (!(ref instanceof java.lang.String)) {
+              com.google.protobuf.ByteString bs =
+                  (com.google.protobuf.ByteString) ref;
+              java.lang.String s = bs.toStringUtf8();
+              type_ = s;
+              return s;
+            } else {
+              return (java.lang.String) ref;
+            }
+          }
+          /**
+           * <code>string type = 2;</code>
+           * @return The bytes for type.
+           */
+          public com.google.protobuf.ByteString
+              getTypeBytes() {
+            java.lang.Object ref = type_;
+            if (ref instanceof String) {
+              com.google.protobuf.ByteString b = 
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                      (java.lang.String) ref);
+              type_ = b;
+              return b;
+            } else {
+              return (com.google.protobuf.ByteString) ref;
+            }
+          }
+          /**
+           * <code>string type = 2;</code>
+           * @param value The type to set.
+           * @return This builder for chaining.
+           */
+          public Builder setType(
+              java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  
+            type_ = value;
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string type = 2;</code>
+           * @return This builder for chaining.
+           */
+          public Builder clearType() {
+            
+            type_ = getDefaultInstance().getType();
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string type = 2;</code>
+           * @param value The bytes for type to set.
+           * @return This builder for chaining.
+           */
+          public Builder setTypeBytes(
+              com.google.protobuf.ByteString value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+            
+            type_ = value;
+            onChanged();
+            return this;
+          }
+          @java.lang.Override
+          public final Builder setUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.setUnknownFields(unknownFields);
+          }
+
+          @java.lang.Override
+          public final Builder mergeUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.mergeUnknownFields(unknownFields);
+          }
+
+
+          // @@protoc_insertion_point(builder_scope:library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter)
+        }
+
+        // @@protoc_insertion_point(class_scope:library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter)
+        private static final org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter DEFAULT_INSTANCE;
+        static {
+          DEFAULT_INSTANCE = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter();
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter getDefaultInstance() {
+          return DEFAULT_INSTANCE;
+        }
+
+        private static final com.google.protobuf.Parser<S4MethodParameter>
+            PARSER = new com.google.protobuf.AbstractParser<S4MethodParameter>() {
+          @java.lang.Override
+          public S4MethodParameter parsePartialFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new S4MethodParameter(input, extensionRegistry);
+          }
+        };
+
+        public static com.google.protobuf.Parser<S4MethodParameter> parser() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Parser<S4MethodParameter> getParserForType() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter getDefaultInstanceForType() {
+          return DEFAULT_INSTANCE;
+        }
+
+      }
+
+      public interface S4MethodParametersWrapperOrBuilder extends
+          // @@protoc_insertion_point(interface_extends:library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper)
+          com.google.protobuf.MessageOrBuilder {
+
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+         */
+        java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter> 
+            getS4MethodParametersList();
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+         */
+        org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter getS4MethodParameters(int index);
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+         */
+        int getS4MethodParametersCount();
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+         */
+        java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameterOrBuilder> 
+            getS4MethodParametersOrBuilderList();
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+         */
+        org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameterOrBuilder getS4MethodParametersOrBuilder(
+            int index);
+      }
+      /**
+       * Protobuf type {@code library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper}
+       */
+      public static final class S4MethodParametersWrapper extends
+          com.google.protobuf.GeneratedMessageV3 implements
+          // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper)
+          S4MethodParametersWrapperOrBuilder {
+      private static final long serialVersionUID = 0L;
+        // Use S4MethodParametersWrapper.newBuilder() to construct.
+        private S4MethodParametersWrapper(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+          super(builder);
+        }
+        private S4MethodParametersWrapper() {
+          s4MethodParameters_ = java.util.Collections.emptyList();
+        }
+
+        @java.lang.Override
+        @SuppressWarnings({"unused"})
+        protected java.lang.Object newInstance(
+            UnusedPrivateParameter unused) {
+          return new S4MethodParametersWrapper();
+        }
+
+        @java.lang.Override
+        public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+          return this.unknownFields;
+        }
+        private S4MethodParametersWrapper(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          this();
+          if (extensionRegistry == null) {
+            throw new java.lang.NullPointerException();
+          }
+          int mutable_bitField0_ = 0;
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder();
+          try {
+            boolean done = false;
+            while (!done) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  done = true;
+                  break;
+                case 10: {
+                  if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                    s4MethodParameters_ = new java.util.ArrayList<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter>();
+                    mutable_bitField0_ |= 0x00000001;
+                  }
+                  s4MethodParameters_.add(
+                      input.readMessage(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.parser(), extensionRegistry));
+                  break;
+                }
+                default: {
+                  if (!parseUnknownField(
+                      input, unknownFields, extensionRegistry, tag)) {
+                    done = true;
+                  }
+                  break;
+                }
+              }
+            }
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            throw e.setUnfinishedMessage(this);
+          } catch (java.io.IOException e) {
+            throw new com.google.protobuf.InvalidProtocolBufferException(
+                e).setUnfinishedMessage(this);
+          } finally {
+            if (((mutable_bitField0_ & 0x00000001) != 0)) {
+              s4MethodParameters_ = java.util.Collections.unmodifiableList(s4MethodParameters_);
+            }
+            this.unknownFields = unknownFields.build();
+            makeExtensionsImmutable();
+          }
+        }
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParametersWrapper_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParametersWrapper_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.Builder.class);
+        }
+
+        public static final int S4METHODPARAMETERS_FIELD_NUMBER = 1;
+        private java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter> s4MethodParameters_;
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+         */
+        @java.lang.Override
+        public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter> getS4MethodParametersList() {
+          return s4MethodParameters_;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+         */
+        @java.lang.Override
+        public java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameterOrBuilder> 
+            getS4MethodParametersOrBuilderList() {
+          return s4MethodParameters_;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+         */
+        @java.lang.Override
+        public int getS4MethodParametersCount() {
+          return s4MethodParameters_.size();
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+         */
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter getS4MethodParameters(int index) {
+          return s4MethodParameters_.get(index);
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+         */
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameterOrBuilder getS4MethodParametersOrBuilder(
+            int index) {
+          return s4MethodParameters_.get(index);
+        }
+
+        private byte memoizedIsInitialized = -1;
+        @java.lang.Override
+        public final boolean isInitialized() {
+          byte isInitialized = memoizedIsInitialized;
+          if (isInitialized == 1) return true;
+          if (isInitialized == 0) return false;
+
+          memoizedIsInitialized = 1;
+          return true;
+        }
+
+        @java.lang.Override
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          for (int i = 0; i < s4MethodParameters_.size(); i++) {
+            output.writeMessage(1, s4MethodParameters_.get(i));
+          }
+          unknownFields.writeTo(output);
+        }
+
+        @java.lang.Override
+        public int getSerializedSize() {
+          int size = memoizedSize;
+          if (size != -1) return size;
+
+          size = 0;
+          for (int i = 0; i < s4MethodParameters_.size(); i++) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeMessageSize(1, s4MethodParameters_.get(i));
+          }
+          size += unknownFields.getSerializedSize();
+          memoizedSize = size;
+          return size;
+        }
+
+        @java.lang.Override
+        public boolean equals(final java.lang.Object obj) {
+          if (obj == this) {
+           return true;
+          }
+          if (!(obj instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper)) {
+            return super.equals(obj);
+          }
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper other = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper) obj;
+
+          if (!getS4MethodParametersList()
+              .equals(other.getS4MethodParametersList())) return false;
+          if (!unknownFields.equals(other.unknownFields)) return false;
+          return true;
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+          if (memoizedHashCode != 0) {
+            return memoizedHashCode;
+          }
+          int hash = 41;
+          hash = (19 * hash) + getDescriptor().hashCode();
+          if (getS4MethodParametersCount() > 0) {
+            hash = (37 * hash) + S4METHODPARAMETERS_FIELD_NUMBER;
+            hash = (53 * hash) + getS4MethodParametersList().hashCode();
+          }
+          hash = (29 * hash) + unknownFields.hashCode();
+          memoizedHashCode = hash;
+          return hash;
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper parseFrom(
+            java.nio.ByteBuffer data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper parseFrom(
+            java.nio.ByteBuffer data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper parseDelimitedFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper parseDelimitedFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        @java.lang.Override
+        public Builder newBuilderForType() { return newBuilder(); }
+        public static Builder newBuilder() {
+          return DEFAULT_INSTANCE.toBuilder();
+        }
+        public static Builder newBuilder(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper prototype) {
+          return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+        }
+        @java.lang.Override
+        public Builder toBuilder() {
+          return this == DEFAULT_INSTANCE
+              ? new Builder() : new Builder().mergeFrom(this);
+        }
+
+        @java.lang.Override
+        protected Builder newBuilderForType(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          Builder builder = new Builder(parent);
+          return builder;
+        }
+        /**
+         * Protobuf type {@code library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper}
+         */
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+            // @@protoc_insertion_point(builder_implements:library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper)
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapperOrBuilder {
+          public static final com.google.protobuf.Descriptors.Descriptor
+              getDescriptor() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParametersWrapper_descriptor;
+          }
+
+          @java.lang.Override
+          protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+              internalGetFieldAccessorTable() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParametersWrapper_fieldAccessorTable
+                .ensureFieldAccessorsInitialized(
+                    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.Builder.class);
+          }
+
+          // Construct using org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.newBuilder()
+          private Builder() {
+            maybeForceBuilderInitialization();
+          }
+
+          private Builder(
+              com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+            super(parent);
+            maybeForceBuilderInitialization();
+          }
+          private void maybeForceBuilderInitialization() {
+            if (com.google.protobuf.GeneratedMessageV3
+                    .alwaysUseFieldBuilders) {
+              getS4MethodParametersFieldBuilder();
+            }
+          }
+          @java.lang.Override
+          public Builder clear() {
+            super.clear();
+            if (s4MethodParametersBuilder_ == null) {
+              s4MethodParameters_ = java.util.Collections.emptyList();
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              s4MethodParametersBuilder_.clear();
+            }
+            return this;
+          }
+
+          @java.lang.Override
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParametersWrapper_descriptor;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper getDefaultInstanceForType() {
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.getDefaultInstance();
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper build() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper result = buildPartial();
+            if (!result.isInitialized()) {
+              throw newUninitializedMessageException(result);
+            }
+            return result;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper buildPartial() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper(this);
+            int from_bitField0_ = bitField0_;
+            if (s4MethodParametersBuilder_ == null) {
+              if (((bitField0_ & 0x00000001) != 0)) {
+                s4MethodParameters_ = java.util.Collections.unmodifiableList(s4MethodParameters_);
+                bitField0_ = (bitField0_ & ~0x00000001);
+              }
+              result.s4MethodParameters_ = s4MethodParameters_;
+            } else {
+              result.s4MethodParameters_ = s4MethodParametersBuilder_.build();
+            }
+            onBuilt();
+            return result;
+          }
+
+          @java.lang.Override
+          public Builder clone() {
+            return super.clone();
+          }
+          @java.lang.Override
+          public Builder setField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.setField(field, value);
+          }
+          @java.lang.Override
+          public Builder clearField(
+              com.google.protobuf.Descriptors.FieldDescriptor field) {
+            return super.clearField(field);
+          }
+          @java.lang.Override
+          public Builder clearOneof(
+              com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+            return super.clearOneof(oneof);
+          }
+          @java.lang.Override
+          public Builder setRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              int index, java.lang.Object value) {
+            return super.setRepeatedField(field, index, value);
+          }
+          @java.lang.Override
+          public Builder addRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.addRepeatedField(field, value);
+          }
+          @java.lang.Override
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper) {
+              return mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+
+          public Builder mergeFrom(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper other) {
+            if (other == org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.getDefaultInstance()) return this;
+            if (s4MethodParametersBuilder_ == null) {
+              if (!other.s4MethodParameters_.isEmpty()) {
+                if (s4MethodParameters_.isEmpty()) {
+                  s4MethodParameters_ = other.s4MethodParameters_;
+                  bitField0_ = (bitField0_ & ~0x00000001);
+                } else {
+                  ensureS4MethodParametersIsMutable();
+                  s4MethodParameters_.addAll(other.s4MethodParameters_);
+                }
+                onChanged();
+              }
+            } else {
+              if (!other.s4MethodParameters_.isEmpty()) {
+                if (s4MethodParametersBuilder_.isEmpty()) {
+                  s4MethodParametersBuilder_.dispose();
+                  s4MethodParametersBuilder_ = null;
+                  s4MethodParameters_ = other.s4MethodParameters_;
+                  bitField0_ = (bitField0_ & ~0x00000001);
+                  s4MethodParametersBuilder_ = 
+                    com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                       getS4MethodParametersFieldBuilder() : null;
+                } else {
+                  s4MethodParametersBuilder_.addAllMessages(other.s4MethodParameters_);
+                }
+              }
+            }
+            this.mergeUnknownFields(other.unknownFields);
+            onChanged();
+            return this;
+          }
+
+          @java.lang.Override
+          public final boolean isInitialized() {
+            return true;
+          }
+
+          @java.lang.Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper parsedMessage = null;
+            try {
+              parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+              parsedMessage = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper) e.getUnfinishedMessage();
+              throw e.unwrapIOException();
+            } finally {
+              if (parsedMessage != null) {
+                mergeFrom(parsedMessage);
+              }
+            }
+            return this;
+          }
+          private int bitField0_;
+
+          private java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter> s4MethodParameters_ =
+            java.util.Collections.emptyList();
+          private void ensureS4MethodParametersIsMutable() {
+            if (!((bitField0_ & 0x00000001) != 0)) {
+              s4MethodParameters_ = new java.util.ArrayList<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter>(s4MethodParameters_);
+              bitField0_ |= 0x00000001;
+             }
+          }
+
+          private com.google.protobuf.RepeatedFieldBuilderV3<
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameterOrBuilder> s4MethodParametersBuilder_;
+
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter> getS4MethodParametersList() {
+            if (s4MethodParametersBuilder_ == null) {
+              return java.util.Collections.unmodifiableList(s4MethodParameters_);
+            } else {
+              return s4MethodParametersBuilder_.getMessageList();
+            }
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public int getS4MethodParametersCount() {
+            if (s4MethodParametersBuilder_ == null) {
+              return s4MethodParameters_.size();
+            } else {
+              return s4MethodParametersBuilder_.getCount();
+            }
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter getS4MethodParameters(int index) {
+            if (s4MethodParametersBuilder_ == null) {
+              return s4MethodParameters_.get(index);
+            } else {
+              return s4MethodParametersBuilder_.getMessage(index);
+            }
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public Builder setS4MethodParameters(
+              int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter value) {
+            if (s4MethodParametersBuilder_ == null) {
+              if (value == null) {
+                throw new NullPointerException();
+              }
+              ensureS4MethodParametersIsMutable();
+              s4MethodParameters_.set(index, value);
+              onChanged();
+            } else {
+              s4MethodParametersBuilder_.setMessage(index, value);
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public Builder setS4MethodParameters(
+              int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.Builder builderForValue) {
+            if (s4MethodParametersBuilder_ == null) {
+              ensureS4MethodParametersIsMutable();
+              s4MethodParameters_.set(index, builderForValue.build());
+              onChanged();
+            } else {
+              s4MethodParametersBuilder_.setMessage(index, builderForValue.build());
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public Builder addS4MethodParameters(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter value) {
+            if (s4MethodParametersBuilder_ == null) {
+              if (value == null) {
+                throw new NullPointerException();
+              }
+              ensureS4MethodParametersIsMutable();
+              s4MethodParameters_.add(value);
+              onChanged();
+            } else {
+              s4MethodParametersBuilder_.addMessage(value);
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public Builder addS4MethodParameters(
+              int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter value) {
+            if (s4MethodParametersBuilder_ == null) {
+              if (value == null) {
+                throw new NullPointerException();
+              }
+              ensureS4MethodParametersIsMutable();
+              s4MethodParameters_.add(index, value);
+              onChanged();
+            } else {
+              s4MethodParametersBuilder_.addMessage(index, value);
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public Builder addS4MethodParameters(
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.Builder builderForValue) {
+            if (s4MethodParametersBuilder_ == null) {
+              ensureS4MethodParametersIsMutable();
+              s4MethodParameters_.add(builderForValue.build());
+              onChanged();
+            } else {
+              s4MethodParametersBuilder_.addMessage(builderForValue.build());
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public Builder addS4MethodParameters(
+              int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.Builder builderForValue) {
+            if (s4MethodParametersBuilder_ == null) {
+              ensureS4MethodParametersIsMutable();
+              s4MethodParameters_.add(index, builderForValue.build());
+              onChanged();
+            } else {
+              s4MethodParametersBuilder_.addMessage(index, builderForValue.build());
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public Builder addAllS4MethodParameters(
+              java.lang.Iterable<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter> values) {
+            if (s4MethodParametersBuilder_ == null) {
+              ensureS4MethodParametersIsMutable();
+              com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                  values, s4MethodParameters_);
+              onChanged();
+            } else {
+              s4MethodParametersBuilder_.addAllMessages(values);
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public Builder clearS4MethodParameters() {
+            if (s4MethodParametersBuilder_ == null) {
+              s4MethodParameters_ = java.util.Collections.emptyList();
+              bitField0_ = (bitField0_ & ~0x00000001);
+              onChanged();
+            } else {
+              s4MethodParametersBuilder_.clear();
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public Builder removeS4MethodParameters(int index) {
+            if (s4MethodParametersBuilder_ == null) {
+              ensureS4MethodParametersIsMutable();
+              s4MethodParameters_.remove(index);
+              onChanged();
+            } else {
+              s4MethodParametersBuilder_.remove(index);
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.Builder getS4MethodParametersBuilder(
+              int index) {
+            return getS4MethodParametersFieldBuilder().getBuilder(index);
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameterOrBuilder getS4MethodParametersOrBuilder(
+              int index) {
+            if (s4MethodParametersBuilder_ == null) {
+              return s4MethodParameters_.get(index);  } else {
+              return s4MethodParametersBuilder_.getMessageOrBuilder(index);
+            }
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameterOrBuilder> 
+               getS4MethodParametersOrBuilderList() {
+            if (s4MethodParametersBuilder_ != null) {
+              return s4MethodParametersBuilder_.getMessageOrBuilderList();
+            } else {
+              return java.util.Collections.unmodifiableList(s4MethodParameters_);
+            }
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.Builder addS4MethodParametersBuilder() {
+            return getS4MethodParametersFieldBuilder().addBuilder(
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.getDefaultInstance());
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.Builder addS4MethodParametersBuilder(
+              int index) {
+            return getS4MethodParametersFieldBuilder().addBuilder(
+                index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.getDefaultInstance());
+          }
+          /**
+           * <code>repeated .library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter s4MethodParameters = 1;</code>
+           */
+          public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.Builder> 
+               getS4MethodParametersBuilderList() {
+            return getS4MethodParametersFieldBuilder().getBuilderList();
+          }
+          private com.google.protobuf.RepeatedFieldBuilderV3<
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameterOrBuilder> 
+              getS4MethodParametersFieldBuilder() {
+            if (s4MethodParametersBuilder_ == null) {
+              s4MethodParametersBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+                  org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameter.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParameterOrBuilder>(
+                      s4MethodParameters_,
+                      ((bitField0_ & 0x00000001) != 0),
+                      getParentForChildren(),
+                      isClean());
+              s4MethodParameters_ = null;
+            }
+            return s4MethodParametersBuilder_;
+          }
+          @java.lang.Override
+          public final Builder setUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.setUnknownFields(unknownFields);
+          }
+
+          @java.lang.Override
+          public final Builder mergeUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.mergeUnknownFields(unknownFields);
+          }
+
+
+          // @@protoc_insertion_point(builder_scope:library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper)
+        }
+
+        // @@protoc_insertion_point(class_scope:library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper)
+        private static final org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper DEFAULT_INSTANCE;
+        static {
+          DEFAULT_INSTANCE = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper();
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper getDefaultInstance() {
+          return DEFAULT_INSTANCE;
+        }
+
+        private static final com.google.protobuf.Parser<S4MethodParametersWrapper>
+            PARSER = new com.google.protobuf.AbstractParser<S4MethodParametersWrapper>() {
+          @java.lang.Override
+          public S4MethodParametersWrapper parsePartialFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new S4MethodParametersWrapper(input, extensionRegistry);
+          }
+        };
+
+        public static com.google.protobuf.Parser<S4MethodParametersWrapper> parser() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Parser<S4MethodParametersWrapper> getParserForType() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper getDefaultInstanceForType() {
+          return DEFAULT_INSTANCE;
+        }
+
+      }
+
+      private int extraParametersInfoCase_ = 0;
+      private java.lang.Object extraParametersInfo_;
+      public enum ExtraParametersInfoCase
+          implements com.google.protobuf.Internal.EnumLite,
+              com.google.protobuf.AbstractMessage.InternalOneOfEnum {
+        EXTRANAMEDARGUMENTS(2),
+        S4PARAMETERSINFO(3),
+        S4GENERICSIGNATURE(4),
+        EXTRAPARAMETERSINFO_NOT_SET(0);
+        private final int value;
+        private ExtraParametersInfoCase(int value) {
+          this.value = value;
+        }
+        /**
+         * @param value The number of the enum to look for.
+         * @return The enum associated with the given number.
+         * @deprecated Use {@link #forNumber(int)} instead.
+         */
+        @java.lang.Deprecated
+        public static ExtraParametersInfoCase valueOf(int value) {
+          return forNumber(value);
+        }
+
+        public static ExtraParametersInfoCase forNumber(int value) {
+          switch (value) {
+            case 2: return EXTRANAMEDARGUMENTS;
+            case 3: return S4PARAMETERSINFO;
+            case 4: return S4GENERICSIGNATURE;
+            case 0: return EXTRAPARAMETERSINFO_NOT_SET;
+            default: return null;
+          }
+        }
+        public int getNumber() {
+          return this.value;
+        }
+      };
+
+      public ExtraParametersInfoCase
+      getExtraParametersInfoCase() {
+        return ExtraParametersInfoCase.forNumber(
+            extraParametersInfoCase_);
+      }
+
       public static final int PARAMETERS_FIELD_NUMBER = 1;
       private volatile java.lang.Object parameters_;
       /**
@@ -1428,14 +3916,13 @@ public final class LibrarySummary {
       }
 
       public static final int EXTRANAMEDARGUMENTS_FIELD_NUMBER = 2;
-      private org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments_;
       /**
        * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
        * @return Whether the extraNamedArguments field is set.
        */
       @java.lang.Override
       public boolean hasExtraNamedArguments() {
-        return extraNamedArguments_ != null;
+        return extraParametersInfoCase_ == 2;
       }
       /**
        * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
@@ -1443,14 +3930,82 @@ public final class LibrarySummary {
        */
       @java.lang.Override
       public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments getExtraNamedArguments() {
-        return extraNamedArguments_ == null ? org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.getDefaultInstance() : extraNamedArguments_;
+        if (extraParametersInfoCase_ == 2) {
+           return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments) extraParametersInfo_;
+        }
+        return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.getDefaultInstance();
       }
       /**
        * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
        */
       @java.lang.Override
       public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArgumentsOrBuilder getExtraNamedArgumentsOrBuilder() {
-        return getExtraNamedArguments();
+        if (extraParametersInfoCase_ == 2) {
+           return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments) extraParametersInfo_;
+        }
+        return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.getDefaultInstance();
+      }
+
+      public static final int S4PARAMETERSINFO_FIELD_NUMBER = 3;
+      /**
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper s4ParametersInfo = 3;</code>
+       * @return Whether the s4ParametersInfo field is set.
+       */
+      @java.lang.Override
+      public boolean hasS4ParametersInfo() {
+        return extraParametersInfoCase_ == 3;
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper s4ParametersInfo = 3;</code>
+       * @return The s4ParametersInfo.
+       */
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper getS4ParametersInfo() {
+        if (extraParametersInfoCase_ == 3) {
+           return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper) extraParametersInfo_;
+        }
+        return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.getDefaultInstance();
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper s4ParametersInfo = 3;</code>
+       */
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapperOrBuilder getS4ParametersInfoOrBuilder() {
+        if (extraParametersInfoCase_ == 3) {
+           return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper) extraParametersInfo_;
+        }
+        return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.getDefaultInstance();
+      }
+
+      public static final int S4GENERICSIGNATURE_FIELD_NUMBER = 4;
+      /**
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature s4GenericSignature = 4;</code>
+       * @return Whether the s4GenericSignature field is set.
+       */
+      @java.lang.Override
+      public boolean hasS4GenericSignature() {
+        return extraParametersInfoCase_ == 4;
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature s4GenericSignature = 4;</code>
+       * @return The s4GenericSignature.
+       */
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature getS4GenericSignature() {
+        if (extraParametersInfoCase_ == 4) {
+           return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature) extraParametersInfo_;
+        }
+        return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.getDefaultInstance();
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature s4GenericSignature = 4;</code>
+       */
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignatureOrBuilder getS4GenericSignatureOrBuilder() {
+        if (extraParametersInfoCase_ == 4) {
+           return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature) extraParametersInfo_;
+        }
+        return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.getDefaultInstance();
       }
 
       private byte memoizedIsInitialized = -1;
@@ -1470,8 +4025,14 @@ public final class LibrarySummary {
         if (!getParametersBytes().isEmpty()) {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 1, parameters_);
         }
-        if (extraNamedArguments_ != null) {
-          output.writeMessage(2, getExtraNamedArguments());
+        if (extraParametersInfoCase_ == 2) {
+          output.writeMessage(2, (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments) extraParametersInfo_);
+        }
+        if (extraParametersInfoCase_ == 3) {
+          output.writeMessage(3, (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper) extraParametersInfo_);
+        }
+        if (extraParametersInfoCase_ == 4) {
+          output.writeMessage(4, (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature) extraParametersInfo_);
         }
         unknownFields.writeTo(output);
       }
@@ -1485,9 +4046,17 @@ public final class LibrarySummary {
         if (!getParametersBytes().isEmpty()) {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, parameters_);
         }
-        if (extraNamedArguments_ != null) {
+        if (extraParametersInfoCase_ == 2) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(2, getExtraNamedArguments());
+            .computeMessageSize(2, (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments) extraParametersInfo_);
+        }
+        if (extraParametersInfoCase_ == 3) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(3, (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper) extraParametersInfo_);
+        }
+        if (extraParametersInfoCase_ == 4) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(4, (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature) extraParametersInfo_);
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -1506,10 +4075,22 @@ public final class LibrarySummary {
 
         if (!getParameters()
             .equals(other.getParameters())) return false;
-        if (hasExtraNamedArguments() != other.hasExtraNamedArguments()) return false;
-        if (hasExtraNamedArguments()) {
-          if (!getExtraNamedArguments()
-              .equals(other.getExtraNamedArguments())) return false;
+        if (!getExtraParametersInfoCase().equals(other.getExtraParametersInfoCase())) return false;
+        switch (extraParametersInfoCase_) {
+          case 2:
+            if (!getExtraNamedArguments()
+                .equals(other.getExtraNamedArguments())) return false;
+            break;
+          case 3:
+            if (!getS4ParametersInfo()
+                .equals(other.getS4ParametersInfo())) return false;
+            break;
+          case 4:
+            if (!getS4GenericSignature()
+                .equals(other.getS4GenericSignature())) return false;
+            break;
+          case 0:
+          default:
         }
         if (!unknownFields.equals(other.unknownFields)) return false;
         return true;
@@ -1524,9 +4105,21 @@ public final class LibrarySummary {
         hash = (19 * hash) + getDescriptor().hashCode();
         hash = (37 * hash) + PARAMETERS_FIELD_NUMBER;
         hash = (53 * hash) + getParameters().hashCode();
-        if (hasExtraNamedArguments()) {
-          hash = (37 * hash) + EXTRANAMEDARGUMENTS_FIELD_NUMBER;
-          hash = (53 * hash) + getExtraNamedArguments().hashCode();
+        switch (extraParametersInfoCase_) {
+          case 2:
+            hash = (37 * hash) + EXTRANAMEDARGUMENTS_FIELD_NUMBER;
+            hash = (53 * hash) + getExtraNamedArguments().hashCode();
+            break;
+          case 3:
+            hash = (37 * hash) + S4PARAMETERSINFO_FIELD_NUMBER;
+            hash = (53 * hash) + getS4ParametersInfo().hashCode();
+            break;
+          case 4:
+            hash = (37 * hash) + S4GENERICSIGNATURE_FIELD_NUMBER;
+            hash = (53 * hash) + getS4GenericSignature().hashCode();
+            break;
+          case 0:
+          default:
         }
         hash = (29 * hash) + unknownFields.hashCode();
         memoizedHashCode = hash;
@@ -1663,12 +4256,8 @@ public final class LibrarySummary {
           super.clear();
           parameters_ = "";
 
-          if (extraNamedArgumentsBuilder_ == null) {
-            extraNamedArguments_ = null;
-          } else {
-            extraNamedArguments_ = null;
-            extraNamedArgumentsBuilder_ = null;
-          }
+          extraParametersInfoCase_ = 0;
+          extraParametersInfo_ = null;
           return this;
         }
 
@@ -1696,11 +4285,28 @@ public final class LibrarySummary {
         public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation buildPartial() {
           org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation(this);
           result.parameters_ = parameters_;
-          if (extraNamedArgumentsBuilder_ == null) {
-            result.extraNamedArguments_ = extraNamedArguments_;
-          } else {
-            result.extraNamedArguments_ = extraNamedArgumentsBuilder_.build();
+          if (extraParametersInfoCase_ == 2) {
+            if (extraNamedArgumentsBuilder_ == null) {
+              result.extraParametersInfo_ = extraParametersInfo_;
+            } else {
+              result.extraParametersInfo_ = extraNamedArgumentsBuilder_.build();
+            }
           }
+          if (extraParametersInfoCase_ == 3) {
+            if (s4ParametersInfoBuilder_ == null) {
+              result.extraParametersInfo_ = extraParametersInfo_;
+            } else {
+              result.extraParametersInfo_ = s4ParametersInfoBuilder_.build();
+            }
+          }
+          if (extraParametersInfoCase_ == 4) {
+            if (s4GenericSignatureBuilder_ == null) {
+              result.extraParametersInfo_ = extraParametersInfo_;
+            } else {
+              result.extraParametersInfo_ = s4GenericSignatureBuilder_.build();
+            }
+          }
+          result.extraParametersInfoCase_ = extraParametersInfoCase_;
           onBuilt();
           return result;
         }
@@ -1753,8 +4359,22 @@ public final class LibrarySummary {
             parameters_ = other.parameters_;
             onChanged();
           }
-          if (other.hasExtraNamedArguments()) {
-            mergeExtraNamedArguments(other.getExtraNamedArguments());
+          switch (other.getExtraParametersInfoCase()) {
+            case EXTRANAMEDARGUMENTS: {
+              mergeExtraNamedArguments(other.getExtraNamedArguments());
+              break;
+            }
+            case S4PARAMETERSINFO: {
+              mergeS4ParametersInfo(other.getS4ParametersInfo());
+              break;
+            }
+            case S4GENERICSIGNATURE: {
+              mergeS4GenericSignature(other.getS4GenericSignature());
+              break;
+            }
+            case EXTRAPARAMETERSINFO_NOT_SET: {
+              break;
+            }
           }
           this.mergeUnknownFields(other.unknownFields);
           onChanged();
@@ -1784,6 +4404,21 @@ public final class LibrarySummary {
           }
           return this;
         }
+        private int extraParametersInfoCase_ = 0;
+        private java.lang.Object extraParametersInfo_;
+        public ExtraParametersInfoCase
+            getExtraParametersInfoCase() {
+          return ExtraParametersInfoCase.forNumber(
+              extraParametersInfoCase_);
+        }
+
+        public Builder clearExtraParametersInfo() {
+          extraParametersInfoCase_ = 0;
+          extraParametersInfo_ = null;
+          onChanged();
+          return this;
+        }
+
 
         private java.lang.Object parameters_ = "";
         /**
@@ -1861,25 +4496,32 @@ public final class LibrarySummary {
           return this;
         }
 
-        private org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments_;
         private com.google.protobuf.SingleFieldBuilderV3<
             org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArgumentsOrBuilder> extraNamedArgumentsBuilder_;
         /**
          * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
          * @return Whether the extraNamedArguments field is set.
          */
+        @java.lang.Override
         public boolean hasExtraNamedArguments() {
-          return extraNamedArgumentsBuilder_ != null || extraNamedArguments_ != null;
+          return extraParametersInfoCase_ == 2;
         }
         /**
          * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
          * @return The extraNamedArguments.
          */
+        @java.lang.Override
         public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments getExtraNamedArguments() {
           if (extraNamedArgumentsBuilder_ == null) {
-            return extraNamedArguments_ == null ? org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.getDefaultInstance() : extraNamedArguments_;
+            if (extraParametersInfoCase_ == 2) {
+              return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments) extraParametersInfo_;
+            }
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.getDefaultInstance();
           } else {
-            return extraNamedArgumentsBuilder_.getMessage();
+            if (extraParametersInfoCase_ == 2) {
+              return extraNamedArgumentsBuilder_.getMessage();
+            }
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.getDefaultInstance();
           }
         }
         /**
@@ -1890,12 +4532,12 @@ public final class LibrarySummary {
             if (value == null) {
               throw new NullPointerException();
             }
-            extraNamedArguments_ = value;
+            extraParametersInfo_ = value;
             onChanged();
           } else {
             extraNamedArgumentsBuilder_.setMessage(value);
           }
-
+          extraParametersInfoCase_ = 2;
           return this;
         }
         /**
@@ -1904,12 +4546,12 @@ public final class LibrarySummary {
         public Builder setExtraNamedArguments(
             org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.Builder builderForValue) {
           if (extraNamedArgumentsBuilder_ == null) {
-            extraNamedArguments_ = builderForValue.build();
+            extraParametersInfo_ = builderForValue.build();
             onChanged();
           } else {
             extraNamedArgumentsBuilder_.setMessage(builderForValue.build());
           }
-
+          extraParametersInfoCase_ = 2;
           return this;
         }
         /**
@@ -1917,17 +4559,21 @@ public final class LibrarySummary {
          */
         public Builder mergeExtraNamedArguments(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments value) {
           if (extraNamedArgumentsBuilder_ == null) {
-            if (extraNamedArguments_ != null) {
-              extraNamedArguments_ =
-                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.newBuilder(extraNamedArguments_).mergeFrom(value).buildPartial();
+            if (extraParametersInfoCase_ == 2 &&
+                extraParametersInfo_ != org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.getDefaultInstance()) {
+              extraParametersInfo_ = org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.newBuilder((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments) extraParametersInfo_)
+                  .mergeFrom(value).buildPartial();
             } else {
-              extraNamedArguments_ = value;
+              extraParametersInfo_ = value;
             }
             onChanged();
           } else {
-            extraNamedArgumentsBuilder_.mergeFrom(value);
+            if (extraParametersInfoCase_ == 2) {
+              extraNamedArgumentsBuilder_.mergeFrom(value);
+            }
+            extraNamedArgumentsBuilder_.setMessage(value);
           }
-
+          extraParametersInfoCase_ = 2;
           return this;
         }
         /**
@@ -1935,32 +4581,38 @@ public final class LibrarySummary {
          */
         public Builder clearExtraNamedArguments() {
           if (extraNamedArgumentsBuilder_ == null) {
-            extraNamedArguments_ = null;
-            onChanged();
+            if (extraParametersInfoCase_ == 2) {
+              extraParametersInfoCase_ = 0;
+              extraParametersInfo_ = null;
+              onChanged();
+            }
           } else {
-            extraNamedArguments_ = null;
-            extraNamedArgumentsBuilder_ = null;
+            if (extraParametersInfoCase_ == 2) {
+              extraParametersInfoCase_ = 0;
+              extraParametersInfo_ = null;
+            }
+            extraNamedArgumentsBuilder_.clear();
           }
-
           return this;
         }
         /**
          * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
          */
         public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.Builder getExtraNamedArgumentsBuilder() {
-          
-          onChanged();
           return getExtraNamedArgumentsFieldBuilder().getBuilder();
         }
         /**
          * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
          */
+        @java.lang.Override
         public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArgumentsOrBuilder getExtraNamedArgumentsOrBuilder() {
-          if (extraNamedArgumentsBuilder_ != null) {
+          if ((extraParametersInfoCase_ == 2) && (extraNamedArgumentsBuilder_ != null)) {
             return extraNamedArgumentsBuilder_.getMessageOrBuilder();
           } else {
-            return extraNamedArguments_ == null ?
-                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.getDefaultInstance() : extraNamedArguments_;
+            if (extraParametersInfoCase_ == 2) {
+              return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments) extraParametersInfo_;
+            }
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.getDefaultInstance();
           }
         }
         /**
@@ -1970,14 +4622,301 @@ public final class LibrarySummary {
             org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArgumentsOrBuilder> 
             getExtraNamedArgumentsFieldBuilder() {
           if (extraNamedArgumentsBuilder_ == null) {
+            if (!(extraParametersInfoCase_ == 2)) {
+              extraParametersInfo_ = org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.getDefaultInstance();
+            }
             extraNamedArgumentsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
                 org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArgumentsOrBuilder>(
-                    getExtraNamedArguments(),
+                    (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments) extraParametersInfo_,
                     getParentForChildren(),
                     isClean());
-            extraNamedArguments_ = null;
+            extraParametersInfo_ = null;
           }
+          extraParametersInfoCase_ = 2;
+          onChanged();;
           return extraNamedArgumentsBuilder_;
+        }
+
+        private com.google.protobuf.SingleFieldBuilderV3<
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapperOrBuilder> s4ParametersInfoBuilder_;
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper s4ParametersInfo = 3;</code>
+         * @return Whether the s4ParametersInfo field is set.
+         */
+        @java.lang.Override
+        public boolean hasS4ParametersInfo() {
+          return extraParametersInfoCase_ == 3;
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper s4ParametersInfo = 3;</code>
+         * @return The s4ParametersInfo.
+         */
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper getS4ParametersInfo() {
+          if (s4ParametersInfoBuilder_ == null) {
+            if (extraParametersInfoCase_ == 3) {
+              return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper) extraParametersInfo_;
+            }
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.getDefaultInstance();
+          } else {
+            if (extraParametersInfoCase_ == 3) {
+              return s4ParametersInfoBuilder_.getMessage();
+            }
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.getDefaultInstance();
+          }
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper s4ParametersInfo = 3;</code>
+         */
+        public Builder setS4ParametersInfo(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper value) {
+          if (s4ParametersInfoBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            extraParametersInfo_ = value;
+            onChanged();
+          } else {
+            s4ParametersInfoBuilder_.setMessage(value);
+          }
+          extraParametersInfoCase_ = 3;
+          return this;
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper s4ParametersInfo = 3;</code>
+         */
+        public Builder setS4ParametersInfo(
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.Builder builderForValue) {
+          if (s4ParametersInfoBuilder_ == null) {
+            extraParametersInfo_ = builderForValue.build();
+            onChanged();
+          } else {
+            s4ParametersInfoBuilder_.setMessage(builderForValue.build());
+          }
+          extraParametersInfoCase_ = 3;
+          return this;
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper s4ParametersInfo = 3;</code>
+         */
+        public Builder mergeS4ParametersInfo(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper value) {
+          if (s4ParametersInfoBuilder_ == null) {
+            if (extraParametersInfoCase_ == 3 &&
+                extraParametersInfo_ != org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.getDefaultInstance()) {
+              extraParametersInfo_ = org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.newBuilder((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper) extraParametersInfo_)
+                  .mergeFrom(value).buildPartial();
+            } else {
+              extraParametersInfo_ = value;
+            }
+            onChanged();
+          } else {
+            if (extraParametersInfoCase_ == 3) {
+              s4ParametersInfoBuilder_.mergeFrom(value);
+            }
+            s4ParametersInfoBuilder_.setMessage(value);
+          }
+          extraParametersInfoCase_ = 3;
+          return this;
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper s4ParametersInfo = 3;</code>
+         */
+        public Builder clearS4ParametersInfo() {
+          if (s4ParametersInfoBuilder_ == null) {
+            if (extraParametersInfoCase_ == 3) {
+              extraParametersInfoCase_ = 0;
+              extraParametersInfo_ = null;
+              onChanged();
+            }
+          } else {
+            if (extraParametersInfoCase_ == 3) {
+              extraParametersInfoCase_ = 0;
+              extraParametersInfo_ = null;
+            }
+            s4ParametersInfoBuilder_.clear();
+          }
+          return this;
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper s4ParametersInfo = 3;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.Builder getS4ParametersInfoBuilder() {
+          return getS4ParametersInfoFieldBuilder().getBuilder();
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper s4ParametersInfo = 3;</code>
+         */
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapperOrBuilder getS4ParametersInfoOrBuilder() {
+          if ((extraParametersInfoCase_ == 3) && (s4ParametersInfoBuilder_ != null)) {
+            return s4ParametersInfoBuilder_.getMessageOrBuilder();
+          } else {
+            if (extraParametersInfoCase_ == 3) {
+              return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper) extraParametersInfo_;
+            }
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.getDefaultInstance();
+          }
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper s4ParametersInfo = 3;</code>
+         */
+        private com.google.protobuf.SingleFieldBuilderV3<
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapperOrBuilder> 
+            getS4ParametersInfoFieldBuilder() {
+          if (s4ParametersInfoBuilder_ == null) {
+            if (!(extraParametersInfoCase_ == 3)) {
+              extraParametersInfo_ = org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.getDefaultInstance();
+            }
+            s4ParametersInfoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapperOrBuilder>(
+                    (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4MethodParametersWrapper) extraParametersInfo_,
+                    getParentForChildren(),
+                    isClean());
+            extraParametersInfo_ = null;
+          }
+          extraParametersInfoCase_ = 3;
+          onChanged();;
+          return s4ParametersInfoBuilder_;
+        }
+
+        private com.google.protobuf.SingleFieldBuilderV3<
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignatureOrBuilder> s4GenericSignatureBuilder_;
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature s4GenericSignature = 4;</code>
+         * @return Whether the s4GenericSignature field is set.
+         */
+        @java.lang.Override
+        public boolean hasS4GenericSignature() {
+          return extraParametersInfoCase_ == 4;
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature s4GenericSignature = 4;</code>
+         * @return The s4GenericSignature.
+         */
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature getS4GenericSignature() {
+          if (s4GenericSignatureBuilder_ == null) {
+            if (extraParametersInfoCase_ == 4) {
+              return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature) extraParametersInfo_;
+            }
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.getDefaultInstance();
+          } else {
+            if (extraParametersInfoCase_ == 4) {
+              return s4GenericSignatureBuilder_.getMessage();
+            }
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.getDefaultInstance();
+          }
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature s4GenericSignature = 4;</code>
+         */
+        public Builder setS4GenericSignature(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature value) {
+          if (s4GenericSignatureBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            extraParametersInfo_ = value;
+            onChanged();
+          } else {
+            s4GenericSignatureBuilder_.setMessage(value);
+          }
+          extraParametersInfoCase_ = 4;
+          return this;
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature s4GenericSignature = 4;</code>
+         */
+        public Builder setS4GenericSignature(
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.Builder builderForValue) {
+          if (s4GenericSignatureBuilder_ == null) {
+            extraParametersInfo_ = builderForValue.build();
+            onChanged();
+          } else {
+            s4GenericSignatureBuilder_.setMessage(builderForValue.build());
+          }
+          extraParametersInfoCase_ = 4;
+          return this;
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature s4GenericSignature = 4;</code>
+         */
+        public Builder mergeS4GenericSignature(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature value) {
+          if (s4GenericSignatureBuilder_ == null) {
+            if (extraParametersInfoCase_ == 4 &&
+                extraParametersInfo_ != org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.getDefaultInstance()) {
+              extraParametersInfo_ = org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.newBuilder((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature) extraParametersInfo_)
+                  .mergeFrom(value).buildPartial();
+            } else {
+              extraParametersInfo_ = value;
+            }
+            onChanged();
+          } else {
+            if (extraParametersInfoCase_ == 4) {
+              s4GenericSignatureBuilder_.mergeFrom(value);
+            }
+            s4GenericSignatureBuilder_.setMessage(value);
+          }
+          extraParametersInfoCase_ = 4;
+          return this;
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature s4GenericSignature = 4;</code>
+         */
+        public Builder clearS4GenericSignature() {
+          if (s4GenericSignatureBuilder_ == null) {
+            if (extraParametersInfoCase_ == 4) {
+              extraParametersInfoCase_ = 0;
+              extraParametersInfo_ = null;
+              onChanged();
+            }
+          } else {
+            if (extraParametersInfoCase_ == 4) {
+              extraParametersInfoCase_ = 0;
+              extraParametersInfo_ = null;
+            }
+            s4GenericSignatureBuilder_.clear();
+          }
+          return this;
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature s4GenericSignature = 4;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.Builder getS4GenericSignatureBuilder() {
+          return getS4GenericSignatureFieldBuilder().getBuilder();
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature s4GenericSignature = 4;</code>
+         */
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignatureOrBuilder getS4GenericSignatureOrBuilder() {
+          if ((extraParametersInfoCase_ == 4) && (s4GenericSignatureBuilder_ != null)) {
+            return s4GenericSignatureBuilder_.getMessageOrBuilder();
+          } else {
+            if (extraParametersInfoCase_ == 4) {
+              return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature) extraParametersInfo_;
+            }
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.getDefaultInstance();
+          }
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature s4GenericSignature = 4;</code>
+         */
+        private com.google.protobuf.SingleFieldBuilderV3<
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignatureOrBuilder> 
+            getS4GenericSignatureFieldBuilder() {
+          if (s4GenericSignatureBuilder_ == null) {
+            if (!(extraParametersInfoCase_ == 4)) {
+              extraParametersInfo_ = org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.getDefaultInstance();
+            }
+            s4GenericSignatureBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignatureOrBuilder>(
+                    (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.S4GenericSignature) extraParametersInfo_,
+                    getParentForChildren(),
+                    isClean());
+            extraParametersInfo_ = null;
+          }
+          extraParametersInfoCase_ = 4;
+          onChanged();;
+          return s4GenericSignatureBuilder_;
         }
         @java.lang.Override
         public final Builder setUnknownFields(
@@ -7212,6 +10151,21 @@ public final class LibrarySummary {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_ExtraNamedArguments_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4GenericSignature_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4GenericSignature_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParameter_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParameter_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParametersWrapper_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParametersWrapper_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -7241,37 +10195,50 @@ public final class LibrarySummary {
   static {
     java.lang.String[] descriptorData = {
       "\n\025library_summary.proto\022\017library_summary" +
-      "\"\266\007\n\016RLibrarySymbol\022\014\n\004name\030\001 \001(\t\0222\n\004typ" +
+      "\"\270\013\n\016RLibrarySymbol\022\014\n\004name\030\001 \001(\t\0222\n\004typ" +
       "e\030\002 \001(\0162$.library_summary.RLibrarySymbol" +
       ".Type\022\020\n\010exported\030\003 \001(\010\022X\n\026functionRepre" +
       "sentation\030\004 \001(\01326.library_summary.RLibra" +
       "rySymbol.FunctionRepresentationH\000\022V\n\025s4C" +
       "lassRepresentation\030\005 \001(\01325.library_summa" +
       "ry.RLibrarySymbol.S4ClassRepresentationH" +
-      "\000\032\323\001\n\026FunctionRepresentation\022\022\n\nparamete" +
-      "rs\030\001 \001(\t\022g\n\023extraNamedArguments\030\002 \001(\0132J." +
+      "\000\032\270\005\n\026FunctionRepresentation\022\022\n\nparamete" +
+      "rs\030\001 \001(\t\022i\n\023extraNamedArguments\030\002 \001(\0132J." +
       "library_summary.RLibrarySymbol.FunctionR" +
-      "epresentation.ExtraNamedArguments\032<\n\023Ext" +
-      "raNamedArguments\022\020\n\010argNames\030\001 \003(\t\022\023\n\013fu" +
-      "nArgNames\030\002 \003(\t\032\353\002\n\025S4ClassRepresentatio" +
-      "n\022\023\n\013packageName\030\001 \001(\t\022P\n\005slots\030\002 \003(\0132A." +
-      "library_summary.RLibrarySymbol.S4ClassRe" +
-      "presentation.S4ClassSlot\022X\n\014superClasses" +
-      "\030\003 \003(\0132B.library_summary.RLibrarySymbol." +
-      "S4ClassRepresentation.S4SuperClass\022\021\n\tis" +
-      "Virtual\030\004 \001(\010\032C\n\013S4ClassSlot\022\014\n\004name\030\001 \001" +
-      "(\t\022\014\n\004type\030\002 \001(\t\022\030\n\020declarationClass\030\003 \001" +
-      "(\t\0329\n\014S4SuperClass\022\014\n\004name\030\001 \001(\t\022\033\n\023isDi" +
-      "rectInheritance\030\002 \001(\010\"H\n\004Type\022\t\n\005OTHER\020\000" +
-      "\022\014\n\010FUNCTION\020\001\022\r\n\tPRIMITIVE\020\002\022\013\n\007DATASET" +
-      "\020\003\022\013\n\007S4CLASS\020\004B\020\n\016representation\"\330\001\n\017RL" +
-      "ibraryPackage\022\014\n\004name\030\001 \001(\t\022;\n\010priority\030" +
-      "\002 \001(\0162).library_summary.RLibraryPackage." +
-      "Priority\0220\n\007symbols\030\003 \003(\0132\037.library_summ" +
-      "ary.RLibrarySymbol\"H\n\010Priority\022\013\n\007UNKNOW" +
-      "N\020\000\022\006\n\002NA\020\001\022\017\n\013RECOMMENDED\020\002\022\010\n\004BASE\020\003\022\014" +
-      "\n\010OPTIONAL\020\004B\032\n\030org.jetbrains.r.packages" +
-      "b\006proto3"
+      "epresentation.ExtraNamedArgumentsH\000\022l\n\020s" +
+      "4ParametersInfo\030\003 \001(\0132P.library_summary." +
+      "RLibrarySymbol.FunctionRepresentation.S4" +
+      "MethodParametersWrapperH\000\022g\n\022s4GenericSi" +
+      "gnature\030\004 \001(\0132I.library_summary.RLibrary" +
+      "Symbol.FunctionRepresentation.S4GenericS" +
+      "ignatureH\000\032<\n\023ExtraNamedArguments\022\020\n\010arg" +
+      "Names\030\001 \003(\t\022\023\n\013funArgNames\030\002 \003(\t\032>\n\022S4Ge" +
+      "nericSignature\022\022\n\nparameters\030\001 \003(\t\022\024\n\014va" +
+      "lueClasses\030\002 \003(\t\032/\n\021S4MethodParameter\022\014\n" +
+      "\004name\030\001 \001(\t\022\014\n\004type\030\002 \001(\t\032\201\001\n\031S4MethodPa" +
+      "rametersWrapper\022d\n\022s4MethodParameters\030\001 " +
+      "\003(\0132H.library_summary.RLibrarySymbol.Fun" +
+      "ctionRepresentation.S4MethodParameterB\025\n" +
+      "\023extraParametersInfo\032\353\002\n\025S4ClassRepresen" +
+      "tation\022\023\n\013packageName\030\001 \001(\t\022P\n\005slots\030\002 \003" +
+      "(\0132A.library_summary.RLibrarySymbol.S4Cl" +
+      "assRepresentation.S4ClassSlot\022X\n\014superCl" +
+      "asses\030\003 \003(\0132B.library_summary.RLibrarySy" +
+      "mbol.S4ClassRepresentation.S4SuperClass\022" +
+      "\021\n\tisVirtual\030\004 \001(\010\032C\n\013S4ClassSlot\022\014\n\004nam" +
+      "e\030\001 \001(\t\022\014\n\004type\030\002 \001(\t\022\030\n\020declarationClas" +
+      "s\030\003 \001(\t\0329\n\014S4SuperClass\022\014\n\004name\030\001 \001(\t\022\033\n" +
+      "\023isDirectInheritance\030\002 \001(\010\"e\n\004Type\022\t\n\005OT" +
+      "HER\020\000\022\014\n\010FUNCTION\020\001\022\r\n\tPRIMITIVE\020\002\022\013\n\007DA" +
+      "TASET\020\003\022\013\n\007S4CLASS\020\004\022\r\n\tS4GENERIC\020\005\022\014\n\010S" +
+      "4METHOD\020\006B\020\n\016representation\"\330\001\n\017RLibrary" +
+      "Package\022\014\n\004name\030\001 \001(\t\022;\n\010priority\030\002 \001(\0162" +
+      ").library_summary.RLibraryPackage.Priori" +
+      "ty\0220\n\007symbols\030\003 \003(\0132\037.library_summary.RL" +
+      "ibrarySymbol\"H\n\010Priority\022\013\n\007UNKNOWN\020\000\022\006\n" +
+      "\002NA\020\001\022\017\n\013RECOMMENDED\020\002\022\010\n\004BASE\020\003\022\014\n\010OPTI" +
+      "ONAL\020\004B\032\n\030org.jetbrains.r.packagesb\006prot" +
+      "o3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -7288,13 +10255,31 @@ public final class LibrarySummary {
     internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_descriptor,
-        new java.lang.String[] { "Parameters", "ExtraNamedArguments", });
+        new java.lang.String[] { "Parameters", "ExtraNamedArguments", "S4ParametersInfo", "S4GenericSignature", "ExtraParametersInfo", });
     internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_ExtraNamedArguments_descriptor =
       internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_descriptor.getNestedTypes().get(0);
     internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_ExtraNamedArguments_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_ExtraNamedArguments_descriptor,
         new java.lang.String[] { "ArgNames", "FunArgNames", });
+    internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4GenericSignature_descriptor =
+      internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_descriptor.getNestedTypes().get(1);
+    internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4GenericSignature_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4GenericSignature_descriptor,
+        new java.lang.String[] { "Parameters", "ValueClasses", });
+    internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParameter_descriptor =
+      internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_descriptor.getNestedTypes().get(2);
+    internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParameter_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParameter_descriptor,
+        new java.lang.String[] { "Name", "Type", });
+    internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParametersWrapper_descriptor =
+      internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_descriptor.getNestedTypes().get(3);
+    internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParametersWrapper_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_S4MethodParametersWrapper_descriptor,
+        new java.lang.String[] { "S4MethodParameters", });
     internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_descriptor =
       internal_static_library_summary_RLibrarySymbol_descriptor.getNestedTypes().get(1);
     internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_fieldAccessorTable = new

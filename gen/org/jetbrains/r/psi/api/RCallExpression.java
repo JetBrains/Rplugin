@@ -8,7 +8,7 @@ import com.intellij.psi.StubBasedPsiElement;
 import org.jetbrains.r.psi.stubs.RCallExpressionStub;
 import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfo;
 
-public interface RCallExpression extends RExpression, StubBasedPsiElement<RCallExpressionStub> {
+public interface RCallExpression extends RExpression, RS4GenericOrMethodHolder, StubBasedPsiElement<RCallExpressionStub> {
 
   @NotNull
   RArgumentList getArgumentList();

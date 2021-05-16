@@ -29,9 +29,7 @@ import org.jetbrains.r.classes.s4.context.RS4ContextProvider.Companion.S4_CLASS_
 import org.jetbrains.r.classes.s4.context.RS4NewObjectClassNameContext
 import org.jetbrains.r.classes.s4.context.RS4NewObjectContext
 import org.jetbrains.r.classes.s4.context.RS4NewObjectSlotNameContext
-import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassContainsContext
-import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassDependencyClassNameContext
-import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassRepresentationContext
+import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassTypeUsageContext
 import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
 import org.jetbrains.r.codeInsight.table.RTableColumnCollectProcessor
 import org.jetbrains.r.codeInsight.table.RTableContextManager
@@ -491,10 +489,9 @@ class RCompletionContributor : CompletionContributor() {
         is RS4NewObjectClassNameContext -> {
           omitVirtual = true
         }
-        is RS4SetClassRepresentationContext, is RS4SetClassContainsContext, is RS4SetClassDependencyClassNameContext -> {
+        is RS4SetClassTypeUsageContext -> {
           nameToOmit = RS4ClassInfoUtil.getAssociatedClassName(s4Context.contextFunctionCall)
         }
-        else -> return
       }
 
       val project = classNameExpression.project

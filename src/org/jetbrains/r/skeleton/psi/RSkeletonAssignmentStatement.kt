@@ -10,9 +10,12 @@ import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.stubs.StubElement
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.associatedS4MethodInfo
+import org.jetbrains.r.classes.s4.methods.RS4RawMethodInfo
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.Type
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.RPomTarget
@@ -94,7 +97,17 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
     val (packageName, _) = RSkeletonUtil.skeletonFileToRPackage(containingFile) ?: throw IllegalStateException("bad filename")
 
     val accessOperator = if (stub.exported) "::" else ":::"
-    val expressionRef = RReference.expressionRef("$packageName$accessOperator${RNamesValidator.quoteIfNeeded(getName())}", consoleView.rInterop)
+    val name = RNamesValidator.quoteIfNeeded(name)
+    val expressionRef = RReference.expressionRef(
+      if (stub.type == Type.S4METHOD) {
+        val types = (associatedS4MethodInfo as RS4RawMethodInfo).parameters.joinToString(", ") { "'${it.type}'" }
+        "methods::selectMethod('$name', signature = c($types))"
+      }
+      else {
+        "$packageName$accessOperator$name"
+      },
+      consoleView.rInterop
+    )
     val rValue = try {
       expressionRef.getValueInfo()
     } catch (e: RInteropTerminated) {
