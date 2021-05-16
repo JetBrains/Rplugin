@@ -7,7 +7,7 @@ package org.jetbrains.r.classes.common.context
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RPsiElement
 
-interface ILibraryClassContext {
+interface LibraryClassContext {
   val functionName: String
   val functionCall: RCallExpression
   val originalElement: RPsiElement

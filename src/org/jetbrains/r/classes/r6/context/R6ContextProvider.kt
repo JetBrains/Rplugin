@@ -4,11 +4,11 @@
 
 package org.jetbrains.r.classes.r6.context
 
-import org.jetbrains.r.classes.common.context.ILibraryClassContext
+import org.jetbrains.r.classes.common.context.LibraryClassContext
 import org.jetbrains.r.psi.api.RPsiElement
 import java.lang.reflect.ParameterizedType
 
-abstract class R6ContextProvider<T : ILibraryClassContext> {
+abstract class R6ContextProvider<T : LibraryClassContext> {
   abstract fun getR6ContextInner(element: RPsiElement): T?
   abstract fun getContext(element: RPsiElement): T?
 
@@ -16,16 +16,16 @@ abstract class R6ContextProvider<T : ILibraryClassContext> {
   private val contextClass = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>
 
   companion object {
-    fun getProviders(): List<R6ContextProvider<out ILibraryClassContext>> = listOf(
+    fun getProviders(): List<R6ContextProvider<out LibraryClassContext>> = listOf(
       R6CreateClassContextProvider(),
       R6SetClassMembersContextProvider()
     )
 
-    fun getR6Context(element: RPsiElement): ILibraryClassContext? {
-      return getR6Context(element, ILibraryClassContext::class.java)
+    fun getR6Context(element: RPsiElement): LibraryClassContext? {
+      return getR6Context(element, LibraryClassContext::class.java)
     }
 
-    fun <T : ILibraryClassContext> getR6Context(element: RPsiElement, vararg searchedContexts: Class<out T>): T? {
+    fun <T : LibraryClassContext> getR6Context(element: RPsiElement, vararg searchedContexts: Class<out T>): T? {
       for (provider in getProviders()) {
         if (searchedContexts.any { it.isAssignableFrom(provider.contextClass) }) {
           val s4Context = provider.getContext(element)

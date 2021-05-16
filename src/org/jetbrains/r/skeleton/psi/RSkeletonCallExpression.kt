@@ -34,6 +34,7 @@ class RSkeletonCallExpression(private val myStub: RSkeletonCallExpressionStub) :
 
   override fun getText(): String {
     val s4Info = stub.s4ClassInfo?.getDeclarationText(project)
+    //todo reconsider impl
     val r6Info = stub.r6ClassInfo.toString()
 
     return s4Info ?: r6Info

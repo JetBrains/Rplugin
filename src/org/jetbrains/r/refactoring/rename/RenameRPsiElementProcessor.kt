@@ -13,8 +13,7 @@ import com.intellij.usageView.UsageInfo
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.classes.s4.classInfo.RStringLiteralPomTarget
-import org.jetbrains.r.classes.s4.context.RS4ContextProvider
-import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassClassNameContext
+import org.jetbrains.r.classes.s4.context.RS4ContextProvider.Companion.setClassTypeProvider
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.refactoring.RRefactoringUtil
@@ -34,14 +33,14 @@ class RenameRPsiElementProcessor : RenamePsiElementProcessor() {
         }
       }
       is RForStatement -> element.target
-      is RAssignmentStatement, is RParameter, is RNamedArgument, is RFile -> element
+      is RAssignmentStatement, is RNamedArgument, is RParameter, is RFile -> element
       is PomTargetPsiElement -> {
         val target = element.target
         if (target is RStringLiteralPomTarget) target.literal
         else null
       }
       is RStringLiteralExpression -> {
-        val context = RS4ContextProvider.getS4Context(element, RS4SetClassClassNameContext::class)
+        val context = setClassTypeProvider.getContext(element)
         if (context != null) element else null
       }
       else -> null

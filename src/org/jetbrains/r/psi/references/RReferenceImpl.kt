@@ -91,9 +91,7 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
   }
 
   private fun resolveDependantIdentifier(): Array<ResolveResult> {
-    val r6SearchedIdentifierDefinition = R6ClassPsiUtil.getSearchedIdentifier(element) ?: return emptyArray()
-    // TODO fix that!
-    return arrayOf(PsiElementResolveResult(r6SearchedIdentifierDefinition))
+    return R6ClassPsiUtil.getSearchedIdentifier(element)?.let { arrayOf(PsiElementResolveResult(it)) } ?: emptyArray()
   }
 
   @Throws(IncorrectOperationException::class)
