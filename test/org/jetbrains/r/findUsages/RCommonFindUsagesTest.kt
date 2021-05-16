@@ -4,19 +4,7 @@
 
 package org.jetbrains.r.findUsages
 
-import com.intellij.testFramework.UsefulTestCase
-import com.intellij.usages.PsiElementUsageTarget
-import com.intellij.usages.UsageTargetUtil
-import org.intellij.lang.annotations.Language
-import org.jetbrains.r.run.RProcessHandlerBaseTestCase
-
-class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
-
-  override fun setUp() {
-    super.setUp()
-    addLibraries()
-  }
-
+class RCommonFindUsagesTest  : FindUsagesTestBase() {
   fun testLocalVariable() {
     doTest("""
       my.local.<caret>variable <- 10
@@ -244,16 +232,5 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
             10obj1@slot1
             11obj1@slot.ext
      """)
-  }
-
-  private fun doTest(@Language("R") code: String, expected: String) {
-    myFixture.configureByText("test.R", code.trimIndent())
-    val element = myFixture.elementAtCaret
-    val targets = UsageTargetUtil.findUsageTargets(element)
-    assertNotNull(targets)
-    assertTrue(targets.size > 0)
-    val target = (targets[0] as PsiElementUsageTarget).element
-    val actual = myFixture.getUsageViewTreeTextRepresentation(target)
-    UsefulTestCase.assertSameLines(expected.trimIndent(), actual)
   }
 }

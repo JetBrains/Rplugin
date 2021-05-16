@@ -5,7 +5,7 @@
 package org.jetbrains.r.inspections
 
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.inspections.s4class.MissingS4ClassNameInspection
+import org.jetbrains.r.inspections.classes.s4.MissingS4ClassNameInspection
 
 class MissingS4ClassNameInspectionTest : RInspectionTest() {
 

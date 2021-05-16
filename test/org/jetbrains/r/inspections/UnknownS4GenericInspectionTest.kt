@@ -5,7 +5,7 @@
 package org.jetbrains.r.inspections
 
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.inspections.s4class.UnknownS4GenericInspection
+import org.jetbrains.r.inspections.classes.s4.UnknownS4GenericInspection
 
 class UnknownS4GenericInspectionTest : RInspectionTest() {
 

@@ -13,21 +13,21 @@ import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 
 sealed class RS4SetMethodContext : RS4MethodsContext() {
-  override val contextFunctionName: String = "setMethod"
+  override val functionName: String = "setMethod"
 }
 
 data class RS4SetMethodFunctionNameContext(override val originalElement: RPsiElement,
-                                           override val contextFunctionCall: RCallExpression) : RS4SetMethodContext()
+                                           override val functionCall: RCallExpression) : RS4SetMethodContext()
 
 data class RS4SetMethodSignatureClassNameContext(override val originalElement: RPsiElement,
-                                                 override val contextFunctionCall: RCallExpression) : RS4SetMethodContext()
+                                                 override val functionCall: RCallExpression) : RS4SetMethodContext()
 
 // setMethod("fun", signature = c(para<caret>m = ))
 data class RS4SetMethodParameterNamesContext(override val originalElement: RPsiElement,
-                                             override val contextFunctionCall: RCallExpression) : RS4SetMethodContext()
+                                             override val functionCall: RCallExpression) : RS4SetMethodContext()
 
 data class RS4SetMethodDefinitionContext(override val originalElement: RPsiElement,
-                                         override val contextFunctionCall: RCallExpression) : RS4SetMethodContext()
+                                         override val functionCall: RCallExpression) : RS4SetMethodContext()
 
 class RS4SetMethodProvider : RS4ContextProvider<RS4SetMethodContext>() {
   override fun getS4ContextWithoutCaching(element: RPsiElement): RS4SetMethodContext? {

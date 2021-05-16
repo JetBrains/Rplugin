@@ -19,7 +19,7 @@ import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex
 import org.jetbrains.r.psi.stubs.RInternalAssignmentCompletionIndex
-import org.jetbrains.r.psi.stubs.RS4GenericIndex
+import org.jetbrains.r.psi.stubs.classes.RS4GenericIndex
 
 object RPackageCompletionUtil {
 

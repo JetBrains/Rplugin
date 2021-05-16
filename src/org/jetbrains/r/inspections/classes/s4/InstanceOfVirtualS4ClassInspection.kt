@@ -2,7 +2,7 @@
  * Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.inspections.s4class
+package org.jetbrains.r.inspections.classes.s4
 
 import com.intellij.codeInspection.LocalInspectionToolSession
 import com.intellij.codeInspection.ProblemHighlightType
@@ -15,7 +15,7 @@ import org.jetbrains.r.psi.api.RStringLiteralExpression
 import org.jetbrains.r.psi.api.RVisitor
 import org.jetbrains.r.psi.isFunctionFromLibrary
 import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.RS4ClassNameIndex
+import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
 
 class InstanceOfVirtualS4ClassInspection : RInspection() {
   override fun getDisplayName() = RBundle.message("inspection.virtual.s4class.instance.name")

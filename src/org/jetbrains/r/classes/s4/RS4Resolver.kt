@@ -28,9 +28,9 @@ import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.psi.api.RStringLiteralExpression
 import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.RS4ClassNameIndex
-import org.jetbrains.r.psi.stubs.RS4GenericIndex
-import org.jetbrains.r.psi.stubs.RS4MethodsIndex
+import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
+import org.jetbrains.r.psi.stubs.classes.RS4GenericIndex
+import org.jetbrains.r.psi.stubs.classes.RS4MethodsIndex
 import org.jetbrains.r.skeleton.psi.RSkeletonCallExpression
 
 object RS4Resolver {

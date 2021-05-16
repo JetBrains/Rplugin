@@ -4,6 +4,6 @@
 
 package org.jetbrains.r.classes.s4.context.methods
 
-import org.jetbrains.r.classes.s4.context.RS4Context
+import org.jetbrains.r.classes.common.context.ILibraryClassContext
 
-abstract class RS4MethodsContext : RS4Context
+abstract class RS4MethodsContext : ILibraryClassContext

@@ -77,6 +77,21 @@ public final class LibrarySummary {
      */
     org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentationOrBuilder getS4ClassRepresentationOrBuilder();
 
+    /**
+     * <code>.library_summary.RLibrarySymbol.R6ClassRepresentation r6ClassRepresentation = 6;</code>
+     * @return Whether the r6ClassRepresentation field is set.
+     */
+    boolean hasR6ClassRepresentation();
+    /**
+     * <code>.library_summary.RLibrarySymbol.R6ClassRepresentation r6ClassRepresentation = 6;</code>
+     * @return The r6ClassRepresentation.
+     */
+    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation getR6ClassRepresentation();
+    /**
+     * <code>.library_summary.RLibrarySymbol.R6ClassRepresentation r6ClassRepresentation = 6;</code>
+     */
+    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentationOrBuilder getR6ClassRepresentationOrBuilder();
+
     public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.RepresentationCase getRepresentationCase();
   }
   /**
@@ -171,6 +186,20 @@ public final class LibrarySummary {
               representationCase_ = 5;
               break;
             }
+            case 50: {
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.Builder subBuilder = null;
+              if (representationCase_ == 6) {
+                subBuilder = ((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation) representation_).toBuilder();
+              }
+              representation_ =
+                  input.readMessage(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation) representation_);
+                representation_ = subBuilder.buildPartial();
+              }
+              representationCase_ = 6;
+              break;
+            }
             default: {
               if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
@@ -236,6 +265,10 @@ public final class LibrarySummary {
        * <code>S4METHOD = 6;</code>
        */
       S4METHOD(6),
+      /**
+       * <code>R6CLASS = 7;</code>
+       */
+      R6CLASS(7),
       UNRECOGNIZED(-1),
       ;
 
@@ -267,6 +300,10 @@ public final class LibrarySummary {
        * <code>S4METHOD = 6;</code>
        */
       public static final int S4METHOD_VALUE = 6;
+      /**
+       * <code>R6CLASS = 7;</code>
+       */
+      public static final int R6CLASS_VALUE = 7;
 
 
       public final int getNumber() {
@@ -300,6 +337,7 @@ public final class LibrarySummary {
           case 4: return S4CLASS;
           case 5: return S4GENERIC;
           case 6: return S4METHOD;
+          case 7: return R6CLASS;
           default: return null;
         }
       }
@@ -7863,6 +7901,3606 @@ public final class LibrarySummary {
 
     }
 
+    public interface R6ClassRepresentationOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:library_summary.RLibrarySymbol.R6ClassRepresentation)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>repeated string superClasses = 1;</code>
+       * @return A list containing the superClasses.
+       */
+      java.util.List<java.lang.String>
+          getSuperClassesList();
+      /**
+       * <code>repeated string superClasses = 1;</code>
+       * @return The count of superClasses.
+       */
+      int getSuperClassesCount();
+      /**
+       * <code>repeated string superClasses = 1;</code>
+       * @param index The index of the element to return.
+       * @return The superClasses at the given index.
+       */
+      java.lang.String getSuperClasses(int index);
+      /**
+       * <code>repeated string superClasses = 1;</code>
+       * @param index The index of the value to return.
+       * @return The bytes of the superClasses at the given index.
+       */
+      com.google.protobuf.ByteString
+          getSuperClassesBytes(int index);
+
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+       */
+      java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField> 
+          getFieldsList();
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+       */
+      org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField getFields(int index);
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+       */
+      int getFieldsCount();
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+       */
+      java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassFieldOrBuilder> 
+          getFieldsOrBuilderList();
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+       */
+      org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassFieldOrBuilder getFieldsOrBuilder(
+          int index);
+
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+       */
+      java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod> 
+          getMethodsList();
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+       */
+      org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod getMethods(int index);
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+       */
+      int getMethodsCount();
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+       */
+      java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethodOrBuilder> 
+          getMethodsOrBuilderList();
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+       */
+      org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethodOrBuilder getMethodsOrBuilder(
+          int index);
+
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+       */
+      java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding> 
+          getActiveBindingsList();
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+       */
+      org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding getActiveBindings(int index);
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+       */
+      int getActiveBindingsCount();
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+       */
+      java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBindingOrBuilder> 
+          getActiveBindingsOrBuilderList();
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+       */
+      org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBindingOrBuilder getActiveBindingsOrBuilder(
+          int index);
+    }
+    /**
+     * Protobuf type {@code library_summary.RLibrarySymbol.R6ClassRepresentation}
+     */
+    public static final class R6ClassRepresentation extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.R6ClassRepresentation)
+        R6ClassRepresentationOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use R6ClassRepresentation.newBuilder() to construct.
+      private R6ClassRepresentation(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private R6ClassRepresentation() {
+        superClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        fields_ = java.util.Collections.emptyList();
+        methods_ = java.util.Collections.emptyList();
+        activeBindings_ = java.util.Collections.emptyList();
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new R6ClassRepresentation();
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private R6ClassRepresentation(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                java.lang.String s = input.readStringRequireUtf8();
+                if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                  superClasses_ = new com.google.protobuf.LazyStringArrayList();
+                  mutable_bitField0_ |= 0x00000001;
+                }
+                superClasses_.add(s);
+                break;
+              }
+              case 18: {
+                if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                  fields_ = new java.util.ArrayList<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField>();
+                  mutable_bitField0_ |= 0x00000002;
+                }
+                fields_.add(
+                    input.readMessage(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.parser(), extensionRegistry));
+                break;
+              }
+              case 26: {
+                if (!((mutable_bitField0_ & 0x00000004) != 0)) {
+                  methods_ = new java.util.ArrayList<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod>();
+                  mutable_bitField0_ |= 0x00000004;
+                }
+                methods_.add(
+                    input.readMessage(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.parser(), extensionRegistry));
+                break;
+              }
+              case 34: {
+                if (!((mutable_bitField0_ & 0x00000008) != 0)) {
+                  activeBindings_ = new java.util.ArrayList<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding>();
+                  mutable_bitField0_ |= 0x00000008;
+                }
+                activeBindings_.add(
+                    input.readMessage(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.parser(), extensionRegistry));
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          if (((mutable_bitField0_ & 0x00000001) != 0)) {
+            superClasses_ = superClasses_.getUnmodifiableView();
+          }
+          if (((mutable_bitField0_ & 0x00000002) != 0)) {
+            fields_ = java.util.Collections.unmodifiableList(fields_);
+          }
+          if (((mutable_bitField0_ & 0x00000004) != 0)) {
+            methods_ = java.util.Collections.unmodifiableList(methods_);
+          }
+          if (((mutable_bitField0_ & 0x00000008) != 0)) {
+            activeBindings_ = java.util.Collections.unmodifiableList(activeBindings_);
+          }
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.Builder.class);
+      }
+
+      public interface R6ClassFieldOrBuilder extends
+          // @@protoc_insertion_point(interface_extends:library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField)
+          com.google.protobuf.MessageOrBuilder {
+
+        /**
+         * <code>string name = 1;</code>
+         * @return The name.
+         */
+        java.lang.String getName();
+        /**
+         * <code>string name = 1;</code>
+         * @return The bytes for name.
+         */
+        com.google.protobuf.ByteString
+            getNameBytes();
+
+        /**
+         * <code>bool isPublic = 2;</code>
+         * @return The isPublic.
+         */
+        boolean getIsPublic();
+      }
+      /**
+       * Protobuf type {@code library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField}
+       */
+      public static final class R6ClassField extends
+          com.google.protobuf.GeneratedMessageV3 implements
+          // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField)
+          R6ClassFieldOrBuilder {
+      private static final long serialVersionUID = 0L;
+        // Use R6ClassField.newBuilder() to construct.
+        private R6ClassField(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+          super(builder);
+        }
+        private R6ClassField() {
+          name_ = "";
+        }
+
+        @java.lang.Override
+        @SuppressWarnings({"unused"})
+        protected java.lang.Object newInstance(
+            UnusedPrivateParameter unused) {
+          return new R6ClassField();
+        }
+
+        @java.lang.Override
+        public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+          return this.unknownFields;
+        }
+        private R6ClassField(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          this();
+          if (extensionRegistry == null) {
+            throw new java.lang.NullPointerException();
+          }
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder();
+          try {
+            boolean done = false;
+            while (!done) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  done = true;
+                  break;
+                case 10: {
+                  java.lang.String s = input.readStringRequireUtf8();
+
+                  name_ = s;
+                  break;
+                }
+                case 16: {
+
+                  isPublic_ = input.readBool();
+                  break;
+                }
+                default: {
+                  if (!parseUnknownField(
+                      input, unknownFields, extensionRegistry, tag)) {
+                    done = true;
+                  }
+                  break;
+                }
+              }
+            }
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            throw e.setUnfinishedMessage(this);
+          } catch (java.io.IOException e) {
+            throw new com.google.protobuf.InvalidProtocolBufferException(
+                e).setUnfinishedMessage(this);
+          } finally {
+            this.unknownFields = unknownFields.build();
+            makeExtensionsImmutable();
+          }
+        }
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassField_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassField_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.Builder.class);
+        }
+
+        public static final int NAME_FIELD_NUMBER = 1;
+        private volatile java.lang.Object name_;
+        /**
+         * <code>string name = 1;</code>
+         * @return The name.
+         */
+        @java.lang.Override
+        public java.lang.String getName() {
+          java.lang.Object ref = name_;
+          if (ref instanceof java.lang.String) {
+            return (java.lang.String) ref;
+          } else {
+            com.google.protobuf.ByteString bs = 
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            name_ = s;
+            return s;
+          }
+        }
+        /**
+         * <code>string name = 1;</code>
+         * @return The bytes for name.
+         */
+        @java.lang.Override
+        public com.google.protobuf.ByteString
+            getNameBytes() {
+          java.lang.Object ref = name_;
+          if (ref instanceof java.lang.String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            name_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+
+        public static final int ISPUBLIC_FIELD_NUMBER = 2;
+        private boolean isPublic_;
+        /**
+         * <code>bool isPublic = 2;</code>
+         * @return The isPublic.
+         */
+        @java.lang.Override
+        public boolean getIsPublic() {
+          return isPublic_;
+        }
+
+        private byte memoizedIsInitialized = -1;
+        @java.lang.Override
+        public final boolean isInitialized() {
+          byte isInitialized = memoizedIsInitialized;
+          if (isInitialized == 1) return true;
+          if (isInitialized == 0) return false;
+
+          memoizedIsInitialized = 1;
+          return true;
+        }
+
+        @java.lang.Override
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          if (!getNameBytes().isEmpty()) {
+            com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
+          }
+          if (isPublic_ != false) {
+            output.writeBool(2, isPublic_);
+          }
+          unknownFields.writeTo(output);
+        }
+
+        @java.lang.Override
+        public int getSerializedSize() {
+          int size = memoizedSize;
+          if (size != -1) return size;
+
+          size = 0;
+          if (!getNameBytes().isEmpty()) {
+            size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
+          }
+          if (isPublic_ != false) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeBoolSize(2, isPublic_);
+          }
+          size += unknownFields.getSerializedSize();
+          memoizedSize = size;
+          return size;
+        }
+
+        @java.lang.Override
+        public boolean equals(final java.lang.Object obj) {
+          if (obj == this) {
+           return true;
+          }
+          if (!(obj instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField)) {
+            return super.equals(obj);
+          }
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField other = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField) obj;
+
+          if (!getName()
+              .equals(other.getName())) return false;
+          if (getIsPublic()
+              != other.getIsPublic()) return false;
+          if (!unknownFields.equals(other.unknownFields)) return false;
+          return true;
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+          if (memoizedHashCode != 0) {
+            return memoizedHashCode;
+          }
+          int hash = 41;
+          hash = (19 * hash) + getDescriptor().hashCode();
+          hash = (37 * hash) + NAME_FIELD_NUMBER;
+          hash = (53 * hash) + getName().hashCode();
+          hash = (37 * hash) + ISPUBLIC_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+              getIsPublic());
+          hash = (29 * hash) + unknownFields.hashCode();
+          memoizedHashCode = hash;
+          return hash;
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField parseFrom(
+            java.nio.ByteBuffer data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField parseFrom(
+            java.nio.ByteBuffer data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField parseDelimitedFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField parseDelimitedFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        @java.lang.Override
+        public Builder newBuilderForType() { return newBuilder(); }
+        public static Builder newBuilder() {
+          return DEFAULT_INSTANCE.toBuilder();
+        }
+        public static Builder newBuilder(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField prototype) {
+          return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+        }
+        @java.lang.Override
+        public Builder toBuilder() {
+          return this == DEFAULT_INSTANCE
+              ? new Builder() : new Builder().mergeFrom(this);
+        }
+
+        @java.lang.Override
+        protected Builder newBuilderForType(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          Builder builder = new Builder(parent);
+          return builder;
+        }
+        /**
+         * Protobuf type {@code library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField}
+         */
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+            // @@protoc_insertion_point(builder_implements:library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField)
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassFieldOrBuilder {
+          public static final com.google.protobuf.Descriptors.Descriptor
+              getDescriptor() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassField_descriptor;
+          }
+
+          @java.lang.Override
+          protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+              internalGetFieldAccessorTable() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassField_fieldAccessorTable
+                .ensureFieldAccessorsInitialized(
+                    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.Builder.class);
+          }
+
+          // Construct using org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.newBuilder()
+          private Builder() {
+            maybeForceBuilderInitialization();
+          }
+
+          private Builder(
+              com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+            super(parent);
+            maybeForceBuilderInitialization();
+          }
+          private void maybeForceBuilderInitialization() {
+            if (com.google.protobuf.GeneratedMessageV3
+                    .alwaysUseFieldBuilders) {
+            }
+          }
+          @java.lang.Override
+          public Builder clear() {
+            super.clear();
+            name_ = "";
+
+            isPublic_ = false;
+
+            return this;
+          }
+
+          @java.lang.Override
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassField_descriptor;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField getDefaultInstanceForType() {
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.getDefaultInstance();
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField build() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField result = buildPartial();
+            if (!result.isInitialized()) {
+              throw newUninitializedMessageException(result);
+            }
+            return result;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField buildPartial() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField(this);
+            result.name_ = name_;
+            result.isPublic_ = isPublic_;
+            onBuilt();
+            return result;
+          }
+
+          @java.lang.Override
+          public Builder clone() {
+            return super.clone();
+          }
+          @java.lang.Override
+          public Builder setField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.setField(field, value);
+          }
+          @java.lang.Override
+          public Builder clearField(
+              com.google.protobuf.Descriptors.FieldDescriptor field) {
+            return super.clearField(field);
+          }
+          @java.lang.Override
+          public Builder clearOneof(
+              com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+            return super.clearOneof(oneof);
+          }
+          @java.lang.Override
+          public Builder setRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              int index, java.lang.Object value) {
+            return super.setRepeatedField(field, index, value);
+          }
+          @java.lang.Override
+          public Builder addRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.addRepeatedField(field, value);
+          }
+          @java.lang.Override
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField) {
+              return mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+
+          public Builder mergeFrom(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField other) {
+            if (other == org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.getDefaultInstance()) return this;
+            if (!other.getName().isEmpty()) {
+              name_ = other.name_;
+              onChanged();
+            }
+            if (other.getIsPublic() != false) {
+              setIsPublic(other.getIsPublic());
+            }
+            this.mergeUnknownFields(other.unknownFields);
+            onChanged();
+            return this;
+          }
+
+          @java.lang.Override
+          public final boolean isInitialized() {
+            return true;
+          }
+
+          @java.lang.Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField parsedMessage = null;
+            try {
+              parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+              parsedMessage = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField) e.getUnfinishedMessage();
+              throw e.unwrapIOException();
+            } finally {
+              if (parsedMessage != null) {
+                mergeFrom(parsedMessage);
+              }
+            }
+            return this;
+          }
+
+          private java.lang.Object name_ = "";
+          /**
+           * <code>string name = 1;</code>
+           * @return The name.
+           */
+          public java.lang.String getName() {
+            java.lang.Object ref = name_;
+            if (!(ref instanceof java.lang.String)) {
+              com.google.protobuf.ByteString bs =
+                  (com.google.protobuf.ByteString) ref;
+              java.lang.String s = bs.toStringUtf8();
+              name_ = s;
+              return s;
+            } else {
+              return (java.lang.String) ref;
+            }
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @return The bytes for name.
+           */
+          public com.google.protobuf.ByteString
+              getNameBytes() {
+            java.lang.Object ref = name_;
+            if (ref instanceof String) {
+              com.google.protobuf.ByteString b = 
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                      (java.lang.String) ref);
+              name_ = b;
+              return b;
+            } else {
+              return (com.google.protobuf.ByteString) ref;
+            }
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @param value The name to set.
+           * @return This builder for chaining.
+           */
+          public Builder setName(
+              java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  
+            name_ = value;
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @return This builder for chaining.
+           */
+          public Builder clearName() {
+            
+            name_ = getDefaultInstance().getName();
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @param value The bytes for name to set.
+           * @return This builder for chaining.
+           */
+          public Builder setNameBytes(
+              com.google.protobuf.ByteString value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+            
+            name_ = value;
+            onChanged();
+            return this;
+          }
+
+          private boolean isPublic_ ;
+          /**
+           * <code>bool isPublic = 2;</code>
+           * @return The isPublic.
+           */
+          @java.lang.Override
+          public boolean getIsPublic() {
+            return isPublic_;
+          }
+          /**
+           * <code>bool isPublic = 2;</code>
+           * @param value The isPublic to set.
+           * @return This builder for chaining.
+           */
+          public Builder setIsPublic(boolean value) {
+            
+            isPublic_ = value;
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>bool isPublic = 2;</code>
+           * @return This builder for chaining.
+           */
+          public Builder clearIsPublic() {
+            
+            isPublic_ = false;
+            onChanged();
+            return this;
+          }
+          @java.lang.Override
+          public final Builder setUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.setUnknownFields(unknownFields);
+          }
+
+          @java.lang.Override
+          public final Builder mergeUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.mergeUnknownFields(unknownFields);
+          }
+
+
+          // @@protoc_insertion_point(builder_scope:library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField)
+        }
+
+        // @@protoc_insertion_point(class_scope:library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField)
+        private static final org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField DEFAULT_INSTANCE;
+        static {
+          DEFAULT_INSTANCE = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField();
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField getDefaultInstance() {
+          return DEFAULT_INSTANCE;
+        }
+
+        private static final com.google.protobuf.Parser<R6ClassField>
+            PARSER = new com.google.protobuf.AbstractParser<R6ClassField>() {
+          @java.lang.Override
+          public R6ClassField parsePartialFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new R6ClassField(input, extensionRegistry);
+          }
+        };
+
+        public static com.google.protobuf.Parser<R6ClassField> parser() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Parser<R6ClassField> getParserForType() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField getDefaultInstanceForType() {
+          return DEFAULT_INSTANCE;
+        }
+
+      }
+
+      public interface R6ClassMethodOrBuilder extends
+          // @@protoc_insertion_point(interface_extends:library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod)
+          com.google.protobuf.MessageOrBuilder {
+
+        /**
+         * <code>string name = 1;</code>
+         * @return The name.
+         */
+        java.lang.String getName();
+        /**
+         * <code>string name = 1;</code>
+         * @return The bytes for name.
+         */
+        com.google.protobuf.ByteString
+            getNameBytes();
+
+        /**
+         * <code>bool isPublic = 2;</code>
+         * @return The isPublic.
+         */
+        boolean getIsPublic();
+      }
+      /**
+       * Protobuf type {@code library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod}
+       */
+      public static final class R6ClassMethod extends
+          com.google.protobuf.GeneratedMessageV3 implements
+          // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod)
+          R6ClassMethodOrBuilder {
+      private static final long serialVersionUID = 0L;
+        // Use R6ClassMethod.newBuilder() to construct.
+        private R6ClassMethod(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+          super(builder);
+        }
+        private R6ClassMethod() {
+          name_ = "";
+        }
+
+        @java.lang.Override
+        @SuppressWarnings({"unused"})
+        protected java.lang.Object newInstance(
+            UnusedPrivateParameter unused) {
+          return new R6ClassMethod();
+        }
+
+        @java.lang.Override
+        public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+          return this.unknownFields;
+        }
+        private R6ClassMethod(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          this();
+          if (extensionRegistry == null) {
+            throw new java.lang.NullPointerException();
+          }
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder();
+          try {
+            boolean done = false;
+            while (!done) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  done = true;
+                  break;
+                case 10: {
+                  java.lang.String s = input.readStringRequireUtf8();
+
+                  name_ = s;
+                  break;
+                }
+                case 16: {
+
+                  isPublic_ = input.readBool();
+                  break;
+                }
+                default: {
+                  if (!parseUnknownField(
+                      input, unknownFields, extensionRegistry, tag)) {
+                    done = true;
+                  }
+                  break;
+                }
+              }
+            }
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            throw e.setUnfinishedMessage(this);
+          } catch (java.io.IOException e) {
+            throw new com.google.protobuf.InvalidProtocolBufferException(
+                e).setUnfinishedMessage(this);
+          } finally {
+            this.unknownFields = unknownFields.build();
+            makeExtensionsImmutable();
+          }
+        }
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassMethod_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassMethod_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.Builder.class);
+        }
+
+        public static final int NAME_FIELD_NUMBER = 1;
+        private volatile java.lang.Object name_;
+        /**
+         * <code>string name = 1;</code>
+         * @return The name.
+         */
+        @java.lang.Override
+        public java.lang.String getName() {
+          java.lang.Object ref = name_;
+          if (ref instanceof java.lang.String) {
+            return (java.lang.String) ref;
+          } else {
+            com.google.protobuf.ByteString bs = 
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            name_ = s;
+            return s;
+          }
+        }
+        /**
+         * <code>string name = 1;</code>
+         * @return The bytes for name.
+         */
+        @java.lang.Override
+        public com.google.protobuf.ByteString
+            getNameBytes() {
+          java.lang.Object ref = name_;
+          if (ref instanceof java.lang.String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            name_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+
+        public static final int ISPUBLIC_FIELD_NUMBER = 2;
+        private boolean isPublic_;
+        /**
+         * <code>bool isPublic = 2;</code>
+         * @return The isPublic.
+         */
+        @java.lang.Override
+        public boolean getIsPublic() {
+          return isPublic_;
+        }
+
+        private byte memoizedIsInitialized = -1;
+        @java.lang.Override
+        public final boolean isInitialized() {
+          byte isInitialized = memoizedIsInitialized;
+          if (isInitialized == 1) return true;
+          if (isInitialized == 0) return false;
+
+          memoizedIsInitialized = 1;
+          return true;
+        }
+
+        @java.lang.Override
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          if (!getNameBytes().isEmpty()) {
+            com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
+          }
+          if (isPublic_ != false) {
+            output.writeBool(2, isPublic_);
+          }
+          unknownFields.writeTo(output);
+        }
+
+        @java.lang.Override
+        public int getSerializedSize() {
+          int size = memoizedSize;
+          if (size != -1) return size;
+
+          size = 0;
+          if (!getNameBytes().isEmpty()) {
+            size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
+          }
+          if (isPublic_ != false) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeBoolSize(2, isPublic_);
+          }
+          size += unknownFields.getSerializedSize();
+          memoizedSize = size;
+          return size;
+        }
+
+        @java.lang.Override
+        public boolean equals(final java.lang.Object obj) {
+          if (obj == this) {
+           return true;
+          }
+          if (!(obj instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod)) {
+            return super.equals(obj);
+          }
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod other = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod) obj;
+
+          if (!getName()
+              .equals(other.getName())) return false;
+          if (getIsPublic()
+              != other.getIsPublic()) return false;
+          if (!unknownFields.equals(other.unknownFields)) return false;
+          return true;
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+          if (memoizedHashCode != 0) {
+            return memoizedHashCode;
+          }
+          int hash = 41;
+          hash = (19 * hash) + getDescriptor().hashCode();
+          hash = (37 * hash) + NAME_FIELD_NUMBER;
+          hash = (53 * hash) + getName().hashCode();
+          hash = (37 * hash) + ISPUBLIC_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+              getIsPublic());
+          hash = (29 * hash) + unknownFields.hashCode();
+          memoizedHashCode = hash;
+          return hash;
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod parseFrom(
+            java.nio.ByteBuffer data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod parseFrom(
+            java.nio.ByteBuffer data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod parseDelimitedFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod parseDelimitedFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        @java.lang.Override
+        public Builder newBuilderForType() { return newBuilder(); }
+        public static Builder newBuilder() {
+          return DEFAULT_INSTANCE.toBuilder();
+        }
+        public static Builder newBuilder(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod prototype) {
+          return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+        }
+        @java.lang.Override
+        public Builder toBuilder() {
+          return this == DEFAULT_INSTANCE
+              ? new Builder() : new Builder().mergeFrom(this);
+        }
+
+        @java.lang.Override
+        protected Builder newBuilderForType(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          Builder builder = new Builder(parent);
+          return builder;
+        }
+        /**
+         * Protobuf type {@code library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod}
+         */
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+            // @@protoc_insertion_point(builder_implements:library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod)
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethodOrBuilder {
+          public static final com.google.protobuf.Descriptors.Descriptor
+              getDescriptor() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassMethod_descriptor;
+          }
+
+          @java.lang.Override
+          protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+              internalGetFieldAccessorTable() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassMethod_fieldAccessorTable
+                .ensureFieldAccessorsInitialized(
+                    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.Builder.class);
+          }
+
+          // Construct using org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.newBuilder()
+          private Builder() {
+            maybeForceBuilderInitialization();
+          }
+
+          private Builder(
+              com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+            super(parent);
+            maybeForceBuilderInitialization();
+          }
+          private void maybeForceBuilderInitialization() {
+            if (com.google.protobuf.GeneratedMessageV3
+                    .alwaysUseFieldBuilders) {
+            }
+          }
+          @java.lang.Override
+          public Builder clear() {
+            super.clear();
+            name_ = "";
+
+            isPublic_ = false;
+
+            return this;
+          }
+
+          @java.lang.Override
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassMethod_descriptor;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod getDefaultInstanceForType() {
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.getDefaultInstance();
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod build() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod result = buildPartial();
+            if (!result.isInitialized()) {
+              throw newUninitializedMessageException(result);
+            }
+            return result;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod buildPartial() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod(this);
+            result.name_ = name_;
+            result.isPublic_ = isPublic_;
+            onBuilt();
+            return result;
+          }
+
+          @java.lang.Override
+          public Builder clone() {
+            return super.clone();
+          }
+          @java.lang.Override
+          public Builder setField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.setField(field, value);
+          }
+          @java.lang.Override
+          public Builder clearField(
+              com.google.protobuf.Descriptors.FieldDescriptor field) {
+            return super.clearField(field);
+          }
+          @java.lang.Override
+          public Builder clearOneof(
+              com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+            return super.clearOneof(oneof);
+          }
+          @java.lang.Override
+          public Builder setRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              int index, java.lang.Object value) {
+            return super.setRepeatedField(field, index, value);
+          }
+          @java.lang.Override
+          public Builder addRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.addRepeatedField(field, value);
+          }
+          @java.lang.Override
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod) {
+              return mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+
+          public Builder mergeFrom(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod other) {
+            if (other == org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.getDefaultInstance()) return this;
+            if (!other.getName().isEmpty()) {
+              name_ = other.name_;
+              onChanged();
+            }
+            if (other.getIsPublic() != false) {
+              setIsPublic(other.getIsPublic());
+            }
+            this.mergeUnknownFields(other.unknownFields);
+            onChanged();
+            return this;
+          }
+
+          @java.lang.Override
+          public final boolean isInitialized() {
+            return true;
+          }
+
+          @java.lang.Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod parsedMessage = null;
+            try {
+              parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+              parsedMessage = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod) e.getUnfinishedMessage();
+              throw e.unwrapIOException();
+            } finally {
+              if (parsedMessage != null) {
+                mergeFrom(parsedMessage);
+              }
+            }
+            return this;
+          }
+
+          private java.lang.Object name_ = "";
+          /**
+           * <code>string name = 1;</code>
+           * @return The name.
+           */
+          public java.lang.String getName() {
+            java.lang.Object ref = name_;
+            if (!(ref instanceof java.lang.String)) {
+              com.google.protobuf.ByteString bs =
+                  (com.google.protobuf.ByteString) ref;
+              java.lang.String s = bs.toStringUtf8();
+              name_ = s;
+              return s;
+            } else {
+              return (java.lang.String) ref;
+            }
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @return The bytes for name.
+           */
+          public com.google.protobuf.ByteString
+              getNameBytes() {
+            java.lang.Object ref = name_;
+            if (ref instanceof String) {
+              com.google.protobuf.ByteString b = 
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                      (java.lang.String) ref);
+              name_ = b;
+              return b;
+            } else {
+              return (com.google.protobuf.ByteString) ref;
+            }
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @param value The name to set.
+           * @return This builder for chaining.
+           */
+          public Builder setName(
+              java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  
+            name_ = value;
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @return This builder for chaining.
+           */
+          public Builder clearName() {
+            
+            name_ = getDefaultInstance().getName();
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @param value The bytes for name to set.
+           * @return This builder for chaining.
+           */
+          public Builder setNameBytes(
+              com.google.protobuf.ByteString value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+            
+            name_ = value;
+            onChanged();
+            return this;
+          }
+
+          private boolean isPublic_ ;
+          /**
+           * <code>bool isPublic = 2;</code>
+           * @return The isPublic.
+           */
+          @java.lang.Override
+          public boolean getIsPublic() {
+            return isPublic_;
+          }
+          /**
+           * <code>bool isPublic = 2;</code>
+           * @param value The isPublic to set.
+           * @return This builder for chaining.
+           */
+          public Builder setIsPublic(boolean value) {
+            
+            isPublic_ = value;
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>bool isPublic = 2;</code>
+           * @return This builder for chaining.
+           */
+          public Builder clearIsPublic() {
+            
+            isPublic_ = false;
+            onChanged();
+            return this;
+          }
+          @java.lang.Override
+          public final Builder setUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.setUnknownFields(unknownFields);
+          }
+
+          @java.lang.Override
+          public final Builder mergeUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.mergeUnknownFields(unknownFields);
+          }
+
+
+          // @@protoc_insertion_point(builder_scope:library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod)
+        }
+
+        // @@protoc_insertion_point(class_scope:library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod)
+        private static final org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod DEFAULT_INSTANCE;
+        static {
+          DEFAULT_INSTANCE = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod();
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod getDefaultInstance() {
+          return DEFAULT_INSTANCE;
+        }
+
+        private static final com.google.protobuf.Parser<R6ClassMethod>
+            PARSER = new com.google.protobuf.AbstractParser<R6ClassMethod>() {
+          @java.lang.Override
+          public R6ClassMethod parsePartialFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new R6ClassMethod(input, extensionRegistry);
+          }
+        };
+
+        public static com.google.protobuf.Parser<R6ClassMethod> parser() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Parser<R6ClassMethod> getParserForType() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod getDefaultInstanceForType() {
+          return DEFAULT_INSTANCE;
+        }
+
+      }
+
+      public interface R6ClassActiveBindingOrBuilder extends
+          // @@protoc_insertion_point(interface_extends:library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding)
+          com.google.protobuf.MessageOrBuilder {
+
+        /**
+         * <code>string name = 1;</code>
+         * @return The name.
+         */
+        java.lang.String getName();
+        /**
+         * <code>string name = 1;</code>
+         * @return The bytes for name.
+         */
+        com.google.protobuf.ByteString
+            getNameBytes();
+      }
+      /**
+       * Protobuf type {@code library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding}
+       */
+      public static final class R6ClassActiveBinding extends
+          com.google.protobuf.GeneratedMessageV3 implements
+          // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding)
+          R6ClassActiveBindingOrBuilder {
+      private static final long serialVersionUID = 0L;
+        // Use R6ClassActiveBinding.newBuilder() to construct.
+        private R6ClassActiveBinding(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+          super(builder);
+        }
+        private R6ClassActiveBinding() {
+          name_ = "";
+        }
+
+        @java.lang.Override
+        @SuppressWarnings({"unused"})
+        protected java.lang.Object newInstance(
+            UnusedPrivateParameter unused) {
+          return new R6ClassActiveBinding();
+        }
+
+        @java.lang.Override
+        public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+          return this.unknownFields;
+        }
+        private R6ClassActiveBinding(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          this();
+          if (extensionRegistry == null) {
+            throw new java.lang.NullPointerException();
+          }
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder();
+          try {
+            boolean done = false;
+            while (!done) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  done = true;
+                  break;
+                case 10: {
+                  java.lang.String s = input.readStringRequireUtf8();
+
+                  name_ = s;
+                  break;
+                }
+                default: {
+                  if (!parseUnknownField(
+                      input, unknownFields, extensionRegistry, tag)) {
+                    done = true;
+                  }
+                  break;
+                }
+              }
+            }
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            throw e.setUnfinishedMessage(this);
+          } catch (java.io.IOException e) {
+            throw new com.google.protobuf.InvalidProtocolBufferException(
+                e).setUnfinishedMessage(this);
+          } finally {
+            this.unknownFields = unknownFields.build();
+            makeExtensionsImmutable();
+          }
+        }
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassActiveBinding_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassActiveBinding_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.Builder.class);
+        }
+
+        public static final int NAME_FIELD_NUMBER = 1;
+        private volatile java.lang.Object name_;
+        /**
+         * <code>string name = 1;</code>
+         * @return The name.
+         */
+        @java.lang.Override
+        public java.lang.String getName() {
+          java.lang.Object ref = name_;
+          if (ref instanceof java.lang.String) {
+            return (java.lang.String) ref;
+          } else {
+            com.google.protobuf.ByteString bs = 
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            name_ = s;
+            return s;
+          }
+        }
+        /**
+         * <code>string name = 1;</code>
+         * @return The bytes for name.
+         */
+        @java.lang.Override
+        public com.google.protobuf.ByteString
+            getNameBytes() {
+          java.lang.Object ref = name_;
+          if (ref instanceof java.lang.String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            name_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+
+        private byte memoizedIsInitialized = -1;
+        @java.lang.Override
+        public final boolean isInitialized() {
+          byte isInitialized = memoizedIsInitialized;
+          if (isInitialized == 1) return true;
+          if (isInitialized == 0) return false;
+
+          memoizedIsInitialized = 1;
+          return true;
+        }
+
+        @java.lang.Override
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          if (!getNameBytes().isEmpty()) {
+            com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
+          }
+          unknownFields.writeTo(output);
+        }
+
+        @java.lang.Override
+        public int getSerializedSize() {
+          int size = memoizedSize;
+          if (size != -1) return size;
+
+          size = 0;
+          if (!getNameBytes().isEmpty()) {
+            size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
+          }
+          size += unknownFields.getSerializedSize();
+          memoizedSize = size;
+          return size;
+        }
+
+        @java.lang.Override
+        public boolean equals(final java.lang.Object obj) {
+          if (obj == this) {
+           return true;
+          }
+          if (!(obj instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding)) {
+            return super.equals(obj);
+          }
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding other = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding) obj;
+
+          if (!getName()
+              .equals(other.getName())) return false;
+          if (!unknownFields.equals(other.unknownFields)) return false;
+          return true;
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+          if (memoizedHashCode != 0) {
+            return memoizedHashCode;
+          }
+          int hash = 41;
+          hash = (19 * hash) + getDescriptor().hashCode();
+          hash = (37 * hash) + NAME_FIELD_NUMBER;
+          hash = (53 * hash) + getName().hashCode();
+          hash = (29 * hash) + unknownFields.hashCode();
+          memoizedHashCode = hash;
+          return hash;
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding parseFrom(
+            java.nio.ByteBuffer data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding parseFrom(
+            java.nio.ByteBuffer data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding parseDelimitedFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding parseDelimitedFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        @java.lang.Override
+        public Builder newBuilderForType() { return newBuilder(); }
+        public static Builder newBuilder() {
+          return DEFAULT_INSTANCE.toBuilder();
+        }
+        public static Builder newBuilder(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding prototype) {
+          return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+        }
+        @java.lang.Override
+        public Builder toBuilder() {
+          return this == DEFAULT_INSTANCE
+              ? new Builder() : new Builder().mergeFrom(this);
+        }
+
+        @java.lang.Override
+        protected Builder newBuilderForType(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          Builder builder = new Builder(parent);
+          return builder;
+        }
+        /**
+         * Protobuf type {@code library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding}
+         */
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+            // @@protoc_insertion_point(builder_implements:library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding)
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBindingOrBuilder {
+          public static final com.google.protobuf.Descriptors.Descriptor
+              getDescriptor() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassActiveBinding_descriptor;
+          }
+
+          @java.lang.Override
+          protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+              internalGetFieldAccessorTable() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassActiveBinding_fieldAccessorTable
+                .ensureFieldAccessorsInitialized(
+                    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.Builder.class);
+          }
+
+          // Construct using org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.newBuilder()
+          private Builder() {
+            maybeForceBuilderInitialization();
+          }
+
+          private Builder(
+              com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+            super(parent);
+            maybeForceBuilderInitialization();
+          }
+          private void maybeForceBuilderInitialization() {
+            if (com.google.protobuf.GeneratedMessageV3
+                    .alwaysUseFieldBuilders) {
+            }
+          }
+          @java.lang.Override
+          public Builder clear() {
+            super.clear();
+            name_ = "";
+
+            return this;
+          }
+
+          @java.lang.Override
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassActiveBinding_descriptor;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding getDefaultInstanceForType() {
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.getDefaultInstance();
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding build() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding result = buildPartial();
+            if (!result.isInitialized()) {
+              throw newUninitializedMessageException(result);
+            }
+            return result;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding buildPartial() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding(this);
+            result.name_ = name_;
+            onBuilt();
+            return result;
+          }
+
+          @java.lang.Override
+          public Builder clone() {
+            return super.clone();
+          }
+          @java.lang.Override
+          public Builder setField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.setField(field, value);
+          }
+          @java.lang.Override
+          public Builder clearField(
+              com.google.protobuf.Descriptors.FieldDescriptor field) {
+            return super.clearField(field);
+          }
+          @java.lang.Override
+          public Builder clearOneof(
+              com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+            return super.clearOneof(oneof);
+          }
+          @java.lang.Override
+          public Builder setRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              int index, java.lang.Object value) {
+            return super.setRepeatedField(field, index, value);
+          }
+          @java.lang.Override
+          public Builder addRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.addRepeatedField(field, value);
+          }
+          @java.lang.Override
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding) {
+              return mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+
+          public Builder mergeFrom(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding other) {
+            if (other == org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.getDefaultInstance()) return this;
+            if (!other.getName().isEmpty()) {
+              name_ = other.name_;
+              onChanged();
+            }
+            this.mergeUnknownFields(other.unknownFields);
+            onChanged();
+            return this;
+          }
+
+          @java.lang.Override
+          public final boolean isInitialized() {
+            return true;
+          }
+
+          @java.lang.Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding parsedMessage = null;
+            try {
+              parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+              parsedMessage = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding) e.getUnfinishedMessage();
+              throw e.unwrapIOException();
+            } finally {
+              if (parsedMessage != null) {
+                mergeFrom(parsedMessage);
+              }
+            }
+            return this;
+          }
+
+          private java.lang.Object name_ = "";
+          /**
+           * <code>string name = 1;</code>
+           * @return The name.
+           */
+          public java.lang.String getName() {
+            java.lang.Object ref = name_;
+            if (!(ref instanceof java.lang.String)) {
+              com.google.protobuf.ByteString bs =
+                  (com.google.protobuf.ByteString) ref;
+              java.lang.String s = bs.toStringUtf8();
+              name_ = s;
+              return s;
+            } else {
+              return (java.lang.String) ref;
+            }
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @return The bytes for name.
+           */
+          public com.google.protobuf.ByteString
+              getNameBytes() {
+            java.lang.Object ref = name_;
+            if (ref instanceof String) {
+              com.google.protobuf.ByteString b = 
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                      (java.lang.String) ref);
+              name_ = b;
+              return b;
+            } else {
+              return (com.google.protobuf.ByteString) ref;
+            }
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @param value The name to set.
+           * @return This builder for chaining.
+           */
+          public Builder setName(
+              java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  
+            name_ = value;
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @return This builder for chaining.
+           */
+          public Builder clearName() {
+            
+            name_ = getDefaultInstance().getName();
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string name = 1;</code>
+           * @param value The bytes for name to set.
+           * @return This builder for chaining.
+           */
+          public Builder setNameBytes(
+              com.google.protobuf.ByteString value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+            
+            name_ = value;
+            onChanged();
+            return this;
+          }
+          @java.lang.Override
+          public final Builder setUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.setUnknownFields(unknownFields);
+          }
+
+          @java.lang.Override
+          public final Builder mergeUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.mergeUnknownFields(unknownFields);
+          }
+
+
+          // @@protoc_insertion_point(builder_scope:library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding)
+        }
+
+        // @@protoc_insertion_point(class_scope:library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding)
+        private static final org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding DEFAULT_INSTANCE;
+        static {
+          DEFAULT_INSTANCE = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding();
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding getDefaultInstance() {
+          return DEFAULT_INSTANCE;
+        }
+
+        private static final com.google.protobuf.Parser<R6ClassActiveBinding>
+            PARSER = new com.google.protobuf.AbstractParser<R6ClassActiveBinding>() {
+          @java.lang.Override
+          public R6ClassActiveBinding parsePartialFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new R6ClassActiveBinding(input, extensionRegistry);
+          }
+        };
+
+        public static com.google.protobuf.Parser<R6ClassActiveBinding> parser() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Parser<R6ClassActiveBinding> getParserForType() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding getDefaultInstanceForType() {
+          return DEFAULT_INSTANCE;
+        }
+
+      }
+
+      public static final int SUPERCLASSES_FIELD_NUMBER = 1;
+      private com.google.protobuf.LazyStringList superClasses_;
+      /**
+       * <code>repeated string superClasses = 1;</code>
+       * @return A list containing the superClasses.
+       */
+      public com.google.protobuf.ProtocolStringList
+          getSuperClassesList() {
+        return superClasses_;
+      }
+      /**
+       * <code>repeated string superClasses = 1;</code>
+       * @return The count of superClasses.
+       */
+      public int getSuperClassesCount() {
+        return superClasses_.size();
+      }
+      /**
+       * <code>repeated string superClasses = 1;</code>
+       * @param index The index of the element to return.
+       * @return The superClasses at the given index.
+       */
+      public java.lang.String getSuperClasses(int index) {
+        return superClasses_.get(index);
+      }
+      /**
+       * <code>repeated string superClasses = 1;</code>
+       * @param index The index of the value to return.
+       * @return The bytes of the superClasses at the given index.
+       */
+      public com.google.protobuf.ByteString
+          getSuperClassesBytes(int index) {
+        return superClasses_.getByteString(index);
+      }
+
+      public static final int FIELDS_FIELD_NUMBER = 2;
+      private java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField> fields_;
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+       */
+      @java.lang.Override
+      public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField> getFieldsList() {
+        return fields_;
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+       */
+      @java.lang.Override
+      public java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassFieldOrBuilder> 
+          getFieldsOrBuilderList() {
+        return fields_;
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+       */
+      @java.lang.Override
+      public int getFieldsCount() {
+        return fields_.size();
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+       */
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField getFields(int index) {
+        return fields_.get(index);
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+       */
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassFieldOrBuilder getFieldsOrBuilder(
+          int index) {
+        return fields_.get(index);
+      }
+
+      public static final int METHODS_FIELD_NUMBER = 3;
+      private java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod> methods_;
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+       */
+      @java.lang.Override
+      public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod> getMethodsList() {
+        return methods_;
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+       */
+      @java.lang.Override
+      public java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethodOrBuilder> 
+          getMethodsOrBuilderList() {
+        return methods_;
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+       */
+      @java.lang.Override
+      public int getMethodsCount() {
+        return methods_.size();
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+       */
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod getMethods(int index) {
+        return methods_.get(index);
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+       */
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethodOrBuilder getMethodsOrBuilder(
+          int index) {
+        return methods_.get(index);
+      }
+
+      public static final int ACTIVEBINDINGS_FIELD_NUMBER = 4;
+      private java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding> activeBindings_;
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+       */
+      @java.lang.Override
+      public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding> getActiveBindingsList() {
+        return activeBindings_;
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+       */
+      @java.lang.Override
+      public java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBindingOrBuilder> 
+          getActiveBindingsOrBuilderList() {
+        return activeBindings_;
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+       */
+      @java.lang.Override
+      public int getActiveBindingsCount() {
+        return activeBindings_.size();
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+       */
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding getActiveBindings(int index) {
+        return activeBindings_.get(index);
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+       */
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBindingOrBuilder getActiveBindingsOrBuilder(
+          int index) {
+        return activeBindings_.get(index);
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        for (int i = 0; i < superClasses_.size(); i++) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, superClasses_.getRaw(i));
+        }
+        for (int i = 0; i < fields_.size(); i++) {
+          output.writeMessage(2, fields_.get(i));
+        }
+        for (int i = 0; i < methods_.size(); i++) {
+          output.writeMessage(3, methods_.get(i));
+        }
+        for (int i = 0; i < activeBindings_.size(); i++) {
+          output.writeMessage(4, activeBindings_.get(i));
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        {
+          int dataSize = 0;
+          for (int i = 0; i < superClasses_.size(); i++) {
+            dataSize += computeStringSizeNoTag(superClasses_.getRaw(i));
+          }
+          size += dataSize;
+          size += 1 * getSuperClassesList().size();
+        }
+        for (int i = 0; i < fields_.size(); i++) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(2, fields_.get(i));
+        }
+        for (int i = 0; i < methods_.size(); i++) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(3, methods_.get(i));
+        }
+        for (int i = 0; i < activeBindings_.size(); i++) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(4, activeBindings_.get(i));
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation)) {
+          return super.equals(obj);
+        }
+        org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation other = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation) obj;
+
+        if (!getSuperClassesList()
+            .equals(other.getSuperClassesList())) return false;
+        if (!getFieldsList()
+            .equals(other.getFieldsList())) return false;
+        if (!getMethodsList()
+            .equals(other.getMethodsList())) return false;
+        if (!getActiveBindingsList()
+            .equals(other.getActiveBindingsList())) return false;
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        if (getSuperClassesCount() > 0) {
+          hash = (37 * hash) + SUPERCLASSES_FIELD_NUMBER;
+          hash = (53 * hash) + getSuperClassesList().hashCode();
+        }
+        if (getFieldsCount() > 0) {
+          hash = (37 * hash) + FIELDS_FIELD_NUMBER;
+          hash = (53 * hash) + getFieldsList().hashCode();
+        }
+        if (getMethodsCount() > 0) {
+          hash = (37 * hash) + METHODS_FIELD_NUMBER;
+          hash = (53 * hash) + getMethodsList().hashCode();
+        }
+        if (getActiveBindingsCount() > 0) {
+          hash = (37 * hash) + ACTIVEBINDINGS_FIELD_NUMBER;
+          hash = (53 * hash) + getActiveBindingsList().hashCode();
+        }
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code library_summary.RLibrarySymbol.R6ClassRepresentation}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:library_summary.RLibrarySymbol.R6ClassRepresentation)
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentationOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.Builder.class);
+        }
+
+        // Construct using org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+            getFieldsFieldBuilder();
+            getMethodsFieldBuilder();
+            getActiveBindingsFieldBuilder();
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          superClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+          bitField0_ = (bitField0_ & ~0x00000001);
+          if (fieldsBuilder_ == null) {
+            fields_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000002);
+          } else {
+            fieldsBuilder_.clear();
+          }
+          if (methodsBuilder_ == null) {
+            methods_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            methodsBuilder_.clear();
+          }
+          if (activeBindingsBuilder_ == null) {
+            activeBindings_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000008);
+          } else {
+            activeBindingsBuilder_.clear();
+          }
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_descriptor;
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation getDefaultInstanceForType() {
+          return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation build() {
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation buildPartial() {
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation(this);
+          int from_bitField0_ = bitField0_;
+          if (((bitField0_ & 0x00000001) != 0)) {
+            superClasses_ = superClasses_.getUnmodifiableView();
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.superClasses_ = superClasses_;
+          if (fieldsBuilder_ == null) {
+            if (((bitField0_ & 0x00000002) != 0)) {
+              fields_ = java.util.Collections.unmodifiableList(fields_);
+              bitField0_ = (bitField0_ & ~0x00000002);
+            }
+            result.fields_ = fields_;
+          } else {
+            result.fields_ = fieldsBuilder_.build();
+          }
+          if (methodsBuilder_ == null) {
+            if (((bitField0_ & 0x00000004) != 0)) {
+              methods_ = java.util.Collections.unmodifiableList(methods_);
+              bitField0_ = (bitField0_ & ~0x00000004);
+            }
+            result.methods_ = methods_;
+          } else {
+            result.methods_ = methodsBuilder_.build();
+          }
+          if (activeBindingsBuilder_ == null) {
+            if (((bitField0_ & 0x00000008) != 0)) {
+              activeBindings_ = java.util.Collections.unmodifiableList(activeBindings_);
+              bitField0_ = (bitField0_ & ~0x00000008);
+            }
+            result.activeBindings_ = activeBindings_;
+          } else {
+            result.activeBindings_ = activeBindingsBuilder_.build();
+          }
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation) {
+            return mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation other) {
+          if (other == org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.getDefaultInstance()) return this;
+          if (!other.superClasses_.isEmpty()) {
+            if (superClasses_.isEmpty()) {
+              superClasses_ = other.superClasses_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureSuperClassesIsMutable();
+              superClasses_.addAll(other.superClasses_);
+            }
+            onChanged();
+          }
+          if (fieldsBuilder_ == null) {
+            if (!other.fields_.isEmpty()) {
+              if (fields_.isEmpty()) {
+                fields_ = other.fields_;
+                bitField0_ = (bitField0_ & ~0x00000002);
+              } else {
+                ensureFieldsIsMutable();
+                fields_.addAll(other.fields_);
+              }
+              onChanged();
+            }
+          } else {
+            if (!other.fields_.isEmpty()) {
+              if (fieldsBuilder_.isEmpty()) {
+                fieldsBuilder_.dispose();
+                fieldsBuilder_ = null;
+                fields_ = other.fields_;
+                bitField0_ = (bitField0_ & ~0x00000002);
+                fieldsBuilder_ = 
+                  com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                     getFieldsFieldBuilder() : null;
+              } else {
+                fieldsBuilder_.addAllMessages(other.fields_);
+              }
+            }
+          }
+          if (methodsBuilder_ == null) {
+            if (!other.methods_.isEmpty()) {
+              if (methods_.isEmpty()) {
+                methods_ = other.methods_;
+                bitField0_ = (bitField0_ & ~0x00000004);
+              } else {
+                ensureMethodsIsMutable();
+                methods_.addAll(other.methods_);
+              }
+              onChanged();
+            }
+          } else {
+            if (!other.methods_.isEmpty()) {
+              if (methodsBuilder_.isEmpty()) {
+                methodsBuilder_.dispose();
+                methodsBuilder_ = null;
+                methods_ = other.methods_;
+                bitField0_ = (bitField0_ & ~0x00000004);
+                methodsBuilder_ = 
+                  com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                     getMethodsFieldBuilder() : null;
+              } else {
+                methodsBuilder_.addAllMessages(other.methods_);
+              }
+            }
+          }
+          if (activeBindingsBuilder_ == null) {
+            if (!other.activeBindings_.isEmpty()) {
+              if (activeBindings_.isEmpty()) {
+                activeBindings_ = other.activeBindings_;
+                bitField0_ = (bitField0_ & ~0x00000008);
+              } else {
+                ensureActiveBindingsIsMutable();
+                activeBindings_.addAll(other.activeBindings_);
+              }
+              onChanged();
+            }
+          } else {
+            if (!other.activeBindings_.isEmpty()) {
+              if (activeBindingsBuilder_.isEmpty()) {
+                activeBindingsBuilder_.dispose();
+                activeBindingsBuilder_ = null;
+                activeBindings_ = other.activeBindings_;
+                bitField0_ = (bitField0_ & ~0x00000008);
+                activeBindingsBuilder_ = 
+                  com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                     getActiveBindingsFieldBuilder() : null;
+              } else {
+                activeBindingsBuilder_.addAllMessages(other.activeBindings_);
+              }
+            }
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+        private int bitField0_;
+
+        private com.google.protobuf.LazyStringList superClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        private void ensureSuperClassesIsMutable() {
+          if (!((bitField0_ & 0x00000001) != 0)) {
+            superClasses_ = new com.google.protobuf.LazyStringArrayList(superClasses_);
+            bitField0_ |= 0x00000001;
+           }
+        }
+        /**
+         * <code>repeated string superClasses = 1;</code>
+         * @return A list containing the superClasses.
+         */
+        public com.google.protobuf.ProtocolStringList
+            getSuperClassesList() {
+          return superClasses_.getUnmodifiableView();
+        }
+        /**
+         * <code>repeated string superClasses = 1;</code>
+         * @return The count of superClasses.
+         */
+        public int getSuperClassesCount() {
+          return superClasses_.size();
+        }
+        /**
+         * <code>repeated string superClasses = 1;</code>
+         * @param index The index of the element to return.
+         * @return The superClasses at the given index.
+         */
+        public java.lang.String getSuperClasses(int index) {
+          return superClasses_.get(index);
+        }
+        /**
+         * <code>repeated string superClasses = 1;</code>
+         * @param index The index of the value to return.
+         * @return The bytes of the superClasses at the given index.
+         */
+        public com.google.protobuf.ByteString
+            getSuperClassesBytes(int index) {
+          return superClasses_.getByteString(index);
+        }
+        /**
+         * <code>repeated string superClasses = 1;</code>
+         * @param index The index to set the value at.
+         * @param value The superClasses to set.
+         * @return This builder for chaining.
+         */
+        public Builder setSuperClasses(
+            int index, java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureSuperClassesIsMutable();
+          superClasses_.set(index, value);
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>repeated string superClasses = 1;</code>
+         * @param value The superClasses to add.
+         * @return This builder for chaining.
+         */
+        public Builder addSuperClasses(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureSuperClassesIsMutable();
+          superClasses_.add(value);
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>repeated string superClasses = 1;</code>
+         * @param values The superClasses to add.
+         * @return This builder for chaining.
+         */
+        public Builder addAllSuperClasses(
+            java.lang.Iterable<java.lang.String> values) {
+          ensureSuperClassesIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, superClasses_);
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>repeated string superClasses = 1;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearSuperClasses() {
+          superClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>repeated string superClasses = 1;</code>
+         * @param value The bytes of the superClasses to add.
+         * @return This builder for chaining.
+         */
+        public Builder addSuperClassesBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+          ensureSuperClassesIsMutable();
+          superClasses_.add(value);
+          onChanged();
+          return this;
+        }
+
+        private java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField> fields_ =
+          java.util.Collections.emptyList();
+        private void ensureFieldsIsMutable() {
+          if (!((bitField0_ & 0x00000002) != 0)) {
+            fields_ = new java.util.ArrayList<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField>(fields_);
+            bitField0_ |= 0x00000002;
+           }
+        }
+
+        private com.google.protobuf.RepeatedFieldBuilderV3<
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassFieldOrBuilder> fieldsBuilder_;
+
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField> getFieldsList() {
+          if (fieldsBuilder_ == null) {
+            return java.util.Collections.unmodifiableList(fields_);
+          } else {
+            return fieldsBuilder_.getMessageList();
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public int getFieldsCount() {
+          if (fieldsBuilder_ == null) {
+            return fields_.size();
+          } else {
+            return fieldsBuilder_.getCount();
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField getFields(int index) {
+          if (fieldsBuilder_ == null) {
+            return fields_.get(index);
+          } else {
+            return fieldsBuilder_.getMessage(index);
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public Builder setFields(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField value) {
+          if (fieldsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureFieldsIsMutable();
+            fields_.set(index, value);
+            onChanged();
+          } else {
+            fieldsBuilder_.setMessage(index, value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public Builder setFields(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.Builder builderForValue) {
+          if (fieldsBuilder_ == null) {
+            ensureFieldsIsMutable();
+            fields_.set(index, builderForValue.build());
+            onChanged();
+          } else {
+            fieldsBuilder_.setMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public Builder addFields(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField value) {
+          if (fieldsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureFieldsIsMutable();
+            fields_.add(value);
+            onChanged();
+          } else {
+            fieldsBuilder_.addMessage(value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public Builder addFields(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField value) {
+          if (fieldsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureFieldsIsMutable();
+            fields_.add(index, value);
+            onChanged();
+          } else {
+            fieldsBuilder_.addMessage(index, value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public Builder addFields(
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.Builder builderForValue) {
+          if (fieldsBuilder_ == null) {
+            ensureFieldsIsMutable();
+            fields_.add(builderForValue.build());
+            onChanged();
+          } else {
+            fieldsBuilder_.addMessage(builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public Builder addFields(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.Builder builderForValue) {
+          if (fieldsBuilder_ == null) {
+            ensureFieldsIsMutable();
+            fields_.add(index, builderForValue.build());
+            onChanged();
+          } else {
+            fieldsBuilder_.addMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public Builder addAllFields(
+            java.lang.Iterable<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField> values) {
+          if (fieldsBuilder_ == null) {
+            ensureFieldsIsMutable();
+            com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                values, fields_);
+            onChanged();
+          } else {
+            fieldsBuilder_.addAllMessages(values);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public Builder clearFields() {
+          if (fieldsBuilder_ == null) {
+            fields_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000002);
+            onChanged();
+          } else {
+            fieldsBuilder_.clear();
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public Builder removeFields(int index) {
+          if (fieldsBuilder_ == null) {
+            ensureFieldsIsMutable();
+            fields_.remove(index);
+            onChanged();
+          } else {
+            fieldsBuilder_.remove(index);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.Builder getFieldsBuilder(
+            int index) {
+          return getFieldsFieldBuilder().getBuilder(index);
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassFieldOrBuilder getFieldsOrBuilder(
+            int index) {
+          if (fieldsBuilder_ == null) {
+            return fields_.get(index);  } else {
+            return fieldsBuilder_.getMessageOrBuilder(index);
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassFieldOrBuilder> 
+             getFieldsOrBuilderList() {
+          if (fieldsBuilder_ != null) {
+            return fieldsBuilder_.getMessageOrBuilderList();
+          } else {
+            return java.util.Collections.unmodifiableList(fields_);
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.Builder addFieldsBuilder() {
+          return getFieldsFieldBuilder().addBuilder(
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.getDefaultInstance());
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.Builder addFieldsBuilder(
+            int index) {
+          return getFieldsFieldBuilder().addBuilder(
+              index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.getDefaultInstance());
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassField fields = 2;</code>
+         */
+        public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.Builder> 
+             getFieldsBuilderList() {
+          return getFieldsFieldBuilder().getBuilderList();
+        }
+        private com.google.protobuf.RepeatedFieldBuilderV3<
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassFieldOrBuilder> 
+            getFieldsFieldBuilder() {
+          if (fieldsBuilder_ == null) {
+            fieldsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassField.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassFieldOrBuilder>(
+                    fields_,
+                    ((bitField0_ & 0x00000002) != 0),
+                    getParentForChildren(),
+                    isClean());
+            fields_ = null;
+          }
+          return fieldsBuilder_;
+        }
+
+        private java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod> methods_ =
+          java.util.Collections.emptyList();
+        private void ensureMethodsIsMutable() {
+          if (!((bitField0_ & 0x00000004) != 0)) {
+            methods_ = new java.util.ArrayList<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod>(methods_);
+            bitField0_ |= 0x00000004;
+           }
+        }
+
+        private com.google.protobuf.RepeatedFieldBuilderV3<
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethodOrBuilder> methodsBuilder_;
+
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod> getMethodsList() {
+          if (methodsBuilder_ == null) {
+            return java.util.Collections.unmodifiableList(methods_);
+          } else {
+            return methodsBuilder_.getMessageList();
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public int getMethodsCount() {
+          if (methodsBuilder_ == null) {
+            return methods_.size();
+          } else {
+            return methodsBuilder_.getCount();
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod getMethods(int index) {
+          if (methodsBuilder_ == null) {
+            return methods_.get(index);
+          } else {
+            return methodsBuilder_.getMessage(index);
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public Builder setMethods(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod value) {
+          if (methodsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureMethodsIsMutable();
+            methods_.set(index, value);
+            onChanged();
+          } else {
+            methodsBuilder_.setMessage(index, value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public Builder setMethods(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.Builder builderForValue) {
+          if (methodsBuilder_ == null) {
+            ensureMethodsIsMutable();
+            methods_.set(index, builderForValue.build());
+            onChanged();
+          } else {
+            methodsBuilder_.setMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public Builder addMethods(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod value) {
+          if (methodsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureMethodsIsMutable();
+            methods_.add(value);
+            onChanged();
+          } else {
+            methodsBuilder_.addMessage(value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public Builder addMethods(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod value) {
+          if (methodsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureMethodsIsMutable();
+            methods_.add(index, value);
+            onChanged();
+          } else {
+            methodsBuilder_.addMessage(index, value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public Builder addMethods(
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.Builder builderForValue) {
+          if (methodsBuilder_ == null) {
+            ensureMethodsIsMutable();
+            methods_.add(builderForValue.build());
+            onChanged();
+          } else {
+            methodsBuilder_.addMessage(builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public Builder addMethods(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.Builder builderForValue) {
+          if (methodsBuilder_ == null) {
+            ensureMethodsIsMutable();
+            methods_.add(index, builderForValue.build());
+            onChanged();
+          } else {
+            methodsBuilder_.addMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public Builder addAllMethods(
+            java.lang.Iterable<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod> values) {
+          if (methodsBuilder_ == null) {
+            ensureMethodsIsMutable();
+            com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                values, methods_);
+            onChanged();
+          } else {
+            methodsBuilder_.addAllMessages(values);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public Builder clearMethods() {
+          if (methodsBuilder_ == null) {
+            methods_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000004);
+            onChanged();
+          } else {
+            methodsBuilder_.clear();
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public Builder removeMethods(int index) {
+          if (methodsBuilder_ == null) {
+            ensureMethodsIsMutable();
+            methods_.remove(index);
+            onChanged();
+          } else {
+            methodsBuilder_.remove(index);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.Builder getMethodsBuilder(
+            int index) {
+          return getMethodsFieldBuilder().getBuilder(index);
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethodOrBuilder getMethodsOrBuilder(
+            int index) {
+          if (methodsBuilder_ == null) {
+            return methods_.get(index);  } else {
+            return methodsBuilder_.getMessageOrBuilder(index);
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethodOrBuilder> 
+             getMethodsOrBuilderList() {
+          if (methodsBuilder_ != null) {
+            return methodsBuilder_.getMessageOrBuilderList();
+          } else {
+            return java.util.Collections.unmodifiableList(methods_);
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.Builder addMethodsBuilder() {
+          return getMethodsFieldBuilder().addBuilder(
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.getDefaultInstance());
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.Builder addMethodsBuilder(
+            int index) {
+          return getMethodsFieldBuilder().addBuilder(
+              index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.getDefaultInstance());
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod methods = 3;</code>
+         */
+        public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.Builder> 
+             getMethodsBuilderList() {
+          return getMethodsFieldBuilder().getBuilderList();
+        }
+        private com.google.protobuf.RepeatedFieldBuilderV3<
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethodOrBuilder> 
+            getMethodsFieldBuilder() {
+          if (methodsBuilder_ == null) {
+            methodsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethod.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassMethodOrBuilder>(
+                    methods_,
+                    ((bitField0_ & 0x00000004) != 0),
+                    getParentForChildren(),
+                    isClean());
+            methods_ = null;
+          }
+          return methodsBuilder_;
+        }
+
+        private java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding> activeBindings_ =
+          java.util.Collections.emptyList();
+        private void ensureActiveBindingsIsMutable() {
+          if (!((bitField0_ & 0x00000008) != 0)) {
+            activeBindings_ = new java.util.ArrayList<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding>(activeBindings_);
+            bitField0_ |= 0x00000008;
+           }
+        }
+
+        private com.google.protobuf.RepeatedFieldBuilderV3<
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBindingOrBuilder> activeBindingsBuilder_;
+
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding> getActiveBindingsList() {
+          if (activeBindingsBuilder_ == null) {
+            return java.util.Collections.unmodifiableList(activeBindings_);
+          } else {
+            return activeBindingsBuilder_.getMessageList();
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public int getActiveBindingsCount() {
+          if (activeBindingsBuilder_ == null) {
+            return activeBindings_.size();
+          } else {
+            return activeBindingsBuilder_.getCount();
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding getActiveBindings(int index) {
+          if (activeBindingsBuilder_ == null) {
+            return activeBindings_.get(index);
+          } else {
+            return activeBindingsBuilder_.getMessage(index);
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public Builder setActiveBindings(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding value) {
+          if (activeBindingsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureActiveBindingsIsMutable();
+            activeBindings_.set(index, value);
+            onChanged();
+          } else {
+            activeBindingsBuilder_.setMessage(index, value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public Builder setActiveBindings(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.Builder builderForValue) {
+          if (activeBindingsBuilder_ == null) {
+            ensureActiveBindingsIsMutable();
+            activeBindings_.set(index, builderForValue.build());
+            onChanged();
+          } else {
+            activeBindingsBuilder_.setMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public Builder addActiveBindings(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding value) {
+          if (activeBindingsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureActiveBindingsIsMutable();
+            activeBindings_.add(value);
+            onChanged();
+          } else {
+            activeBindingsBuilder_.addMessage(value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public Builder addActiveBindings(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding value) {
+          if (activeBindingsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureActiveBindingsIsMutable();
+            activeBindings_.add(index, value);
+            onChanged();
+          } else {
+            activeBindingsBuilder_.addMessage(index, value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public Builder addActiveBindings(
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.Builder builderForValue) {
+          if (activeBindingsBuilder_ == null) {
+            ensureActiveBindingsIsMutable();
+            activeBindings_.add(builderForValue.build());
+            onChanged();
+          } else {
+            activeBindingsBuilder_.addMessage(builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public Builder addActiveBindings(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.Builder builderForValue) {
+          if (activeBindingsBuilder_ == null) {
+            ensureActiveBindingsIsMutable();
+            activeBindings_.add(index, builderForValue.build());
+            onChanged();
+          } else {
+            activeBindingsBuilder_.addMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public Builder addAllActiveBindings(
+            java.lang.Iterable<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding> values) {
+          if (activeBindingsBuilder_ == null) {
+            ensureActiveBindingsIsMutable();
+            com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                values, activeBindings_);
+            onChanged();
+          } else {
+            activeBindingsBuilder_.addAllMessages(values);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public Builder clearActiveBindings() {
+          if (activeBindingsBuilder_ == null) {
+            activeBindings_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000008);
+            onChanged();
+          } else {
+            activeBindingsBuilder_.clear();
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public Builder removeActiveBindings(int index) {
+          if (activeBindingsBuilder_ == null) {
+            ensureActiveBindingsIsMutable();
+            activeBindings_.remove(index);
+            onChanged();
+          } else {
+            activeBindingsBuilder_.remove(index);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.Builder getActiveBindingsBuilder(
+            int index) {
+          return getActiveBindingsFieldBuilder().getBuilder(index);
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBindingOrBuilder getActiveBindingsOrBuilder(
+            int index) {
+          if (activeBindingsBuilder_ == null) {
+            return activeBindings_.get(index);  } else {
+            return activeBindingsBuilder_.getMessageOrBuilder(index);
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBindingOrBuilder> 
+             getActiveBindingsOrBuilderList() {
+          if (activeBindingsBuilder_ != null) {
+            return activeBindingsBuilder_.getMessageOrBuilderList();
+          } else {
+            return java.util.Collections.unmodifiableList(activeBindings_);
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.Builder addActiveBindingsBuilder() {
+          return getActiveBindingsFieldBuilder().addBuilder(
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.getDefaultInstance());
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.Builder addActiveBindingsBuilder(
+            int index) {
+          return getActiveBindingsFieldBuilder().addBuilder(
+              index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.getDefaultInstance());
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding activeBindings = 4;</code>
+         */
+        public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.Builder> 
+             getActiveBindingsBuilderList() {
+          return getActiveBindingsFieldBuilder().getBuilderList();
+        }
+        private com.google.protobuf.RepeatedFieldBuilderV3<
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBindingOrBuilder> 
+            getActiveBindingsFieldBuilder() {
+          if (activeBindingsBuilder_ == null) {
+            activeBindingsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBinding.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.R6ClassActiveBindingOrBuilder>(
+                    activeBindings_,
+                    ((bitField0_ & 0x00000008) != 0),
+                    getParentForChildren(),
+                    isClean());
+            activeBindings_ = null;
+          }
+          return activeBindingsBuilder_;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:library_summary.RLibrarySymbol.R6ClassRepresentation)
+      }
+
+      // @@protoc_insertion_point(class_scope:library_summary.RLibrarySymbol.R6ClassRepresentation)
+      private static final org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation();
+      }
+
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      private static final com.google.protobuf.Parser<R6ClassRepresentation>
+          PARSER = new com.google.protobuf.AbstractParser<R6ClassRepresentation>() {
+        @java.lang.Override
+        public R6ClassRepresentation parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new R6ClassRepresentation(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<R6ClassRepresentation> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<R6ClassRepresentation> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
     private int representationCase_ = 0;
     private java.lang.Object representation_;
     public enum RepresentationCase
@@ -7870,6 +11508,7 @@ public final class LibrarySummary {
             com.google.protobuf.AbstractMessage.InternalOneOfEnum {
       FUNCTIONREPRESENTATION(4),
       S4CLASSREPRESENTATION(5),
+      R6CLASSREPRESENTATION(6),
       REPRESENTATION_NOT_SET(0);
       private final int value;
       private RepresentationCase(int value) {
@@ -7889,6 +11528,7 @@ public final class LibrarySummary {
         switch (value) {
           case 4: return FUNCTIONREPRESENTATION;
           case 5: return S4CLASSREPRESENTATION;
+          case 6: return R6CLASSREPRESENTATION;
           case 0: return REPRESENTATION_NOT_SET;
           default: return null;
         }
@@ -8034,6 +11674,37 @@ public final class LibrarySummary {
       return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.getDefaultInstance();
     }
 
+    public static final int R6CLASSREPRESENTATION_FIELD_NUMBER = 6;
+    /**
+     * <code>.library_summary.RLibrarySymbol.R6ClassRepresentation r6ClassRepresentation = 6;</code>
+     * @return Whether the r6ClassRepresentation field is set.
+     */
+    @java.lang.Override
+    public boolean hasR6ClassRepresentation() {
+      return representationCase_ == 6;
+    }
+    /**
+     * <code>.library_summary.RLibrarySymbol.R6ClassRepresentation r6ClassRepresentation = 6;</code>
+     * @return The r6ClassRepresentation.
+     */
+    @java.lang.Override
+    public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation getR6ClassRepresentation() {
+      if (representationCase_ == 6) {
+         return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation) representation_;
+      }
+      return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.getDefaultInstance();
+    }
+    /**
+     * <code>.library_summary.RLibrarySymbol.R6ClassRepresentation r6ClassRepresentation = 6;</code>
+     */
+    @java.lang.Override
+    public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentationOrBuilder getR6ClassRepresentationOrBuilder() {
+      if (representationCase_ == 6) {
+         return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation) representation_;
+      }
+      return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.getDefaultInstance();
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -8063,6 +11734,9 @@ public final class LibrarySummary {
       if (representationCase_ == 5) {
         output.writeMessage(5, (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) representation_);
       }
+      if (representationCase_ == 6) {
+        output.writeMessage(6, (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation) representation_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -8090,6 +11764,10 @@ public final class LibrarySummary {
       if (representationCase_ == 5) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(5, (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) representation_);
+      }
+      if (representationCase_ == 6) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(6, (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation) representation_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -8121,6 +11799,10 @@ public final class LibrarySummary {
           if (!getS4ClassRepresentation()
               .equals(other.getS4ClassRepresentation())) return false;
           break;
+        case 6:
+          if (!getR6ClassRepresentation()
+              .equals(other.getR6ClassRepresentation())) return false;
+          break;
         case 0:
         default:
       }
@@ -8150,6 +11832,10 @@ public final class LibrarySummary {
         case 5:
           hash = (37 * hash) + S4CLASSREPRESENTATION_FIELD_NUMBER;
           hash = (53 * hash) + getS4ClassRepresentation().hashCode();
+          break;
+        case 6:
+          hash = (37 * hash) + R6CLASSREPRESENTATION_FIELD_NUMBER;
+          hash = (53 * hash) + getR6ClassRepresentation().hashCode();
           break;
         case 0:
         default:
@@ -8338,6 +12024,13 @@ public final class LibrarySummary {
             result.representation_ = s4ClassRepresentationBuilder_.build();
           }
         }
+        if (representationCase_ == 6) {
+          if (r6ClassRepresentationBuilder_ == null) {
+            result.representation_ = representation_;
+          } else {
+            result.representation_ = r6ClassRepresentationBuilder_.build();
+          }
+        }
         result.representationCase_ = representationCase_;
         onBuilt();
         return result;
@@ -8404,6 +12097,10 @@ public final class LibrarySummary {
           }
           case S4CLASSREPRESENTATION: {
             mergeS4ClassRepresentation(other.getS4ClassRepresentation());
+            break;
+          }
+          case R6CLASSREPRESENTATION: {
+            mergeR6ClassRepresentation(other.getR6ClassRepresentation());
             break;
           }
           case REPRESENTATION_NOT_SET: {
@@ -8895,6 +12592,147 @@ public final class LibrarySummary {
         representationCase_ = 5;
         onChanged();;
         return s4ClassRepresentationBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentationOrBuilder> r6ClassRepresentationBuilder_;
+      /**
+       * <code>.library_summary.RLibrarySymbol.R6ClassRepresentation r6ClassRepresentation = 6;</code>
+       * @return Whether the r6ClassRepresentation field is set.
+       */
+      @java.lang.Override
+      public boolean hasR6ClassRepresentation() {
+        return representationCase_ == 6;
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.R6ClassRepresentation r6ClassRepresentation = 6;</code>
+       * @return The r6ClassRepresentation.
+       */
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation getR6ClassRepresentation() {
+        if (r6ClassRepresentationBuilder_ == null) {
+          if (representationCase_ == 6) {
+            return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation) representation_;
+          }
+          return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.getDefaultInstance();
+        } else {
+          if (representationCase_ == 6) {
+            return r6ClassRepresentationBuilder_.getMessage();
+          }
+          return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.R6ClassRepresentation r6ClassRepresentation = 6;</code>
+       */
+      public Builder setR6ClassRepresentation(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation value) {
+        if (r6ClassRepresentationBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          representation_ = value;
+          onChanged();
+        } else {
+          r6ClassRepresentationBuilder_.setMessage(value);
+        }
+        representationCase_ = 6;
+        return this;
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.R6ClassRepresentation r6ClassRepresentation = 6;</code>
+       */
+      public Builder setR6ClassRepresentation(
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.Builder builderForValue) {
+        if (r6ClassRepresentationBuilder_ == null) {
+          representation_ = builderForValue.build();
+          onChanged();
+        } else {
+          r6ClassRepresentationBuilder_.setMessage(builderForValue.build());
+        }
+        representationCase_ = 6;
+        return this;
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.R6ClassRepresentation r6ClassRepresentation = 6;</code>
+       */
+      public Builder mergeR6ClassRepresentation(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation value) {
+        if (r6ClassRepresentationBuilder_ == null) {
+          if (representationCase_ == 6 &&
+              representation_ != org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.getDefaultInstance()) {
+            representation_ = org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.newBuilder((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation) representation_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            representation_ = value;
+          }
+          onChanged();
+        } else {
+          if (representationCase_ == 6) {
+            r6ClassRepresentationBuilder_.mergeFrom(value);
+          }
+          r6ClassRepresentationBuilder_.setMessage(value);
+        }
+        representationCase_ = 6;
+        return this;
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.R6ClassRepresentation r6ClassRepresentation = 6;</code>
+       */
+      public Builder clearR6ClassRepresentation() {
+        if (r6ClassRepresentationBuilder_ == null) {
+          if (representationCase_ == 6) {
+            representationCase_ = 0;
+            representation_ = null;
+            onChanged();
+          }
+        } else {
+          if (representationCase_ == 6) {
+            representationCase_ = 0;
+            representation_ = null;
+          }
+          r6ClassRepresentationBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.R6ClassRepresentation r6ClassRepresentation = 6;</code>
+       */
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.Builder getR6ClassRepresentationBuilder() {
+        return getR6ClassRepresentationFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.R6ClassRepresentation r6ClassRepresentation = 6;</code>
+       */
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentationOrBuilder getR6ClassRepresentationOrBuilder() {
+        if ((representationCase_ == 6) && (r6ClassRepresentationBuilder_ != null)) {
+          return r6ClassRepresentationBuilder_.getMessageOrBuilder();
+        } else {
+          if (representationCase_ == 6) {
+            return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation) representation_;
+          }
+          return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.R6ClassRepresentation r6ClassRepresentation = 6;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentationOrBuilder> 
+          getR6ClassRepresentationFieldBuilder() {
+        if (r6ClassRepresentationBuilder_ == null) {
+          if (!(representationCase_ == 6)) {
+            representation_ = org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.getDefaultInstance();
+          }
+          r6ClassRepresentationBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentationOrBuilder>(
+                  (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.R6ClassRepresentation) representation_,
+                  getParentForChildren(),
+                  isClean());
+          representation_ = null;
+        }
+        representationCase_ = 6;
+        onChanged();;
+        return r6ClassRepresentationBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -10180,6 +14018,26 @@ public final class LibrarySummary {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4SuperClass_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassField_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassField_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassMethod_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassMethod_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassActiveBinding_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassActiveBinding_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_library_summary_RLibraryPackage_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -10194,49 +14052,63 @@ public final class LibrarySummary {
   static {
     java.lang.String[] descriptorData = {
       "\n\025library_summary.proto\022\017library_summary" +
-      "\"\255\013\n\016RLibrarySymbol\022\014\n\004name\030\001 \001(\t\0222\n\004typ" +
+      "\"\327\017\n\016RLibrarySymbol\022\014\n\004name\030\001 \001(\t\0222\n\004typ" +
       "e\030\002 \001(\0162$.library_summary.RLibrarySymbol" +
       ".Type\022\020\n\010exported\030\003 \001(\010\022X\n\026functionRepre" +
       "sentation\030\004 \001(\01326.library_summary.RLibra" +
       "rySymbol.FunctionRepresentationH\000\022V\n\025s4C" +
       "lassRepresentation\030\005 \001(\01325.library_summa" +
       "ry.RLibrarySymbol.S4ClassRepresentationH" +
-      "\000\032\270\005\n\026FunctionRepresentation\022\022\n\nparamete" +
-      "rs\030\001 \001(\t\022i\n\023extraNamedArguments\030\002 \001(\0132J." +
-      "library_summary.RLibrarySymbol.FunctionR" +
-      "epresentation.ExtraNamedArgumentsH\000\022l\n\020s" +
-      "4ParametersInfo\030\003 \001(\0132P.library_summary." +
+      "\000\022V\n\025r6ClassRepresentation\030\006 \001(\01325.libra" +
+      "ry_summary.RLibrarySymbol.R6ClassReprese" +
+      "ntationH\000\032\270\005\n\026FunctionRepresentation\022\022\n\n" +
+      "parameters\030\001 \001(\t\022i\n\023extraNamedArguments\030" +
+      "\002 \001(\0132J.library_summary.RLibrarySymbol.F" +
+      "unctionRepresentation.ExtraNamedArgument" +
+      "sH\000\022l\n\020s4ParametersInfo\030\003 \001(\0132P.library_" +
+      "summary.RLibrarySymbol.FunctionRepresent" +
+      "ation.S4MethodParametersWrapperH\000\022g\n\022s4G" +
+      "enericSignature\030\004 \001(\0132I.library_summary." +
       "RLibrarySymbol.FunctionRepresentation.S4" +
-      "MethodParametersWrapperH\000\022g\n\022s4GenericSi" +
-      "gnature\030\004 \001(\0132I.library_summary.RLibrary" +
-      "Symbol.FunctionRepresentation.S4GenericS" +
-      "ignatureH\000\032<\n\023ExtraNamedArguments\022\020\n\010arg" +
-      "Names\030\001 \003(\t\022\023\n\013funArgNames\030\002 \003(\t\032>\n\022S4Ge" +
-      "nericSignature\022\022\n\nparameters\030\001 \003(\t\022\024\n\014va" +
-      "lueClasses\030\002 \003(\t\032/\n\021S4MethodParameter\022\014\n" +
-      "\004name\030\001 \001(\t\022\014\n\004type\030\002 \001(\t\032\201\001\n\031S4MethodPa" +
-      "rametersWrapper\022d\n\022s4MethodParameters\030\001 " +
-      "\003(\0132H.library_summary.RLibrarySymbol.Fun" +
-      "ctionRepresentation.S4MethodParameterB\025\n" +
-      "\023extraParametersInfo\032\340\002\n\025S4ClassRepresen" +
-      "tation\022\023\n\013packageName\030\001 \001(\t\022P\n\005slots\030\002 \003" +
-      "(\0132A.library_summary.RLibrarySymbol.S4Cl" +
-      "assRepresentation.S4ClassSlot\022X\n\014superCl" +
-      "asses\030\003 \003(\0132B.library_summary.RLibrarySy" +
-      "mbol.S4ClassRepresentation.S4SuperClass\022" +
-      "\021\n\tisVirtual\030\004 \001(\010\032C\n\013S4ClassSlot\022\014\n\004nam" +
-      "e\030\001 \001(\t\022\014\n\004type\030\002 \001(\t\022\030\n\020declarationClas" +
-      "s\030\003 \001(\t\032.\n\014S4SuperClass\022\014\n\004name\030\001 \001(\t\022\020\n" +
-      "\010distance\030\002 \001(\005\"e\n\004Type\022\t\n\005OTHER\020\000\022\014\n\010FU" +
-      "NCTION\020\001\022\r\n\tPRIMITIVE\020\002\022\013\n\007DATASET\020\003\022\013\n\007" +
-      "S4CLASS\020\004\022\r\n\tS4GENERIC\020\005\022\014\n\010S4METHOD\020\006B\020" +
-      "\n\016representation\"\330\001\n\017RLibraryPackage\022\014\n\004" +
-      "name\030\001 \001(\t\022;\n\010priority\030\002 \001(\0162).library_s" +
-      "ummary.RLibraryPackage.Priority\0220\n\007symbo" +
-      "ls\030\003 \003(\0132\037.library_summary.RLibrarySymbo" +
-      "l\"H\n\010Priority\022\013\n\007UNKNOWN\020\000\022\006\n\002NA\020\001\022\017\n\013RE" +
-      "COMMENDED\020\002\022\010\n\004BASE\020\003\022\014\n\010OPTIONAL\020\004B\032\n\030o" +
-      "rg.jetbrains.r.packagesb\006proto3"
+      "GenericSignatureH\000\032<\n\023ExtraNamedArgument" +
+      "s\022\020\n\010argNames\030\001 \003(\t\022\023\n\013funArgNames\030\002 \003(\t" +
+      "\032>\n\022S4GenericSignature\022\022\n\nparameters\030\001 \003" +
+      "(\t\022\024\n\014valueClasses\030\002 \003(\t\032/\n\021S4MethodPara" +
+      "meter\022\014\n\004name\030\001 \001(\t\022\014\n\004type\030\002 \001(\t\032\201\001\n\031S4" +
+      "MethodParametersWrapper\022d\n\022s4MethodParam" +
+      "eters\030\001 \003(\0132H.library_summary.RLibrarySy" +
+      "mbol.FunctionRepresentation.S4MethodPara" +
+      "meterB\025\n\023extraParametersInfo\032\340\002\n\025S4Class" +
+      "Representation\022\023\n\013packageName\030\001 \001(\t\022P\n\005s" +
+      "lots\030\002 \003(\0132A.library_summary.RLibrarySym" +
+      "bol.S4ClassRepresentation.S4ClassSlot\022X\n" +
+      "\014superClasses\030\003 \003(\0132B.library_summary.RL" +
+      "ibrarySymbol.S4ClassRepresentation.S4Sup" +
+      "erClass\022\021\n\tisVirtual\030\004 \001(\010\032C\n\013S4ClassSlo" +
+      "t\022\014\n\004name\030\001 \001(\t\022\014\n\004type\030\002 \001(\t\022\030\n\020declara" +
+      "tionClass\030\003 \001(\t\032.\n\014S4SuperClass\022\014\n\004name\030" +
+      "\001 \001(\t\022\020\n\010distance\030\002 \001(\005\032\302\003\n\025R6ClassRepre" +
+      "sentation\022\024\n\014superClasses\030\001 \003(\t\022R\n\006field" +
+      "s\030\002 \003(\0132B.library_summary.RLibrarySymbol" +
+      ".R6ClassRepresentation.R6ClassField\022T\n\007m" +
+      "ethods\030\003 \003(\0132C.library_summary.RLibraryS" +
+      "ymbol.R6ClassRepresentation.R6ClassMetho" +
+      "d\022b\n\016activeBindings\030\004 \003(\0132J.library_summ" +
+      "ary.RLibrarySymbol.R6ClassRepresentation" +
+      ".R6ClassActiveBinding\032.\n\014R6ClassField\022\014\n" +
+      "\004name\030\001 \001(\t\022\020\n\010isPublic\030\002 \001(\010\032/\n\rR6Class" +
+      "Method\022\014\n\004name\030\001 \001(\t\022\020\n\010isPublic\030\002 \001(\010\032$" +
+      "\n\024R6ClassActiveBinding\022\014\n\004name\030\001 \001(\t\"r\n\004" +
+      "Type\022\t\n\005OTHER\020\000\022\014\n\010FUNCTION\020\001\022\r\n\tPRIMITI" +
+      "VE\020\002\022\013\n\007DATASET\020\003\022\013\n\007S4CLASS\020\004\022\r\n\tS4GENE" +
+      "RIC\020\005\022\014\n\010S4METHOD\020\006\022\013\n\007R6CLASS\020\007B\020\n\016repr" +
+      "esentation\"\330\001\n\017RLibraryPackage\022\014\n\004name\030\001" +
+      " \001(\t\022;\n\010priority\030\002 \001(\0162).library_summary" +
+      ".RLibraryPackage.Priority\0220\n\007symbols\030\003 \003" +
+      "(\0132\037.library_summary.RLibrarySymbol\"H\n\010P" +
+      "riority\022\013\n\007UNKNOWN\020\000\022\006\n\002NA\020\001\022\017\n\013RECOMMEN" +
+      "DED\020\002\022\010\n\004BASE\020\003\022\014\n\010OPTIONAL\020\004B\032\n\030org.jet" +
+      "brains.r.packagesb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -10247,7 +14119,7 @@ public final class LibrarySummary {
     internal_static_library_summary_RLibrarySymbol_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_library_summary_RLibrarySymbol_descriptor,
-        new java.lang.String[] { "Name", "Type", "Exported", "FunctionRepresentation", "S4ClassRepresentation", "Representation", });
+        new java.lang.String[] { "Name", "Type", "Exported", "FunctionRepresentation", "S4ClassRepresentation", "R6ClassRepresentation", "Representation", });
     internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_descriptor =
       internal_static_library_summary_RLibrarySymbol_descriptor.getNestedTypes().get(0);
     internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_fieldAccessorTable = new
@@ -10296,6 +14168,30 @@ public final class LibrarySummary {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4SuperClass_descriptor,
         new java.lang.String[] { "Name", "Distance", });
+    internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_descriptor =
+      internal_static_library_summary_RLibrarySymbol_descriptor.getNestedTypes().get(2);
+    internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_descriptor,
+        new java.lang.String[] { "SuperClasses", "Fields", "Methods", "ActiveBindings", });
+    internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassField_descriptor =
+      internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_descriptor.getNestedTypes().get(0);
+    internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassField_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassField_descriptor,
+        new java.lang.String[] { "Name", "IsPublic", });
+    internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassMethod_descriptor =
+      internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_descriptor.getNestedTypes().get(1);
+    internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassMethod_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassMethod_descriptor,
+        new java.lang.String[] { "Name", "IsPublic", });
+    internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassActiveBinding_descriptor =
+      internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_descriptor.getNestedTypes().get(2);
+    internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassActiveBinding_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_library_summary_RLibrarySymbol_R6ClassRepresentation_R6ClassActiveBinding_descriptor,
+        new java.lang.String[] { "Name", });
     internal_static_library_summary_RLibraryPackage_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_library_summary_RLibraryPackage_fieldAccessorTable = new

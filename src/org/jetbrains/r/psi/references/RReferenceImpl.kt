@@ -11,7 +11,7 @@ import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.ResolveResult
 import com.intellij.util.IncorrectOperationException
 import com.intellij.util.Processor
-import org.jetbrains.r.classes.s4.RS4Resolver
+import org.jetbrains.r.classes.r6.R6ClassPsiUtil
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.classes.s4.context.RS4NewObjectSlotNameContext
 import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
@@ -36,13 +36,13 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
     }
 
     if (element.isDependantIdentifier && RS4ContextProvider.getS4Context(element, RS4NewObjectSlotNameContext::class) == null) {
-      return emptyArray()
+      return resolveDependantIdentifier()
     }
 
     return RResolver.resolveUsingSourcesAndRuntime(element, element.name, resolveLocally())
   }
 
-  private fun resolveColumn() : PsiElementResolveResult? {
+  private fun resolveColumn(): PsiElementResolveResult? {
     val resultElementRef = Ref<PsiElement>()
     val resolveProcessor = object : Processor<TableColumnInfo> {
       override fun process(it: TableColumnInfo): Boolean {
@@ -69,13 +69,11 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
       val definition = element.findVariableDefinition()?.variableDescription?.firstDefinition
       if (definition?.parent is RAssignmentStatement || definition?.parent is RParameter) {
         return PsiElementResolveResult(definition.parent)
-      }
-      else if (definition != null) {
+      } else if (definition != null) {
         return PsiElementResolveResult(definition)
       }
       return RResolver.EmptyLocalResult
-    }
-    else if (kind == ReferenceKind.ARGUMENT) {
+    } else if (kind == ReferenceKind.ARGUMENT) {
       return resolveColumn()
     }
     return null
@@ -88,12 +86,14 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
       if (assignment is RSkeletonAssignmentStatement && assignment.parameterNameList.contains(element.name)) {
         return arrayOf(PsiElementResolveResult(RPomTarget.createSkeletonParameterTarget(assignment, element.name)))
       }
-      assignment.getParameters().firstOrNull { parameter -> parameter.name == element.name}?.let { PsiElementResolveResult(it) }
+      assignment.getParameters().firstOrNull { parameter -> parameter.name == element.name }?.let { PsiElementResolveResult(it) }
     }.toTypedArray()
   }
 
-  private fun resolveDependantIdentifier(identifier: RIdentifierExpression): Array<ResolveResult> {
-    return RS4Resolver.resolveSlot(identifier)
+  private fun resolveDependantIdentifier(): Array<ResolveResult> {
+    val r6SearchedIdentifierDefinition = R6ClassPsiUtil.getSearchedIdentifier(element) ?: return emptyArray()
+    // TODO fix that!
+    return arrayOf(PsiElementResolveResult(r6SearchedIdentifierDefinition))
   }
 
   @Throws(IncorrectOperationException::class)

@@ -12,7 +12,7 @@ import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.associatedS4GenericInfo
 import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.toS4MethodParameters
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.stubs.RS4GenericIndex
+import org.jetbrains.r.psi.stubs.classes.RS4GenericIndex
 import java.util.concurrent.ConcurrentHashMap
 
 data class RS4GenericSignature(val parameters: List<String>, val valueClasses: List<String>, val partialParsed: Boolean) {

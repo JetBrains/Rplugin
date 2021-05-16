@@ -17,7 +17,12 @@ import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
 import org.jetbrains.r.packages.LibrarySummary
 import org.jetbrains.r.packages.isFunctionDeclaration
 import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.stubs.*
+import org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex
+import org.jetbrains.r.psi.stubs.RAssignmentNameIndex
+import org.jetbrains.r.psi.stubs.RInternalAssignmentCompletionIndex
+import org.jetbrains.r.psi.stubs.RStubElementType
+import org.jetbrains.r.psi.stubs.classes.RS4GenericIndex
+import org.jetbrains.r.psi.stubs.classes.RS4MethodsIndex
 
 class RSkeletonAssignmentElementType : RStubElementType<RSkeletonAssignmentStub, RAssignmentStatement>("R bin assignment") {
   override fun createPsi(stub: RSkeletonAssignmentStub): RAssignmentStatement {

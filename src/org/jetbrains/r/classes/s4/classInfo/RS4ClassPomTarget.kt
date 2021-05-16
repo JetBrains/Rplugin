@@ -29,7 +29,7 @@ data class RSkeletonS4SlotPomTarget(val setClass: RSkeletonCallExpression, priva
   }
   override fun getName(): String = name
 
-  val slotInfo by lazy { setClass.associatedS4ClassInfo.slots.firstOrNull { it.name == name } }
+  val slotInfo by lazy { setClass.associatedS4ClassInfo!!.slots.firstOrNull { it.name == name } }
 }
 
 data class RS4ComplexSlotPomTarget(val slotDefinition: RExpression, val slot: RS4ClassSlot) : RPomTarget() {
@@ -51,5 +51,5 @@ data class RSkeletonS4ClassPomTarget(val setClass: RSkeletonCallExpression) : RP
       }
     }
   }
-  override fun getName(): String = setClass.stub.s4ClassInfo.className
+  override fun getName(): String = setClass.stub.s4ClassInfo!!.className
 }

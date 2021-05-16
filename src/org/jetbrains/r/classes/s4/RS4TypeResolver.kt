@@ -40,13 +40,13 @@ object RS4TypeResolver {
       is RParameter -> {
         val fn = PsiTreeUtil.getParentOfType(element, RFunctionExpression::class.java) ?: return emptyList()
         val context = RS4ContextProvider.getS4Context(fn, RS4SetMethodDefinitionContext::class) ?: return emptyList()
-        val params = context.contextFunctionCall.associatedS4MethodInfo?.getParameters(RSearchScopeUtil.getScope(element))
+        val params = context.functionCall.associatedS4MethodInfo?.getParameters(RSearchScopeUtil.getScope(element))
         params?.firstOrNull { it.name == element.name }?.type?.let { listOf(it) }
       }
       is RIdentifierExpression -> {
         val newSlotContext = RS4ContextProvider.getS4Context(element, RS4NewObjectSlotNameContext::class)
         if (newSlotContext != null) {
-          RS4ClassInfoUtil.getAssociatedClassName(newSlotContext.contextFunctionCall)?.let { listOf(it) }
+          RS4ClassInfoUtil.getAssociatedClassName(newSlotContext.functionCall)?.let { listOf(it) }
         }
         else element.reference.multiResolve(false).flatMap {
           (it.element as? RPsiElement)?.let { it1 -> resolveS4TypeClass(it1) } ?: emptyList()
@@ -59,7 +59,7 @@ object RS4TypeResolver {
             is RNamedArgument -> resolveElement.assignedValue?.name
             is PomTargetPsiElement -> {
               when (val target = resolveElement.target) {
-                is RSkeletonS4SlotPomTarget -> target.setClass.stub.s4ClassInfo.slots.firstOrNull { it.name == target.name }?.type
+                is RSkeletonS4SlotPomTarget -> target.setClass.stub.s4ClassInfo!!.slots.firstOrNull { it.name == target.name }?.type
                 is RS4ComplexSlotPomTarget -> target.slot.type
                 is RStringLiteralPomTarget -> "ANY"
                 else -> null

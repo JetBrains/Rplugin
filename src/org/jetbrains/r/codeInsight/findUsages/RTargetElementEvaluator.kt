@@ -20,7 +20,10 @@ class RTargetElementEvaluator : TargetElementEvaluatorEx2() {
       return grandParent.assignee == parent
     }
 
-    return grandParent is RParameter || grandParent is RNamedArgument
+    return when (grandParent) {
+      is RParameter, is RNamedArgument -> true
+      else -> false
+    }
   }
 
   override fun getNamedElement(element: PsiElement): PsiElement? {

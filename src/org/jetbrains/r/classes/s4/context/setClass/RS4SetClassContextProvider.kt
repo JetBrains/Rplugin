@@ -19,17 +19,17 @@ sealed class RS4SetClassTypeContext : RS4SetClassContext()
 
 // setClass("<caret>")
 data class RS4SetClassClassNameContext(override val originalElement: RPsiElement,
-                                       override val contextFunctionCall: RCallExpression) : RS4SetClassTypeContext()
+                                       override val functionCall: RCallExpression) : RS4SetClassTypeContext()
 
 sealed class RS4SetClassTypeUsageContext : RS4SetClassTypeContext()
 
 // setClass("MyClass", "<caret>")
 data class RS4SetClassRepresentationContext(override val originalElement: RPsiElement,
-                                            override val contextFunctionCall: RCallExpression) : RS4SetClassTypeUsageContext()
+                                            override val functionCall: RCallExpression) : RS4SetClassTypeUsageContext()
 
 // setClass("MyClass", , , "<caret>")
 data class RS4SetClassContainsContext(override val originalElement: RPsiElement,
-                                      override val contextFunctionCall: RCallExpression) : RS4SetClassTypeUsageContext()
+                                      override val functionCall: RCallExpression) : RS4SetClassTypeUsageContext()
 
 // setClass("MyClass", contains = "<caret>")
 // setClass("MyClass", contains = c("<caret>"))
@@ -38,7 +38,7 @@ data class RS4SetClassContainsContext(override val originalElement: RPsiElement,
 // setClass("MyClass", representation = representation("<caret>")
 // setClass("MyClass", slots = c(name = "<caret>"))
 data class RS4SetClassDependencyClassNameContext(override val originalElement: RPsiElement,
-                                                 override val contextFunctionCall: RCallExpression) : RS4SetClassTypeUsageContext()
+                                                 override val functionCall: RCallExpression) : RS4SetClassTypeUsageContext()
 
 class RS4SetClassTypeContextProvider : RS4ContextProvider<RS4SetClassTypeContext>() {
   override fun getS4ContextWithoutCaching(element: RPsiElement): RS4SetClassTypeContext? {

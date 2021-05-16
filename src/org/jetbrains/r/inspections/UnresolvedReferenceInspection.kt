@@ -20,7 +20,7 @@ import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isFunctionFromLibrary
 import org.jetbrains.r.psi.references.RReferenceBase
 import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.RS4ClassNameIndex
+import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
 
 class UnresolvedReferenceInspection : RInspection() {
 

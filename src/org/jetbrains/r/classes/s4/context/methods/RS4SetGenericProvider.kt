@@ -13,23 +13,23 @@ import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 
 sealed class RS4SetGenericContext : RS4MethodsContext() {
-  override val contextFunctionName: String = "setGeneric"
+  override val functionName: String = "setGeneric"
 }
 
 data class RS4SetGenericFunctionNameContext(override val originalElement: RPsiElement,
-                                            override val contextFunctionCall: RCallExpression) : RS4SetGenericContext()
+                                            override val functionCall: RCallExpression) : RS4SetGenericContext()
 
 // setGeneric("fun", valueClass = "<caret>")
 // setGeneric("fun", valueClass = c("<caret>"))
 // setGeneric("fun", valueClass = c(unused = "<caret>"))
 data class RS4SetGenericValueClassesContext(override val originalElement: RPsiElement,
-                                            override val contextFunctionCall: RCallExpression) : RS4SetGenericContext()
+                                            override val functionCall: RCallExpression) : RS4SetGenericContext()
 
 // setGeneric("fun", signature = "<caret>")
 // setGeneric("fun", signature = c("<caret>"))
 // setGeneric("fun", signature = c(unused = "<caret>"))
 data class RS4SetGenericParameterNamesContext(override val originalElement: RPsiElement,
-                                              override val contextFunctionCall: RCallExpression) : RS4SetGenericContext()
+                                              override val functionCall: RCallExpression) : RS4SetGenericContext()
 
 class RS4SetGenericProvider : RS4ContextProvider<RS4SetGenericContext>() {
   override fun getS4ContextWithoutCaching(element: RPsiElement): RS4SetGenericContext? {

@@ -17,7 +17,7 @@ import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 
 class RS4SlotDeclarationContext(override val originalElement: RPsiElement,
-                                override val contextFunctionCall: RCallExpression,
+                                override val functionCall: RCallExpression,
                                 val slots: List<RS4ClassSlot>) : RS4SetClassContext() {
   constructor(originalElement: RPsiElement, contextFunctionCall: RCallExpression, slot: RS4ClassSlot) :
     this(originalElement, contextFunctionCall, listOf(slot))
@@ -68,7 +68,7 @@ class RS4SlotDeclarationContextProvider : RS4ContextProvider<RS4SlotDeclarationC
   override fun getS4ContextForPomTarget(element: PomTargetPsiElement): RS4SlotDeclarationContext? {
     return when (val target = element.target) {
       is RSkeletonS4SlotPomTarget -> {
-        val slot = target.setClass.associatedS4ClassInfo.slots.firstOrNull { it.name == target.name} ?: return null
+        val slot = target.setClass.associatedS4ClassInfo!!.slots.firstOrNull { it.name == target.name} ?: return null
         RS4SlotDeclarationContext(element as RPsiElement, target.setClass, slot)
       }
       else -> null

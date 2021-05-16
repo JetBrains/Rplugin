@@ -4,8 +4,8 @@
 
 package org.jetbrains.r.classes.s4.context.setClass
 
-import org.jetbrains.r.classes.s4.context.RS4Context
+import org.jetbrains.r.classes.common.context.ILibraryClassContext
 
-abstract class RS4SetClassContext : RS4Context {
-  override val contextFunctionName = "setClass"
+abstract class RS4SetClassContext : ILibraryClassContext {
+  override val functionName = "setClass"
 }

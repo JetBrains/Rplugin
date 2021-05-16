@@ -113,10 +113,24 @@ class RoxygenCompletionContributor : CompletionContributor() {
         document.insertString(offset, "()")
         context.editor.caretModel.moveCaretRelatively(4, 0, false, false, false)
       }
+
+      override fun getInsertHandlerForLookupString(lookupString: String) = InsertHandler<LookupElement> { context, _ ->
+        val offset = context.tailOffset
+        val document = context.document
+        insertSpaceAfterLinkIfNeeded(document, offset)
+        document.insertString(offset, "()")
+        context.editor.caretModel.moveCaretRelatively(4, 0, false, false, false)
+      }
     }
 
     private object RoxygenConstantLinkInsertHandler : RLookupElementInsertHandler {
       override fun getInsertHandlerForAssignment(assignment: RAssignmentStatement) = InsertHandler<LookupElement> { context, _ ->
+        val document = context.document
+        insertSpaceAfterLinkIfNeeded(document, context.tailOffset)
+        context.editor.caretModel.moveCaretRelatively(2, 0, false, false, false)
+      }
+
+      override fun getInsertHandlerForLookupString(lookupString: String) = InsertHandler<LookupElement> { context, _ ->
         val document = context.document
         insertSpaceAfterLinkIfNeeded(document, context.tailOffset)
         context.editor.caretModel.moveCaretRelatively(2, 0, false, false, false)

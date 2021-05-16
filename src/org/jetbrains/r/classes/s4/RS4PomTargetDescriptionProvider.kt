@@ -41,7 +41,7 @@ class RS4PomTargetDescriptionProvider : PomDescriptionProvider() {
   }
 
   private fun getShortName(element: PomTarget): String? = when (element) {
-    is RSkeletonS4ClassPomTarget -> element.setClass.associatedS4ClassInfo.className
+    is RSkeletonS4ClassPomTarget -> element.setClass.associatedS4ClassInfo!!.className
     is RSkeletonS4SlotPomTarget -> element.name
     is RS4ComplexSlotPomTarget -> element.slot.name
     is RStringLiteralPomTarget -> element.literal.name
@@ -49,7 +49,7 @@ class RS4PomTargetDescriptionProvider : PomDescriptionProvider() {
   }
 
   private fun getLongName(element: PomTarget): String? = when (element) {
-    is RSkeletonS4ClassPomTarget -> element.setClass.associatedS4ClassInfo.let { "${it.packageName}::setClass('${it.className}')" }
+    is RSkeletonS4ClassPomTarget -> element.setClass.associatedS4ClassInfo!!.let { "${it.packageName}::setClass('${it.className}')" }
     is RSkeletonS4SlotPomTarget -> element.slotInfo?.let { "${it.name} = '${it.type}'" }
     is RS4ComplexSlotPomTarget -> element.slot.let { "${it.name} = '${it.type}'" }
     else -> null

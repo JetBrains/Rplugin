@@ -15,7 +15,7 @@ import org.jetbrains.r.packages.RPackageProjectManager
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.RS4ClassNameIndex
+import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
 import org.jetbrains.r.skeleton.psi.RSkeletonCallExpression
 
 sealed class RS4ClassDistance {
@@ -84,7 +84,7 @@ object RS4ClassInfoUtil {
     if (callExpression == null) return emptyList()
     if (callExpression is RSkeletonCallExpression) {
       // S4 classes from packages and so contains all slots
-      return callExpression.associatedS4ClassInfo.slots
+      return callExpression.associatedS4ClassInfo?.slots ?: emptyList()
     }
     if (!callExpression.isFunctionFromLibrarySoft("setClass", "methods")) return emptyList()
     return CachedValuesManager.getProjectPsiDependentCache(callExpression) {
@@ -102,7 +102,7 @@ object RS4ClassInfoUtil {
     if (callExpression == null) return emptyList()
     if (callExpression is RSkeletonCallExpression) {
       // S4 classes from packages and so contains all super classes
-      return callExpression.associatedS4ClassInfo.superClasses
+      return callExpression.associatedS4ClassInfo?.superClasses ?: emptyList()
     }
     if (!callExpression.isFunctionFromLibrarySoft("setClass", "methods")) return emptyList()
     return CachedValuesManager.getProjectPsiDependentCache(callExpression) {

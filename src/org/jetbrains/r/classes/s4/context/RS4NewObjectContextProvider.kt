@@ -5,6 +5,7 @@
 package org.jetbrains.r.classes.s4.context
 
 import com.intellij.psi.util.PsiTreeUtil
+import org.jetbrains.r.classes.common.context.ILibraryClassContext
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.RCallExpression
@@ -12,18 +13,18 @@ import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 
-sealed class RS4NewObjectContext : RS4Context {
-  override val contextFunctionName = "new"
+sealed class RS4NewObjectContext : ILibraryClassContext {
+  override val functionName = "new"
 }
 
 // new("<caret>")
 data class RS4NewObjectClassNameContext(override val originalElement: RPsiElement,
-                                        override val contextFunctionCall: RCallExpression) : RS4NewObjectContext()
+                                        override val functionCall: RCallExpression) : RS4NewObjectContext()
 
 // new("ClassName", slot<caret>_name)
 // new("ClassName", slot<caret>_name = slot_value)
 data class RS4NewObjectSlotNameContext(override val originalElement: RPsiElement,
-                                       override val contextFunctionCall: RCallExpression) : RS4NewObjectContext()
+                                       override val functionCall: RCallExpression) : RS4NewObjectContext()
 
 class RS4NewObjectContextProvider : RS4ContextProvider<RS4NewObjectContext>() {
   override fun getS4ContextWithoutCaching(element: RPsiElement): RS4NewObjectContext? {
@@ -46,5 +47,10 @@ class RS4NewObjectContextProvider : RS4ContextProvider<RS4NewObjectContext>() {
         RS4NewObjectSlotNameContext(currentArgument, parentCall)
       }
     }
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other !is RS4ContextProvider<*>) return false
+    return this::class.java.name == other::class.java.name
   }
 }

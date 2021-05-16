@@ -22,8 +22,8 @@ import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isFunctionFromLibrary
 import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.RS4GenericIndex
-import org.jetbrains.r.psi.stubs.RS4MethodsIndex
+import org.jetbrains.r.psi.stubs.classes.RS4GenericIndex
+import org.jetbrains.r.psi.stubs.classes.RS4MethodsIndex
 
 class RVariableInplaceRenamer : VariableInplaceRenamer {
 
@@ -71,7 +71,7 @@ class RVariableInplaceRenamer : VariableInplaceRenamer {
         builder.replaceElement(methodLiteral)
       }
     }
-    val body = when(val def = RArgumentInfo.getArgumentByName(context.contextFunctionCall, "def")) {
+    val body = when(val def = RArgumentInfo.getArgumentByName(context.functionCall, "def")) {
       is RFunctionExpression -> def.expression
       is RIdentifierExpression -> ((def.reference.resolve() as? RAssignmentStatement)?.assignedValue as? RFunctionExpression)?.expression
       else -> null

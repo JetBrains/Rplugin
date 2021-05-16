@@ -42,6 +42,7 @@ dependencies {
     compile("com.google.protobuf:protobuf-java:$protobufVersion")
     compile("io.grpc:grpc-stub:$grpcVersion")
     compile("io.grpc:grpc-protobuf:$grpcVersion")
+    compile("org.assertj:assertj-core:3.18.1")
     runtimeOnly("io.grpc:grpc-netty-shaded:$grpcVersion")
     protobuf(files("protos/", "grammars/"))
 }
