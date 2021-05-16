@@ -450,8 +450,6 @@ You can find the source code in the following repositories:
         <enterHandlerDelegate implementation="org.jetbrains.r.roxygen.RoxygenEnterDelegateToHostHandler" order="last"/>
         <backspaceHandlerDelegate implementation="org.jetbrains.r.editor.RBackspaceHandler"/>
 
-        <lang.elementManipulator forClass="org.jetbrains.r.psi.api.RStringLiteralExpression"
-                                 implementationClass="org.jetbrains.r.psi.RStringManipulator"/>
         <lang.findUsagesProvider implementationClass="org.jetbrains.r.psi.references.RFindUsagesProvider" language="R"/>
         <lang.findUsagesProvider implementationClass="org.jetbrains.r.roxygen.usage.RoxygenFindUsagesProvider" language="Roxygen"/>
         <elementDescriptionProvider implementation="org.jetbrains.r.psi.references.RPomTargetDescriptionProvider"/>
