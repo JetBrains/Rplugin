@@ -18,6 +18,9 @@ class ColoredTextConsole(project: Project, viewer: Boolean = false) :
 
   private val ansiEscapeDecoder = AnsiEscapeDecoder()
 
+  // when it's true its save to call editor, otherwise call 'editor' will throw an NPE
+  private val objectInitialized = true;
+
   fun addData(message: String, outputType: Key<*>) {
     ansiEscapeDecoder.escapeText(message, outputType, this)
   }
@@ -28,7 +31,7 @@ class ColoredTextConsole(project: Project, viewer: Boolean = false) :
 
   override fun setUI(ui: PanelUI?) {
     super.setUI(ui)
-    if (editor != null) {
+    if (objectInitialized && editor != null) {
       (editor as EditorImpl).backgroundColor = UIUtil.getPanelBackground()
     }
   }
