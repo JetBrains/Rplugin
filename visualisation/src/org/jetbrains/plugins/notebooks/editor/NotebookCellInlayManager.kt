@@ -257,10 +257,16 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
       )
     }
     if (inlays.put(inlay, controller) !== controller) {
-      Disposer.register(inlay, Disposable {
+      val disposable = Disposable {
         inlay.renderer.castSafelyTo<JComponent>()?.putClientProperty(DataManager.CLIENT_PROPERTY_DATA_PROVIDER, null)
         inlays.remove(inlay)
-      })
+      }
+      if (Disposer.isDisposed(inlay)) {
+        @Suppress("SSBasedInspection")
+        disposable.dispose()
+      } else {
+        Disposer.register(inlay, disposable)
+      }
     }
   }
 
