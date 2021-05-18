@@ -29,7 +29,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       <root> (2)
        Variable
         my.local.variable
-       Found usages (2)
+       Usages in Project Files (2)
         Unclassified (2)
          light_idea_test_case (2)
            (2)
@@ -52,7 +52,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       <root> (2)
        Function
         my.local.function
-       Found usages (2)
+       Usages in Project Files (2)
         Unclassified (2)
          light_idea_test_case (2)
            (2)
@@ -70,7 +70,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       <root> (2)
        Function
         packageDescription(pkg, lib.loc = NULL, fields = NULL, drop = TRUE, encoding = "")
-       Found usages (2)
+       Usages in Project Files (2)
         Unclassified (2)
          light_idea_test_case (2)
            (2)
@@ -93,7 +93,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       <root> (2)
        Function parameter
         x
-       Found usages (2)
+       Usages in Project Files (2)
         Unclassified (2)
          light_idea_test_case (2)
            (2)
@@ -120,7 +120,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       <root> (2)
        Function parameter
         x
-       Found usages (2)
+       Usages in Project Files (2)
         Unclassified (1)
          light_idea_test_case (1)
            (1)
@@ -153,7 +153,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       <root> (2)
        Function
         bar
-       Found usages (2)
+       Usages in Project Files (2)
         Unclassified (1)
          light_idea_test_case (1)
            (1)
@@ -178,7 +178,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       <root> (2)
        S4 class
         MyClass
-       Found usages (2)
+       Usages in Project Files (2)
         Unclassified (2)
          light_idea_test_case (2)
            (2)
@@ -203,7 +203,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       <root> (4)
        S4 slot
         slot
-       Found usages (4)
+       Usages in Project Files (4)
         Unclassified (4)
          light_idea_test_case (4)
            (4)
@@ -232,7 +232,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       <root> (6)
        S4 slot
         slot
-       Found usages (6)
+       Usages in Project Files (6)
         Unclassified (6)
          light_idea_test_case (6)
            (6)
