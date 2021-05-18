@@ -697,6 +697,18 @@ You can find the source code in the following repositories:
                          bundle="messages.RPluginBundle" key="inspection.virtual.s4class.instance.name"
                          implementationClass="org.jetbrains.r.inspections.s4class.InstanceOfVirtualS4ClassInspection"/>
 
+        <localInspection shortName="RMissingS4ClassNameInspection" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RPluginBundle" key="inspection.missing.s4.class.name.name"
+                         implementationClass="org.jetbrains.r.inspections.s4class.MissingS4ClassNameInspection"/>
+
+        <localInspection shortName="RUnknownS4ClassNameInspection" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RPluginBundle" key="inspection.unknown.s4.class.name.name"
+                         implementationClass="org.jetbrains.r.inspections.s4class.UnknownS4ClassNameInspection"/>
+
+        <localInspection shortName="RUnknownS4GenericInspection" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RPluginBundle" key="inspection.unknown.s4.generic.name"
+                         implementationClass="org.jetbrains.r.inspections.s4class.UnknownS4GenericInspection"/>
+
         <localInspection shortName="RStudioAPISourceMarkerInspection" language="R" enabledByDefault="true" groupName="R"
                        bundle="messages.RPluginBundle" key="rstudioapi.source.markers.name"
                        implementationClass="org.jetbrains.r.rinterop.rstudioapi.RStudioAPISourceMarkerInspection"/>
