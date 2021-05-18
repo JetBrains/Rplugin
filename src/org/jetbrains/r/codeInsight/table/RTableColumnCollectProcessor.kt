@@ -10,7 +10,7 @@ open class RTableColumnCollectProcessor : CommonProcessors.CollectProcessor<Tabl
       .map { (name, list) ->
         list.groupBy { it.quoteNeeded }.map {(quoteNeeded, list) -> TableColumnInfo(name,
                                                                                     StringUtils.join(list.mapNotNull { it.type }.toSet(), "/"),
-                                                                                    definition = list.map { it.definition }.firstOrNull(),
+                                                                                    definition = list.mapNotNull { it.definition }.firstOrNull(),
                                                                                     quoteNeeded = quoteNeeded)}
 
       }.flatten().toMutableList()

@@ -9,6 +9,15 @@ import org.jetbrains.r.console.addRuntimeInfo
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 class RTableColumnResolveTest : RProcessHandlerBaseTestCase() {
+  override fun setUp() {
+    super.setUp()
+
+    addLibraries()
+
+    rInterop.executeCode("library(data.table)", true)
+    rInterop.executeCode("library(dplyr)", true)
+  }
+
   fun testResolveInCall() {
     doTest(
       "my_column=letters",
