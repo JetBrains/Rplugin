@@ -60,11 +60,6 @@ class RFindUsagesProvider : FindUsagesProvider {
       return RBundle.message("find.usages.s4.class")
     }
 
-    if (element is RStringLiteralExpression &&
-        RS4ContextProvider.getS4Context(element, RS4SetClassClassNameContext::class) != null) {
-      return RBundle.message("find.usages.s4.class")
-    }
-
     if (RPsiUtil.getNamedArgumentByNameIdentifier(element as RPsiElement) != null &&
         RS4ContextProvider.getS4Context(element, RS4SlotDeclarationContext::class) != null) {
       return RBundle.message("find.usages.s4.slot")

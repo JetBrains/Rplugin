@@ -15,6 +15,9 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.classes.s4.classInfo.RS4ComplexSlotPomTarget
 import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4ClassPomTarget
 import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4SlotPomTarget
+import org.jetbrains.r.classes.s4.classInfo.RStringLiteralPomTarget
+import org.jetbrains.r.classes.s4.context.RS4ContextProvider
+import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassClassNameContext
 
 class RS4PomTargetDescriptionProvider : PomDescriptionProvider() {
   override fun getElementDescription(element: PomTarget, location: ElementDescriptionLocation): String? = when (location) {
@@ -28,6 +31,12 @@ class RS4PomTargetDescriptionProvider : PomDescriptionProvider() {
   private fun getType(element: PomTarget): String? = when (element) {
     is RSkeletonS4ClassPomTarget -> RBundle.message("find.usages.s4.class")
     is RSkeletonS4SlotPomTarget, is RS4ComplexSlotPomTarget -> RBundle.message("find.usages.s4.slot")
+    is RStringLiteralPomTarget -> {
+      if (RS4ContextProvider.getS4Context(element.literal, RS4SetClassClassNameContext::class) != null) {
+        RBundle.message("find.usages.s4.class")
+      }
+      else null
+    }
     else -> null
   }
 
@@ -35,6 +44,7 @@ class RS4PomTargetDescriptionProvider : PomDescriptionProvider() {
     is RSkeletonS4ClassPomTarget -> element.setClass.associatedS4ClassInfo.className
     is RSkeletonS4SlotPomTarget -> element.name
     is RS4ComplexSlotPomTarget -> element.slot.name
+    is RStringLiteralPomTarget -> element.literal.name
     else -> null
   }
 
