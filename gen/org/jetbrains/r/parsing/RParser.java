@@ -37,9 +37,9 @@ public class RParser implements PsiParser, LightPsiParser {
 
   public static final TokenSet[] EXTENDS_SETS_ = new TokenSet[] {
     create_token_set_(R_AND_OPERATOR, R_ASSIGN_OPERATOR, R_AT_OPERATOR, R_COLON_OPERATOR,
-      R_COMPARE_OPERATOR, R_EXP_OPERATOR, R_INFIX_OPERATOR, R_LIST_SUBSET_OPERATOR,
-      R_MULDIV_OPERATOR, R_NOT_OPERATOR, R_OR_OPERATOR, R_PLUSMINUS_OPERATOR,
-      R_TILDE_OPERATOR),
+      R_COMPARE_OPERATOR, R_EXP_OPERATOR, R_FORWARD_PIPE_OPERATOR, R_INFIX_OPERATOR,
+      R_LIST_SUBSET_OPERATOR, R_MULDIV_OPERATOR, R_NOT_OPERATOR, R_OR_OPERATOR,
+      R_PLUSMINUS_OPERATOR, R_TILDE_OPERATOR),
     create_token_set_(R_ASSIGNMENT_STATEMENT, R_AT_EXPRESSION, R_BLOCK_EXPRESSION, R_BOOLEAN_LITERAL,
       R_BOUNDARY_LITERAL, R_BREAK_STATEMENT, R_CALL_EXPRESSION, R_EMPTY_EXPRESSION,
       R_EXPRESSION, R_FOR_STATEMENT, R_FUNCTION_EXPRESSION, R_HELP_EXPRESSION,
@@ -274,6 +274,18 @@ public class RParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // '|>'
+  public static boolean forward_pipe_operator(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_pipe_operator")) return false;
+    if (!nextTokenIs(b, R_FORWARD_PIPE)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, R_FORWARD_PIPE);
+    exit_section_(b, m, R_FORWARD_PIPE_OPERATOR, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // expression else expression
   static boolean if_with_else(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "if_with_else")) return false;
@@ -354,7 +366,7 @@ public class RParser implements PsiParser, LightPsiParser {
   static boolean member_tag(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "member_tag")) return false;
     boolean r;
-    r = expression(b, l + 1, 29);
+    r = expression(b, l + 1, 30);
     if (!r) r = namespace_access_expression(b, l + 1);
     if (!r) r = parenthesized_expression(b, l + 1);
     return r;
@@ -780,15 +792,16 @@ public class RParser implements PsiParser, LightPsiParser {
   // 19: BINARY(plusminus_expression)
   // 20: BINARY(muldiv_expression)
   // 21: BINARY(infix_expression)
-  // 22: BINARY(colon_expression)
-  // 23: PREFIX(unary_plusminus_expression)
-  // 24: BINARY(exp_expression)
-  // 25: POSTFIX(subscription_expression)
-  // 26: POSTFIX(call_impl_expression)
-  // 27: POSTFIX(member_expression)
-  // 28: BINARY(at_expression)
-  // 29: PREFIX(namespace_access_expression)
-  // 30: ATOM(string_literal_expression) ATOM(numeric_literal_expression) ATOM(boolean_literal) ATOM(na_literal)
+  // 22: BINARY(forward_pipe_expression)
+  // 23: BINARY(colon_expression)
+  // 24: PREFIX(unary_plusminus_expression)
+  // 25: BINARY(exp_expression)
+  // 26: POSTFIX(subscription_expression)
+  // 27: POSTFIX(call_impl_expression)
+  // 28: POSTFIX(member_expression)
+  // 29: BINARY(at_expression)
+  // 30: PREFIX(namespace_access_expression)
+  // 31: ATOM(string_literal_expression) ATOM(numeric_literal_expression) ATOM(boolean_literal) ATOM(na_literal)
   //    ATOM(null_literal) ATOM(boundary_literal) ATOM(invalid_literal) ATOM(identifier_expression)
   public static boolean expression(PsiBuilder b, int l, int g) {
     if (!recursion_guard_(b, l, "expression")) return false;
@@ -868,28 +881,32 @@ public class RParser implements PsiParser, LightPsiParser {
         r = expression(b, l, 21);
         exit_section_(b, l, m, R_OPERATOR_EXPRESSION, r, true, null);
       }
-      else if (g < 22 && colon_expression_0(b, l + 1)) {
+      else if (g < 22 && forward_pipe_expression_0(b, l + 1)) {
         r = expression(b, l, 22);
         exit_section_(b, l, m, R_OPERATOR_EXPRESSION, r, true, null);
       }
-      else if (g < 24 && exp_expression_0(b, l + 1)) {
-        r = expression(b, l, 24);
+      else if (g < 23 && colon_expression_0(b, l + 1)) {
+        r = expression(b, l, 23);
         exit_section_(b, l, m, R_OPERATOR_EXPRESSION, r, true, null);
       }
-      else if (g < 25 && subscription_expression_0(b, l + 1)) {
+      else if (g < 25 && exp_expression_0(b, l + 1)) {
+        r = expression(b, l, 25);
+        exit_section_(b, l, m, R_OPERATOR_EXPRESSION, r, true, null);
+      }
+      else if (g < 26 && subscription_expression_0(b, l + 1)) {
         r = true;
         exit_section_(b, l, m, R_SUBSCRIPTION_EXPRESSION, r, true, null);
       }
-      else if (g < 26 && call_impl_expression_0(b, l + 1)) {
+      else if (g < 27 && call_impl_expression_0(b, l + 1)) {
         r = true;
         exit_section_(b, l, m, R_CALL_EXPRESSION, r, true, null);
       }
-      else if (g < 27 && member_expression_0(b, l + 1)) {
+      else if (g < 28 && member_expression_0(b, l + 1)) {
         r = true;
         exit_section_(b, l, m, R_MEMBER_EXPRESSION, r, true, null);
       }
-      else if (g < 28 && at_expression_0(b, l + 1)) {
-        r = expression(b, l, 28);
+      else if (g < 29 && at_expression_0(b, l + 1)) {
+        r = expression(b, l, 29);
         exit_section_(b, l, m, R_AT_EXPRESSION, r, true, null);
       }
       else {
@@ -1432,6 +1449,27 @@ public class RParser implements PsiParser, LightPsiParser {
     return r;
   }
 
+  // !<<isNewLine>> forward_pipe_operator
+  private static boolean forward_pipe_expression_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_pipe_expression_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = forward_pipe_expression_0_0(b, l + 1);
+    r = r && forward_pipe_operator(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // !<<isNewLine>>
+  private static boolean forward_pipe_expression_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forward_pipe_expression_0_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NOT_);
+    r = !isNewLine(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
   // !<<isNewLine>> colon_operator
   private static boolean colon_expression_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "colon_expression_0")) return false;
@@ -1460,7 +1498,7 @@ public class RParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_, null);
     r = plusminus_operator(b, l + 1);
     p = r;
-    r = p && expression(b, l, 23);
+    r = p && expression(b, l, 24);
     exit_section_(b, l, m, R_UNARY_PLUSMINUS_EXPRESSION, r, p, null);
     return r || p;
   }
@@ -1661,7 +1699,7 @@ public class RParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_, null);
     r = namespace_access_expression_0(b, l + 1);
     p = r;
-    r = p && expression(b, l, 29);
+    r = p && expression(b, l, 30);
     exit_section_(b, l, m, R_NAMESPACE_ACCESS_EXPRESSION, r, p, null);
     return r || p;
   }

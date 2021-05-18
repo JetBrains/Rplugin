@@ -26,6 +26,7 @@ public interface RElementTypes {
   IElementType R_EMPTY_EXPRESSION = new RElementType("R_EMPTY_EXPRESSION");
   IElementType R_EXPRESSION = new RElementType("R_EXPRESSION");
   IElementType R_EXP_OPERATOR = new RElementType("R_EXP_OPERATOR");
+  IElementType R_FORWARD_PIPE_OPERATOR = new RElementType("R_FORWARD_PIPE_OPERATOR");
   IElementType R_FOR_STATEMENT = new RElementType("R_FOR_STATEMENT");
   IElementType R_FUNCTION_EXPRESSION = new RElementType("R_FUNCTION_EXPRESSION");
   IElementType R_HELP_EXPRESSION = new RElementType("R_HELP_EXPRESSION");
@@ -75,6 +76,7 @@ public interface RElementTypes {
   IElementType R_EXP = new RElementType("^");
   IElementType R_FALSE = new RElementType("FALSE");
   IElementType R_FOR = new RElementType("for");
+  IElementType R_FORWARD_PIPE = new RElementType("|>");
   IElementType R_FUNCTION = new RElementType("function");
   IElementType R_GE = new RElementType(">=");
   IElementType R_GT = new RElementType(">");
@@ -176,6 +178,9 @@ public interface RElementTypes {
       }
       else if (type == R_EXP_OPERATOR) {
         return new RExpOperatorImpl(node);
+      }
+      else if (type == R_FORWARD_PIPE_OPERATOR) {
+        return new RForwardPipeOperatorImpl(node);
       }
       else if (type == R_FOR_STATEMENT) {
         return new RForStatementImpl(node);
