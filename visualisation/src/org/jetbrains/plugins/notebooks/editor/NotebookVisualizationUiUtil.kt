@@ -1,6 +1,5 @@
 package org.jetbrains.plugins.notebooks.editor
 
-import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentListener
@@ -101,28 +100,8 @@ fun Editor.getCell(line: Int): NotebookCellLines.Interval =
 fun Editor.getCells(lines: IntRange): List<NotebookCellLines.Interval> =
   NotebookCellLines.get(this).getCells(lines).toList()
 
-fun Editor.getPrimarySelectedCell(): NotebookCellLines.Interval =
-  getCell(caretModel.primaryCaret.logicalPosition.line)
-
-fun Editor.getSelectedCells(): List<NotebookCellLines.Interval> {
-  val notebookCellLines = NotebookCellLines.get(this)
-  return caretModel.allCarets.flatMap { caret ->
-    notebookCellLines.getCells(document.getSelectionLines(caret))
-  }.distinct()
-}
-
-fun Editor.isSelectedCell(cell: NotebookCellLines.Interval): Boolean =
-  caretModel.allCarets.any { caret ->
-    document.getSelectionLines(caret).hasIntersectionWith(cell.lines)
-  }
-
-fun Editor.deselectCell(cell: NotebookCellLines.Interval) {
-  for (caret in caretModel.allCarets) {
-    if (caret.logicalPosition.line in cell.lines) {
-      caretModel.removeCaret(caret)
-    }
-  }
-}
+fun NotebookCellLines.getCells(lines: IntRange): Sequence<NotebookCellLines.Interval> =
+  intervalsIterator(lines.first).asSequence().takeWhile { it.lines.first <= lines.last }
 
 fun groupNeighborCells(cells: List<NotebookCellLines.Interval>): List<List<NotebookCellLines.Interval>> {
   val groups = SmartList<SmartList<NotebookCellLines.Interval>>()
@@ -134,12 +113,6 @@ fun groupNeighborCells(cells: List<NotebookCellLines.Interval>): List<List<Noteb
   }
   return groups
 }
-
-private fun NotebookCellLines.getCells(lines: IntRange): Sequence<NotebookCellLines.Interval> =
-  intervalsIterator(lines.first).asSequence().takeWhile { it.lines.first <= lines.last }
-
-private fun Document.getSelectionLines(caret: Caret): IntRange =
-  IntRange(getLineNumber(caret.selectionStart), getLineNumber(caret.selectionEnd))
 
 /** Both lists should be sorted by the [IntRange.first]. */
 fun MutableList<IntRange>.mergeAndJoinIntersections(other: List<IntRange>) {
