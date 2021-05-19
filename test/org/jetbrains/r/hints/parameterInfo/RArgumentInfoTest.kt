@@ -186,8 +186,18 @@ class RArgumentInfoTest : RLightCodeInsightFixtureTestCase() {
     """.trimIndent(), listOf(1), listOf("b"))
 
     doTest("""
+      foo <- function(a, b, c) 42
+      100 |> fo<caret>o(c = 10)
+    """.trimIndent(), listOf(1), listOf("b"))
+
+    doTest("""
       foo <- function(a) 42
       42 %>% fo<caret>o(c = 10, a = 10, 10, 20, 30)
+    """.trimIndent(), emptyList(), emptyList())
+
+    doTest("""
+      foo <- function(a) 42
+      42 |> fo<caret>o(c = 10, a = 10, 10, 20, 30)
     """.trimIndent(), emptyList(), emptyList())
   }
 
@@ -210,6 +220,11 @@ class RArgumentInfoTest : RLightCodeInsightFixtureTestCase() {
     doTest("""
       foo <- function(a, b, ..., c) 42
       50 %>% fo<caret>o(10, l = 20, z = 30, b = 40, a = 50, c = 60, 90)
+    """.trimIndent(), 0, 1, 2, 3, 7)
+
+    doTest("""
+      foo <- function(a, b, ..., c) 42
+      50 |> fo<caret>o(10, l = 20, z = 30, b = 40, a = 50, c = 60, 90)
     """.trimIndent(), 0, 1, 2, 3, 7)
 
     doTest("""
@@ -238,6 +253,11 @@ class RArgumentInfoTest : RLightCodeInsightFixtureTestCase() {
     doTest("""
       foo <- function(a, b, ..., d) 42
       42 %>% fo<caret>o(d = 10, 20, 30, a = 80, 90)
+    """.trimIndent(), "b", "d", "...", "...", "a", "...")
+
+    doTest("""
+      foo <- function(a, b, ..., d) 42
+      42 |> fo<caret>o(d = 10, 20, 30, a = 80, 90)
     """.trimIndent(), "b", "d", "...", "...", "a", "...")
 
     doTest("""
@@ -274,6 +294,11 @@ class RArgumentInfoTest : RLightCodeInsightFixtureTestCase() {
     doTest("""
       foo <- function(a, b, f) 42
       42 %>% fo<caret>o(10)
+    """.trimIndent(), "a", "b")
+
+    doTest("""
+      foo <- function(a, b, f) 42
+      42 |> fo<caret>o(10)
     """.trimIndent(), "a", "b")
   }
 
