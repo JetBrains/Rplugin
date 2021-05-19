@@ -182,6 +182,8 @@ class RParsingTest : RUsefulTestCase() {
 
   fun testIncorrectNewLines() = doTest()
 
+  fun testForwardPipe() = doTest()
+
   //---------------------------------------
   private fun doTest() {
     val testName = getTestName(false)

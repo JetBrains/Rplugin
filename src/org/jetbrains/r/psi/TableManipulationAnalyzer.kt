@@ -12,6 +12,7 @@ import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.packages.RSkeletonUtil
+import org.jetbrains.r.psi.RPsiUtil.isPipeOperator
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.references.RResolveUtil
 import org.jetbrains.r.rinterop.TableColumnsInfo
@@ -108,7 +109,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
       is RSubscriptionExpression -> getCallInfoFromSubscriptionExpression(expression, runtimeInfo)
       is ROperatorExpression -> {
         if (!expression.isBinary) return null
-        if (expression.operator?.name != PIPE_OPERATOR) return null
+        if (isPipeOperator(expression.operator)) return null
 
         val function: T
         val argList: RArgumentHolder
@@ -183,8 +184,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
       return processTableFromVariable(element, processor)
     }
     else if (element is ROperatorExpression) {
-      val operator = element.operator
-      if (operator == null || PIPE_OPERATOR != operator.text) {
+      if (!isPipeOperator(element.operator)) {
         return true
       }
       val rightExpr = element.rightExpr
@@ -383,8 +383,6 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
   )
 
   companion object {
-    private const val PIPE_OPERATOR = "%>%"
-
     fun processOperandColumns(operandProcessorRunner: ProcessOperandColumnRunner?,
                               @Suppress("UNUSED_PARAMETER") expression: RExpression,
                               @Suppress("UNUSED_PARAMETER") callInfo: TableManipulationCallInfo<*>,

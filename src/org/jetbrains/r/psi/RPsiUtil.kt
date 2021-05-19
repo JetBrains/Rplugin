@@ -26,7 +26,7 @@ object RPsiUtil {
   val OPERATORS = TokenSet.create(
     R_MINUS, R_PLUS, R_NOT, R_TILDE, R_HELP,
     R_COLON, R_MULT, R_DIV, R_EXP,
-    R_INFIX_OP, R_LT, R_GT, R_EQEQ, R_GE,
+    R_INFIX_OP, R_FORWARD_PIPE_OPERATOR, R_LT, R_GT, R_EQEQ, R_GE,
     R_LE, R_AND, R_ANDAND, R_OR, R_OROR,
     R_LEFT_ASSIGN, R_RIGHT_ASSIGN, R_LIST_SUBSET, R_AT)
 
@@ -140,6 +140,15 @@ object RPsiUtil {
 
   fun isWhitespaceWithNL(psi: PsiElement): Boolean = isWhitespaceWithNL(psi.node)
   fun isWhitespaceWithNL(node: ASTNode): Boolean = node.elementType == TokenType.WHITE_SPACE && node.textContains('\n')
+
+  private const val PIPE_OPERATOR = "%>%"
+  fun isPipeOperator(operator: ROperator?): Boolean {
+    if (operator == null) {
+      return false
+    }
+
+    return operator is RForwardPipeOperator || operator.name == PIPE_OPERATOR
+  }
 }
 
 val RIdentifierExpression.isInsideSubscription: Boolean

@@ -185,6 +185,8 @@ STRING_WITHOUT_END=({QUOTED_LITERAL_WITHOUT_END} | {DOUBLE_QUOTED_LITERAL_WITHOU
 "&&"                        { return R_ANDAND; }
 "||"                        { return R_OROR; }
 
+// Pipes
+"|>"                        { return R_FORWARD_PIPE; }
 
 //arithmetic
 "-"                         { return R_MINUS; }

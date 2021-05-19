@@ -78,6 +78,10 @@ public class RVisitor extends PsiElementVisitor {
     // visitLoopStatement(o);
   }
 
+  public void visitForwardPipeOperator(@NotNull RForwardPipeOperator o) {
+    visitOperator(o);
+  }
+
   public void visitFunctionExpression(@NotNull RFunctionExpression o) {
     visitExpression(o);
     // visitControlFlowHolder(o);

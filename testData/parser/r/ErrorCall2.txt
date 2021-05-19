@@ -7,6 +7,6 @@ RFile:ErrorCall2.r
       PsiElement(()('(')
       R_NUMERIC_LITERAL_EXPRESSION
         PsiElement(NUMERIC)('10')
-      PsiErrorElement:$, '(', ')', ',', ':', <and operator>, <compare operator>, <left assign operator>, <muldiv operator>, <no comma tail>, <or operator>, <plusminus operator>, <right assign operator>, '=', '@', INFIX_OP, '^' or '~' expected
+      PsiErrorElement:$, '(', ')', ',', ':', <and operator>, <compare operator>, <left assign operator>, <muldiv operator>, <no comma tail>, <or operator>, <plusminus operator>, <right assign operator>, '=', '@', INFIX_OP, '^', '|>' or '~' expected
         <empty list>
   PsiWhiteSpace('\n')

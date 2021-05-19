@@ -1,0 +1,18 @@
+RFile:ForwardPipe.r
+  R_OPERATOR_EXPRESSION
+    R_CALL_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('call')
+      R_ARGUMENT_LIST
+        PsiElement(()('(')
+        PsiElement())(')')
+    PsiWhiteSpace(' ')
+    R_FORWARD_PIPE_OPERATOR
+      PsiElement(|>)('|>')
+    PsiWhiteSpace(' ')
+    R_CALL_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('call2')
+      R_ARGUMENT_LIST
+        PsiElement(()('(')
+        PsiElement())(')')

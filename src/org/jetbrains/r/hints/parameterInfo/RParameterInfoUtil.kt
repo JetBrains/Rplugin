@@ -13,6 +13,7 @@ import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.util.io.StringRef
 import org.jetbrains.r.psi.RPsiUtil
+import org.jetbrains.r.psi.RPsiUtil.isPipeOperator
 import org.jetbrains.r.psi.api.*
 
 /**
@@ -148,14 +149,13 @@ class RArgumentInfo private constructor(argumentList: RArgumentHolder, val param
       return result
     }
 
-    private const val PIPE_OPERATOR = "%>%"
     private val ARGUMENT_INFO_KEY =
       Key.create<CachedValue<RArgumentInfo>>("org.jetbrains.r.hints.parameterInfo.RArgumentInfo")
 
     private fun findPipeArgument(argumentHolder: RArgumentHolder): RExpression? {
       val call = if (argumentHolder is RArgumentList) argumentHolder.parent else argumentHolder
       val callParent = call.parent as? ROperatorExpression ?: return null
-      return if (callParent.operator?.name == PIPE_OPERATOR && callParent.rightExpr == call) callParent.leftExpr
+      return if (isPipeOperator(callParent.operator) && callParent.rightExpr == call) callParent.leftExpr
       else null
     }
   }

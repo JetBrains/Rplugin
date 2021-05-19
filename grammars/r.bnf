@@ -57,6 +57,7 @@
   MULT="*"
   DIV="/"
   EXP="^"
+  FORWARD_PIPE="|>"
   LIST_SUBSET="$"
   COLON=":"
   LPAR="("
@@ -117,7 +118,7 @@ expression ::=
     block_expression | help_expression | parenthesized_expression |
     function_expression | left_assign_expression | eq_assign_expression | right_assign_expression |
     unary_tilde_expression | tilde_expression | or_expression | and_expression | unary_not_expression | compare_expression | plusminus_expression |
-    muldiv_expression | infix_expression | colon_expression | unary_plusminus_expression | exp_expression | subscription_expression |
+    muldiv_expression | infix_expression | forward_pipe_expression| colon_expression | unary_plusminus_expression | exp_expression | subscription_expression |
     call_impl_expression | member_expression | at_expression | namespace_access_expression | primitive_expression { methods= [ getReference ] }
 
 //operators
@@ -151,6 +152,7 @@ muldiv_operator ::= '*' | '/'
 colon_operator ::= ':' // used for sequences and interactions
 exp_operator ::= '^'
 infix_operator ::= INFIX_OP { methods = [getName setName] }
+forward_pipe_operator ::= '|>'
 not_operator ::= '!'
 at_operator ::= '@'
 list_subset_operator ::= '$'
@@ -173,6 +175,7 @@ muldiv_expression ::= expression !<<isNewLine>> muldiv_operator expression { ele
 exp_expression ::= expression !<<isNewLine>> exp_operator expression { elementType=operator_expression }
 colon_expression ::= expression !<<isNewLine>> colon_operator expression { elementType=operator_expression }
 infix_expression ::= expression !<<isNewLine>> infix_operator expression { elementType=operator_expression }
+forward_pipe_expression ::= expression !<<isNewLine>> forward_pipe_operator expression { elementType=operator_expression }
 
 // unary operator expressions
 unary_not_expression ::= not_operator expression { extends=operator_expression }
