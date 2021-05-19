@@ -97,7 +97,11 @@ private class OutputCollapsingGutterMouseListener : EditorMouseListener, EditorM
 
   private fun getCollapsingComponent(editor: EditorEx, point: Point): CollapsingComponent? {
     val surroundingComponent: SurroundingComponent =
-      editor.contentComponent.getComponentAt(0, point.y).castSafelyTo<JComponent>()?.getComponent(0)?.castSafelyTo()
+      editor.contentComponent.getComponentAt(0, point.y)
+        .castSafelyTo<JComponent>()
+        ?.takeIf { it.componentCount > 0 }
+        ?.getComponent(0)
+        ?.castSafelyTo()
       ?: return null
 
     val innerComponent: InnerComponent =
