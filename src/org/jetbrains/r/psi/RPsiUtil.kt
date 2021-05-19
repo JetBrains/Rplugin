@@ -140,6 +140,15 @@ object RPsiUtil {
 
   fun isWhitespaceWithNL(psi: PsiElement): Boolean = isWhitespaceWithNL(psi.node)
   fun isWhitespaceWithNL(node: ASTNode): Boolean = node.elementType == TokenType.WHITE_SPACE && node.textContains('\n')
+
+  private const val PIPE_OPERATOR = "%>%"
+  fun isPipeOperator(operator: ROperator?): Boolean {
+    if (operator == null) {
+      return false
+    }
+
+    return operator is RForwardPipeOperator || operator.name == PIPE_OPERATOR
+  }
 }
 
 val RIdentifierExpression.isInsideSubscription: Boolean

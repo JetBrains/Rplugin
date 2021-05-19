@@ -207,6 +207,17 @@ class RTableColumnResolveTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testResolveWithForwardPipe() {
+    doTest(
+      "my_column=letters",
+
+      """
+        tbl <- dplyr::tibble(my_column=letters)
+        tbl |> dplyr::filter(my_colu<caret>mn)
+      """.trimIndent()
+    )
+  }
+
   private fun doTest(resolveTargetParentText: String, text: String, fileType: LanguageFileType? = RFileType) {
     fileType?.let { myFixture.configureByText(it, text) }
     myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
