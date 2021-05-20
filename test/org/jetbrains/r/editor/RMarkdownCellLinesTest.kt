@@ -1,10 +1,13 @@
 package org.jetbrains.r.editor
 
 import com.intellij.openapi.actionSystem.IdeActions
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.testFramework.ThreadTracker
 import org.jetbrains.plugins.notebooks.editor.CodeCellLinesChecker
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.CellType.*
 import org.jetbrains.plugins.notebooks.editor.edt
+import org.junit.Before
 import org.junit.Test
 
 class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
@@ -611,5 +614,10 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
 
   private fun assertCodeCells(description: String = "", handler: CodeCellLinesChecker.() -> Unit) {
     CodeCellLinesChecker(description) { fixture.editor as EditorImpl }.invoke(handler)
+  }
+
+  @Before
+  fun before() {
+    ThreadTracker.longRunningThreadCreated(ApplicationManager.getApplication(), "Timer-", "BaseDataReader", "rwrapper")
   }
 }
