@@ -7,7 +7,7 @@ RFile:ShorthandFunction.r
       PsiElement(<-)('<-')
     PsiWhiteSpace(' ')
     R_FUNCTION_EXPRESSION
-      PsiElement(function)('\')
+      PsiElement(shorthand_function)('\')
       R_PARAMETER_LIST
         PsiElement(()('(')
         R_PARAMETER

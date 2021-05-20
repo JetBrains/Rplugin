@@ -113,7 +113,7 @@ boolean_literal ::= TRUE | FALSE { methods = [isTrue isFalse]}
 null_literal ::= NULL
 na_literal ::= NA | NA_integer_ | NA_real_ | NA_complex_ | NA_character_
 boundary_literal ::= Inf | NaN
-private function_literal ::= function | "\\"
+private function_literal ::= function | shorthand_function
 
 expression ::=
     if_statement | while_statement | for_statement | repeat_statement | break_statement | next_statement |

@@ -951,7 +951,7 @@ class _RLexer implements FlexLexer {
             // lookahead expression with fixed base length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL/*, zzStartRead, zzEndRead - zzStartRead*/, zzStartRead, 1);
-            { return R_FUNCTION;
+            { return R_SHORTHAND_FUNCTION;
             } 
             // fall through
           case 105: break;
