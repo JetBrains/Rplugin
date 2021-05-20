@@ -483,11 +483,13 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
         interval(CODE, 1..2)
         interval(MARKDOWN, 3..3)
       }
-      intervalListenerCall(1) {
+      intervalListenerCall(0) {
         before {
+          interval(MARKDOWN, 0..0)
           interval(MARKDOWN, 1..2)
         }
         after {
+          interval(MARKDOWN, 0..0)
           interval(CODE, 1..2)
           interval(MARKDOWN, 3..3)
         }
