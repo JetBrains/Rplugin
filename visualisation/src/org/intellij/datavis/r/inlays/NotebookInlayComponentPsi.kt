@@ -12,11 +12,13 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.*
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import org.intellij.datavis.r.inlays.components.*
 import org.intellij.datavis.r.ui.UiCustomizer
+import org.jetbrains.plugins.notebooks.editor.NotebookIntervalPointer
 import org.jetbrains.plugins.notebooks.editor.notebookAppearance
 import java.awt.BorderLayout
 import java.awt.Cursor
@@ -28,7 +30,77 @@ import javax.swing.JComponent
 import kotlin.math.max
 import kotlin.math.min
 
-class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImpl)
+class NotebookInlayComponentPsi(val cell: PsiElement, editor: EditorImpl) : NotebookInlayComponent(editor) {
+  override fun updateCellSeparator() {
+    if (!UiCustomizer.instance.showUpdateCellSeparator) {
+      return
+    }
+
+    if (separatorHighlighter != null &&
+        separatorHighlighter!!.startOffset == cell.textRange.startOffset &&
+        separatorHighlighter!!.endOffset == cell.textRange.endOffset) {
+      return
+    }
+
+    if (separatorHighlighter != null) {
+      editor.markupModel.removeHighlighter(separatorHighlighter!!)
+    }
+
+    // ToDo This is half-hack. The problem is that updateCellSeparator called from PSI change
+    // but if we have a lot of sequential changes in editor.document (line Backspace button is hold)
+    // document was updated but PSI update is async and that's why we have this check.
+    if (cell.textRange.endOffset > editor.document.textLength) {
+      return
+    }
+
+    try {
+      separatorHighlighter = createSeparatorHighlighter(editor, cell.textRange)
+    }
+    catch (e: Exception) {
+      e.printStackTrace()
+    }
+  }
+}
+
+class NotebookInlayComponentInterval(val cell: NotebookIntervalPointer, editor: EditorImpl) : NotebookInlayComponent(editor) {
+  override fun updateCellSeparator() {
+    if (!UiCustomizer.instance.showUpdateCellSeparator) {
+      return
+    }
+
+    if (separatorHighlighter != null) {
+      editor.markupModel.removeHighlighter(separatorHighlighter!!)
+    }
+
+    try {
+      val interval = cell.get() ?: return
+      val doc = editor.document
+      val textRange = TextRange(doc.getLineStartOffset(interval.lines.first), doc.getLineEndOffset(interval.lines.last))
+      separatorHighlighter = createSeparatorHighlighter(editor, textRange)
+    }
+    catch (e: Exception) {
+      e.printStackTrace()
+    }
+  }
+}
+
+private fun createSeparatorHighlighter(editor: EditorImpl, textRange: TextRange) =
+  editor.markupModel.addRangeHighlighter(textRange.startOffset, textRange.endOffset,
+                                         HighlighterLayer.SYNTAX - 1, null,
+                                         HighlighterTargetArea.LINES_IN_RANGE).apply {
+
+    customRenderer = NotebookInlayComponent.separatorRenderer
+    lineMarkerRenderer = LineMarkerRenderer { _, g, r ->
+      @Suppress("INACCESSIBLE_TYPE")
+      val gutterWidth = (editor.gutterComponentEx as JComponent).width
+
+      val y = r.y + r.height - editor.lineHeight
+      g.color = editor.colorsScheme.getColor(EditorColors.RIGHT_MARGIN_COLOR)
+      g.drawLine(0, y, gutterWidth + 10, y)
+    }
+  }
+
+abstract class NotebookInlayComponent(protected val editor: EditorImpl)
   : InlayComponent(), MouseListener, MouseMotionListener {
   companion object {
     val separatorRenderer = CustomHighlighterRenderer { editor, highlighter1, g ->
@@ -55,7 +127,7 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
 
   private var mouseOverNewParagraphArea = false
 
-  private var separatorHighlighter: RangeHighlighter? = null
+  protected var separatorHighlighter: RangeHighlighter? = null
 
   private val disposable = Disposer.newDisposable()
 
@@ -144,48 +216,7 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
   /**
    * Draw separator line below cell. Also fills cell background
    */
-  private fun updateCellSeparator() {
-    if (!UiCustomizer.instance.showUpdateCellSeparator) {
-      return
-    }
-
-    if (separatorHighlighter != null &&
-        separatorHighlighter!!.startOffset == cell.textRange.startOffset &&
-        separatorHighlighter!!.endOffset == cell.textRange.endOffset) {
-      return
-    }
-
-    if (separatorHighlighter != null) {
-      editor.markupModel.removeHighlighter(separatorHighlighter!!)
-    }
-
-    // ToDo This is half-hack. The problem is that updateCellSeparator called from PSI change
-    // but if we have a lot of sequential changes in editor.document (line Backspace button is hold)
-    // document was updated but PSI update is async and that's why we have this check.
-    if(cell.textRange.endOffset > editor.document.textLength) {
-      return
-    }
-
-    try {
-      separatorHighlighter = editor.markupModel.addRangeHighlighter(cell.textRange.startOffset, cell.textRange.endOffset,
-                                                                    HighlighterLayer.SYNTAX - 1, null,
-                                                                    HighlighterTargetArea.LINES_IN_RANGE).apply {
-
-        customRenderer = separatorRenderer
-
-        lineMarkerRenderer = LineMarkerRenderer { _, g, r ->
-          @Suppress("INACCESSIBLE_TYPE")
-          val gutterWidth = (editor.gutterComponentEx as JComponent).width
-
-          val y = r.y + r.height - editor.lineHeight
-          g.color = editor.colorsScheme.getColor(EditorColors.RIGHT_MARGIN_COLOR)
-          g.drawLine(0, y, gutterWidth + 10, y)
-        }
-      }
-    } catch (e: Exception) {
-      e.printStackTrace()
-    }
-  }
+  protected abstract fun updateCellSeparator()
 
   override fun assignInlay(inlay: Inlay<*>) {
     super.assignInlay(inlay)

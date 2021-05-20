@@ -39,7 +39,7 @@ class RMarkdownOutputInlayController private constructor(
 ) : NotebookCellInlayController, RMarkdownNotebookOutput {
 
   private val notebook: RMarkdownNotebook = RMarkdownNotebook.installIfNotExists(editor)
-  private var inlayComponent: NotebookInlayComponent = addInlayComponent(editor, psiElement, inlayOffset)
+  private var inlayComponent: NotebookInlayComponentPsi = addInlayComponent(editor, psiElement, inlayOffset)
   override var inlay: Inlay<*> = inlayComponent.inlay!!
 
   init {
@@ -58,7 +58,7 @@ class RMarkdownOutputInlayController private constructor(
     return result
   }
 
-  private fun registerDisposable(registeredInlayComponent: NotebookInlayComponent) {
+  private fun registerDisposable(registeredInlayComponent: NotebookInlayComponentPsi) {
     Disposer.register(registeredInlayComponent.inlay!!, Disposable {
       if (skipDisposeComponent)
         return@Disposable
@@ -143,9 +143,9 @@ class RMarkdownOutputInlayController private constructor(
     inlayComponent.clearOutputs()
   }
 
-  private fun addInlayComponent(editor: EditorImpl, cell: PsiElement, offset: Int): NotebookInlayComponent {
+  private fun addInlayComponent(editor: EditorImpl, cell: PsiElement, offset: Int): NotebookInlayComponentPsi {
     InlayDimensions.init(editor)
-    val inlayComponent = NotebookInlayComponent(cell, editor)
+    val inlayComponent = NotebookInlayComponentPsi(cell, editor)
 
     // On editor creation it has 0 width
     val gutterWidth = (editor.gutter as EditorGutterComponentEx).width
@@ -234,11 +234,11 @@ class RMarkdownOutputInlayController private constructor(
 }
 
 
-private fun addBlockElement(editor: Editor, offset: Int, inlayComponent: NotebookInlayComponent): Inlay<NotebookInlayComponent> =
+private fun addBlockElement(editor: Editor, offset: Int, inlayComponent: NotebookInlayComponentPsi): Inlay<NotebookInlayComponentPsi> =
   editor.inlayModel.addBlockElement(offset, true, false, EditorInlaysManager.INLAY_PRIORITY, inlayComponent)!!
 
 
-private fun setupInlayComponent(editor: Editor, inlayComponent: NotebookInlayComponent) {
+private fun setupInlayComponent(editor: Editor, inlayComponent: NotebookInlayComponentPsi) {
   val scrollKeeper = EditorScrollingPositionKeeper(editor)
 
   fun updateInlaysInEditor(editor: Editor) {
@@ -268,7 +268,7 @@ private fun getPsiElement(editor: Editor, offset: Int): PsiElement? =
 private fun getCodeFenceEnd(psiElement: PsiElement): PsiElement? =
   psiElement.let { it.parent.children.find { it.elementType == MarkdownTokenTypes.CODE_FENCE_END } }
 
-private fun disposeComponent(component: NotebookInlayComponent) {
+private fun disposeComponent(component: NotebookInlayComponentPsi) {
   component.parent?.remove(component)
   component.disposeInlay()
   component.dispose()

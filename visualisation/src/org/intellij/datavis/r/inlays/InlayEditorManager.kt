@@ -56,7 +56,7 @@ import kotlin.math.min
  */
 class EditorInlaysManager(val project: Project, private val editor: EditorImpl, val descriptor: InlayElementDescriptor) {
 
-  private val inlays: MutableMap<PsiElement, NotebookInlayComponent> = LinkedHashMap()
+  private val inlays: MutableMap<PsiElement, NotebookInlayComponentPsi> = LinkedHashMap()
   private val inlayElements = LinkedHashSet<PsiElement>()
   private val scrollKeeper: EditorScrollingPositionKeeper = EditorScrollingPositionKeeper(editor)
   private val viewportQueue = MergingUpdateQueue(VIEWPORT_TASK_NAME, VIEWPORT_TIME_SPAN, true, null, project)
@@ -183,12 +183,12 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     }
   }
 
-  private fun addInlayOutputs(inlayComponent: NotebookInlayComponent,
+  private fun addInlayOutputs(inlayComponent: NotebookInlayComponentPsi,
                               inlayOutputs: List<InlayOutput>) {
     inlayComponent.addInlayOutputs(inlayOutputs) { removeInlay(inlayComponent) }
   }
 
-  private fun removeInlay(inlayComponent: NotebookInlayComponent, cleanup: Boolean = true) {
+  private fun removeInlay(inlayComponent: NotebookInlayComponentPsi, cleanup: Boolean = true) {
     val cell = inlayComponent.cell
     if (cleanup && cell.isValid) descriptor.cleanup(cell)
     inlayComponent.parent?.remove(inlayComponent)
@@ -296,7 +296,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     }.inSmartMode(project).submit(NonUrgentExecutor.getInstance())
   }
 
-  private fun getInlayComponentByOffset(offset: Int): NotebookInlayComponent? {
+  private fun getInlayComponentByOffset(offset: Int): NotebookInlayComponentPsi? {
     return if (offset == editor.document.textLength)
       inlays.entries.firstOrNull { it.key.textRange.containsOffset(offset) }?.value
     else
@@ -337,7 +337,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     inlays.values.forEach { updateInlayPosition(it) }
   }
 
-  private fun setupInlayComponent(inlayComponent: NotebookInlayComponent) {
+  private fun setupInlayComponent(inlayComponent: NotebookInlayComponentPsi) {
 
     fun updateInlaysInEditor(editor: Editor) {
 
@@ -373,7 +373,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   }
 
   /** It could be that user started to type below inlay. In this case we will detect new position and perform inlay repositioning. */
-  private fun updateInlayPosition(inlayComponent: NotebookInlayComponent) {
+  private fun updateInlayPosition(inlayComponent: NotebookInlayComponentPsi) {
     // editedCell here contains old text. This event will be processed by PSI later.
     val offset = descriptor.getInlayOffset(inlayComponent.cell)
     if (inlayComponent.inlay!!.offset != offset) {
@@ -384,11 +384,11 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     inlayComponent.updateComponentBounds(inlayComponent.inlay!!)
   }
 
-  private fun addBlockElement(offset: Int, inlayComponent: NotebookInlayComponent): Inlay<NotebookInlayComponent> {
+  private fun addBlockElement(offset: Int, inlayComponent: NotebookInlayComponentPsi): Inlay<NotebookInlayComponentPsi> {
     return editor.inlayModel.addBlockElement(offset, true, false, INLAY_PRIORITY, inlayComponent)
   }
 
-  private fun addInlayComponent(cell: PsiElement): NotebookInlayComponent {
+  private fun addInlayComponent(cell: PsiElement): NotebookInlayComponentPsi {
 
     val existingInlay = inlays[cell]
     if (existingInlay != null) {
@@ -398,7 +398,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     InlayDimensions.init(editor)
 
     val offset = descriptor.getInlayOffset(cell)
-    val inlayComponent = NotebookInlayComponent(cell, editor)
+    val inlayComponent = NotebookInlayComponentPsi(cell, editor)
 
     // On editor creation it has 0 width
     val gutterWidth = (editor.gutter as EditorGutterComponentEx).width
@@ -419,7 +419,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     return inlayComponent
   }
 
-  private fun getInlayComponent(cell: PsiElement): NotebookInlayComponent? {
+  private fun getInlayComponent(cell: PsiElement): NotebookInlayComponentPsi? {
     return inlays[cell]
   }
 
