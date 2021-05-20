@@ -1,1 +1,26 @@
-call() |> call2()
+RFile:ShorthandFunction.r
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('a')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_FUNCTION_EXPRESSION
+      PsiElement(function)('\')
+      R_PARAMETER_LIST
+        PsiElement(()('(')
+        R_PARAMETER
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('x')
+        PsiElement())(')')
+      PsiWhiteSpace(' ')
+      R_OPERATOR_EXPRESSION
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('x')
+        PsiWhiteSpace(' ')
+        R_PLUSMINUS_OPERATOR
+          PsiElement(+)('+')
+        PsiWhiteSpace(' ')
+        R_NUMERIC_LITERAL_EXPRESSION
+          PsiElement(NUMERIC)('1')
