@@ -1,12 +1,9 @@
 package org.intellij.datavis.r.ui
 
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiElement
-import org.intellij.datavis.r.inlays.NotebookInlayComponent
 import org.intellij.datavis.r.inlays.components.GraphicsPanel
 import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.datavis.r.inlays.components.ToolbarPane
@@ -25,8 +22,6 @@ interface UiCustomizer {
   fun toolbarPaneProgressComponentChanged(toolbarPane: ToolbarPane, component: JComponent?)
 
   fun toolbarPaneMainPanelCreated(toolbarPane: ToolbarPane, panel: JPanel?)
-
-  fun createNotebookInlayComponent(cell: PsiElement, editor: EditorImpl): NotebookInlayComponent
 
   fun getTextOutputBackground(editor: Editor): Color
 

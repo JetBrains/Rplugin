@@ -21,7 +21,6 @@ import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.intellij.datavis.r.inlays.*
 import org.intellij.datavis.r.inlays.components.InlayProgressStatus
-import org.intellij.datavis.r.ui.UiCustomizer
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.plugins.notebooks.editor.*
 import org.jetbrains.r.rendering.chunk.ChunkDescriptorProvider
@@ -146,7 +145,7 @@ class RMarkdownOutputInlayController private constructor(
 
   private fun addInlayComponent(editor: EditorImpl, cell: PsiElement, offset: Int): NotebookInlayComponent {
     InlayDimensions.init(editor)
-    val inlayComponent = UiCustomizer.instance.createNotebookInlayComponent(cell, editor)
+    val inlayComponent = NotebookInlayComponent(cell, editor)
 
     // On editor creation it has 0 width
     val gutterWidth = (editor.gutter as EditorGutterComponentEx).width
