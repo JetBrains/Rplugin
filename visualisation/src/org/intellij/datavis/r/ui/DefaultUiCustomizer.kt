@@ -7,7 +7,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.util.ui.UIUtil
 import org.intellij.datavis.r.inlays.NotebookInlayComponent
-import org.intellij.datavis.r.inlays.NotebookInlayComponentImpl
 import org.intellij.datavis.r.inlays.components.GraphicsPanel
 import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.datavis.r.inlays.components.ToolbarPane
@@ -28,7 +27,7 @@ class DefaultUiCustomizer : UiCustomizer {
   override fun toolbarPaneMainPanelCreated(toolbarPane: ToolbarPane, panel: JPanel?): Unit = Unit
 
   override fun createNotebookInlayComponent(cell: PsiElement, editor: EditorImpl): NotebookInlayComponent =
-    NotebookInlayComponentImpl(cell, editor)
+    NotebookInlayComponent(cell, editor)
 
   override fun getTextOutputBackground(editor: Editor) = UIUtil.getPanelBackground()
 

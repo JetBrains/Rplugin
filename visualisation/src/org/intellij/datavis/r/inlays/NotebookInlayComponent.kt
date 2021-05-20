@@ -14,8 +14,10 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiElement
 import com.intellij.util.ui.JBUI
+import com.intellij.util.ui.UIUtil
 import org.intellij.datavis.r.inlays.components.*
 import org.intellij.datavis.r.ui.UiCustomizer
+import org.jetbrains.plugins.notebooks.editor.notebookAppearance
 import java.awt.BorderLayout
 import java.awt.Cursor
 import java.awt.Graphics
@@ -26,7 +28,7 @@ import javax.swing.JComponent
 import kotlin.math.max
 import kotlin.math.min
 
-abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImpl)
+class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImpl)
   : InlayComponent(), MouseListener, MouseMotionListener {
   companion object {
     val separatorRenderer = CustomHighlighterRenderer { editor, highlighter1, g ->
@@ -113,7 +115,31 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
     toolbar = null
   }
 
-  abstract override fun paintComponent(g: Graphics)
+  override fun paintComponent(g: Graphics) {
+    /** Paints rounded rect panel - background of inlay component. */
+    val g2d = g.create()
+
+    g2d.color = //if (selected) {
+      //inlay!!.editor.colorsScheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor
+      //}
+      //else {
+      (inlay!!.editor as EditorImpl).let {
+        it.notebookAppearance.getInlayBackgroundColor(it.colorsScheme) ?: it.backgroundColor
+      }
+    //}
+
+    g2d.fillRect(0, 0, width, InlayDimensions.topOffset + InlayDimensions.cornerRadius)
+    g2d.fillRect(0, height - InlayDimensions.bottomOffset - InlayDimensions.cornerRadius, width,
+                 InlayDimensions.bottomOffset + InlayDimensions.cornerRadius)
+
+
+    g2d.color = UIUtil.getLabelBackground()
+    g2d.fillRoundRect(0, InlayDimensions.topOffset, width,
+                      height - InlayDimensions.bottomOffset - InlayDimensions.topOffset,
+                      InlayDimensions.cornerRadius, InlayDimensions.cornerRadius)
+
+    g2d.dispose()
+  }
 
   /**
    * Draw separator line below cell. Also fills cell background
