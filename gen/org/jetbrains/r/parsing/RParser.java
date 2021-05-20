@@ -286,6 +286,17 @@ public class RParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // function | shorthand_function
+  static boolean function_literal(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "function_literal")) return false;
+    if (!nextTokenIs(b, "", R_FUNCTION, R_SHORTHAND_FUNCTION)) return false;
+    boolean r;
+    r = consumeToken(b, R_FUNCTION);
+    if (!r) r = consumeToken(b, R_SHORTHAND_FUNCTION);
+    return r;
+  }
+
+  /* ********************************************************** */
   // expression else expression
   static boolean if_with_else(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "if_with_else")) return false;
@@ -1201,13 +1212,13 @@ public class RParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // function parameter_list expression
+  // function_literal parameter_list expression
   public static boolean function_expression(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "function_expression")) return false;
-    if (!nextTokenIsSmart(b, R_FUNCTION)) return false;
+    if (!nextTokenIsSmart(b, R_FUNCTION, R_SHORTHAND_FUNCTION)) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, R_FUNCTION_EXPRESSION, null);
-    r = consumeTokenSmart(b, R_FUNCTION);
+    Marker m = enter_section_(b, l, _COLLAPSE_, R_FUNCTION_EXPRESSION, "<function expression>");
+    r = function_literal(b, l + 1);
     p = r; // pin = 1
     r = r && report_error_(b, parameter_list(b, l + 1));
     r = p && expression(b, l + 1, -1) && r;

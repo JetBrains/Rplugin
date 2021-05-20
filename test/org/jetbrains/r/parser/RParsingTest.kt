@@ -184,6 +184,8 @@ class RParsingTest : RUsefulTestCase() {
 
   fun testForwardPipe() = doTest()
 
+  fun testShorthandFunction() = doTest()
+
   //---------------------------------------
   private fun doTest() {
     val testName = getTestName(false)

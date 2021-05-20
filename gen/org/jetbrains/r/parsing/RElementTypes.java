@@ -122,6 +122,7 @@ public interface RElementTypes {
   IElementType R_RIGHT_COMPLEX_ASSIGN = new RElementType("->>");
   IElementType R_RPAR = new RElementType(")");
   IElementType R_SEMI = new RElementType(";");
+  IElementType R_SHORTHAND_FUNCTION = new RElementType("shorthand_function");
   IElementType R_STRING = new RElementType("STRING");
   IElementType R_TICK = new RElementType("`");
   IElementType R_TILDE = new RElementType("~");

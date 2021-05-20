@@ -166,6 +166,7 @@ STRING_WITHOUT_END=({QUOTED_LITERAL_WITHOUT_END} | {DOUBLE_QUOTED_LITERAL_WITHOU
 "repeat"                    { return R_REPEAT; }
 "while"                     { return R_WHILE; }
 "function"                  { return R_FUNCTION; }
+"\\" / "("                  { return R_SHORTHAND_FUNCTION; }
 "for"                       { return R_FOR; }
 "in"                        { return R_IN; }
 "next"                      { return R_NEXT; }

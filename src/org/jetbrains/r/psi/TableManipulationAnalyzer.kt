@@ -109,7 +109,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
       is RSubscriptionExpression -> getCallInfoFromSubscriptionExpression(expression, runtimeInfo)
       is ROperatorExpression -> {
         if (!expression.isBinary) return null
-        if (isPipeOperator(expression.operator)) return null
+        if (!isPipeOperator(expression.operator)) return null
 
         val function: T
         val argList: RArgumentHolder
