@@ -39,7 +39,6 @@ interface RDataFrameViewer : Disposable {
   fun refresh(): Promise<Boolean>
 
   override fun dispose() {
-    val a = 10;
   }
 
   fun registerDisposable(parent: Disposable, virtualFile: RTableVirtualFile?) {
