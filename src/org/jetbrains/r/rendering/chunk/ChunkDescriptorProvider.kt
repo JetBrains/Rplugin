@@ -18,7 +18,10 @@ import com.intellij.ui.scale.JBUIScale
 import com.intellij.util.IconUtil
 import com.intellij.util.ui.ImageUtil
 import com.intellij.util.ui.UIUtil
-import org.intellij.datavis.r.inlays.*
+import org.intellij.datavis.r.inlays.InlayDescriptorProvider
+import org.intellij.datavis.r.inlays.InlayDimensions
+import org.intellij.datavis.r.inlays.InlayElementDescriptor
+import org.intellij.datavis.r.inlays.InlayOutput
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.plugins.notebooks.editor.use
 import org.jetbrains.r.RBundle
@@ -66,17 +69,23 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
 
 
   companion object {
-    fun cleanup(psi: PsiElement): Future<Void> {
-      val cacheDirectory = ChunkPath.create(psi)!!.getCacheDirectory()
-      return FileUtil.asyncDelete(File(cacheDirectory))
-    }
+    fun cleanup(psi: PsiElement): Future<Void> =
+      cleanup(ChunkPath.create(psi)!!)
+
+    fun cleanup(chunkPath: ChunkPath): Future<Void> =
+      FileUtil.asyncDelete(File(chunkPath.getCacheDirectory()))
 
     fun getInlayOutputs(psi: PsiElement): List<InlayOutput> =
       ChunkPath.create(psi)?.let { key ->
         getInlayOutputs(key, RGraphicsSettings.isDarkModeEnabled(psi.project))
       } ?: emptyList()
 
-    fun getInlayOutputs(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutput> =
+    fun getInlayOutputs(chunkPath: ChunkPath, editor: Editor): List<InlayOutput> =
+      editor.project?.let { project ->
+        getInlayOutputs(chunkPath, RGraphicsSettings.isDarkModeEnabled(project))
+      } ?: emptyList()
+
+    private fun getInlayOutputs(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutput> =
       getImages(chunkPath, isDarkModeEnabled) + getUrls(chunkPath) + getTables(chunkPath) + getOutputs(chunkPath)
 
     fun getImages(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutput> {
