@@ -35,12 +35,11 @@ class RMarkdownOutputInlayController private constructor(
   val editor: EditorImpl,
   override val factory: NotebookCellInlayController.Factory,
   override val psiElement: PsiElement,
-  val intervalPointer: NotebookIntervalPointer,
-  inlayOffset: Int
+  val intervalPointer: NotebookIntervalPointer
 ) : NotebookCellInlayController, RMarkdownNotebookOutput {
 
   private val notebook: RMarkdownNotebook = RMarkdownNotebook.installIfNotExists(editor)
-  private var inlayComponent: NotebookInlayComponent = addInlayComponent(editor, intervalPointer, inlayOffset)
+  private var inlayComponent: NotebookInlayComponent = addInlayComponent(editor, intervalPointer)!!
   override var inlay: Inlay<*> = inlayComponent.inlay!!
 
   init {
@@ -144,8 +143,10 @@ class RMarkdownOutputInlayController private constructor(
     inlayComponent.clearOutputs()
   }
 
-  private fun addInlayComponent(editor: EditorImpl, intervalPointer: NotebookIntervalPointer, offset: Int): NotebookInlayComponent {
+  private fun addInlayComponent(editor: EditorImpl, intervalPointer: NotebookIntervalPointer): NotebookInlayComponent? {
     InlayDimensions.init(editor)
+    val interval = intervalPointer.get() ?: return null
+    val offset = extractOffset(editor.document, interval)
     val inlayComponent = NotebookInlayComponentInterval(intervalPointer, editor)
 
     // On editor creation it has 0 width
@@ -221,9 +222,9 @@ class RMarkdownOutputInlayController private constructor(
     }
 
     private fun makeController(editor: EditorImpl, pointer: NotebookIntervalPointer): RMarkdownOutputInlayController? {
-      val offset = extractOffset(editor.document, pointer.get()!!.lines)
+      val offset = extractOffset(editor.document, pointer.get()!!)
       return getCodeFenceEnd(editor, offset)?.let{ codeEndElement ->
-        RMarkdownOutputInlayController(editor, this, codeEndElement, pointer, offset)
+        RMarkdownOutputInlayController(editor, this, codeEndElement, pointer)
       }
     }
 
@@ -278,8 +279,8 @@ private fun disposeComponent(component: NotebookInlayComponent) {
 private fun extractOffset(cell: PsiElement) =
   cell.endOffset - 1
 
-private fun extractOffset(document: Document, lines: IntRange) =
-  Integer.max(document.getLineEndOffset(lines.last) - 1, 0)
+private fun extractOffset(document: Document, interval: NotebookCellLines.Interval) =
+  Integer.max(document.getLineEndOffset(interval.lines.last) - 1, 0)
 
 private val key = Key.create<RMarkdownNotebook>(RMarkdownNotebook::class.java.name)
 
