@@ -25,6 +25,7 @@ import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.plugins.notebooks.editor.*
 import org.jetbrains.r.rendering.chunk.ChunkDescriptorProvider
+import org.jetbrains.r.rendering.chunk.ChunkPath
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
 import java.awt.Graphics
 import java.awt.Point
@@ -86,7 +87,9 @@ class RMarkdownOutputInlayController private constructor(
   override fun clearOutputs(removeFiles: Boolean) {
     invokeLater { // preserve order with addText() calls
       if (removeFiles) {
-        RMarkdownInlayDescriptor.cleanup(psiElement)
+        makeChunkPath()?.let {
+          RMarkdownInlayDescriptor.cleanup(it)
+        }
       }
       resetComponent()
     }
@@ -110,14 +113,15 @@ class RMarkdownOutputInlayController private constructor(
     invokeLater {
       if (resetComponent) {
         resetComponent()
-      } else {
+      }
+      else {
         // reuse inlayComponent, check that it is valid
         if (Disposer.isDisposed(inlay)) {
           return@invokeLater
         }
       }
 
-      val outputs = RMarkdownInlayDescriptor.getInlayOutputs(psiElement)
+      val outputs = makeChunkPath()?.let { RMarkdownInlayDescriptor.getInlayOutputs(it, editor) } ?: emptyList()
       if (outputs.isEmpty()) return@invokeLater
 
       inlayComponent.addInlayOutputs(outputs) {
@@ -192,6 +196,9 @@ class RMarkdownOutputInlayController private constructor(
     val isInViewport = bounds.y <= viewportRange.last && bounds.y + bounds.height >= viewportRange.first
     inlayComponent.onViewportChange(isInViewport)
   }
+
+  private fun makeChunkPath(): ChunkPath? =
+    intervalPointer.get()?.let { ChunkPath.create(editor, it) }
 
   class Factory : NotebookCellInlayController.Factory {
     override fun compute(editor: EditorImpl,
@@ -364,7 +371,7 @@ class RMarkdownNotebook(project: Project, editor: EditorImpl) {
   private fun addDocumentListener(editor: EditorImpl) {
     val project = editor.project ?: return
 
-    editor.document.addDocumentListener(object: DocumentListener {
+    editor.document.addDocumentListener(object : DocumentListener {
       override fun documentChanged(event: DocumentEvent) {
         PsiDocumentManager.getInstance(project).performForCommittedDocument(editor.document) {
           outputs.values.forEach {
@@ -376,8 +383,8 @@ class RMarkdownNotebook(project: Project, editor: EditorImpl) {
   }
 
   private fun addViewportListener(editor: EditorImpl) {
-    editor.scrollPane.viewport.addChangeListener{
-      viewportQueue.queue(object: Update(VIEWPORT_TASK_IDENTITY) {
+    editor.scrollPane.viewport.addChangeListener {
+      viewportQueue.queue(object : Update(VIEWPORT_TASK_IDENTITY) {
         override fun run() =
           updateInlaysForViewport(editor)
       })
