@@ -5,8 +5,6 @@ import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.Inlay
-import com.intellij.openapi.editor.event.DocumentEvent
-import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
 import com.intellij.openapi.editor.ex.util.EditorScrollingPositionKeeper
@@ -14,10 +12,8 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
-import com.intellij.refactoring.suggested.endOffset
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.intellij.datavis.r.inlays.*
@@ -35,41 +31,17 @@ import java.awt.event.ComponentEvent
 class RMarkdownOutputInlayController private constructor(
   val editor: EditorImpl,
   override val factory: NotebookCellInlayController.Factory,
-  override val psiElement: PsiElement,
   override val intervalPointer: NotebookIntervalPointer
 ) : NotebookCellInlayController, RMarkdownNotebookOutput {
 
   private val notebook: RMarkdownNotebook = RMarkdownNotebook.installIfNotExists(editor)
-  private var inlayComponent: NotebookInlayComponent = addInlayComponent(editor, intervalPointer)!!
-  override var inlay: Inlay<*> = inlayComponent.inlay!!
+  private val inlayComponent: NotebookInlayComponent = addInlayComponent(editor, intervalPointer)!!
+  override val inlay: Inlay<*> = inlayComponent.inlay!!
 
   init {
-    registerDisposable(inlayComponent)
     notebook.update(this)
     updateOutputs(resetComponent = false)
-  }
-
-  private var skipDisposeComponent = false
-
-  private fun <T> skipDisposeComponent(action: () -> T): T {
-    val prevValue = skipDisposeComponent
-    skipDisposeComponent = true
-    val result = action()
-    skipDisposeComponent = prevValue
-    return result
-  }
-
-  private fun registerDisposable(registeredInlayComponent: NotebookInlayComponent) {
-    Disposer.register(registeredInlayComponent.inlay!!, Disposable {
-      if (skipDisposeComponent)
-        return@Disposable
-
-      if (inlayComponent == registeredInlayComponent) {
-        notebook.remove(this)
-      }
-
-      disposeComponent(registeredInlayComponent)
-    })
+    Disposer.register(inlayComponent.inlay!!, Disposable { dispose() })
   }
 
   override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, intervalIterator: ListIterator<NotebookCellLines.Interval>) {
@@ -170,24 +142,6 @@ class RMarkdownOutputInlayController private constructor(
     return inlayComponent
   }
 
-  override fun onPsiDocumentCommitted() {
-    if (Disposer.isDisposed(editor.disposable)) return
-
-    val offset = extractOffset(psiElement)
-    if (inlayComponent.inlay?.offset == offset) {
-      return
-    }
-
-    skipDisposeComponent {
-      inlayComponent.disposeInlay()
-    }
-
-    inlay = addBlockElement(editor, offset, inlayComponent)
-    inlayComponent.assignInlay(inlay)
-    registerDisposable(inlayComponent)
-    inlayComponent.updateComponentBounds(inlayComponent.inlay!!)
-  }
-
   override fun onUpdateViewport(viewportRange: IntRange, expansionRange: IntRange) {
     if (Disposer.isDisposed(inlay))
       return
@@ -221,16 +175,10 @@ class RMarkdownOutputInlayController private constructor(
             .firstOrNull {
               it.intervalPointer.get() == pointer.get()
             }
-          ?: makeController(editor, pointer)
+          ?: RMarkdownOutputInlayController(editor, this, pointer)
         }
         NotebookCellLines.CellType.MARKDOWN,
         NotebookCellLines.CellType.RAW -> null
-      }
-    }
-
-    private fun makeController(editor: EditorImpl, pointer: NotebookIntervalPointer): RMarkdownOutputInlayController? {
-      return getCodeFenceEnd(editor, pointer.get()!!)?.let { codeEndElement ->
-        RMarkdownOutputInlayController(editor, this, codeEndElement, pointer)
       }
     }
   }
@@ -283,9 +231,6 @@ private fun disposeComponent(component: NotebookInlayComponent) {
   component.dispose()
 }
 
-private fun extractOffset(cell: PsiElement) =
-  cell.endOffset - 1
-
 private fun extractOffset(document: Document, interval: NotebookCellLines.Interval) =
   Integer.max(document.getLineEndOffset(interval.lines.last) - 1, 0)
 
@@ -312,13 +257,9 @@ interface RMarkdownNotebookOutput {
 
   fun dispose()
 
-  fun onPsiDocumentCommitted()
-
   fun onUpdateViewport(viewportRange: IntRange, expansionRange: IntRange)
 
   fun setWidth(width: Int)
-
-  val psiElement: PsiElement
 }
 
 class RMarkdownNotebook(project: Project, editor: EditorImpl) {
@@ -330,7 +271,6 @@ class RMarkdownNotebook(project: Project, editor: EditorImpl) {
 
   init {
     addResizeListener(editor)
-    addDocumentListener(editor)
     addViewportListener(editor)
   }
 
@@ -366,20 +306,6 @@ class RMarkdownNotebook(project: Project, editor: EditorImpl) {
         }
       }
     })
-  }
-
-  private fun addDocumentListener(editor: EditorImpl) {
-    val project = editor.project ?: return
-
-    editor.document.addDocumentListener(object : DocumentListener {
-      override fun documentChanged(event: DocumentEvent) {
-        PsiDocumentManager.getInstance(project).performForCommittedDocument(editor.document) {
-          outputs.values.forEach {
-            it.onPsiDocumentCommitted()
-          }
-        }
-      }
-    }, editor.disposable)
   }
 
   private fun addViewportListener(editor: EditorImpl) {
