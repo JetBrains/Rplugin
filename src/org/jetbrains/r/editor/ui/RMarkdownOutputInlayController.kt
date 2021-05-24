@@ -35,7 +35,7 @@ class RMarkdownOutputInlayController private constructor(
   val editor: EditorImpl,
   override val factory: NotebookCellInlayController.Factory,
   override val psiElement: PsiElement,
-  val intervalPointer: NotebookIntervalPointer
+  override val intervalPointer: NotebookIntervalPointer
 ) : NotebookCellInlayController, RMarkdownNotebookOutput {
 
   private val notebook: RMarkdownNotebook = RMarkdownNotebook.installIfNotExists(editor)
@@ -50,7 +50,7 @@ class RMarkdownOutputInlayController private constructor(
 
   private var skipDisposeComponent = false
 
-  private fun<T> skipDisposeComponent(action: () -> T): T {
+  private fun <T> skipDisposeComponent(action: () -> T): T {
     val prevValue = skipDisposeComponent
     skipDisposeComponent = true
     val result = action()
@@ -290,6 +290,8 @@ private val key = Key.create<RMarkdownNotebook>(RMarkdownNotebook::class.java.na
  * dispose() and updates of RMarkdownNotebook done at call time
  */
 interface RMarkdownNotebookOutput {
+  val intervalPointer: NotebookIntervalPointer
+
   /** clear outputs and text */
   fun clearOutputs(removeFiles: Boolean)
 
@@ -313,8 +315,11 @@ interface RMarkdownNotebookOutput {
 }
 
 class RMarkdownNotebook(project: Project, editor: EditorImpl) {
-  private val outputs: MutableMap<PsiElement, RMarkdownNotebookOutput> = LinkedHashMap()
+  // pointerFactory reuses pointers
+  private val outputs: MutableMap<NotebookIntervalPointer, RMarkdownNotebookOutput> = LinkedHashMap()
   private val viewportQueue = MergingUpdateQueue(VIEWPORT_TASK_NAME, VIEWPORT_TIME_SPAN, true, null, editor.disposable)
+  private val pointerFactory = NotebookIntervalPointerFactory.get(editor)
+  private val psiToInterval = PsiToInterval(project, editor) { interval -> getCodeFenceEnd(editor, interval) }
 
   init {
     addResizeListener(editor)
@@ -322,7 +327,11 @@ class RMarkdownNotebook(project: Project, editor: EditorImpl) {
     addViewportListener(editor)
   }
 
-  operator fun get(cell: PsiElement): RMarkdownNotebookOutput? = correctCell(cell)?.let { outputs[it] }
+  operator fun get(cell: NotebookCellLines.Interval?): RMarkdownNotebookOutput? =
+    cell?.let { pointerFactory.create(it) }?.let { outputs[it] }
+
+  operator fun get(cell: PsiElement): RMarkdownNotebookOutput? =
+    correctCell(cell)?.let { psiToInterval[it] }?.let { this[it] }
 
   private fun correctCell(cell: PsiElement): PsiElement? =
     when (cell.elementType) {
@@ -331,12 +340,12 @@ class RMarkdownNotebook(project: Project, editor: EditorImpl) {
     }
 
   fun update(output: RMarkdownNotebookOutput) {
-    val previousOutput = outputs.put(output.psiElement, output) as RMarkdownOutputInlayController?
+    val previousOutput = outputs.put(output.intervalPointer, output) as RMarkdownOutputInlayController?
     previousOutput?.dispose()
   }
 
   fun remove(output: RMarkdownNotebookOutput) {
-    outputs.remove(output.psiElement, output)
+    outputs.remove(output.intervalPointer, output)
   }
 
   private fun addResizeListener(editor: EditorEx) {
