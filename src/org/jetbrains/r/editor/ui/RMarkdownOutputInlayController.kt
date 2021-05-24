@@ -11,6 +11,7 @@ import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
 import com.intellij.openapi.editor.ex.util.EditorScrollingPositionKeeper
 import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiDocumentManager
@@ -39,7 +40,7 @@ class RMarkdownOutputInlayController private constructor(
 ) : NotebookCellInlayController, RMarkdownNotebookOutput {
 
   private val notebook: RMarkdownNotebook = RMarkdownNotebook.installIfNotExists(editor)
-  private var inlayComponent: NotebookInlayComponentPsi = addInlayComponent(editor, psiElement, inlayOffset)
+  private var inlayComponent: NotebookInlayComponent = addInlayComponent(editor, intervalPointer, inlayOffset)
   override var inlay: Inlay<*> = inlayComponent.inlay!!
 
   init {
@@ -58,7 +59,7 @@ class RMarkdownOutputInlayController private constructor(
     return result
   }
 
-  private fun registerDisposable(registeredInlayComponent: NotebookInlayComponentPsi) {
+  private fun registerDisposable(registeredInlayComponent: NotebookInlayComponent) {
     Disposer.register(registeredInlayComponent.inlay!!, Disposable {
       if (skipDisposeComponent)
         return@Disposable
@@ -143,9 +144,9 @@ class RMarkdownOutputInlayController private constructor(
     inlayComponent.clearOutputs()
   }
 
-  private fun addInlayComponent(editor: EditorImpl, cell: PsiElement, offset: Int): NotebookInlayComponentPsi {
+  private fun addInlayComponent(editor: EditorImpl, intervalPointer: NotebookIntervalPointer, offset: Int): NotebookInlayComponent {
     InlayDimensions.init(editor)
-    val inlayComponent = NotebookInlayComponentPsi(cell, editor)
+    val inlayComponent = NotebookInlayComponentInterval(intervalPointer, editor)
 
     // On editor creation it has 0 width
     val gutterWidth = (editor.gutter as EditorGutterComponentEx).width
@@ -234,11 +235,11 @@ class RMarkdownOutputInlayController private constructor(
 }
 
 
-private fun addBlockElement(editor: Editor, offset: Int, inlayComponent: NotebookInlayComponentPsi): Inlay<NotebookInlayComponentPsi> =
+private fun addBlockElement(editor: Editor, offset: Int, inlayComponent: NotebookInlayComponent): Inlay<NotebookInlayComponent> =
   editor.inlayModel.addBlockElement(offset, true, false, EditorInlaysManager.INLAY_PRIORITY, inlayComponent)!!
 
 
-private fun setupInlayComponent(editor: Editor, inlayComponent: NotebookInlayComponentPsi) {
+private fun setupInlayComponent(editor: Editor, inlayComponent: NotebookInlayComponent) {
   val scrollKeeper = EditorScrollingPositionKeeper(editor)
 
   fun updateInlaysInEditor(editor: Editor) {
@@ -268,7 +269,7 @@ private fun getPsiElement(editor: Editor, offset: Int): PsiElement? =
 private fun getCodeFenceEnd(psiElement: PsiElement): PsiElement? =
   psiElement.let { it.parent.children.find { it.elementType == MarkdownTokenTypes.CODE_FENCE_END } }
 
-private fun disposeComponent(component: NotebookInlayComponentPsi) {
+private fun disposeComponent(component: NotebookInlayComponent) {
   component.parent?.remove(component)
   component.disposeInlay()
   component.dispose()
@@ -310,7 +311,7 @@ interface RMarkdownNotebookOutput {
   val psiElement: PsiElement
 }
 
-class RMarkdownNotebook(editor: EditorImpl) {
+class RMarkdownNotebook(project: Project, editor: EditorImpl) {
   private val outputs: MutableMap<PsiElement, RMarkdownNotebookOutput> = LinkedHashMap()
   private val viewportQueue = MergingUpdateQueue(VIEWPORT_TASK_NAME, VIEWPORT_TIME_SPAN, true, null, editor.disposable)
 
@@ -390,7 +391,7 @@ class RMarkdownNotebook(editor: EditorImpl) {
     private const val VIEWPORT_TIME_SPAN = 50
 
     private fun install(editor: EditorImpl): RMarkdownNotebook =
-      RMarkdownNotebook(editor).also {
+      RMarkdownNotebook(editor.project!!, editor).also {
         key.set(editor, it)
       }
 
