@@ -222,15 +222,9 @@ class RMarkdownOutputInlayController private constructor(
     }
 
     private fun makeController(editor: EditorImpl, pointer: NotebookIntervalPointer): RMarkdownOutputInlayController? {
-      val offset = extractOffset(editor.document, pointer.get()!!)
-      return getCodeFenceEnd(editor, offset)?.let{ codeEndElement ->
+      return getCodeFenceEnd(editor, pointer.get()!!)?.let { codeEndElement ->
         RMarkdownOutputInlayController(editor, this, codeEndElement, pointer)
       }
-    }
-
-    private fun getCodeFenceEnd(editor: EditorImpl, offset: Int): PsiElement? {
-      val psiElement = getPsiElement(editor, offset) ?: return null
-      return getCodeFenceEnd(psiElement)
     }
   }
 }
@@ -269,6 +263,12 @@ private fun getPsiElement(editor: Editor, offset: Int): PsiElement? =
 
 private fun getCodeFenceEnd(psiElement: PsiElement): PsiElement? =
   psiElement.let { it.parent.children.find { it.elementType == MarkdownTokenTypes.CODE_FENCE_END } }
+
+private fun getCodeFenceEnd(editor: EditorImpl, interval: NotebookCellLines.Interval): PsiElement? {
+  val offset = extractOffset(editor.document, interval)
+  val psiElement = getPsiElement(editor, offset) ?: return null
+  return getCodeFenceEnd(psiElement)
+}
 
 private fun disposeComponent(component: NotebookInlayComponent) {
   component.parent?.remove(component)
