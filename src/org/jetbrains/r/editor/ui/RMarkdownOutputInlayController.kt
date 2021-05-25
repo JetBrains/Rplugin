@@ -287,8 +287,8 @@ class RMarkdownNotebook(project: Project, editor: EditorImpl) {
     }
 
   fun update(output: RMarkdownNotebookOutput) {
-    val previousOutput = outputs.put(output.intervalPointer, output) as RMarkdownOutputInlayController?
-    previousOutput?.dispose()
+    require(output.intervalPointer !in outputs)
+    outputs[output.intervalPointer] = output
   }
 
   fun remove(output: RMarkdownNotebookOutput) {
