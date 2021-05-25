@@ -91,7 +91,7 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
   private val emptyLeftComponent = object : JPanel(GridBagLayout()) {
     init {
       background = backgroundColor()
-      PopupHandler.installPopupHandler(this, popupActionGrouping, JOBS_POPUP_PLACE)
+      PopupHandler.installPopupMenu(this, popupActionGrouping, JOBS_POPUP_PLACE)
 
       add(Spacer(), GridBag().weighty(1.0).apply { gridy = 0 })
 
@@ -224,7 +224,7 @@ internal class JobList(private val splitter: SplitterApi,
 
   init {
     panel.background = backgroundColor()
-    PopupHandler.installPopupHandler(panel, popupActionGroup, JOBS_POPUP_PLACE)
+    PopupHandler.installPopupMenu(panel, popupActionGroup, JOBS_POPUP_PLACE)
     scrollPane.setViewportView(panel)
     scrollPane.border = null
     panel.border = null
@@ -380,7 +380,7 @@ internal class JobEntity(val jobDescriptor: RJobDescriptor,
   }
 
   private fun installMouseListenerOnLeftPanel() {
-    PopupHandler.installPopupHandler(leftPanel, jobList.popupActionGroup, JOBS_POPUP_PLACE)
+    PopupHandler.installPopupMenu(leftPanel, jobList.popupActionGroup, JOBS_POPUP_PLACE)
     leftPanel.addMouseListener(object : MouseAdapter() {
       override fun mouseClicked(event: MouseEvent) {
         if (event.button == MouseEvent.BUTTON1) {
