@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.notebooks.editor
 
+import com.intellij.lang.Language
 import com.intellij.lang.LanguageExtension
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
@@ -13,9 +14,13 @@ interface NotebookCellLinesProvider {
   companion object : LanguageExtension<NotebookCellLinesProvider>(ID)
 }
 
-internal val Editor.notebookCellLinesProvider: NotebookCellLinesProvider?
-  get() = project
+internal fun getLanguage(editor: Editor): Language? =
+  editor
+    .project
     ?.let(PsiDocumentManager::getInstance)
-    ?.getPsiFile(document)
+    ?.getPsiFile(editor.document)
     ?.language
+
+internal val Editor.notebookCellLinesProvider: NotebookCellLinesProvider?
+  get() = getLanguage(this)
     ?.let(NotebookCellLinesProvider::forLanguage)

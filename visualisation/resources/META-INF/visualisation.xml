@@ -23,6 +23,10 @@
                     beanClass="com.intellij.lang.LanguageExtensionPoint" dynamic="true">
       <with attribute="implementationClass" implements="org.jetbrains.plugins.notebooks.editor.NotebookCellLinesProvider"/>
     </extensionPoint>
+    <extensionPoint qualifiedName="org.jetbrains.plugins.notebooks.notebookCellSelectionModelProvider"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint" dynamic="true">
+      <with attribute="implementationClass" implements="org.jetbrains.plugins.notebooks.editor.NotebookCellSelectionModelProvider"/>
+    </extensionPoint>
 
     <extensionPoint qualifiedName="org.jetbrains.plugins.notebooks.notebookCellInlayController"
                     interface="org.jetbrains.plugins.notebooks.editor.NotebookCellInlayController$Factory"

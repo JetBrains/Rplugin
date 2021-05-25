@@ -362,6 +362,8 @@ You can find the source code in the following repositories:
     <extensions defaultExtensionNs="org.jetbrains.plugins.notebooks">
         <notebookCellLinesProvider language="RMarkdown"
                                    implementationClass="org.jetbrains.r.editor.RMarkdownCellLinesProvider"/>
+        <notebookCellSelectionModelProvider language="RMarkdown"
+                                            implementationClass="org.jetbrains.r.editor.RMarkdownCellSelectionModelProvider"/>
         <editor.notebookEditorAppearanceProvider implementation="org.jetbrains.r.editor.RMarkdownNotebookEditorAppearanceProvider"/>
         <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownCellToolbarController$Factory"/>
         <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownOutputInlayController$Factory"/>
