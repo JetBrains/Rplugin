@@ -21,18 +21,24 @@ class PsiToInterval(project: Project, editor: EditorImpl, extractPsi: (NotebookC
   init {
     val pointerFactory = NotebookIntervalPointerFactory.get(editor)
 
-    editor.document.addDocumentListener(object : DocumentListener {
-      override fun documentChanged(event: DocumentEvent) {
-        PsiDocumentManager.getInstance(project).performForCommittedDocument(editor.document) {
-          psiToInterval.clear()
-          if (!Disposer.isDisposed(editor.disposable)) {
-            for (interval in NotebookCellLines.get(editor).intervalsIterator()) {
-              extractPsi(interval)?.let { psi ->
-                psiToInterval[psi] = pointerFactory.create(interval)
-              }
+    fun scheduleUpdateForCommittedDocument() {
+      PsiDocumentManager.getInstance(project).performForCommittedDocument(editor.document) {
+        psiToInterval.clear()
+        if (!Disposer.isDisposed(editor.disposable)) {
+          for (interval in NotebookCellLines.get(editor).intervalsIterator()) {
+            extractPsi(interval)?.let { psi ->
+              psiToInterval[psi] = pointerFactory.create(interval)
             }
           }
         }
+      }
+    }
+
+    scheduleUpdateForCommittedDocument()
+
+    editor.document.addDocumentListener(object : DocumentListener {
+      override fun documentChanged(event: DocumentEvent) {
+        scheduleUpdateForCommittedDocument()
       }
     }, editor.disposable)
   }
