@@ -175,12 +175,10 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(MARKDOWN, 0, 74)
-        marker(MARKDOWN, 74, 36)
+        marker(MARKDOWN, 0, 110)
       }
       intervals {
-        interval(MARKDOWN, 0..5)
-        interval(MARKDOWN, 6..9)
+        interval(MARKDOWN, 0..9)
       }
     }
   }

@@ -7,8 +7,8 @@ import com.intellij.openapi.editor.Document
 import com.intellij.psi.tree.IElementType
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.lexer.MarkdownLexerAdapter
-import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesImpl
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
+import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesImpl
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesLexer
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesProvider
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
@@ -16,7 +16,6 @@ import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesLexer {
   private fun getCellType(tokenType: IElementType): NotebookCellLines.CellType? =
     when (tokenType) {
-      RMarkdownCellType.HEADER_CELL.elementType -> NotebookCellLines.CellType.MARKDOWN
       RMarkdownCellType.MARKDOWN_CELL.elementType -> NotebookCellLines.CellType.MARKDOWN
       RMarkdownCellType.CODE_CELL.elementType -> NotebookCellLines.CellType.CODE
       else -> null
@@ -50,7 +49,6 @@ class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesL
 }
 
 internal enum class RMarkdownCellType(val debugName: String) {
-  HEADER_CELL("HEADER_CELL"),
   MARKDOWN_CELL("MARKDOWN_CELL"),
   CODE_CELL("CODE_CELL");
 
@@ -104,10 +102,6 @@ internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(RMarkdownMapB
           RMarkdownCellType.MARKDOWN_CELL
         }
       }
-      tokenStart == 0 && tokenText == "---" -> {
-        consumeHeader(originalLexer)
-        RMarkdownCellType.HEADER_CELL
-      }
       else -> {
         consumeMarkdown(originalLexer)
         RMarkdownCellType.MARKDOWN_CELL
@@ -119,23 +113,6 @@ internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(RMarkdownMapB
     while (lexer.tokenType != null &&
            lexer.tokenType != RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType) {
       consumeToEndOfLine(lexer) // quoted line
-    }
-  }
-
-  private fun consumeHeader(lexer: Lexer) {
-    while (true) {
-      when (lexer.tokenType) {
-        null, RMarkdownCodeMarkers.BACKTICK_NO_LANG.elementType, RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType -> return
-        MarkdownTokenTypes.BLOCK_QUOTE -> consumeToEndOfLine(lexer)
-        else -> {
-          if (lexer.tokenType == MarkdownTokenTypes.TEXT && lexer.tokenText == "---") {
-            lexer.advance()
-            consumeEndOfLine(lexer)
-            return
-          }
-          consumeToEndOfLine(lexer)
-        }
-      }
     }
   }
 
