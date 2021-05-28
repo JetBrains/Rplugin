@@ -8,7 +8,6 @@ import com.intellij.psi.tree.IElementType
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.lexer.MarkdownLexerAdapter
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
-import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesImpl
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesLexer
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesProvider
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
@@ -24,7 +23,7 @@ class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesL
   override fun shouldParseWholeFile(): Boolean = true
 
   override fun create(document: Document): NotebookCellLines =
-    NotebookCellLinesImpl.get(document, this)
+    RMarkdownCellLines.get(document, this)
 
   override fun markerSequence(chars: CharSequence, ordinalIncrement: Int, offsetIncrement: Int): Sequence<NotebookCellLines.Marker> =
     sequence {
@@ -32,7 +31,7 @@ class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesL
       val seq = NotebookCellLinesLexer.defaultMarkerSequence({ RMarkdownMergingLangLexer() }, this@RMarkdownCellLinesProvider::getCellType,
                                                              chars, ordinalIncrement, offsetIncrement)
 
-      for(marker in seq) {
+      for (marker in seq) {
         lastMarker = marker
         yield(marker)
       }
@@ -42,6 +41,15 @@ class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesL
           ordinal = lastMarker.ordinal + 1,
           type = NotebookCellLines.CellType.MARKDOWN,
           offset = chars.length + offsetIncrement,
+          length = 0
+        ))
+      }
+
+      if (lastMarker == null) {
+        yield(NotebookCellLines.Marker(
+          ordinal = 0,
+          type = NotebookCellLines.CellType.MARKDOWN,
+          offset = 0,
           length = 0
         ))
       }

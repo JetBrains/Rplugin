@@ -5,14 +5,15 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.testFramework.ThreadTracker
 import org.jetbrains.plugins.notebooks.editor.CodeCellLinesChecker
-import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.CellType.*
+import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.CellType.CODE
+import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.CellType.MARKDOWN
 import org.jetbrains.plugins.notebooks.editor.edt
 import org.junit.Before
 import org.junit.Test
 
-class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
+class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
   @Test
-  fun `test notebook with text`(): Unit = edt{
+  fun `test notebook with text`(): Unit = edt {
     fixture.openNotebookTextInEditor("""
       line 1
       line 2
@@ -30,7 +31,7 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
   }
 
   @Test
-  fun `test notebook with code`(): Unit = edt{
+  fun `test notebook with code`(): Unit = edt {
     fixture.openNotebookTextInEditor("""
       ```{r}
       code line
@@ -48,7 +49,7 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
   }
 
   @Test
-  fun `test code options`(): Unit = edt{
+  fun `test code options`(): Unit = edt {
     fixture.openNotebookTextInEditor("""
       ```{r setup}
       ```
@@ -73,7 +74,7 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
   }
 
   @Test
-  fun `test uncompleted code cell`(): Unit = edt{
+  fun `test uncompleted code cell`(): Unit = edt {
     fixture.openNotebookTextInEditor("""
       ```{r setup}
       actual markdown
@@ -91,7 +92,7 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
   }
 
   @Test
-  fun `test uncompleted code cell surrounded by markdown`(): Unit = edt{
+  fun `test uncompleted code cell surrounded by markdown`(): Unit = edt {
     fixture.openNotebookTextInEditor("""
       markdown
       ```{r setup}
@@ -114,7 +115,7 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
 
 
   @Test
-  fun `two code cells`(): Unit = edt{
+  fun `two code cells`(): Unit = edt {
     fixture.openNotebookTextInEditor("""
       ```{r}
       code cell 1
@@ -137,7 +138,7 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
   }
 
   @Test
-  fun `code cell with newline at the end of file`(): Unit = edt{
+  fun `code cell with newline at the end of file`(): Unit = edt {
     fixture.openNotebookTextInEditor("""
       ```{r}
       code
@@ -159,7 +160,7 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
   }
 
   @Test
-  fun `rmd notebook header`(): Unit = edt{
+  fun `rmd notebook header`(): Unit = edt {
     fixture.openNotebookTextInEditor("""
       ---
       title: "title"
@@ -296,14 +297,6 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
       }
       intervalListenerCall(0) {
         before {
-          interval(RAW, 0..0)
-        }
-        after {
-          interval(MARKDOWN, 0..0)
-        }
-      }
-      intervalListenerCall(0) {
-        before {
           interval(MARKDOWN, 0..0)
         }
         after {
@@ -315,23 +308,25 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
     assertCodeCells("remove all text") {
       fixture.performEditorAction(IdeActions.ACTION_SELECT_ALL)
       fixture.performEditorAction(IdeActions.ACTION_EDITOR_DELETE)
-      markers {  }
-      intervals {
-        interval(RAW, 0..0)
+      markers {
+        marker(MARKDOWN, 0, 0)
       }
-      intervalListenerCall(0){
-        before{
+      intervals {
+        interval(MARKDOWN, 0..0)
+      }
+      intervalListenerCall(0) {
+        before {
           interval(MARKDOWN, 0..1)
         }
         after {
-          interval(RAW, 0..0)
+          interval(MARKDOWN, 0..0)
         }
       }
     }
   }
 
   @Test
-  fun `test add code to empty document and delete`(): Unit = edt {
+  fun `test add code to empty document`(): Unit = edt {
     fixture.openNotebookTextInEditor("")
 
     assertCodeCells("add code") {
@@ -346,14 +341,6 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
       }
       intervals {
         interval(CODE, 0..2)
-      }
-      intervalListenerCall(0) {
-        before {
-          interval(RAW, 0..0)
-        }
-        after {
-          interval(MARKDOWN, 0..0)
-        }
       }
       intervalListenerCall(0) {
         before {
@@ -384,16 +371,18 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
     assertCodeCells("remove code") {
       fixture.performEditorAction(IdeActions.ACTION_SELECT_ALL)
       fixture.performEditorAction(IdeActions.ACTION_EDITOR_DELETE)
-      markers {}
+      markers {
+        marker(MARKDOWN, 0, 0)
+      }
       intervals {
-        interval(RAW, 0..0)
+        interval(MARKDOWN, 0..0)
       }
       intervalListenerCall(0) {
         before {
           interval(CODE, 0..2)
         }
         after {
-          interval(RAW, 0..0)
+          interval(MARKDOWN, 0..0)
         }
       }
     }
@@ -465,7 +454,7 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
   }
 
   @Test
-  fun `test insert code chunk`(): Unit = edt{
+  fun `test insert code chunk`(): Unit = edt {
     fixture.openNotebookTextInEditor("""
       markdown line 1
       ```{r}<caret>```
@@ -484,13 +473,11 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
         interval(CODE, 1..2)
         interval(MARKDOWN, 3..3)
       }
-      intervalListenerCall(0) {
+      intervalListenerCall(1) {
         before {
-          interval(MARKDOWN, 0..0)
           interval(MARKDOWN, 1..2)
         }
         after {
-          interval(MARKDOWN, 0..0)
           interval(CODE, 1..2)
           interval(MARKDOWN, 3..3)
         }
@@ -510,7 +497,7 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(MARKDOWN, 0,7 )
+        marker(MARKDOWN, 0, 7)
         marker(CODE, 7, 16)
         marker(MARKDOWN, 23, 6)
       }
@@ -530,7 +517,7 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
       intervals {
         interval(MARKDOWN, 0..3)
       }
-      intervalListenerCall(0){
+      intervalListenerCall(0) {
         before {
           interval(MARKDOWN, 0..0)
           interval(CODE, 1..3)
@@ -563,7 +550,7 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
     }
 
     val attemptsCount = 3
-    for(attempt in 1..attemptsCount) {
+    for (attempt in 1..attemptsCount) {
       assertCodeCells("add new code line: attempt ${attempt} of ${attemptsCount}") {
         fixture.type("\n")
 
