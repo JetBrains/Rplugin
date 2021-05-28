@@ -14,7 +14,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
+import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.intentions.InstallAllFilePackagesFix
 import org.jetbrains.r.intentions.InstallPackagesFix
 import org.jetbrains.r.interpreter.RInterpreterStateManager
@@ -47,7 +47,7 @@ class MissingPackageInspection : RInspection() {
 
       override fun visitCallExpression(psiElement: RCallExpression) {
         if (RPsiUtil.isImportStatement(psiElement)) {
-          val info = RParameterInfoUtil.getArgumentInfo(psiElement)
+          val info = RArgumentInfo.getArgumentInfo(psiElement)
           val packageArg = info?.getArgumentPassedToParameter("package")
           val characterOnlyArg = info?.getArgumentPassedToParameter("character.only")
           if (packageArg != null) {

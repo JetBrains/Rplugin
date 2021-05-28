@@ -8,7 +8,7 @@ import com.intellij.pom.PomTargetPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4ClassPomTarget
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
-import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
+import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.psi.api.RPsiElement
@@ -44,7 +44,7 @@ class RS4SetClassTypeContextProvider : RS4ContextProvider<RS4SetClassTypeContext
   override fun getS4ContextWithoutCaching(element: RPsiElement): RS4SetClassTypeContext? {
     val parentCall = PsiTreeUtil.getParentOfType(element, RCallExpression::class.java) ?: return null
     return if (parentCall.isFunctionFromLibrary("setClass", "methods")) {
-      val parentArgumentInfo = RParameterInfoUtil.getArgumentInfo(parentCall) ?: return null
+      val parentArgumentInfo = RArgumentInfo.getArgumentInfo(parentCall) ?: return null
       when (element) {
         parentArgumentInfo.getArgumentPassedToParameter("Class") -> {
           // setClass("<caret>")
@@ -65,7 +65,7 @@ class RS4SetClassTypeContextProvider : RS4ContextProvider<RS4SetClassTypeContext
     else {
       val grandParentCall = PsiTreeUtil.getParentOfType(parentCall, RCallExpression::class.java) ?: return null
       if (grandParentCall.isFunctionFromLibrary("setClass", "methods")) {
-        val grandParentArgumentInfo = RParameterInfoUtil.getArgumentInfo(grandParentCall) ?: return null
+        val grandParentArgumentInfo = RArgumentInfo.getArgumentInfo(grandParentCall) ?: return null
         return when {
           // setClass("MyClass", contains = "<caret>")
           // setClass("MyClass", contains = c("<caret>"))
@@ -91,7 +91,7 @@ class RS4SetClassTypeContextProvider : RS4ContextProvider<RS4SetClassTypeContext
       else {
         val grandGrandParentCall = PsiTreeUtil.getParentOfType(grandParentCall, RCallExpression::class.java) ?: return null
         if (!grandGrandParentCall.isFunctionFromLibrary("setClass", "methods")) return null
-        val grandGrandParentArgumentInfo = RParameterInfoUtil.getArgumentInfo(grandGrandParentCall) ?: return null
+        val grandGrandParentArgumentInfo = RArgumentInfo.getArgumentInfo(grandGrandParentCall) ?: return null
 
         // setClass("MyClass", slots = c(name = c("<caret>")))
         // setClass("MyClass", slots = c(name = c(ext = "<caret>")))

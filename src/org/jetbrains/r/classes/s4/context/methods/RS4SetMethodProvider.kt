@@ -6,7 +6,7 @@ package org.jetbrains.r.classes.s4.context.methods
 
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
-import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
+import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.psi.api.RPsiElement
@@ -33,7 +33,7 @@ class RS4SetMethodProvider : RS4ContextProvider<RS4SetMethodContext>() {
   override fun getS4ContextWithoutCaching(element: RPsiElement): RS4SetMethodContext? {
     val parentCall = PsiTreeUtil.getParentOfType(element, RCallExpression::class.java) ?: return null
     return if (parentCall.isFunctionFromLibrary("setMethod", "methods")) {
-      val parentArgumentInfo = RParameterInfoUtil.getArgumentInfo(parentCall) ?: return null
+      val parentArgumentInfo = RArgumentInfo.getArgumentInfo(parentCall) ?: return null
       when (element) {
         parentArgumentInfo.getArgumentPassedToParameter("f") -> {
           RS4SetMethodFunctionNameContext(element, parentCall)
@@ -50,7 +50,7 @@ class RS4SetMethodProvider : RS4ContextProvider<RS4SetMethodContext>() {
     else {
       val grandParentCall = PsiTreeUtil.getParentOfType(parentCall, RCallExpression::class.java) ?: return null
       if (grandParentCall.isFunctionFromLibrary("setMethod", "methods")) {
-        val grandParentArgumentInfo = RParameterInfoUtil.getArgumentInfo(grandParentCall) ?: return null
+        val grandParentArgumentInfo = RArgumentInfo.getArgumentInfo(grandParentCall) ?: return null
         return when {
           PsiTreeUtil.isAncestor(grandParentArgumentInfo.getArgumentPassedToParameter("signature"), element, false) -> {
             val parent = element.parent

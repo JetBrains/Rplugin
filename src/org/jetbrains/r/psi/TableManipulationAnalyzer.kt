@@ -265,7 +265,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
         .maxBy { RSkeletonUtil.skeletonFileToRPackage(it.containingFile)?.name == packageName }
         ?.parameterNameList?.map { it }
     }
-    return RArgumentInfo.getParameterInfo(argumentHolder, allArgumentNames ?: return null)
+    return RArgumentInfo.getArgumentInfo(argumentHolder, allArgumentNames ?: return null)
   }
 
   protected abstract fun transformNotCall(expr: RExpression,

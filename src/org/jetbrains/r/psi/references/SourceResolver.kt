@@ -16,7 +16,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
+import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.findVariableDefinition
@@ -198,7 +198,7 @@ private fun updateSources(sources: IncludedSources, element: PsiElement?): Inclu
   if (element !is RCallExpression) return sources
   val localDefinition = (element.expression as? RIdentifierExpression)?.findVariableDefinition()?.variableDescription?.firstDefinition
   return if (localDefinition == null && element.isFunctionFromLibrarySoft("source", "base")) {
-    val filepathArgument = RParameterInfoUtil.getArgumentByName(element, "file", getSourceDeclaration(element.expression))
+    val filepathArgument = RArgumentInfo.getArgumentByName(element, "file", getSourceDeclaration(element.expression))
     val filepath = if (filepathArgument is RStringLiteralExpression) filepathArgument.name else null
     if (filepath != null) IncludedSources.SingleSource(element.project, filepath, listOf(sources))
     else sources

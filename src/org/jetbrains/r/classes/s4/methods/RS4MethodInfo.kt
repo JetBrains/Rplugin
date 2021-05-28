@@ -84,7 +84,7 @@ data class RS4SignatureMethodInfo(override val methodName: String, private val s
         return@getOrPut defParams.map { RS4MethodParameterInfo(it, "ANY") }
       }
       val call = RElementFactory.createFuncallFromText(project, "tmp(${signature.joinToString(", ")})")
-      val argInfo = RArgumentInfo.getParameterInfo(call.argumentList.expressionList, info.signature.parameters, project)
+      val argInfo = RArgumentInfo.getArgumentInfo(call.argumentList.expressionList, info.signature.parameters, project)
       argInfo.toS4MethodParameters(true)
     }
   }

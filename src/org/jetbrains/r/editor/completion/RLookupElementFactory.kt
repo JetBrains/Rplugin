@@ -13,7 +13,7 @@ import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.TextRange
 import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.associatedS4GenericInfo
-import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
+import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.psi.TableColumnInfo
 import org.jetbrains.r.psi.api.*
@@ -102,7 +102,7 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
       when (genericExpression) {
         is RAssignmentStatement -> genericExpression.functionParameters
         is RCallExpression -> {
-          when (val def = RParameterInfoUtil.getArgumentByName(genericExpression, "def")) {
+          when (val def = RArgumentInfo.getArgumentByName(genericExpression, "def")) {
             is RFunctionExpression -> def.parameterList?.text
             is RIdentifierExpression -> (def.reference.resolve() as? RAssignmentStatement)?.functionParameters
             else -> null

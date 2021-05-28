@@ -26,7 +26,7 @@ class RInlayParameterHintsProvider : InlayParameterHintsProvider {
   override fun getParameterHints(element: PsiElement): List<InlayInfo> {
     if (element !is RArgumentList) return emptyList()
     val call = element.parent as RCallExpression
-    val argumentPermutationInfo = RParameterInfoUtil.getArgumentInfo(call) ?: return emptyList()
+    val argumentPermutationInfo = RArgumentInfo.getArgumentInfo(call) ?: return emptyList()
 
     val isWrapDots = WRAP_DOTS_OPTION.isEnabled()
     val result = mutableListOf<InlayInfo>()

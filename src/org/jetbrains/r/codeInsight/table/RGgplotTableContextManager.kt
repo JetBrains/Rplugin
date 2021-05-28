@@ -7,7 +7,7 @@ import com.intellij.psi.impl.PsiElementBase
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.Processor
 import org.jetbrains.r.console.runtimeInfo
-import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
+import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.TableColumnInfo
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
@@ -89,7 +89,7 @@ class RGgplotTableContextManager : RTableContextManager {
   }
 
   private fun processColumnsFromDataArgument(ggplotCall: RCallExpression, processor: Processor<TableColumnInfo>): Boolean {
-    val dataParameter = RParameterInfoUtil.getArgumentByName(ggplotCall, "data") ?: return true
+    val dataParameter = RArgumentInfo.getArgumentByName(ggplotCall, "data") ?: return true
 
     val collectProcessor = RTableColumnCollectProcessor()
     RDplyrTableContextManager().processColumnsOfTables(ggplotCall, listOf(dataParameter), collectProcessor)

@@ -12,7 +12,7 @@ import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfoUtil.toSlot
 import org.jetbrains.r.classes.s4.classInfo.RS4ClassSlot
 import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4SlotPomTarget
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
-import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
+import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isFunctionFromLibrary
 
@@ -34,7 +34,7 @@ class RS4SlotDeclarationContextProvider : RS4ContextProvider<RS4SlotDeclarationC
     val parentCall = PsiTreeUtil.getParentOfType(element, RCallExpression::class.java) ?: return null
     return if (parentCall.isFunctionFromLibrary("setClass", "methods")) {
       if (element !is RStringLiteralExpression) return null
-      val parentArgumentInfo = RParameterInfoUtil.getArgumentInfo(parentCall) ?: return null
+      val parentArgumentInfo = RArgumentInfo.getArgumentInfo(parentCall) ?: return null
       val className = RS4ClassInfoUtil.getAssociatedClassName(parentCall, parentArgumentInfo) ?: return null
       when (element) {
         parentArgumentInfo.getArgumentPassedToParameter("slots") -> {
@@ -48,7 +48,7 @@ class RS4SlotDeclarationContextProvider : RS4ContextProvider<RS4SlotDeclarationC
       val superParentCall = PsiTreeUtil.getParentOfType(parentCall, RCallExpression::class.java) ?: return null
       if (!superParentCall.isFunctionFromLibrary("setClass", "methods")) return null
 
-      val superParentArgumentInfo = RParameterInfoUtil.getArgumentInfo(superParentCall) ?: return null
+      val superParentArgumentInfo = RArgumentInfo.getArgumentInfo(superParentCall) ?: return null
       val className = RS4ClassInfoUtil.getAssociatedClassName(superParentCall, superParentArgumentInfo) ?: return null
       return when {
         PsiTreeUtil.isAncestor(superParentArgumentInfo.getArgumentPassedToParameter("slots"), element, false) -> {

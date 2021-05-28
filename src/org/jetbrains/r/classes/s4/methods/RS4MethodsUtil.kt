@@ -9,7 +9,6 @@ import com.intellij.openapi.util.Key
 import org.jetbrains.r.classes.s4.RS4Resolver
 import org.jetbrains.r.classes.s4.RS4Util
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
-import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RCallExpressionImpl
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
@@ -21,7 +20,7 @@ object RS4MethodsUtil {
     val project = callExpression.project
     return when {
       callExpression.isFunctionFromLibrarySoft("setGeneric", "methods") -> {
-        val argumentsInfo = RParameterInfoUtil.getArgumentInfo(callExpression, project.setGenericDefinition) ?: return null
+        val argumentsInfo = RArgumentInfo.getArgumentInfo(callExpression, project.setGenericDefinition) ?: return null
         val methodName = (argumentsInfo.getArgumentPassedToParameter("name") as? RStringLiteralExpression)?.name ?: return null
         val (params, partialParsedParams) = parseCharacterVector(argumentsInfo.getArgumentPassedToParameter("signature"))
         val (valueClasses, partialParsedValueClasses) = parseCharacterVector(argumentsInfo.getArgumentPassedToParameter("valueClass"))
@@ -35,7 +34,7 @@ object RS4MethodsUtil {
         )
       }
       callExpression.isFunctionFromLibrarySoft("setMethod", "methods") -> {
-        val argumentsInfo = RParameterInfoUtil.getArgumentInfo(callExpression, project.setMethodDefinition) ?: return null
+        val argumentsInfo = RArgumentInfo.getArgumentInfo(callExpression, project.setMethodDefinition) ?: return null
         val methodName = argumentsInfo.getArgumentPassedToParameter("f")?.let {
           when (it) {
             is RStringLiteralExpression -> it.name
@@ -70,7 +69,7 @@ object RS4MethodsUtil {
 
   val RS4GenericOrMethodHolder.methodNameIdentifier: RExpression?
     get() = when (this) {
-      is RCallExpressionImpl -> RParameterInfoUtil.getArgumentInfo(this)?.getArgumentPassedToParameter(0)
+      is RCallExpressionImpl -> RArgumentInfo.getArgumentInfo(this)?.getArgumentPassedToParameter(0)
       else -> null
     }
 

@@ -11,7 +11,6 @@ import com.intellij.psi.util.CachedValuesManager
 import com.intellij.util.Processor
 import org.jetbrains.r.classes.s4.RS4Util
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
-import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.packages.RPackageProjectManager
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isFunctionFromLibrary
@@ -23,12 +22,12 @@ import org.jetbrains.r.skeleton.psi.RSkeletonCallExpression
 object RS4ClassInfoUtil {
 
   fun getAssociatedClassName(callExpression: RCallExpression,
-                             argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)): String? {
+                             argumentInfo: RArgumentInfo? = RArgumentInfo.getArgumentInfo(callExpression)): String? {
     return getAssociatedClassNameIdentifier(callExpression, argumentInfo)?.name
   }
 
   fun getAssociatedClassNameIdentifier(callExpression: RCallExpression,
-                                       argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)
+                                       argumentInfo: RArgumentInfo? = RArgumentInfo.getArgumentInfo(callExpression)
   ): RStringLiteralExpression? {
     argumentInfo ?: return null
     if (!callExpression.isFunctionFromLibrarySoft("setClass", "methods") &&
@@ -38,7 +37,7 @@ object RS4ClassInfoUtil {
 
   fun findSlotInClassDefinition(setClass: RCallExpression, slotName: String): Pair<RS4ClassSlot, RExpression>? {
     if (!setClass.isFunctionFromLibrarySoft("setClass", "methods")) return null
-    val argumentInfo = RParameterInfoUtil.getArgumentInfo(setClass, setClass.project.setClassDefinition) ?: return null
+    val argumentInfo = RArgumentInfo.getArgumentInfo(setClass, setClass.project.setClassDefinition) ?: return null
     val className = getAssociatedClassName(setClass, argumentInfo) ?: return null
     var res: Pair<RS4ClassSlot, RExpression>? = null
     val slotProcessor = Processor<Pair<RS4ClassSlot, RExpression>> { slot ->
@@ -142,7 +141,7 @@ object RS4ClassInfoUtil {
   fun parseS4ClassInfo(callExpression: RCallExpression): RS4ClassInfo? {
     if (!callExpression.isFunctionFromLibrarySoft("setClass", "methods")) return null
     val project = callExpression.project
-    val argumentInfo = RParameterInfoUtil.getArgumentInfo(callExpression, project.setClassDefinition) ?: return null
+    val argumentInfo = RArgumentInfo.getArgumentInfo(callExpression, project.setClassDefinition) ?: return null
     val className = getAssociatedClassName(callExpression, argumentInfo) ?: return null
     val representationInfo = parseRepresentationArgument(className, argumentInfo.getArgumentPassedToParameter("representation"))
     val slots = parseSlotsArgument(className, argumentInfo.getArgumentPassedToParameter("slots"))

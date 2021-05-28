@@ -8,7 +8,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.Processor
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.r.editor.completion.RLookupElementFactory
-import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
+import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RStringLiteralExpressionImpl
@@ -161,7 +161,7 @@ class RShinySupportProvider : RLibrarySupportProvider {
 
     uiDefinition.accept(object : RRecursiveElementVisitor() {
       override fun visitCallExpression(call: RCallExpression) {
-        val inputIdArgument = RParameterInfoUtil.getArgumentByName(call, INPUT_ID_ATTRIBUTE)
+        val inputIdArgument = RArgumentInfo.getArgumentByName(call, INPUT_ID_ATTRIBUTE)
         if (inputIdArgument != null) {
           result.add(SmartPointerManager.createPointer(inputIdArgument as PsiElement))
         }
@@ -212,7 +212,7 @@ class RShinySupportProvider : RLibrarySupportProvider {
       override fun visitCallExpression(call: RCallExpression) {
         val callExpression = call.expression
         if (callExpression is RIdentifierExpression && callExpression.name.endsWith(OUTPUT_CALL_SUFFIX)) {
-          val outputIdArgument = RParameterInfoUtil.getArgumentByName(call, OUTPUT_ID_ATTRIBUTE)
+          val outputIdArgument = RArgumentInfo.getArgumentByName(call, OUTPUT_ID_ATTRIBUTE)
           if (outputIdArgument != null) {
             result.add(SmartPointerManager.createPointer(outputIdArgument))
           }

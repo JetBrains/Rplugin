@@ -76,7 +76,7 @@ object RS4Resolver {
     val call = element.parent as? RCallExpression ?: return
     RS4GenericIndex.findDefinitionsByName(name, element.project, globalSearchScope).map { generic ->
       val genericInfo = generic.associatedS4GenericInfo ?: return@map generic
-      val argumentInfo = RArgumentInfo.getParameterInfo(call.argumentList, genericInfo.signature.parameters)
+      val argumentInfo = RArgumentInfo.getArgumentInfo(call.argumentList, genericInfo.signature.parameters)
       val types = argumentInfo.toS4MethodParameters(false)
 
       val methodName = generic.methodName ?: return@map generic

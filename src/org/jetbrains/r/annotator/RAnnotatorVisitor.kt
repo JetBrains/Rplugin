@@ -20,7 +20,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.containers.ContainerUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.highlighting.*
-import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
+import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.RPsiUtil.isFieldLikeComponent
 import org.jetbrains.r.psi.ReferenceKind
@@ -101,7 +101,7 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
     // To avoid IndexNotReadyException
     if (DumbService.isDumb(o.project)) return
     if (!call.isFunctionFromLibrary("source", "base")) return
-    if (RParameterInfoUtil.getArgumentByName(call, "file") != o) return
+    if (RArgumentInfo.getArgumentByName(call, "file") != o) return
 
     val reference = o.references.filterIsInstance<FileReference>().singleOrNull() ?: return
     val range = reference.rangeInElement

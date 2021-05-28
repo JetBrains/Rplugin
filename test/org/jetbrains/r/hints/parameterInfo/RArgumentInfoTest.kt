@@ -209,7 +209,7 @@ class RArgumentInfoTest : RLightCodeInsightFixtureTestCase() {
       val expressions = info!!.expressionListWithPipeExpression
       val expectedResult = ind.map { expressions[it] }
       assertEquals(expectedResult, info.allDotsArguments)
-      assertEquals(expectedResult, RParameterInfoUtil.getAllDotsArguments(call))
+      assertEquals(expectedResult, RArgumentInfo.getAllDotsArguments(call))
     }
 
     doTest("""
@@ -278,7 +278,7 @@ class RArgumentInfoTest : RLightCodeInsightFixtureTestCase() {
       val expectedResult = parameterNames.map { nameToExpr[it]?.unfoldNamedArgument() }
       assertEquals(expectedResult, parameterNames.map { info.getArgumentPassedToParameter(it) })
       assertEquals(expectedResult, parameterNames.mapIndexed { ind, _ -> info.getArgumentPassedToParameter(ind) })
-      assertEquals(expectedResult, parameterNames.map { RParameterInfoUtil.getArgumentByName(call, it) })
+      assertEquals(expectedResult, parameterNames.map { RArgumentInfo.getArgumentByName(call, it) })
     }
 
     doTest("""
@@ -339,7 +339,7 @@ class RArgumentInfoTest : RLightCodeInsightFixtureTestCase() {
   }
 
   private fun argumentPermutationInfoForCall(text: String, call: RCallExpression = findCallAtCaret(text)): RArgumentInfo? {
-    return RParameterInfoUtil.getArgumentInfo(call)
+    return RArgumentInfo.getArgumentInfo(call)
   }
 
   private fun findCallAtCaret(text: String): RCallExpression {

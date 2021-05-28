@@ -8,7 +8,7 @@ import com.intellij.patterns.PsiElementPattern;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil;
+import org.jetbrains.r.hints.parameterInfo.RArgumentInfo;
 import org.jetbrains.r.psi.api.*;
 
 public class RPatterns {
@@ -78,7 +78,7 @@ public class RPatterns {
         RCallExpression call = (RCallExpression)argumentList.getParent();
         RExpression receiver = call.getExpression();
 
-        RExpression argumentValue = RParameterInfoUtil.INSTANCE.getArgumentByName(call, argumentName);
+        RExpression argumentValue = RArgumentInfo.getArgumentByName(call, argumentName);
         if (argumentValue != stringLiteral) {
           return false;
         }

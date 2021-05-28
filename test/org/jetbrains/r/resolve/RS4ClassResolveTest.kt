@@ -17,7 +17,7 @@ import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.addRuntimeInfo
-import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
+import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.psi.api.RStringLiteralExpression
@@ -235,7 +235,7 @@ class RS4ClassResolveTest : RConsoleBaseTestCase() {
     val slot = if (isUserDefined) {
       assertTrue(result is RNamedArgument || result is PomTargetPsiElement)
       val decl = getDeclarationWithClassName(className)
-      val argInfo = RParameterInfoUtil.getArgumentInfo(decl)!!
+      val argInfo = RArgumentInfo.getArgumentInfo(decl)!!
       val slotDecl = when (result) {
         is RNamedArgument -> result
         is PomTargetPsiElement -> when (val target = result.target) {
@@ -359,7 +359,7 @@ class RS4ClassResolveTest : RConsoleBaseTestCase() {
 
   private val RCallExpression.classNameLiteral: RStringLiteralExpression?
     get() {
-      val argumentInfo = RParameterInfoUtil.getArgumentInfo(this)!!
+      val argumentInfo = RArgumentInfo.getArgumentInfo(this)!!
       return argumentInfo.getArgumentPassedToParameter("Class") as? RStringLiteralExpression
     }
 }

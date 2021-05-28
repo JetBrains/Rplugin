@@ -37,7 +37,7 @@ import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.editor.completion.*
-import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
+import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.*
@@ -359,7 +359,7 @@ class RCompletionContributor : CompletionContributor() {
         consumeParameter(parameter, shownNames, result)
       }
 
-      val argumentInfo = RParameterInfoUtil.getArgumentInfo(mainCall, singleDeclaration) ?: return
+      val argumentInfo = RArgumentInfo.getArgumentInfo(mainCall, singleDeclaration) ?: return
       for (parameter in extraNamedArguments.functionArgNames) {
         val arg = argumentInfo.getArgumentPassedToParameter(parameter) ?: continue
         if (arg is RFunctionExpression) {

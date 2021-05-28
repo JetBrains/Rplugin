@@ -135,7 +135,7 @@ class RArgumentInfo private constructor(argumentList: RArgumentHolder, val param
   companion object {
 
     @JvmStatic
-    fun getParameterInfo(argumentHolder: RArgumentHolder, parameterNames: List<String>): RArgumentInfo {
+    fun getArgumentInfo(argumentHolder: RArgumentHolder, parameterNames: List<String>): RArgumentInfo {
       val info = argumentHolder.getUserData(ARGUMENT_INFO_KEY)?.upToDateOrNull?.get()
       val result: RArgumentInfo
       if (info == null || info.parameterNames != parameterNames) {
@@ -155,13 +155,59 @@ class RArgumentInfo private constructor(argumentList: RArgumentHolder, val param
      * **ATTENTION**: no caching here
      */
     @JvmStatic
-    fun getParameterInfo(arguments: List<RExpression>, parameterNames: List<String>, project: Project): RArgumentInfo {
+    fun getArgumentInfo(arguments: List<RExpression>, parameterNames: List<String>, project: Project): RArgumentInfo {
       val call = RElementFactory.createFuncallFromText(project, "tmp(${arguments.joinToString(", ") { it.text }})")
-      return getParameterInfo(call.argumentList, parameterNames)
+      return getArgumentInfo(call.argumentList, parameterNames)
     }
 
-    private val ARGUMENT_INFO_KEY =
-      Key.create<CachedValue<RArgumentInfo>>("org.jetbrains.r.hints.parameterInfo.RArgumentInfo")
+    @JvmStatic
+    fun getArgumentInfo(call: RCallExpression): RArgumentInfo? {
+      return getArgumentInfo(call, RPsiUtil.resolveCall(call).singleOrNull())
+    }
+
+    @JvmStatic
+    fun getArgumentInfo(call: RCallExpression, definition: RAssignmentStatement?): RArgumentInfo? {
+      if (definition == null) return null
+      return getArgumentInfo(call.argumentList, definition.parameterNameList)
+    }
+
+    /**
+     * If you need information about several parameters, use [RArgumentInfo][getArgumentInfo]
+     *
+     * @return the first entry of the required parameter if exist.
+     * In the correct syntax, there is only one entry for all parameters except dots.
+     * If you want to find all arguments passed to dots, use [getAllDotsArguments]
+     */
+    @JvmStatic
+    fun getArgumentByName(call: RCallExpression, name: String): RExpression? {
+      return getArgumentByName(call, name, RPsiUtil.resolveCall(call, false).singleOrNull { it.parameterNameList.contains(name) })
+    }
+
+    /**
+     * @see [getArgumentByName]
+     */
+    @JvmStatic
+    fun getArgumentByName(call: RCallExpression, name: String, definition: RAssignmentStatement?): RExpression? {
+      if (definition != null) {
+        return getArgumentInfo(call, definition)?.getArgumentPassedToParameter(name)
+      }
+      for (namedArgument in call.argumentList.namedArgumentList) {
+        if (namedArgument.name == name) {
+          return namedArgument.assignedValue
+        }
+      }
+      return null
+    }
+
+    @JvmStatic
+    fun getAllDotsArguments(call: RCallExpression): List<RExpression> {
+      return getAllDotsArguments(call, RPsiUtil.resolveCall(call).singleOrNull())
+    }
+
+    @JvmStatic
+    fun getAllDotsArguments(call: RCallExpression, definition: RAssignmentStatement?): List<RExpression> {
+      return getArgumentInfo(call, definition)?.allDotsArguments ?: emptyList()
+    }
 
     private fun findPipeArgument(argumentHolder: RArgumentHolder): RExpression? {
       val call = if (argumentHolder is RArgumentList) argumentHolder.parent else argumentHolder
@@ -169,54 +215,8 @@ class RArgumentInfo private constructor(argumentList: RArgumentHolder, val param
       return if (isPipeOperator(callParent.operator) && callParent.rightExpr == call) callParent.leftExpr
       else null
     }
+
+    private const val DOTS = "..."
+    private val ARGUMENT_INFO_KEY = Key.create<CachedValue<RArgumentInfo>>("org.jetbrains.r.hints.parameterInfo.RArgumentInfo")
   }
 }
-
-@Suppress("MemberVisibilityCanBePrivate")
-object RParameterInfoUtil {
-
-  fun getArgumentInfo(call: RCallExpression): RArgumentInfo? {
-    return getArgumentInfo(call, RPsiUtil.resolveCall(call).singleOrNull())
-  }
-
-  fun getArgumentInfo(call: RCallExpression, definition: RAssignmentStatement?): RArgumentInfo? {
-    if (definition == null) return null
-    return RArgumentInfo.getParameterInfo(call.argumentList, definition.parameterNameList)
-  }
-
-  /**
-   * If you need information about several parameters, use [RArgumentInfo][getArgumentInfo]
-   *
-   * @return the first entry of the required parameter if exist.
-   * In the correct syntax, there is only one entry for all parameters except dots.
-   * If you want to find all arguments passed to dots, use [getAllDotsArguments]
-   */
-  fun getArgumentByName(call: RCallExpression, name: String): RExpression? {
-    return getArgumentByName(call, name, RPsiUtil.resolveCall(call, false).singleOrNull { it.parameterNameList.contains(name) })
-  }
-
-  /**
-   * @see [getArgumentByName]
-   */
-  fun getArgumentByName(call: RCallExpression, name: String, definition: RAssignmentStatement?): RExpression? {
-    if (definition != null) {
-      return getArgumentInfo(call, definition)?.getArgumentPassedToParameter(name)
-    }
-    for (namedArgument in call.argumentList.namedArgumentList) {
-      if (namedArgument.name == name) {
-        return namedArgument.assignedValue
-      }
-    }
-    return null
-  }
-
-  fun getAllDotsArguments(call: RCallExpression): List<RExpression> {
-    return getAllDotsArguments(call, RPsiUtil.resolveCall(call).singleOrNull())
-  }
-
-  fun getAllDotsArguments(call: RCallExpression, definition: RAssignmentStatement?): List<RExpression> {
-    return getArgumentInfo(call, definition)?.allDotsArguments ?: emptyList()
-  }
-}
-
-private const val DOTS = "..."

@@ -10,7 +10,6 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
-import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.inspections.RInspection
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.REmptyExpression
@@ -28,7 +27,7 @@ class DeprecatedSetClassArgsInspection : RInspection() {
   private class Visitor(private val myProblemHolder: ProblemsHolder) : RVisitor() {
     override fun visitCallExpression(call: RCallExpression) {
       if (!call.isFunctionFromLibrary("setClass", "methods")) return
-      val argumentInfo = RParameterInfoUtil.getArgumentInfo(call) ?: return
+      val argumentInfo = RArgumentInfo.getArgumentInfo(call) ?: return
       findDeprecatedArgument(argumentInfo, "representation")
       findDeprecatedArgument(argumentInfo, "access")
       findDeprecatedArgument(argumentInfo, "version")
