@@ -76,7 +76,7 @@ object RResolver {
       result.addAll(RS4Resolver.resolveS4ClassName(element, globalSearchScope))
     }
     val parent = element.parent
-    if (element is RIdentifierExpression && parent !is RCallExpression) {
+    if (element is RIdentifierExpression && parent !is RCallExpression && !(parent is RAtExpression && parent.firstChild == element)) {
       RecursionManager.doPreventingRecursion(element, false) {
         result.addAll(RS4Resolver.resolveSlot(element, globalSearchScope))
       }
