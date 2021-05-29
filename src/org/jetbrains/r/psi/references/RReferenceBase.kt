@@ -17,6 +17,7 @@ import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4ClassPomTarget
 import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4SlotPomTarget
 import org.jetbrains.r.classes.s4.classInfo.RStringLiteralPomTarget
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
+import org.jetbrains.r.classes.s4.context.methods.RS4SetGenericFunctionNameContext
 import org.jetbrains.r.classes.s4.context.methods.RS4SetMethodFunctionNameContext
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.packages.RPackage
@@ -32,15 +33,26 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
   override fun bindToElement(element: PsiElement) = null
 
   override fun isReferenceTo(element: PsiElement): Boolean {
+    if (element is PomTargetPsiElement &&
+        element.target is RStringLiteralPomTarget &&
+        psiElement is RStringLiteralExpression &&
+        RS4ContextProvider.getS4Context((element.target as RStringLiteralPomTarget).literal, RS4SetGenericFunctionNameContext::class) != null &&
+        RS4ContextProvider.getS4Context(psiElement, RS4SetMethodFunctionNameContext::class) != null
+      ) {
+      return true
+    }
     return when (val resolve = resolve()) {
       is PomTargetPsiElement -> {
         if (element !is RPsiElement) return false
         if (resolve.isEquivalentTo(element)) return true
         val target = resolve.target
-        if (target is RStringLiteralPomTarget &&
-            element is PomTargetPsiElement && element.target is RStringLiteralPomTarget) {
-          val context = RS4ContextProvider.getS4Context(target.literal, RS4SetMethodFunctionNameContext::class)
-          if (context != null && target.literal.name == (element.target as RStringLiteralPomTarget).literal.name) return true
+        if (target is RStringLiteralPomTarget && element is PomTargetPsiElement) {
+          val elementTarget = element.target
+          if (elementTarget is RStringLiteralPomTarget &&
+              RS4ContextProvider.getS4Context(elementTarget.literal, RS4SetGenericFunctionNameContext::class) != null) {
+            val context = RS4ContextProvider.getS4Context(target.literal, RS4SetMethodFunctionNameContext::class)
+            if (context != null && target.literal.name == elementTarget.literal.name) return true
+          }
         }
         return when {
           target is RS4ComplexSlotPomTarget -> {
