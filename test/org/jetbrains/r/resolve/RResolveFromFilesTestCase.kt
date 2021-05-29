@@ -48,7 +48,7 @@ abstract class RResolveFromFilesTestCase(testDataDirectoryRoot: String) : RLight
     return files
   }
 
-  protected class PsiElementWrapper(private val elem: PsiElement) {
+  protected class PsiElementWrapper(val elem: PsiElement) {
     override fun equals(other: Any?): Boolean {
       if (other !is PsiElementWrapper) return false
       return elem == other.elem

@@ -1,0 +1,1 @@
+setClass('MyClass', slots = c(data = 'numeric'))

@@ -10,7 +10,7 @@ import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.psi.api.RPsiElement
-import org.jetbrains.r.psi.isFunctionFromLibrary
+import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 
 sealed class RS4SetMethodContext : RS4MethodsContext() {
   override val contextFunctionName: String = "setMethod"
@@ -32,7 +32,7 @@ data class RS4SetMethodDefinitionContext(override val originalElement: RPsiEleme
 class RS4SetMethodProvider : RS4ContextProvider<RS4SetMethodContext>() {
   override fun getS4ContextWithoutCaching(element: RPsiElement): RS4SetMethodContext? {
     val parentCall = PsiTreeUtil.getParentOfType(element, RCallExpression::class.java) ?: return null
-    return if (parentCall.isFunctionFromLibrary("setMethod", "methods")) {
+    return if (parentCall.isFunctionFromLibrarySoft("setMethod", "methods")) {
       val parentArgumentInfo = RArgumentInfo.getArgumentInfo(parentCall) ?: return null
       when (element) {
         parentArgumentInfo.getArgumentPassedToParameter("f") -> {
@@ -49,7 +49,7 @@ class RS4SetMethodProvider : RS4ContextProvider<RS4SetMethodContext>() {
     }
     else {
       val grandParentCall = PsiTreeUtil.getParentOfType(parentCall, RCallExpression::class.java) ?: return null
-      if (grandParentCall.isFunctionFromLibrary("setMethod", "methods")) {
+      if (grandParentCall.isFunctionFromLibrarySoft("setMethod", "methods")) {
         val grandParentArgumentInfo = RArgumentInfo.getArgumentInfo(grandParentCall) ?: return null
         return when {
           PsiTreeUtil.isAncestor(grandParentArgumentInfo.getArgumentPassedToParameter("signature"), element, false) -> {

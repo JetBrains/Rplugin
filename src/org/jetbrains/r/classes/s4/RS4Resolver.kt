@@ -35,17 +35,17 @@ import org.jetbrains.r.skeleton.psi.RSkeletonCallExpression
 
 object RS4Resolver {
 
-  fun resolveSlot(identifier: RPsiElement): Array<ResolveResult> {
+  fun resolveSlot(identifier: RPsiElement,
+                  globalSearchScope: GlobalSearchScope = RSearchScopeUtil.getScope(identifier)): Array<ResolveResult> {
     val owner =
       if (RS4ContextProvider.getS4Context(identifier, RS4NewObjectSlotNameContext::class) != null) identifier
       else (identifier.parent as? RAtExpression)?.leftExpr ?: return emptyArray()
     val name = identifier.name ?: return emptyArray()
     val res = mutableListOf<ResolveResult>()
     val project = identifier.project
-    val scope = RSearchScopeUtil.getScope(identifier)
-    findElementS4ClassDeclarations(owner).forEach { def ->
+    findElementS4ClassDeclarations(owner, globalSearchScope).forEach { def ->
       val declClass = RS4ClassInfoUtil.getAllAssociatedSlots(def).firstOrNull { it.name == name }?.declarationClass ?: return@forEach
-      findClassDeclarations(declClass, identifier, project, scope).forEach { declarationClassDef ->
+      findClassDeclarations(declClass, identifier, project, globalSearchScope).forEach { declarationClassDef ->
         val element = when (declarationClassDef) {
           is RSkeletonCallExpression -> RPomTarget.createSkeletonS4SlotTarget(declarationClassDef, name)
           else -> RS4ClassInfoUtil.findSlotInClassDefinition(declarationClassDef, name)?.let { (slot, def) ->
@@ -62,9 +62,10 @@ object RS4Resolver {
     return res.toTypedArray()
   }
 
-  fun resolveS4ClassName(className: RStringLiteralExpression): Array<ResolveResult> {
+  fun resolveS4ClassName(className: RStringLiteralExpression,
+                         globalSearchScope: GlobalSearchScope = RSearchScopeUtil.getScope(className)): Array<ResolveResult> {
     val name = className.name ?: return emptyArray()
-    return findClassDeclarations(name, className, className.project, RSearchScopeUtil.getScope(className)).mapNotNull { call ->
+    return findClassDeclarations(name, className, className.project, globalSearchScope).mapNotNull { call ->
       val decl =
         if (call is RSkeletonCallExpression) RPomTarget.createSkeletonS4ClassTarget(call)
         else RS4ClassInfoUtil.getAssociatedClassNameIdentifier(call)
@@ -116,11 +117,11 @@ object RS4Resolver {
     }
   }
 
-  fun findElementS4ClassDeclarations(element: RPsiElement): List<RCallExpression> {
+  fun findElementS4ClassDeclarations(element: RPsiElement,
+                                     globalSearchScope: GlobalSearchScope = RSearchScopeUtil.getScope(element)): List<RCallExpression> {
     val classNames = RS4TypeResolver.resolveS4TypeClass(element)
     val project = element.project
-    val scope = RSearchScopeUtil.getScope(element)
-    return classNames.flatMap { findClassDeclarations(it, element, project, scope) }
+    return classNames.flatMap { findClassDeclarations(it, element, project, globalSearchScope) }
   }
 
   private fun findClassDeclarations(className: String,

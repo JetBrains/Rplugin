@@ -10,7 +10,7 @@ import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.psi.api.RPsiElement
-import org.jetbrains.r.psi.isFunctionFromLibrary
+import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 
 sealed class RS4NewObjectContext : RS4Context {
   override val contextFunctionName = "new"
@@ -28,7 +28,7 @@ data class RS4NewObjectSlotNameContext(override val originalElement: RPsiElement
 class RS4NewObjectContextProvider : RS4ContextProvider<RS4NewObjectContext>() {
   override fun getS4ContextWithoutCaching(element: RPsiElement): RS4NewObjectContext? {
     val parentCall = PsiTreeUtil.getParentOfType(element, RCallExpression::class.java) ?: return null
-    if (!parentCall.isFunctionFromLibrary("new", "methods")) return null
+    if (!parentCall.isFunctionFromLibrarySoft("new", "methods")) return null
     val parentArgumentInfo = RArgumentInfo.getArgumentInfo(parentCall) ?: return null
     return if (parentArgumentInfo.getArgumentPassedToParameter("Class") == element) {
       // new("<caret>")

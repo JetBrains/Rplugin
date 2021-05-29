@@ -6,6 +6,7 @@ package org.jetbrains.r.psi.references
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.RecursionManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
@@ -13,6 +14,8 @@ import com.intellij.psi.ResolveResult
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.classes.s4.RS4Resolver
+import org.jetbrains.r.classes.s4.context.RS4ContextProvider
+import org.jetbrains.r.classes.s4.context.RS4NewObjectSlotNameContext
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.interpreter.RInterpreterStateManager
@@ -20,10 +23,7 @@ import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.psi.RPomTarget
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.RPsiUtil.getFunction
-import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.psi.api.RControlFlowHolder
-import org.jetbrains.r.psi.api.RParameterList
-import org.jetbrains.r.psi.api.RPsiElement
+import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.stubs.RAssignmentNameIndex
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 import java.util.function.Predicate
@@ -72,6 +72,22 @@ object RResolver {
                           name: String,
                           result: MutableList<ResolveResult>,
                           globalSearchScope: GlobalSearchScope) {
+    if (element is RStringLiteralExpression) {
+      result.addAll(RS4Resolver.resolveS4ClassName(element, globalSearchScope))
+    }
+    val parent = element.parent
+    if (element is RIdentifierExpression && parent !is RCallExpression) {
+      RecursionManager.doPreventingRecursion(element, false) {
+        result.addAll(RS4Resolver.resolveSlot(element, globalSearchScope))
+      }
+      RPsiUtil.getNamedArgumentByNameIdentifier(element)?.let { return }
+      if (parent is RAtExpression && parent.expressionList.first() != element ||
+          parent is RArgumentList &&
+          RS4ContextProvider.getS4Context(element, RS4NewObjectSlotNameContext::class) != null) {
+        return
+      }
+    }
+    if (result.isNotEmpty()) return
     val statements = RAssignmentNameIndex.find(name, element.project, globalSearchScope)
     val exported = statements.filter { it !is RSkeletonAssignmentStatement || it.stub.exported }
     addResolveResults(result, exported)

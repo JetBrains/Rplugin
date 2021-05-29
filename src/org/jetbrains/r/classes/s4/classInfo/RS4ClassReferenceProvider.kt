@@ -8,17 +8,17 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.util.IncorrectOperationException
 import com.intellij.util.ProcessingContext
-import org.jetbrains.r.classes.s4.RS4Resolver
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.classes.s4.context.methods.RS4SetMethodFunctionNameContext
 import org.jetbrains.r.psi.RPomTarget
 import org.jetbrains.r.psi.api.RStringLiteralExpression
 import org.jetbrains.r.psi.references.RReferenceBase
+import org.jetbrains.r.psi.references.RResolver
 
 class RS4ClassReference(literal: RStringLiteralExpression) : RReferenceBase<RStringLiteralExpression>(literal) {
   override fun multiResolveInner(incompleteCode: Boolean): Array<ResolveResult> {
     RS4ContextProvider.getS4Context(psiElement, *RS4ContextProvider.S4_CLASS_USAGE_CONTEXTS) ?: return emptyArray()
-    return RS4Resolver.resolveS4ClassName(element).map {
+    return RResolver.resolveUsingSourcesAndRuntime(element, element.name ?: "", null).map {
       val element = it.element
       if (element is RStringLiteralExpression) {
         PsiElementResolveResult(RPomTarget.createStringLiteralTarget(element))

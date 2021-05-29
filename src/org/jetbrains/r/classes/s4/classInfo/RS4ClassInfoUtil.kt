@@ -13,7 +13,6 @@ import org.jetbrains.r.classes.s4.RS4Util
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.packages.RPackageProjectManager
 import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.isFunctionFromLibrary
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 import org.jetbrains.r.psi.references.RSearchScopeUtil
 import org.jetbrains.r.psi.stubs.RS4ClassNameIndex
@@ -87,7 +86,7 @@ object RS4ClassInfoUtil {
       // S4 classes from packages and so contains all slots
       return callExpression.associatedS4ClassInfo.slots
     }
-    if (!callExpression.isFunctionFromLibrary("setClass", "methods")) return emptyList()
+    if (!callExpression.isFunctionFromLibrarySoft("setClass", "methods")) return emptyList()
     return CachedValuesManager.getProjectPsiDependentCache(callExpression) {
       val info = callExpression.associatedS4ClassInfo
       if (info == null) return@getProjectPsiDependentCache emptyList<RS4ClassSlot>()
@@ -105,7 +104,7 @@ object RS4ClassInfoUtil {
       // S4 classes from packages and so contains all super classes
       return callExpression.associatedS4ClassInfo.superClasses
     }
-    if (!callExpression.isFunctionFromLibrary("setClass", "methods")) return emptyList()
+    if (!callExpression.isFunctionFromLibrarySoft("setClass", "methods")) return emptyList()
     return CachedValuesManager.getProjectPsiDependentCache(callExpression) {
       val info = callExpression.associatedS4ClassInfo
       if (info == null) return@getProjectPsiDependentCache emptyList<RS4SuperClass>()

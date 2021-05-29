@@ -168,11 +168,9 @@ val RIdentifierExpression.isInsideSubscription: Boolean
 val RIdentifierExpression.isDependantIdentifier: Boolean
   get() = parent.let { parent ->
     !(parent is RMemberExpression && parent.expressionList.firstOrNull() == this) &&
-    !(parent is RAtExpression && parent.expressionList.firstOrNull() == this) &&
     (parent is RNamespaceAccessExpression ||
      parent is RParameter && parent.variable == this ||
      (parent is RMemberExpression && parent.expressionList.first() != this) ||
-     (parent is RAtExpression && parent.expressionList.first() != this) ||
      RPsiUtil.getNamedArgumentByNameIdentifier(this) != null ||
      isInsideSubscription)
   }

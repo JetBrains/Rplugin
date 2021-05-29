@@ -23,16 +23,9 @@ import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifierExpression>(element) {
 
   override fun multiResolveInner(incompleteCode: Boolean): Array<ResolveResult> {
-    if (element.parent is RArgumentList && RS4ContextProvider.getS4Context(element, RS4NewObjectSlotNameContext::class) != null) {
-      return RS4Resolver.resolveSlot(element)
-    }
-
     RPsiUtil.getNamedArgumentByNameIdentifier(element)?.let {
       val argumentResult = resolveNamedArgument(it, incompleteCode)
       if (argumentResult.isNotEmpty()) return argumentResult
-      if (RS4ContextProvider.getS4Context(element, RS4NewObjectSlotNameContext::class) != null) {
-        return RS4Resolver.resolveSlot(element)
-      }
     }
 
     for (extension in RLibrarySupportProvider.EP_NAME.extensions) {
@@ -42,8 +35,8 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
       }
     }
 
-    if (element.isDependantIdentifier) {
-      return resolveDependantIdentifier(element)
+    if (element.isDependantIdentifier && RS4ContextProvider.getS4Context(element, RS4NewObjectSlotNameContext::class) == null) {
+      return emptyArray()
     }
 
     return RResolver.resolveUsingSourcesAndRuntime(element, element.name, resolveLocally())

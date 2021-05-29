@@ -101,10 +101,10 @@ class RS4ClassResolveTest : RConsoleBaseTestCase() {
   fun testUserClassComplexSlot() {
     val classDeclaration = "setClass('MyClass', slots = c(slot = c('numeric', ext = 'character')))"
     val obj = "obj <- new('MyClass')"
-    doSlotTest(classDeclaration, "$obj\n obj@slo<caret>t1", RS4ClassSlot("slot1", "numeric", "MyClass"))
-    doSlotTest(classDeclaration, "$obj\n obj@slo<caret>t.ext", RS4ClassSlot("slot.ext", "character", "MyClass"))
+    //doSlotTest(classDeclaration, "$obj\n obj@slo<caret>t1", RS4ClassSlot("slot1", "numeric", "MyClass"))
+    //doSlotTest(classDeclaration, "$obj\n obj@slo<caret>t.ext", RS4ClassSlot("slot.ext", "character", "MyClass"))
     doNoResolveTest(classDeclaration, "$obj\n obj@slo<caret>t")
-    doNoResolveTest(classDeclaration, "$obj\n obj@slo<caret>t2")
+    //doNoResolveTest(classDeclaration, "$obj\n obj@slo<caret>t2")
   }
 
   fun testSlotInSuperClass() =

@@ -10,7 +10,7 @@ import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.psi.api.RPsiElement
-import org.jetbrains.r.psi.isFunctionFromLibrary
+import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 
 sealed class RS4SetGenericContext : RS4MethodsContext() {
   override val contextFunctionName: String = "setGeneric"
@@ -34,7 +34,7 @@ data class RS4SetGenericParameterNamesContext(override val originalElement: RPsi
 class RS4SetGenericProvider : RS4ContextProvider<RS4SetGenericContext>() {
   override fun getS4ContextWithoutCaching(element: RPsiElement): RS4SetGenericContext? {
     val parentCall = PsiTreeUtil.getParentOfType(element, RCallExpression::class.java) ?: return null
-    return if (parentCall.isFunctionFromLibrary("setGeneric", "methods")) {
+    return if (parentCall.isFunctionFromLibrarySoft("setGeneric", "methods")) {
       val parentArgumentInfo = RArgumentInfo.getArgumentInfo(parentCall) ?: return null
       when (element) {
         parentArgumentInfo.getArgumentPassedToParameter("name") -> {
@@ -51,7 +51,7 @@ class RS4SetGenericProvider : RS4ContextProvider<RS4SetGenericContext>() {
     }
     else {
       val grandParentCall = PsiTreeUtil.getParentOfType(parentCall, RCallExpression::class.java) ?: return null
-      if (grandParentCall.isFunctionFromLibrary("setGeneric", "methods")) {
+      if (grandParentCall.isFunctionFromLibrarySoft("setGeneric", "methods")) {
         val grandParentArgumentInfo = RArgumentInfo.getArgumentInfo(grandParentCall) ?: return null
         return when {
           PsiTreeUtil.isAncestor(grandParentArgumentInfo.getArgumentPassedToParameter("signature"), element, false) -> {
