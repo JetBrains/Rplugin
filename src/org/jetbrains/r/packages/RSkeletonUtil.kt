@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit
 
 
 object RSkeletonUtil {
-  private const val CUR_SKELETON_VERSION = 12
+  private const val CUR_SKELETON_VERSION = 13
   const val SKELETON_DIR_NAME = "r_skeletons"
   private const val MAX_THREAD_POOL_SIZE = 4
   private const val FAILED_SUFFIX = ".failed"
@@ -315,7 +315,7 @@ object RSkeletonUtil {
         for (i in superClasses.indices step 2) {
           val superClassBuilder = RLibrarySymbol.S4ClassRepresentation.S4SuperClass.newBuilder()
           superClassBuilder.name = superClasses[i]
-          superClassBuilder.isDirectInheritance = superClasses[i + 1] == "TRUE"
+          superClassBuilder.distance = superClasses[i + 1].toInt()
           s4ClassRepresentationBuilder.addSuperClasses(superClassBuilder)
         }
 

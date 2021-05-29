@@ -46,7 +46,7 @@ class RSkeletonFileStubBuilder : BinaryFileStubBuilder {
                                                    RS4ClassSlot(it.name, it.type, it.declarationClass)
                                                  },
                                                  s4ClassRepresentation.superClassesList.map {
-                                                   RS4SuperClass(it.name, it.isDirectInheritance)
+                                                   RS4SuperClass(it.name, it.distance)
                                                  },
                                                  s4ClassRepresentation.isVirtual))
       }

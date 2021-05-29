@@ -858,7 +858,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       if (res.className.isEmpty()) return null
       RS4ClassInfo(res.className, res.packageName,
                    res.slotsList.map { RS4ClassSlot(it.name, it.type, it.declarationClass) },
-                   res.superClassesList.map { RS4SuperClass(it.name, it.isDirectInheritance) },
+                   res.superClassesList.map { RS4SuperClass(it.name, it.distance) },
                    res.isVirtual)
     } catch (e: RInteropTerminated) {
       null
@@ -871,7 +871,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       if (res.className.isEmpty()) return null
       RS4ClassInfo(res.className, res.packageName,
                    res.slotsList.map { RS4ClassSlot(it.name, it.type, it.declarationClass) },
-                   res.superClassesList.map { RS4SuperClass(it.name, it.isDirectInheritance) },
+                   res.superClassesList.map { RS4SuperClass(it.name, it.distance) },
                    res.isVirtual)
     } catch (e: RInteropTerminated) {
       null

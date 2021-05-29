@@ -15,6 +15,6 @@ public class RFileElementType extends IStubFileElementType {
 
     @Override
     public int getStubVersion() {
-        return 11;
+        return 12;
     }
 }

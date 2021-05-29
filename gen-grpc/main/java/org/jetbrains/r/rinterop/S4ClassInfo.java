@@ -1011,10 +1011,10 @@ private static final long serialVersionUID = 0L;
         getNameBytes();
 
     /**
-     * <code>bool isDirectInheritance = 2;</code>
-     * @return The isDirectInheritance.
+     * <code>int32 distance = 2;</code>
+     * @return The distance.
      */
-    boolean getIsDirectInheritance();
+    int getDistance();
   }
   /**
    * Protobuf type {@code rplugininterop.S4ClassInfo.S4SuperClass}
@@ -1070,7 +1070,7 @@ private static final long serialVersionUID = 0L;
             }
             case 16: {
 
-              isDirectInheritance_ = input.readBool();
+              distance_ = input.readInt32();
               break;
             }
             default: {
@@ -1143,15 +1143,15 @@ private static final long serialVersionUID = 0L;
       }
     }
 
-    public static final int ISDIRECTINHERITANCE_FIELD_NUMBER = 2;
-    private boolean isDirectInheritance_;
+    public static final int DISTANCE_FIELD_NUMBER = 2;
+    private int distance_;
     /**
-     * <code>bool isDirectInheritance = 2;</code>
-     * @return The isDirectInheritance.
+     * <code>int32 distance = 2;</code>
+     * @return The distance.
      */
     @java.lang.Override
-    public boolean getIsDirectInheritance() {
-      return isDirectInheritance_;
+    public int getDistance() {
+      return distance_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -1171,8 +1171,8 @@ private static final long serialVersionUID = 0L;
       if (!getNameBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
-      if (isDirectInheritance_ != false) {
-        output.writeBool(2, isDirectInheritance_);
+      if (distance_ != 0) {
+        output.writeInt32(2, distance_);
       }
       unknownFields.writeTo(output);
     }
@@ -1186,9 +1186,9 @@ private static final long serialVersionUID = 0L;
       if (!getNameBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
-      if (isDirectInheritance_ != false) {
+      if (distance_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(2, isDirectInheritance_);
+          .computeInt32Size(2, distance_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -1207,8 +1207,8 @@ private static final long serialVersionUID = 0L;
 
       if (!getName()
           .equals(other.getName())) return false;
-      if (getIsDirectInheritance()
-          != other.getIsDirectInheritance()) return false;
+      if (getDistance()
+          != other.getDistance()) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -1222,9 +1222,8 @@ private static final long serialVersionUID = 0L;
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + NAME_FIELD_NUMBER;
       hash = (53 * hash) + getName().hashCode();
-      hash = (37 * hash) + ISDIRECTINHERITANCE_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-          getIsDirectInheritance());
+      hash = (37 * hash) + DISTANCE_FIELD_NUMBER;
+      hash = (53 * hash) + getDistance();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -1360,7 +1359,7 @@ private static final long serialVersionUID = 0L;
         super.clear();
         name_ = "";
 
-        isDirectInheritance_ = false;
+        distance_ = 0;
 
         return this;
       }
@@ -1389,7 +1388,7 @@ private static final long serialVersionUID = 0L;
       public org.jetbrains.r.rinterop.S4ClassInfo.S4SuperClass buildPartial() {
         org.jetbrains.r.rinterop.S4ClassInfo.S4SuperClass result = new org.jetbrains.r.rinterop.S4ClassInfo.S4SuperClass(this);
         result.name_ = name_;
-        result.isDirectInheritance_ = isDirectInheritance_;
+        result.distance_ = distance_;
         onBuilt();
         return result;
       }
@@ -1442,8 +1441,8 @@ private static final long serialVersionUID = 0L;
           name_ = other.name_;
           onChanged();
         }
-        if (other.getIsDirectInheritance() != false) {
-          setIsDirectInheritance(other.getIsDirectInheritance());
+        if (other.getDistance() != 0) {
+          setDistance(other.getDistance());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -1550,33 +1549,33 @@ private static final long serialVersionUID = 0L;
         return this;
       }
 
-      private boolean isDirectInheritance_ ;
+      private int distance_ ;
       /**
-       * <code>bool isDirectInheritance = 2;</code>
-       * @return The isDirectInheritance.
+       * <code>int32 distance = 2;</code>
+       * @return The distance.
        */
       @java.lang.Override
-      public boolean getIsDirectInheritance() {
-        return isDirectInheritance_;
+      public int getDistance() {
+        return distance_;
       }
       /**
-       * <code>bool isDirectInheritance = 2;</code>
-       * @param value The isDirectInheritance to set.
+       * <code>int32 distance = 2;</code>
+       * @param value The distance to set.
        * @return This builder for chaining.
        */
-      public Builder setIsDirectInheritance(boolean value) {
+      public Builder setDistance(int value) {
         
-        isDirectInheritance_ = value;
+        distance_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>bool isDirectInheritance = 2;</code>
+       * <code>int32 distance = 2;</code>
        * @return This builder for chaining.
        */
-      public Builder clearIsDirectInheritance() {
+      public Builder clearDistance() {
         
-        isDirectInheritance_ = false;
+        distance_ = 0;
         onChanged();
         return this;
       }

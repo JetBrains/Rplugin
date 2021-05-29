@@ -129,7 +129,7 @@ object RS4ClassInfoUtil {
       // R keeps all superclasses together in the list, not as a tree
       // So, I don't see any reason to do anything else
       val parentSuperClasses = RS4ClassNameIndex.findClassDefinitions(superClass.name, project, searchScope).flatMap {
-        getAllAssociatedSuperClasses(it).map { RS4SuperClass(it.name, false) }
+        getAllAssociatedSuperClasses(it).map { RS4SuperClass(it.name, it.distance + 1) }
       }
       listOf(superClass) + parentSuperClasses
     }.distinct()
@@ -191,11 +191,11 @@ object RS4ClassInfoUtil {
     var isVirtual = false
     argumentList.forEach { arg ->
       when (arg) {
-        is RNamedArgument -> (arg.assignedValue as? RStringLiteralExpression)?.name?.let { contains.add(RS4SuperClass(it, true)) }
+        is RNamedArgument -> (arg.assignedValue as? RStringLiteralExpression)?.name?.let { contains.add(RS4SuperClass(it, 1)) }
         is RStringLiteralExpression -> {
           val name = arg.name?.takeIf { it.isNotEmpty() } ?: return@forEach
           if (name == "VIRTUAL") isVirtual = true
-          else contains.add(RS4SuperClass(name, true))
+          else contains.add(RS4SuperClass(name, 1))
         }
         else -> {
           // Most likely something strange and difficult to analyse statically
@@ -241,7 +241,7 @@ object RS4ClassInfoUtil {
         is RNamedArgument -> arg.toSlot(className)?.let { if (!slotProcessor.process(it to arg)) return }
         is RStringLiteralExpression -> {
           val name = arg.name?.takeIf { it.isNotEmpty() } ?: return@forEach
-          if (!superClassProcessor.process(RS4SuperClass(name, true) to arg)) return
+          if (!superClassProcessor.process(RS4SuperClass(name, 1) to arg)) return
         }
       }
     }

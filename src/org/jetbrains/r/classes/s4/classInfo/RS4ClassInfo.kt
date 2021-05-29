@@ -29,17 +29,18 @@ data class RS4ClassSlot(val name: String, val type: String, val declarationClass
   }
 }
 
-data class RS4SuperClass(val name: String, val isDirectInheritance: Boolean) {
+data class RS4SuperClass(val name: String, val distance: Int) {
+
   fun serialize(dataStream: StubOutputStream) {
     dataStream.writeName(name)
-    dataStream.writeBoolean(isDirectInheritance)
+    dataStream.writeInt(distance)
   }
 
   companion object {
     fun deserialize(dataStream: StubInputStream): RS4SuperClass {
       val name = StringRef.toString(dataStream.readName())
-      val isDirectInheritance = dataStream.readBoolean()
-      return RS4SuperClass(name, isDirectInheritance)
+      val distance = dataStream.readInt()
+      return RS4SuperClass(name, distance)
     }
   }
 }
@@ -61,7 +62,7 @@ data class RS4ClassInfo(val className: String,
     val indentSize = CodeStyle.getSettings(project).getIndentOptions(RFileType).INDENT_SIZE
     return buildString {
       append("$SET_CLASS_CALL_STR'").append(className).append("'")
-      val containsVec = superClasses.filter { it.isDirectInheritance }.map { "'${it.name}'" }.toMutableList()
+      val containsVec = superClasses.filter { it.distance == 1 }.map { "'${it.name}'" }.toMutableList()
       if (isVirtual) containsVec.add("'VIRTUAL'")
       appendNamedVectorArg("contains", containsVec, indentSize)
 

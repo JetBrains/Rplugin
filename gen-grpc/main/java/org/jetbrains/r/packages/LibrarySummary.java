@@ -6042,10 +6042,10 @@ public final class LibrarySummary {
             getNameBytes();
 
         /**
-         * <code>bool isDirectInheritance = 2;</code>
-         * @return The isDirectInheritance.
+         * <code>int32 distance = 2;</code>
+         * @return The distance.
          */
-        boolean getIsDirectInheritance();
+        int getDistance();
       }
       /**
        * Protobuf type {@code library_summary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass}
@@ -6101,7 +6101,7 @@ public final class LibrarySummary {
                 }
                 case 16: {
 
-                  isDirectInheritance_ = input.readBool();
+                  distance_ = input.readInt32();
                   break;
                 }
                 default: {
@@ -6174,15 +6174,15 @@ public final class LibrarySummary {
           }
         }
 
-        public static final int ISDIRECTINHERITANCE_FIELD_NUMBER = 2;
-        private boolean isDirectInheritance_;
+        public static final int DISTANCE_FIELD_NUMBER = 2;
+        private int distance_;
         /**
-         * <code>bool isDirectInheritance = 2;</code>
-         * @return The isDirectInheritance.
+         * <code>int32 distance = 2;</code>
+         * @return The distance.
          */
         @java.lang.Override
-        public boolean getIsDirectInheritance() {
-          return isDirectInheritance_;
+        public int getDistance() {
+          return distance_;
         }
 
         private byte memoizedIsInitialized = -1;
@@ -6202,8 +6202,8 @@ public final class LibrarySummary {
           if (!getNameBytes().isEmpty()) {
             com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
           }
-          if (isDirectInheritance_ != false) {
-            output.writeBool(2, isDirectInheritance_);
+          if (distance_ != 0) {
+            output.writeInt32(2, distance_);
           }
           unknownFields.writeTo(output);
         }
@@ -6217,9 +6217,9 @@ public final class LibrarySummary {
           if (!getNameBytes().isEmpty()) {
             size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
           }
-          if (isDirectInheritance_ != false) {
+          if (distance_ != 0) {
             size += com.google.protobuf.CodedOutputStream
-              .computeBoolSize(2, isDirectInheritance_);
+              .computeInt32Size(2, distance_);
           }
           size += unknownFields.getSerializedSize();
           memoizedSize = size;
@@ -6238,8 +6238,8 @@ public final class LibrarySummary {
 
           if (!getName()
               .equals(other.getName())) return false;
-          if (getIsDirectInheritance()
-              != other.getIsDirectInheritance()) return false;
+          if (getDistance()
+              != other.getDistance()) return false;
           if (!unknownFields.equals(other.unknownFields)) return false;
           return true;
         }
@@ -6253,9 +6253,8 @@ public final class LibrarySummary {
           hash = (19 * hash) + getDescriptor().hashCode();
           hash = (37 * hash) + NAME_FIELD_NUMBER;
           hash = (53 * hash) + getName().hashCode();
-          hash = (37 * hash) + ISDIRECTINHERITANCE_FIELD_NUMBER;
-          hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-              getIsDirectInheritance());
+          hash = (37 * hash) + DISTANCE_FIELD_NUMBER;
+          hash = (53 * hash) + getDistance();
           hash = (29 * hash) + unknownFields.hashCode();
           memoizedHashCode = hash;
           return hash;
@@ -6391,7 +6390,7 @@ public final class LibrarySummary {
             super.clear();
             name_ = "";
 
-            isDirectInheritance_ = false;
+            distance_ = 0;
 
             return this;
           }
@@ -6420,7 +6419,7 @@ public final class LibrarySummary {
           public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass buildPartial() {
             org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4SuperClass(this);
             result.name_ = name_;
-            result.isDirectInheritance_ = isDirectInheritance_;
+            result.distance_ = distance_;
             onBuilt();
             return result;
           }
@@ -6473,8 +6472,8 @@ public final class LibrarySummary {
               name_ = other.name_;
               onChanged();
             }
-            if (other.getIsDirectInheritance() != false) {
-              setIsDirectInheritance(other.getIsDirectInheritance());
+            if (other.getDistance() != 0) {
+              setDistance(other.getDistance());
             }
             this.mergeUnknownFields(other.unknownFields);
             onChanged();
@@ -6581,33 +6580,33 @@ public final class LibrarySummary {
             return this;
           }
 
-          private boolean isDirectInheritance_ ;
+          private int distance_ ;
           /**
-           * <code>bool isDirectInheritance = 2;</code>
-           * @return The isDirectInheritance.
+           * <code>int32 distance = 2;</code>
+           * @return The distance.
            */
           @java.lang.Override
-          public boolean getIsDirectInheritance() {
-            return isDirectInheritance_;
+          public int getDistance() {
+            return distance_;
           }
           /**
-           * <code>bool isDirectInheritance = 2;</code>
-           * @param value The isDirectInheritance to set.
+           * <code>int32 distance = 2;</code>
+           * @param value The distance to set.
            * @return This builder for chaining.
            */
-          public Builder setIsDirectInheritance(boolean value) {
+          public Builder setDistance(int value) {
             
-            isDirectInheritance_ = value;
+            distance_ = value;
             onChanged();
             return this;
           }
           /**
-           * <code>bool isDirectInheritance = 2;</code>
+           * <code>int32 distance = 2;</code>
            * @return This builder for chaining.
            */
-          public Builder clearIsDirectInheritance() {
+          public Builder clearDistance() {
             
-            isDirectInheritance_ = false;
+            distance_ = 0;
             onChanged();
             return this;
           }
@@ -10195,7 +10194,7 @@ public final class LibrarySummary {
   static {
     java.lang.String[] descriptorData = {
       "\n\025library_summary.proto\022\017library_summary" +
-      "\"\270\013\n\016RLibrarySymbol\022\014\n\004name\030\001 \001(\t\0222\n\004typ" +
+      "\"\255\013\n\016RLibrarySymbol\022\014\n\004name\030\001 \001(\t\0222\n\004typ" +
       "e\030\002 \001(\0162$.library_summary.RLibrarySymbol" +
       ".Type\022\020\n\010exported\030\003 \001(\010\022X\n\026functionRepre" +
       "sentation\030\004 \001(\01326.library_summary.RLibra" +
@@ -10219,7 +10218,7 @@ public final class LibrarySummary {
       "rametersWrapper\022d\n\022s4MethodParameters\030\001 " +
       "\003(\0132H.library_summary.RLibrarySymbol.Fun" +
       "ctionRepresentation.S4MethodParameterB\025\n" +
-      "\023extraParametersInfo\032\353\002\n\025S4ClassRepresen" +
+      "\023extraParametersInfo\032\340\002\n\025S4ClassRepresen" +
       "tation\022\023\n\013packageName\030\001 \001(\t\022P\n\005slots\030\002 \003" +
       "(\0132A.library_summary.RLibrarySymbol.S4Cl" +
       "assRepresentation.S4ClassSlot\022X\n\014superCl" +
@@ -10227,18 +10226,17 @@ public final class LibrarySummary {
       "mbol.S4ClassRepresentation.S4SuperClass\022" +
       "\021\n\tisVirtual\030\004 \001(\010\032C\n\013S4ClassSlot\022\014\n\004nam" +
       "e\030\001 \001(\t\022\014\n\004type\030\002 \001(\t\022\030\n\020declarationClas" +
-      "s\030\003 \001(\t\0329\n\014S4SuperClass\022\014\n\004name\030\001 \001(\t\022\033\n" +
-      "\023isDirectInheritance\030\002 \001(\010\"e\n\004Type\022\t\n\005OT" +
-      "HER\020\000\022\014\n\010FUNCTION\020\001\022\r\n\tPRIMITIVE\020\002\022\013\n\007DA" +
-      "TASET\020\003\022\013\n\007S4CLASS\020\004\022\r\n\tS4GENERIC\020\005\022\014\n\010S" +
-      "4METHOD\020\006B\020\n\016representation\"\330\001\n\017RLibrary" +
-      "Package\022\014\n\004name\030\001 \001(\t\022;\n\010priority\030\002 \001(\0162" +
-      ").library_summary.RLibraryPackage.Priori" +
-      "ty\0220\n\007symbols\030\003 \003(\0132\037.library_summary.RL" +
-      "ibrarySymbol\"H\n\010Priority\022\013\n\007UNKNOWN\020\000\022\006\n" +
-      "\002NA\020\001\022\017\n\013RECOMMENDED\020\002\022\010\n\004BASE\020\003\022\014\n\010OPTI" +
-      "ONAL\020\004B\032\n\030org.jetbrains.r.packagesb\006prot" +
-      "o3"
+      "s\030\003 \001(\t\032.\n\014S4SuperClass\022\014\n\004name\030\001 \001(\t\022\020\n" +
+      "\010distance\030\002 \001(\005\"e\n\004Type\022\t\n\005OTHER\020\000\022\014\n\010FU" +
+      "NCTION\020\001\022\r\n\tPRIMITIVE\020\002\022\013\n\007DATASET\020\003\022\013\n\007" +
+      "S4CLASS\020\004\022\r\n\tS4GENERIC\020\005\022\014\n\010S4METHOD\020\006B\020" +
+      "\n\016representation\"\330\001\n\017RLibraryPackage\022\014\n\004" +
+      "name\030\001 \001(\t\022;\n\010priority\030\002 \001(\0162).library_s" +
+      "ummary.RLibraryPackage.Priority\0220\n\007symbo" +
+      "ls\030\003 \003(\0132\037.library_summary.RLibrarySymbo" +
+      "l\"H\n\010Priority\022\013\n\007UNKNOWN\020\000\022\006\n\002NA\020\001\022\017\n\013RE" +
+      "COMMENDED\020\002\022\010\n\004BASE\020\003\022\014\n\010OPTIONAL\020\004B\032\n\030o" +
+      "rg.jetbrains.r.packagesb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -10297,7 +10295,7 @@ public final class LibrarySummary {
     internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4SuperClass_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4SuperClass_descriptor,
-        new java.lang.String[] { "Name", "IsDirectInheritance", });
+        new java.lang.String[] { "Name", "Distance", });
     internal_static_library_summary_RLibraryPackage_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_library_summary_RLibraryPackage_fieldAccessorTable = new
