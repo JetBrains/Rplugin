@@ -10,6 +10,9 @@ import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.search.GlobalSearchScope
 import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfoUtil
+import org.jetbrains.r.classes.s4.classInfo.RS4DistanceToANY
+import org.jetbrains.r.classes.s4.classInfo.RS4InfDistance
+import org.jetbrains.r.classes.s4.classInfo.RS4OrdDistance
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.classes.s4.context.RS4NewObjectSlotNameContext
 import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.associatedS4GenericInfo
@@ -80,21 +83,29 @@ object RS4Resolver {
       val types = argumentInfo.toS4MethodParameters(false)
 
       val methodName = generic.methodName ?: return@map generic
-      RS4MethodsIndex.findDefinitionsByName(methodName, generic.project, globalSearchScope)
+      val methodsWithDistance = RS4MethodsIndex.findDefinitionsByName(methodName, generic.project, globalSearchScope)
         .mapNotNull { def ->
           val info = def.associatedS4MethodInfo?.getParameters(globalSearchScope)
                        ?.sortedBy { it.name }
                        ?.takeIf { it.isNotEmpty() }
                      ?: return@mapNotNull null
-          def.takeIf {
-            if (info.size != types.size) return@takeIf false
-            info.zip(types).all { (a, b) ->
-              a.name == b.name &&
-              RS4ClassInfoUtil.isSubclass(b.type, a.type, element.project, globalSearchScope)
-            }
+          if (info.size != types.size || info.zip(types).any { (a, b) -> a.name != b.name }) return@mapNotNull null
+          def to info.zip(types).map { (a, b) ->
+            RS4ClassInfoUtil.lookupDistanceBetweenClasses(b.type, a.type, element.project, globalSearchScope)
           }
         }
-        .firstOrNull() ?: generic
+      val anyDistance = methodsWithDistance.maxOfOrNull { methodWithDistance ->
+        methodWithDistance.second.maxOfOrNull { if (it is RS4OrdDistance) it.distance else 0 } ?: 0
+      } ?: 0 + 1
+      methodsWithDistance.map { methodWithDistance ->
+        methodWithDistance.first to methodWithDistance.second.sumBy {
+          when (it) {
+            RS4DistanceToANY -> anyDistance
+            RS4InfDistance -> 100_000
+            is RS4OrdDistance -> it.distance
+          }
+        }
+      }.minByOrNull { it.second }?.first ?: generic
     }.forEach {
       val target = when (val methodNameIdentifier = it.methodNameIdentifier) {
         null -> it

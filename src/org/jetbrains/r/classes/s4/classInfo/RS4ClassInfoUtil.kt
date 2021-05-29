@@ -19,6 +19,30 @@ import org.jetbrains.r.psi.references.RSearchScopeUtil
 import org.jetbrains.r.psi.stubs.RS4ClassNameIndex
 import org.jetbrains.r.skeleton.psi.RSkeletonCallExpression
 
+sealed class RS4ClassDistance {
+  abstract operator fun compareTo(other: RS4ClassDistance): Int
+}
+object RS4DistanceToANY : RS4ClassDistance() {
+  override fun compareTo(other: RS4ClassDistance): Int = when (other) {
+    RS4DistanceToANY -> 0
+    RS4InfDistance -> -1
+    is RS4OrdDistance -> 1
+  }
+}
+object RS4InfDistance : RS4ClassDistance() {
+  override fun compareTo(other: RS4ClassDistance): Int = when (other) {
+    RS4InfDistance -> 0
+    else -> 1
+  }
+}
+data class RS4OrdDistance(val distance: Int) : RS4ClassDistance() {
+  override fun compareTo(other: RS4ClassDistance): Int = when (other) {
+    RS4DistanceToANY -> -1
+    RS4InfDistance -> -1
+    is RS4OrdDistance -> distance - other.distance
+  }
+}
+
 object RS4ClassInfoUtil {
 
   fun getAssociatedClassName(callExpression: RCallExpression,
@@ -89,15 +113,16 @@ object RS4ClassInfoUtil {
     }
   }
 
-  fun isSubclass(subclass: String, parentClass: String, project: Project, searchScope: GlobalSearchScope): Boolean {
-    if (subclass == parentClass || parentClass == "ANY") return true
+  fun lookupDistanceBetweenClasses(subclass: String, parentClass: String, project: Project, searchScope: GlobalSearchScope): RS4ClassDistance {
+    if (subclass == parentClass) return RS4OrdDistance(0)
+    if (parentClass == "ANY") return RS4DistanceToANY
     val classInfos = RS4ClassNameIndex.findClassInfos(subclass, project, searchScope)
-    return classInfos.any { classInfo ->
-      val superClasses = classInfo.superClasses.map { it.name }
-      if (parentClass in superClasses) return@any true
-      val allSuperClasses = calcAllAssociatedSuperClasses(classInfo, project, searchScope).map { it.name }
-      parentClass in allSuperClasses
-    }
+    return classInfos.map { classInfo ->
+      val superClasses = classInfo.superClasses
+      superClasses.firstOrNull { it.name == parentClass }?.let { return@map RS4OrdDistance(it.distance) }
+      val allSuperClasses = calcAllAssociatedSuperClasses(classInfo, project, searchScope)
+      allSuperClasses.firstOrNull { it.name == parentClass }?.let { RS4OrdDistance(it.distance) } ?: RS4InfDistance
+    }.minWithOrNull(RS4ClassDistance::compareTo) ?: RS4InfDistance
   }
 
   private fun calcAllAssociatedSlots(callExpression: RCallExpression, s4ClassInfo: RS4ClassInfo): List<RS4ClassSlot> {

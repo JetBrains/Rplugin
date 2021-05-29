@@ -196,6 +196,33 @@ class RS4ClassResolveTest : RConsoleBaseTestCase() {
       listOf("p2 = 'character'", "'numeric'")
     )
 
+  fun testMethodsDistance() {
+    fun doInnerTest(text: String, matchingSignature: List<String>?) {
+      doMethodTest(
+        2,
+        listOf(
+          listOf("'A'", "'A'"),
+          listOf("'A'", "'B'"),
+          listOf("'D'", "'A'"),
+          listOf("'B'", "'B'")
+        ),
+        """
+        setClass('A')
+        setClass('B', contains = 'A')
+        setClass('C', contains = 'B')
+        setClass('D', contains = 'C')
+        $text
+      """.trimIndent(),
+        matchingSignature
+      )
+    }
+    doInnerTest("fo<caret>o(new('A'), new('A'))", listOf("'A'", "'A'"))
+    doInnerTest("fo<caret>o(new('D'), new('B'))", listOf("'D'", "'A'"))
+    doInnerTest("fo<caret>o(new('C'), new('C'))", listOf("'B'", "'B'"))
+    doInnerTest("fo<caret>o(new('C'), new('D'))", listOf("'B'", "'B'"))
+    doInnerTest("fo<caret>o(new('A'), new('D'))", listOf("'A'", "'B'"))
+  }
+
   fun testNoSlotResolveOnDeclaration() =
     doNoResolveTest("setClass('MyClass', slots = c(slot = 'numeric'))",
                     "setClass('MyClass', slots = c(sl<caret>ot = 'numeric'))")
