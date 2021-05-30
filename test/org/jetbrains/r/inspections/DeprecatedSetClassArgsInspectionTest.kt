@@ -61,12 +61,46 @@ class DeprecatedSetClassArgsInspectionTest : RInspectionTest() {
     """.trimIndent(), true)
   }
 
+  fun testFixFirstArg() {
+    doReplacementTest("setClass(S3methods = TRUE, 'MyClass')", "setClass('MyClass')")
+  }
+
+  fun testFixLastArg() {
+    doReplacementTest("setClass('MyClass', S3methods = TRUE)", "setClass('MyClass')")
+  }
+
+  fun testFixMiddleArg() {
+    doReplacementTest("setClass('MyClass', version = '1.0.0', contains = 'numeric')", "setClass('MyClass', contains = 'numeric')")
+  }
+
+  fun testFixSingleArg() {
+    doReplacementTest("setClass(access = 'ALL')", "setClass()")
+  }
+
+  fun testReplaceRepresentation() {
+    doReplacementTest("setClass('MyClass', representation = c('numeric', a = 'b', hello, c = c('a', 'b'), d = 5), package = 'my')",
+                      "setClass('MyClass', contains = c('numeric', hello), slots = c(a = 'b', c = c('a', 'b'), d = 5), package = 'my')")
+  }
+
+  fun testReplaceRepresentationSingleContains() {
+    doReplacementTest("setClass('MyClass', representation('numeric'))", "setClass('MyClass', contains = 'numeric')")
+  }
+
+  fun testReplaceRepresentationEmpty() {
+    doReplacementTest("setClass('MyClass', representation())", "setClass('MyClass')")
+  }
+
   override val inspection = DeprecatedSetClassArgsInspection::class.java
 
   companion object {
-    private fun msg(argumentName: String) = RBundle.message("inspection.deprecated.setClass.args.description", argumentName)
+    private fun msg(argumentName: String): String {
+      val base =
+        if (argumentName == "representation") "inspection.deprecated.setClass.representation.description"
+        else "inspection.deprecated.setClass.unused.arg.description"
+      return RBundle.message(base, argumentName)
+    }
 
-    private fun makeWeakWarn(argumentName:String, text: String): String {
+    private fun makeWeakWarn(argumentName: String, text: String): String {
       return "<weak_warning descr=\"${msg(argumentName)}\">$text</weak_warning>"
     }
   }
