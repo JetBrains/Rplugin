@@ -1,16 +1,15 @@
 <html>
 <body>
-This inspection detects using the <code>':::'</code> as namespace access operator and suggest using the <code>'::'</code> if it possible
-<p>
-  Before:
-</p>
+<p>Reports usages of <code>':::'</code> as a namespace access operator and suggests
+  using <code>'::'</code> if it is possible.</p>
+<p><b>Example:</b></p>
 <p>
   <code>
     base:::print("Hello world!")
   </code>
 </p>
 <p>
-  After:
+  When you apply the quick-fix, the code changes to:
 </p>
 <p>
   <code>

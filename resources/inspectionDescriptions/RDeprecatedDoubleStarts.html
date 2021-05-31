@@ -1,5 +1,13 @@
 <html>
 <body>
-Exponentiation operator <b>**</b> is undocumented and deprecated. Use <b>^</b> instead.
+<p>Reports usages of the <b>**</b> deprecated exponential operator. It is recommended to use <b>^</b> instead.
+<p><b>Example:</b></p>
+<pre style="font-family: monospace">
+x <- a + b**2
+</pre>
+<p>When you apply the quick-fix, the code changes to:</p>
+<pre style="font-family: monospace">
+x <- a + b^2
+</pre>
 </body>
 </html>

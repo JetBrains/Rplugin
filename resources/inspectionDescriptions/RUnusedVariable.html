@@ -1,7 +1,19 @@
 <html>
 <body>
-Variable is not used in current scope.
-<!-- tooltip end -->
-This could mean, that a variable is not needed and should be removed.
+<p>Reports variables that are not used in the current scope.
+  These variables are not needed and can be removed.</p>
+<p><b>Example:</b></p>
+<pre style="font-family: monospace">
+my_func <- function(a) {
+  x <- 3
+  return (a^2)
+}
+</pre>
+<p>The <code>x</code> variable is not used and can be removed:</p>
+<pre style="font-family: monospace">
+my_func <- function(a) {
+  return (a^2)
+}
+</pre>
 </body>
 </html>

@@ -1,25 +1,24 @@
 <html>
 <body>
-This inspection detects the <code>'c'</code> call with zero or one arguments and suggest remove redundant call
-<p>
-  Before:
-</p>
-<p>
-  <code>
+Reports <code>c</code> calls with zero or one arguments. The inspection suggests removing
+redundant calls.
+<p><b>Examples:</b></p>
+<pre style="font-family: monospace">
     a &lt;- c()
-    <br>
+</pre>
+<p>and</p>
+<pre style="font-family: monospace">
     c(10) + 10
-  </code>
-</p>
+</pre>
 <p>
-  After:
+  When you apply quick-fixes, the code changes to:
 </p>
-<p>
-  <code>
+<pre style="font-family: monospace">
     a &lt;- NULL
-    <br>
+</pre>
+<p>and</p>
+<pre style="font-family: monospace">
     10 + 10
-  </code>
-</p>
+</pre>
 </body>
 </html>

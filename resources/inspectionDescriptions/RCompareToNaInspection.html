@@ -1,5 +1,18 @@
 <html>
 <body>
-This inspection detects using the NA constant in equality checks and suggest using the is.na function.
+<p>Reports usages of the <code>NA</code> constant in equality checks and suggests replacing
+  it with the <code>is.na</code> function.</p>
+<p><b>Example:</b></p>
+<pre style="font-family: monospace">
+if (a==NA){
+  print ("a is not available!")
+}
+</pre>
+<p>When you apply the quick-fix, the code changes to:</p>
+<pre style="font-family: monospace">
+if (is.na(a)){
+  print ("a is not available!")
+}
+</pre>
 </body>
 </html>

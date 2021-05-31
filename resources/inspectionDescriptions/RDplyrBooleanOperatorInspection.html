@@ -1,21 +1,17 @@
 <html>
 <body>
-This inspection detects using `&&` and `||` operations in dplyr expressions.
+<p>Reports usages of `&&` and `||` operations in dplyr expressions.</p>
+<p><b>Example:</b></p>
 <p>
-Incorrect:
+  <code>
+    filter(diamonds, carat > 0.7 && depth > 62.0)
+  </code>
 </p>
+<p>When you apply the quick-fix, the code changes to:</p>
 <p>
-<code>
-filter(diamonds, carat > 0.7 && depth > 62.0)
-</code>
-</p>
-<p>
-Correct:
-</p>
-<p>
-<code>
-  filter(diamonds, carat > 0.7 & depth > 62.0)
-</code>
+  <code>
+    filter(diamonds, carat > 0.7 & depth > 62.0)
+  </code>
 </p>
 </body>
 </html>

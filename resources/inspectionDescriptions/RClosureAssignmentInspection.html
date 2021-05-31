@@ -1,7 +1,9 @@
 <html>
 <body>
-This inspection detects using the <code>'&lt;&lt;-'</code> or <code>'-&gt;&gt;'</code> as assignment operator and suggest remove it.
-<br>
-Using these operators is undesirable as it can lead to multiple errors and code obfuscation.
-</body>
-</html>
+<p>Reports usages of <code>'&lt;&lt;-'</code> or <code>'-&gt;&gt;'</code> as an assignment operator.</p>
+
+<p><b>Example</b></p>:
+
+<p><code>x <<- 12</code></p>
+
+<p>Using these operators can lead to multiple errors and code obfuscation. It is recommended to replace them with <code>&gt;-</code>.</p>

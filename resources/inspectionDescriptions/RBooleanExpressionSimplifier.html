@@ -1,5 +1,8 @@
 <html>
-  <body>
-This inspection detects redundancy in boolean expressions.
-  </body>
+<body>
+<p>Reports redundancy in boolean expressions.</p>
+<p><code>if (x && FALSE) {}</code></p>
+<p>When you apply the quick-fix, the code changes to:</p>
+<p><code>if (FALSE) {}</code></p>
+</body>
 </html>

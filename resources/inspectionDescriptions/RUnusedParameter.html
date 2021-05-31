@@ -1,5 +1,18 @@
 <html>
 <body>
-This inspection highlights function parameters that are not used in function body.
+<p>Reports function parameters that are not used in the function body.</p>
+<p><b>Example:</b></p>
+<pre style="font-family: monospace">
+my_fahrenheit_to_celsius <- function(f_temp) {
+  return((temp - 32) * 5 / 9)
+}
+</pre>
+<p>Revise the highlighted code fragment to ensure the parameter is used or remove it.</p>
+<p><b>Possible solution:</b></p>
+<pre style="font-family: monospace">
+my_fahrenheit_to_celsius <- function(f_temp) {
+  return((f_temp - 32) * 5 / 9)
+}
+</pre>
 </body>
 </html>

@@ -1,23 +1,19 @@
 <html>
 <body>
-This inspection replaces nested dplyr calls by pipe.
+<p>Reports nested dplyr calls and suggests replacing them by pipe.</p>
+<p><b>Example:</b></p>
 <p>
-Before:
+  <code>
+    summarise(filter(diamonds, depth > 62.0), mean = mean(carat))
+  </code>
 </p>
+<p>When you apply the quick-fix, the code changes to:</p>
 <p>
-<code>
-  summarise(filter(diamonds, depth > 62.0), mean = mean(carat))
-</code>
-</p>
-<p>
-After:
-</p>
-<p>
-<code>
-diamonds %>%
-filter(depth > 62.0) %>%
-summarise(mean = mean(carat))
-</code>
+  <code>
+    diamonds %>%
+    filter(depth > 62.0) %>%
+    summarise(mean = mean(carat))
+  </code>
 </p>
 </body>
 </html>

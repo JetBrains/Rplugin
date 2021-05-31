@@ -1,16 +1,15 @@
 <html>
 <body>
-This inspection replaces <code>'paste'</code> call with empty separator with <code>'paste0'</code>
-<p>
-  Before:
-</p>
+<p>Reports an empty separator in the <code>'paste'</code> function.
+  The quick-fix replaces a <code>'paste'</code> call with the <code>'paste0'</code> function.
+<p><b>Example:</b></p>
 <p>
   <code>
     paste("a", "b", sep = '')
   </code>
 </p>
 <p>
-  After:
+  When you apply the quick-fix, the code changes to:
 </p>
 <p>
   <code>
