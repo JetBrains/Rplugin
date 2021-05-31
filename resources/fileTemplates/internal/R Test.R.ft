@@ -1,3 +1,4 @@
+library(testthat)
 test_that("test ${FileName}", {
   expect_equal(2 * 2, 4)
 })

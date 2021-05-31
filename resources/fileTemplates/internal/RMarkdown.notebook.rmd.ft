@@ -1,7 +1,5 @@
 ---
 title: "R Notebook"
-author: ${USER}
-date: ${DATE}
 output: html_notebook
 ---
 
@@ -21,4 +19,4 @@ mycars
 ```
 
 Now, click the **Run** button on the chunk toolbar to [execute](https://www.jetbrains.com/help/pycharm/r-markdown.html#run-r-code) the chunk code. The result should be placed under the chunk.
-Click the **Knit and Open Document** to built and preview an output.
+Click the **Knit and Open Document** to build and preview an output.
