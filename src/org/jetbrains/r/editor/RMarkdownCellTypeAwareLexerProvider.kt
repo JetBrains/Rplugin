@@ -23,7 +23,7 @@ class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesL
   override fun shouldParseWholeFile(): Boolean = true
 
   override fun create(document: Document): NotebookCellLines =
-    RMarkdownCellLines.get(document, this, ::generateIntervals)
+    NonIncrementalCellLines.get(document, this, ::generateIntervals)
 
   override fun markerSequence(chars: CharSequence, ordinalIncrement: Int, offsetIncrement: Int): Sequence<NotebookCellLines.Marker> =
     sequence {

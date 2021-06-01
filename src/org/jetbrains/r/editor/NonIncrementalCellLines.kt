@@ -14,9 +14,9 @@ import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesLexer
  * inspired by [org.jetbrains.plugins.notebooks.editor.NotebookCellLinesImpl],
  * calculates all markers and intervals from scratch for each document update
  */
-class RMarkdownCellLines private constructor(private val document: Document,
-                                             private val cellLinesLexer: NotebookCellLinesLexer,
-                                             private val intervalsGenerator: (Document, List<NotebookCellLines.Marker>) -> List<NotebookCellLines.Interval>) : NotebookCellLines {
+class NonIncrementalCellLines private constructor(private val document: Document,
+                                                  private val cellLinesLexer: NotebookCellLinesLexer,
+                                                  private val intervalsGenerator: (Document, List<NotebookCellLines.Marker>) -> List<NotebookCellLines.Interval>) : NotebookCellLines {
 
   private var markers: List<NotebookCellLines.Marker> = emptyList()
   private var intervals: List<NotebookCellLines.Interval> = emptyList()
@@ -106,7 +106,7 @@ class RMarkdownCellLines private constructor(private val document: Document,
     fun get(document: Document, lexerProvider: NotebookCellLinesLexer,
             intervalsGenerator: (Document, List<NotebookCellLines.Marker>) -> List<NotebookCellLines.Interval>): NotebookCellLines =
       map.computeIfAbsent(document) {
-        RMarkdownCellLines(document, lexerProvider, intervalsGenerator)
+        NonIncrementalCellLines(document, lexerProvider, intervalsGenerator)
       }
   }
 }
