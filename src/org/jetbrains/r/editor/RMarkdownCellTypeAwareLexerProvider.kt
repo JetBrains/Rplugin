@@ -23,7 +23,7 @@ class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesL
   override fun shouldParseWholeFile(): Boolean = true
 
   override fun create(document: Document): NotebookCellLines =
-    RMarkdownCellLines.get(document, this)
+    RMarkdownCellLines.get(document, this, ::generateIntervals)
 
   override fun markerSequence(chars: CharSequence, ordinalIncrement: Int, offsetIncrement: Int): Sequence<NotebookCellLines.Marker> =
     sequence {
@@ -106,7 +106,8 @@ internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(RMarkdownMapB
       type == RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType -> {
         if (consumeCode(originalLexer)) {
           RMarkdownCellType.CODE_CELL
-        } else {
+        }
+        else {
           RMarkdownCellType.MARKDOWN_CELL
         }
       }
@@ -153,4 +154,22 @@ private fun consumeToEndOfLine(lexer: Lexer) {
     lexer.advance()
   }
   consumeEndOfLine(lexer)
+}
+
+private fun generateIntervals(document: Document, markers: List<NotebookCellLines.Marker>): List<NotebookCellLines.Interval> =
+  markers.map { toInterval(document, it) }
+
+private fun toInterval(document: Document, marker: NotebookCellLines.Marker): NotebookCellLines.Interval {
+  // for RMarkdown markers offset + length == nextMarker.offset, actually markers are intervals
+  val startLine = document.getLineNumber(marker.offset)
+
+  val endLine =
+    if (marker.length == 0) startLine
+    else document.getLineNumber(marker.offset + marker.length - 1)
+
+  return NotebookCellLines.Interval(
+    ordinal = marker.ordinal,
+    type = marker.type,
+    lines = startLine..endLine
+  )
 }

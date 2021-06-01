@@ -11,10 +11,12 @@ import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesLexer
 
 /**
- * inspired by [org.jetbrains.plugins.notebooks.editor.NotebookCellLinesImpl], bound to RMarkdown lexer implementation details
+ * inspired by [org.jetbrains.plugins.notebooks.editor.NotebookCellLinesImpl],
+ * calculates all markers and intervals from scratch for each document update
  */
 class RMarkdownCellLines private constructor(private val document: Document,
-                                             private val cellLinesLexer: NotebookCellLinesLexer) : NotebookCellLines {
+                                             private val cellLinesLexer: NotebookCellLinesLexer,
+                                             private val intervalsGenerator: (Document, List<NotebookCellLines.Marker>) -> List<NotebookCellLines.Interval>) : NotebookCellLines {
 
   private var markers: List<NotebookCellLines.Marker> = emptyList()
   private var intervals: List<NotebookCellLines.Interval> = emptyList()
@@ -54,22 +56,7 @@ class RMarkdownCellLines private constructor(private val document: Document,
 
   private fun updateIntervalsAndMarkers() {
     markers = cellLinesLexer.markerSequence(document.charsSequence, 0, 0).toList()
-    // for RMarkdown markers offset + length == nextMarker.offset, actually markers is intervals
-    intervals = markers.map(this::toInterval)
-  }
-
-  private fun toInterval(marker: NotebookCellLines.Marker): NotebookCellLines.Interval {
-    val startLine = document.getLineNumber(marker.offset)
-
-    val endLine =
-      if (marker.length == 0) startLine
-      else document.getLineNumber(marker.offset + marker.length - 1)
-
-    return NotebookCellLines.Interval(
-      ordinal = marker.ordinal,
-      type = marker.type,
-      lines = startLine..endLine
-    )
+    intervals = intervalsGenerator(document, markers)
   }
 
   private fun notifyChanged(oldCells: List<NotebookCellLines.Interval>,
@@ -116,9 +103,10 @@ class RMarkdownCellLines private constructor(private val document: Document,
   companion object {
     private val map = ContainerUtil.createConcurrentWeakMap<Document, NotebookCellLines>()
 
-    fun get(document: Document, lexerProvider: NotebookCellLinesLexer): NotebookCellLines =
+    fun get(document: Document, lexerProvider: NotebookCellLinesLexer,
+            intervalsGenerator: (Document, List<NotebookCellLines.Marker>) -> List<NotebookCellLines.Interval>): NotebookCellLines =
       map.computeIfAbsent(document) {
-        RMarkdownCellLines(document, lexerProvider)
+        RMarkdownCellLines(document, lexerProvider, intervalsGenerator)
       }
   }
 }
