@@ -1,4 +1,4 @@
-package org.jetbrains.r.editor
+package org.jetbrains.plugins.notebooks.editor
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Document
@@ -7,8 +7,6 @@ import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.util.TextRange
 import com.intellij.util.EventDispatcher
 import com.intellij.util.containers.ContainerUtil
-import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
-import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesLexer
 
 /**
  * inspired by [org.jetbrains.plugins.notebooks.editor.NotebookCellLinesImpl],

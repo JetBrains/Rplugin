@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.Document
 import com.intellij.psi.tree.IElementType
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.lexer.MarkdownLexerAdapter
+import org.jetbrains.plugins.notebooks.editor.NonIncrementalCellLines
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesLexer
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesProvider
