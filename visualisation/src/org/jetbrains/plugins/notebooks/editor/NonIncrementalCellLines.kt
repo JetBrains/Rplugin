@@ -75,6 +75,8 @@ class NonIncrementalCellLines private constructor(private val document: Document
       oldCell != oldAffectedCells.lastOrNull() && newCell != newAffectedCells.lastOrNull()
     }.count()
 
+    ++modificationStamp
+
     intervalListeners.multicaster.segmentChanged(
       trimmed(oldCells, trimAtBegin, trimAtEnd),
       trimmed(newCells, trimAtBegin, trimAtEnd)
