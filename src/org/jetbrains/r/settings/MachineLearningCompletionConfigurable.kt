@@ -36,13 +36,13 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     private val settings = MachineLearningCompletionSettings.getInstance()
 
     private fun updateLastCheckedLabel(label: JLabel, time: Long) {
-      val prefix = IdeBundle.message("updates.settings.last.check")
-      when {
-        time <= 0 -> label.text = prefix + ' ' + IdeBundle.message("updates.last.check.never")
-        else -> {
-          label.text = prefix + ' ' + DateFormatUtil.formatPrettyDateTime(time)
-          label.toolTipText = DateFormatUtil.formatDate(time) + ' ' + DateFormatUtil.formatTimeWithSeconds(time)
-        }
+      val lastTimeChecked = when {
+        time <= 0 -> IdeBundle.message("updates.last.check.never")
+        else -> DateFormatUtil.formatPrettyDateTime(time)
+      }
+      label.text = IdeBundle.message("updates.settings.last.check", lastTimeChecked)
+      if (time > 0) {
+        label.toolTipText = DateFormatUtil.formatDate(time) + ' ' + DateFormatUtil.formatTimeWithSeconds(time)
       }
     }
 
