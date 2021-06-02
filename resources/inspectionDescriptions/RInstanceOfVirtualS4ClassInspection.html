@@ -2,10 +2,10 @@
 <body>
 <p>Reports a problem when you create an object of the <code>VIRTUAL</code> class.</p>
 <p><b>Example:</b></p>
-<pre style="font-family: monospace">
+<pre><code>
 setClass('MyClass', slots = c('aa', 'bb'), contains = "VIRTUAL")
 new('MyClass')
-</pre>
+</code></pre>
 <p>
   The most common usage of a <code>VIRTUAL</code>l class is the class union, a virtual class
   that is defined in a call to <code>setClassUnion()</code> rather than a call to <code>setClass()</code>.

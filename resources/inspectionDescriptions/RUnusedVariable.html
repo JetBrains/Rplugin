@@ -3,17 +3,17 @@
 <p>Reports variables that are not used in the current scope.
   These variables are not needed and can be removed.</p>
 <p><b>Example:</b></p>
-<pre style="font-family: monospace">
-my_func <- function(a) {
-  x <- 3
+<pre><code>
+my_func  &lt;- function(a) {
+  x  &lt;- 3
   return (a^2)
 }
-</pre>
+</code></pre>
 <p>The <code>x</code> variable is not used and can be removed:</p>
-<pre style="font-family: monospace">
-my_func <- function(a) {
+<pre><code>
+my_func  &lt;- function(a) {
   return (a^2)
 }
-</pre>
+</code></pre>
 </body>
 </html>

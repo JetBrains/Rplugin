@@ -2,18 +2,18 @@
 <body>
 <p>Reports unresolved symbol and function references.</p>
 <p><b>Example:</b></p>
-<pre style="font-family: monospace">
+<pre><code>
 my_fahrenheit_to_celsius(40)
-</pre>
+</code></pre>
 <p>The <code>my_fahrenheit_to_celsius</code> function is not defined, so the IDE shows a warning.
   You should add the missing declaration.</p>
 <p><b>Possible solution:</b>
-<pre style="font-family: monospace">
-my_fahrenheit_to_celsius <- function(f_temp) {
+<pre><code>
+my_fahrenheit_to_celsius  &lt;- function(f_temp) {
   return((f_temp - 32) * 5 / 9)
 }
 
 my_fahrenheit_to_celsius(40)
-</pre>
+</code></pre>
 </body>
 </html>

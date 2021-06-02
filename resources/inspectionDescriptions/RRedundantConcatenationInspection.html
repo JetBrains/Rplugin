@@ -3,22 +3,22 @@
 Reports <code>c</code> calls with zero or one arguments. The inspection suggests removing
 redundant calls.
 <p><b>Examples:</b></p>
-<pre style="font-family: monospace">
+<pre><code>
     a &lt;- c()
-</pre>
+</code></pre>
 <p>and</p>
-<pre style="font-family: monospace">
+<pre><code>
     c(10) + 10
-</pre>
+</code></pre>
 <p>
   When you apply quick-fixes, the code changes to:
 </p>
-<pre style="font-family: monospace">
+<pre><code>
     a &lt;- NULL
-</pre>
+</code></pre>
 <p>and</p>
-<pre style="font-family: monospace">
+<pre><code>
     10 + 10
-</pre>
+</code></pre>
 </body>
 </html>
