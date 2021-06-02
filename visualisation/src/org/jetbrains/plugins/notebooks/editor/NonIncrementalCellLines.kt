@@ -120,8 +120,13 @@ private val NotebookCellLines.Interval.size: Int
 private fun getAffectedCells(intervals: List<NotebookCellLines.Interval>,
                              document: Document,
                              textRange: TextRange): List<NotebookCellLines.Interval> {
-  val firstLine = document.getLineNumber(textRange.startOffset)
-  val endLine = document.getLineNumber(textRange.endOffset)
+  val firstLine = document.getLineNumber(textRange.startOffset).let { line ->
+    if (document.getLineEndOffset(line) == textRange.startOffset) line + 1 else line
+  }
+
+  val endLine = document.getLineNumber(textRange.endOffset).let { line ->
+    if (document.getLineStartOffset(line) == textRange.endOffset) line - 1 else line
+  }
 
   return intervals.dropWhile {
     it.lines.last < firstLine
