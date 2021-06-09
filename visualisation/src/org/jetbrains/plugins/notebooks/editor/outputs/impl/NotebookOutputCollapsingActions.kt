@@ -64,6 +64,10 @@ internal class NotebookOutputCollapseSingleInCellAction private constructor() : 
     getExpectedComponent(e)?.isSeen?.let { !it } ?: false
 
   override fun setSelected(e: AnActionEvent, state: Boolean) {
+    val inlayManager = e.notebookCellInlayManager
+    if (inlayManager != null) {
+      markScrollingPosition(inlayManager.editor)
+    }
     getExpectedComponent(e)?.isSeen = !state
   }
 

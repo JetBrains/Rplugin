@@ -25,6 +25,8 @@ import com.intellij.util.castSafelyTo
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.jetbrains.annotations.TestOnly
+import org.jetbrains.plugins.notebooks.editor.outputs.impl.DOCUMENT_BEING_UPDATED
+import org.jetbrains.plugins.notebooks.editor.outputs.impl.markScrollingPosition
 import java.awt.Graphics
 import javax.swing.JComponent
 import kotlin.math.max
@@ -147,6 +149,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
       }
 
       override fun beforeDocumentChange(event: DocumentEvent) {
+        event.document.putUserData(DOCUMENT_BEING_UPDATED, true)
         if (isBulkModeEnabled) return
         val document = event.document
         val logicalLines = interestingLogicalLines(document, event.offset, event.oldLength)
@@ -155,6 +158,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
       }
 
       override fun documentChanged(event: DocumentEvent) {
+        event.document.putUserData(DOCUMENT_BEING_UPDATED, false)
         if (isBulkModeEnabled) return
         val logicalLines = interestingLogicalLines(event.document, event.offset, event.newLength)
         ensureInlaysAndHighlightersExist(matchingCellsBeforeChange, logicalLines)
@@ -185,6 +189,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
   }
 
   private fun updateConsequentInlays(interestingRange: IntRange) {
+    markScrollingPosition(editor)
     val matchingIntervals = notebookCellLines.getMatchingCells(interestingRange)
     val fullInterestingRange =
       if (matchingIntervals.isNotEmpty()) matchingIntervals.first().lines.first..matchingIntervals.last().lines.last
