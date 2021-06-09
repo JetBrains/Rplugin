@@ -2,15 +2,19 @@ package org.jetbrains.plugins.notebooks.editor.outputs.impl
 
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.openapi.util.Key
 import org.jetbrains.plugins.notebooks.editor.SwingClientProperty
 import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputComponentFactory
 import java.awt.Component
 import java.awt.Dimension
 import javax.swing.JComponent
 import javax.swing.JPanel
-import javax.swing.SwingUtilities
 import kotlin.math.max
 import kotlin.math.min
+
+val TARGET_LINE_KEY = Key.create<Int>("TARGET_LINE")
+val TARGET_LINE_SHIFT_KEY = Key.create<Int>("TARGET_LINE_SHIFT")
+val DOCUMENT_BEING_UPDATED = Key.create<Boolean>("DOCUMENT_BEING_UPDATED")
 
 internal class InnerComponent(private val editor: EditorImpl) : JPanel() {
   data class Constraint(val widthStretching: NotebookOutputComponentFactory.WidthStretching, val limitedHeight: Boolean)
@@ -51,11 +55,7 @@ internal class InnerComponent(private val editor: EditorImpl) : JPanel() {
     foldSize { maximumSize }
 
   override fun doLayout() {
-    val editorVisibleYTop = editor.scrollingModel.visibleArea.y
-    val editorVisibleYBottom = editor.scrollingModel.visibleArea.run { y + height }
-    val editorRelativeYTop = SwingUtilities.convertPoint(this, 0, 0, editor.contentComponent).y
-    val oldInsets = insets
-    val oldComponentHeights = components.map { it.height }
+    val oldComponentHeights = components.sumBy { it.height }
 
     var totalY = insets.top
     forEveryComponent(Component::getPreferredSize) { component, newWidth, newHeight ->
@@ -68,46 +68,9 @@ internal class InnerComponent(private val editor: EditorImpl) : JPanel() {
       totalY += newHeight
     }
 
-    val newComponentHeights = components.map { it.height }
-
-    // When components adjust their sizes, the code below compensates vertical scroll position. The topmost visible line should keep its
-    // visual position.
-    val (diff, animate) = run {
-      var animate = false
-      var diff = insets.top - oldInsets.top
-      var oldTop = editorRelativeYTop
-      var newTop = editorRelativeYTop
-      var oldBottom: Int
-      var newBottom: Int
-
-      for ((oldHeight, newHeight) in oldComponentHeights.zip(newComponentHeights)) {
-        if (editorVisibleYTop < oldTop) break
-
-        oldBottom = oldTop + oldHeight
-        newBottom = newTop + newHeight
-
-        if (
-          newHeight < oldHeight &&
-          oldTop <= editorVisibleYTop &&
-          editorVisibleYBottom <= oldBottom &&
-          editorRelativeYTop + diff <= newTop
-        ) {
-          // No code lines were visible. Centering the component.
-          diff += oldTop - editorVisibleYTop - editor.scrollingModel.visibleArea.height / 2
-          animate = true
-          break
-        }
-
-        diff += newHeight - oldHeight
-
-        oldTop = oldBottom
-        newTop = newBottom
-      }
-      diff to animate
-    }
-
-    if (diff != 0) {
-      scrollToSelectedCell(editor)
+    val newComponentHeights = components.sumBy { it.height }
+    if (oldComponentHeights != newComponentHeights) {
+      scrollToMarkedPosition(editor)
     }
   }
 

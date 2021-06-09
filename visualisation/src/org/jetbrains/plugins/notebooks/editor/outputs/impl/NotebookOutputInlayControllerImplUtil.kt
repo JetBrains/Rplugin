@@ -1,14 +1,20 @@
 package org.jetbrains.plugins.notebooks.editor.outputs.impl
 
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.ScrollType
+import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
+import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.impl.ScrollingModelImpl
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.TextEditor
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.notebooks.editor.SwingClientProperty
 import org.jetbrains.plugins.notebooks.editor.cellSelectionModel
 import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputInlayController
 import java.awt.BorderLayout
+import java.awt.Rectangle
 import javax.swing.JComponent
 
 internal var EditorGutterComponentEx.hoveredCollapsingComponentRect: CollapsingComponent? by SwingClientProperty()
@@ -27,24 +33,65 @@ internal val NotebookOutputInlayController.collapsingComponents: List<Collapsing
 val NotebookOutputInlayController.outputComponents: List<JComponent>
   @TestOnly get() = collapsingComponents.map { it.mainComponent }
 
-fun scrollToSelectedCell(editor: Editor) {
-  if (!editor.caretModel.isUpToDate) {
+fun scrollToMarkedPosition(editor: Editor) {
+  if (editor.document.getUserData(DOCUMENT_BEING_UPDATED) == true) {
+    // At the moment it's impossible to calculate coordinates by line number
+    return
+  }
+  val topLine = editor.getUserData(TARGET_LINE_KEY);
+  if (topLine == null) {
     return
   }
 
-  val cell = editor.cellSelectionModel?.primarySelectedCell
-  if (cell != null) {
-    val lineNumber = cell.lines.first
-    val offset = editor.document.getLineEndOffset(lineNumber)
-    (editor.scrollingModel as ScrollingModelImpl).run {
-      val wasAnimationEnabled = isAnimationEnabled
-      disableAnimation()
-      try {
-        editor.scrollingModel.scrollTo(editor.offsetToLogicalPosition(offset), ScrollType.MAKE_VISIBLE)
-      }
-      finally {
-        if (wasAnimationEnabled) enableAnimation()
+  val shift = editor.getUserData(TARGET_LINE_SHIFT_KEY);
+  if (shift == null) {
+    return
+  }
+
+  val newLineY: Int = editor.logicalPositionToXY(LogicalPosition(topLine, 0)).y
+  val scrollValue = newLineY - shift
+
+  (editor.scrollingModel as ScrollingModelImpl).run {
+    val wasAnimationEnabled = isAnimationEnabled
+    if (wasAnimationEnabled) disableAnimation()
+    try {
+      scrollVertically(scrollValue)
+    }
+    finally {
+      if (wasAnimationEnabled) enableAnimation()
+    }
+  }
+}
+
+fun markScrollingPosition(virtualFile: VirtualFile, project: Project) {
+  val fileEditors = FileEditorManager.getInstance(project).getAllEditors(virtualFile)
+  val editors = fileEditors.filterIsInstance<TextEditor>().map { it.editor }
+  for (editor in editors) {
+    markScrollingPosition(editor)
+  }
+}
+
+fun markScrollingPosition(editor: Editor) {
+  val visibleArea: Rectangle = editor.scrollingModel.visibleAreaOnScrollingFinished
+  if (visibleArea.height <= 0) {
+    return
+  }
+  var topLine: Int = editor.xyToVisualPosition(visibleArea.location).line
+
+  if (editor is EditorImpl) {
+    val selectedCell = editor.cellSelectionModel?.selectedCells?.firstOrNull()
+    if (selectedCell != null && editor.logicalPositionToXY(LogicalPosition(selectedCell.lines.first, 0)).y >= visibleArea.y && editor.logicalPositionToXY(LogicalPosition(selectedCell.lines.first, 0)).y <= visibleArea.y + visibleArea.height) {
+      topLine = selectedCell.lines.first
+    } else {
+      while (topLine < editor.document.lineCount - 1 && editor.logicalPositionToXY(LogicalPosition(topLine, 0)).y < visibleArea.y) {
+        topLine++
       }
     }
   }
+  val lineToKeep = topLine
+  val lineY: Int = editor.logicalPositionToXY(LogicalPosition(lineToKeep, 0)).y
+  val shift = lineY - visibleArea.y
+
+  editor.putUserData(TARGET_LINE_KEY, lineToKeep)
+  editor.putUserData(TARGET_LINE_SHIFT_KEY, shift)
 }
