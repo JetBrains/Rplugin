@@ -370,10 +370,6 @@ You can find the source code in the following repositories:
         <editor.outputs.notebookOutputDataKeyExtractor implementation="org.jetbrains.r.editor.ui.RMarkdownOutputDataKeyExtractor"/>
     </extensions>
 
-    <applicationListeners>
-        <listener class="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionInitializerListener" topic="com.intellij.ide.AppLifecycleListener" activeInHeadlessMode="false"/>
-    </applicationListeners>
-
     <projectListeners>
       <listener class="org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionProjectOpenListener"
                 topic="com.intellij.openapi.project.ProjectManagerListener" />
@@ -796,6 +792,9 @@ You can find the source code in the following repositories:
       <configurationType implementation="org.jetbrains.r.run.configuration.RRunConfigurationType"/>
       <runConfigurationProducer implementation="org.jetbrains.r.run.configuration.RRunConfigurationProducer"/>
       <programRunner implementation="org.jetbrains.r.run.configuration.RProgramRunner"/>
+
+      <!-- R machine learning completion -->
+      <applicationInitializedListener implementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionInitializerListener"/>
 
       <!-- FUS -->
       <lookup.usageDetails implementation="org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupUsageDescriptor"/>

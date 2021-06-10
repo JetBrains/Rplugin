@@ -1,6 +1,6 @@
 package org.jetbrains.r.editor.mlcompletion
 
-import com.intellij.ide.AppLifecycleListener
+import com.intellij.ide.ApplicationInitializedListener
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionDownloadModelService
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionNotifications
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionRemoteArtifact
@@ -8,8 +8,8 @@ import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionUpdat
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener
 
-class MachineLearningCompletionInitializerListener : AppLifecycleListener {
-  override fun appStarted() {
+class MachineLearningCompletionInitializerListener : ApplicationInitializedListener {
+  override fun componentsInitialized() {
     tryLaunchServer()
     registerOnEnabledListener()
   }
