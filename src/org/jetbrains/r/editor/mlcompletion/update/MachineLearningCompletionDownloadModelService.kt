@@ -8,6 +8,7 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.io.HttpRequests
+import org.jetbrains.annotations.Nls
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import java.nio.file.Path
 
@@ -32,7 +33,7 @@ class MachineLearningCompletionDownloadModelService {
       }
 
     private fun <T : Any> submitModalJob(job: () -> T,
-                                         title: String = "",
+                                         @Nls title: String = "",
                                          onThrowableCallback: ((Throwable) -> Unit)?,
                                          onSuccessCallback: (T) -> Unit): Unit =
       object : Task.Modal(null, title, true) {
@@ -102,7 +103,7 @@ class MachineLearningCompletionDownloadModelService {
     private val artifact: MachineLearningCompletionRemoteArtifact,
     private val artifactLocalFile: Path,
     project: Project?,
-    title: String
+    @Nls title: String
   ) : Task.Backgroundable(project, title, true) {
     override fun run(indicator: ProgressIndicator): Unit =
       HttpRequests.request(artifact.latestArtifactUrl).saveToFile(artifactLocalFile, indicator)

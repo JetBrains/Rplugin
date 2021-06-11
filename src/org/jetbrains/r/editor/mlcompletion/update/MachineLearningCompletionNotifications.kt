@@ -6,6 +6,7 @@ import com.intellij.notification.NotificationGroupManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.update.UpdateUtils.showSizeMb
 import java.util.concurrent.atomic.AtomicReference
@@ -15,6 +16,7 @@ object MachineLearningCompletionNotifications {
 
   const val GROUP_NAME = "RMachineLearningCompletion"
 
+  @Nls
   private val notificationsTitle = RBundle.message("project.settings.ml.completion.name")
 
   private val activeAskForUpdateNotification = AtomicReference<Notification?>(null)
@@ -34,8 +36,8 @@ object MachineLearningCompletionNotifications {
 
   private fun createBasicUpdateNotification(project: Project?,
                                             artifacts: List<MachineLearningCompletionRemoteArtifact>,
-                                            text: String,
-                                            actionText: String): Notification =
+                                            @Nls text: String,
+                                            @Nls actionText: String): Notification =
     NotificationGroupManager.getInstance().getNotificationGroup(GROUP_NAME)
       .createNotification(notificationsTitle, text)
       .addAction(object : NotificationAction(actionText) {

@@ -7,6 +7,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Version
+import org.jetbrains.annotations.Nls
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionLocalArtifact
 import org.jetbrains.r.editor.mlcompletion.update.VersionConverter
 import java.io.File
@@ -71,7 +72,7 @@ class MachineLearningCompletionModelFilesService {
     private val artifact: MachineLearningCompletionLocalArtifact,
     private val artifactZipFile: Path,
     project: Project?,
-    progressTitle: String,
+    @Nls progressTitle: String,
     private val deleteLocalFileOnFinish: Boolean = true,
     ): Task.Backgroundable(project, progressTitle, true) {
 
