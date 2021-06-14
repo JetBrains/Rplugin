@@ -1,5 +1,6 @@
 package org.jetbrains.r.editor.mlcompletion
 
+import com.intellij.execution.process.ProcessIOExecutorService
 import com.intellij.ide.ApplicationInitializedListener
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionDownloadModelService
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionNotifications
@@ -16,7 +17,7 @@ class MachineLearningCompletionInitializerListener : ApplicationInitializedListe
 
   private fun tryLaunchServer() {
     if (MachineLearningCompletionSettings.getInstance().state.isEnabled) {
-      MachineLearningCompletionServerService.getInstance().tryRelaunchServer()
+      ProcessIOExecutorService.INSTANCE.execute(MachineLearningCompletionServerService.getInstance()::tryRelaunchServer)
     }
   }
 
