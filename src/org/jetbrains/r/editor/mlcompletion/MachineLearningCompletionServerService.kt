@@ -4,6 +4,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.util.io.FileUtil
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener
 import java.io.File
@@ -72,7 +73,7 @@ class MachineLearningCompletionServerService : Disposable {
   private fun launchServer(host: String, port: Int): Boolean = completionFilesService.tryRunActionOnFiles { completionFiles ->
     completionFiles.localServerAppExecutableFile?.let { appFile ->
       try {
-        setExecutablePermission(appFile)
+        FileUtil.setExecutable(File(appFile))
         val launchCommand = Paths.get(appFile).asLaunchCommand()
         val processBuilder = ProcessBuilder(launchCommand,
                                             "--config=${completionFiles.localServerConfigFile}",
@@ -87,17 +88,6 @@ class MachineLearningCompletionServerService : Disposable {
       }
       catch (e: Exception) {
         LOG.warn("Exception has occurred in R ML Completion server thread", e)
-      }
-    }
-  }
-
-  private fun setExecutablePermission(file: String) {
-    if (SystemInfo.isUnix) {
-      try {
-        val process = ProcessBuilder("chmod", "+x", file).start()
-        process.waitFor()
-      } catch (e: Exception) {
-        LOG.warn("Exception has occurred when trying to set executable permission for R ML Completion server app", e)
       }
     }
   }
