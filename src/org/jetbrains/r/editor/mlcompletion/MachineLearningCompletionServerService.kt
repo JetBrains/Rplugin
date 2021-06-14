@@ -10,6 +10,7 @@ import org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.concurrent.TimeUnit
 
 class MachineLearningCompletionServerService : Disposable {
 
@@ -29,7 +30,7 @@ class MachineLearningCompletionServerService : Disposable {
   }
 
   private var localServer: Process? = null
-  private var lastRelaunchInitializedTime: Long = System.currentTimeMillis()
+  private var lastRelaunchInitializedTime: Long = TimeUnit.MILLISECONDS.convert(System.nanoTime(), TimeUnit.NANOSECONDS)
 
   val serverAddress
     get() = "http://${settings.state.host}:${settings.state.port}"
@@ -61,7 +62,7 @@ class MachineLearningCompletionServerService : Disposable {
     if (System.currentTimeMillis() - lastRelaunchInitializedTime < RELAUNCH_TIMEOUT_MS) {
       return
     }
-    lastRelaunchInitializedTime = System.currentTimeMillis()
+    lastRelaunchInitializedTime = TimeUnit.MILLISECONDS.convert(System.nanoTime(), TimeUnit.NANOSECONDS)
     shutdownServer()
     launchServer(host, port)
   }
