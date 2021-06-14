@@ -10,6 +10,8 @@ import com.intellij.openapi.fileChooser.ex.FileChooserDialogImpl
 import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.util.NlsContexts
+import com.intellij.openapi.util.NlsContexts.Label
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import org.intellij.datavis.r.VisualizationBundle
@@ -20,9 +22,6 @@ import javax.imageio.ImageIO
 import javax.imageio.ImageTypeSpecifier
 
 object InlayOutputUtil {
-  private val EXPORT_IMAGE_TITLE = VisualizationBundle.message("inlay.output.image.export.text")
-  private val EXPORT_IMAGE_DESCRIPTION = VisualizationBundle.message("inlay.output.image.export.description")
-
   private val EXPORT_FAILURE_TITLE = VisualizationBundle.message("inlay.output.export.failure")
   private val EXPORT_FAILURE_DETAILS = VisualizationBundle.message("inlay.output.export.failure.details")
   private val EXPORT_FAILURE_DESCRIPTION = VisualizationBundle.message("inlay.output.export.failure.description")
@@ -36,7 +35,7 @@ object InlayOutputUtil {
 
   private fun chooseImageSaveLocation(project: Project, image: BufferedImage, onChoose: (File) -> Unit) {
     val extensions = getAvailableFormats(image).toTypedArray()
-    saveWithFileChooser(project, EXPORT_IMAGE_TITLE, EXPORT_IMAGE_DESCRIPTION, extensions, "image", false, onChoose)
+    saveWithFileChooser(project, VisualizationBundle.message("inlay.output.image.export.title"), VisualizationBundle.message("inlay.output.image.export.description"), extensions, "image", false, onChoose)
   }
 
   private fun getAvailableFormats(image: BufferedImage): List<String> {
@@ -68,8 +67,8 @@ object InlayOutputUtil {
 
   fun saveWithFileChooser(
     project: Project,
-    title: String,
-    description: String,
+    @NlsContexts.DialogTitle title: String,
+    @Label description: String,
     extensions: Array<String>,
     defaultName: String,
     createIfMissing: Boolean,

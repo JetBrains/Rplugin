@@ -21,6 +21,7 @@ import org.intellij.datavis.r.inlays.components.BorderlessDialogWrapper
 import org.intellij.datavis.r.inlays.components.DialogUtil
 import org.intellij.datavis.r.inlays.components.GraphicsPanel
 import org.intellij.datavis.r.inlays.components.InlayOutputUtil
+import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.run.graphics.RPlot
@@ -51,7 +52,7 @@ class RGraphicsExportDialog(
   private val wrapper: RGraphicsPanelWrapper,
   initialSize: Dimension?,
   private val zoomGroup: Disposable? = null
-) : BorderlessDialogWrapper(project, TITLE, IdeModalityType.MODELESS)
+) : BorderlessDialogWrapper(project, RBundle.message("graphics.panel.export.dialog.title"), IdeModalityType.MODELESS)
 {
   private val graphicsManager = ChunkGraphicsManager(project)
   private val form = RGraphicsExportDialogForm()
@@ -70,7 +71,7 @@ class RGraphicsExportDialog(
     updateAspectRatio()
   }
 
-  private val refreshAction = object : DumbAwareAction(REFRESH_PREVIEW_TEXT, REFRESH_PREVIEW_TEXT, AllIcons.Actions.Refresh) {
+  private val refreshAction = object : DumbAwareAction(RBundle.message("graphics.panel.export.dialog.refresh.preview.title"), RBundle.message("graphics.panel.export.dialog.refresh.preview.description"), AllIcons.Actions.Refresh) {
     override fun actionPerformed(e: AnActionEvent) {
       rescaleIfNecessary()
     }
@@ -124,7 +125,7 @@ class RGraphicsExportDialog(
 
   init {
     setupGraphicsContentPanel(initialSize)
-    setOKButtonText(SAVE_BUTTON_TEXT)
+    setOKButtonText(RBundle.message("graphics.panel.export.dialog.save"))
     setupAutoResizeCheckBox()
     setupInputControls()
     fillSouthPanel()
@@ -181,7 +182,7 @@ class RGraphicsExportDialog(
       return true
     }
     val description = createConfirmReplaceDescription(location)
-    return MessageDialogBuilder.yesNo(CONFIRM_REPLACE_TITLE, description)
+    return MessageDialogBuilder.yesNo(RBundle.message("graphics.panel.export.dialog.confirm.replace.title"), description)
       .icon(AllIcons.General.WarningDialog).ask(project)
   }
 
@@ -335,7 +336,7 @@ class RGraphicsExportDialog(
 
   private fun JTextField.addBlankTextValidator() {
     addTextChangedListener {
-      val errorText = BLANK_TEXT_INPUT_MESSAGE.takeIf { text.isBlank() }
+      val errorText = RBundle.message("graphics.panel.export.dialog.blank.input").takeIf { text.isBlank() }
       setErrorText(errorText, this)
       updateOkAction()
     }
@@ -390,7 +391,7 @@ class RGraphicsExportDialog(
     }
   }
 
-  private data class ToggleActionPresentation(val activeText: String, val idleText: String, val icon: Icon, val initialState: Boolean)
+  private data class ToggleActionPresentation(@Nls val activeText: String, @Nls val idleText: String, val icon: Icon, val initialState: Boolean)
 
   private class BiStateMachine(initialState: Boolean, private val onChange: (Boolean) -> Unit) {
     var state: Boolean = initialState
@@ -503,25 +504,16 @@ class RGraphicsExportDialog(
     private const val PX_MAX_CHARACTERS = 4
 
     private val INVALID_INTEGER_INPUT_MESSAGE = RBundle.message("graphics.panel.settings.dialog.invalid.integer.input")
-    private val BLANK_TEXT_INPUT_MESSAGE = RBundle.message("graphics.panel.export.dialog.blank.input")
-
-    private val KEEP_ASPECT_RATIO_ACTIVE_TEXT = RBundle.message("graphics.panel.export.dialog.keep.aspect.ratio.active")
-    private val KEEP_ASPECT_RATIO_IDLE_TEXT = RBundle.message("graphics.panel.export.dialog.keep.aspect.ratio.idle")
-    private val REFRESH_PREVIEW_TEXT = RBundle.message("graphics.panel.export.dialog.refresh.preview")
 
     private val CHOOSE_DIRECTORY_DESCRIPTION = RBundle.message("graphics.panel.export.dialog.choose.directory.description")
     private val CHOOSE_DIRECTORY_TITLE = RBundle.message("graphics.panel.export.dialog.choose.directory.title")
     private val PROJECT_DIRECTORY_HINT = RBundle.message("import.data.dialog.project.directory.hint")
 
-    private val CONFIRM_REPLACE_TITLE = RBundle.message("graphics.panel.export.dialog.confirm.replace.title")
-    private val SAVE_BUTTON_TEXT = RBundle.message("graphics.panel.export.dialog.save")
-    private val TITLE = RBundle.message("graphics.panel.export.dialog.title")
-
     private val DPI_TEXT = RBundle.message("graphics.panel.settings.dialog.dpi")
     private val PX_TEXT = RBundle.message("graphics.panel.settings.dialog.pixels")
 
     private val KEEP_ASPECT_RATIO_PRESENTATION =
-      ToggleActionPresentation(KEEP_ASPECT_RATIO_ACTIVE_TEXT, KEEP_ASPECT_RATIO_IDLE_TEXT, VisualisationIcons.Graphics.ConstraintProportions, false)
+      ToggleActionPresentation(RBundle.message("graphics.panel.export.dialog.keep.aspect.ratio.active"), RBundle.message("graphics.panel.export.dialog.keep.aspect.ratio.idle"), VisualisationIcons.Graphics.ConstraintProportions, false)
 
     private val defaultImageRegion: Dimension
       get() = DialogUtil.calculatePreferredSize(DialogUtil.SizePreference.WIDE)
@@ -552,6 +544,7 @@ class RGraphicsExportDialog(
       return 0
     }
 
+    @Nls
     private fun createConfirmReplaceDescription(location: File): String {
       return RBundle.message("graphics.panel.export.dialog.confirm.replace.description", location.name)
     }

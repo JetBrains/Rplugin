@@ -29,6 +29,7 @@ import org.intellij.datavis.r.ui.UiCustomizer
 import org.intellij.images.editor.ImageEditor
 import org.intellij.images.editor.ImageZoomModel
 import org.intellij.images.ui.ImageComponent
+import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.runAsync
 import java.awt.BorderLayout
 import java.awt.Component
@@ -49,7 +50,7 @@ interface DarkModeNotifier {
 
 class GraphicsPanel(private val project: Project, private val disposableParent: Disposable) {
   private val graphicsManager = GraphicsManager.getInstance(project)
-  private val label = JLabel(NO_GRAPHICS, JLabel.CENTER)
+  private val label = JLabel(VisualizationBundle.message("graphics.not.available"), JLabel.CENTER)
   private val rootPanel = EmptyComponentPanel(label)
 
   private val loadingPanel = JBLoadingPanel(BorderLayout(), disposableParent).apply {
@@ -138,7 +139,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
   fun showImage(imageFile: File) {
     if (!tryShowImage(imageFile)) {
-      closeEditor(GRAPHICS_COULD_NOT_BE_LOADED)
+      closeEditor(VisualizationBundle.message("graphics.could.not.be.loaded"))
     }
   }
 
@@ -179,24 +180,24 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     }
   }
 
-  fun showMessage(message: String) {
+  fun showMessage(@Nls message: String) {
     reset(message)
   }
 
-  fun showLoadingMessage(message: String? = null) {
+  fun showLoadingMessage(@Nls message: String? = null) {
     reset()
     rootPanel.contentComponent = loadingPanel
-    loadingPanel.setLoadingText(message ?: LOADING_MESSAGE)
+    loadingPanel.setLoadingText(message ?: VisualizationBundle.message("graphics.loading"))
   }
 
-  fun showMessageWithLink(message: String, linkText: String, linkAction: () -> Unit) {
+  fun showMessageWithLink(@Nls message: String, @Nls linkText: String, linkAction: () -> Unit) {
     reset()
     rootPanel.contentComponent = createInfoPanelWithLink(message, linkText, linkAction)
   }
 
-  fun reset(message: String? = null) {
+  fun reset(@Nls message: String? = null) {
     currentFile = null
-    closeEditor(message ?: NO_GRAPHICS)
+    closeEditor(message ?: VisualizationBundle.message("graphics.not.available"))
   }
 
   private fun tryShowImage(imageFile: File): Boolean {
@@ -251,7 +252,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
       if (Disposer.isDisposed(disposableParent)) {
         return@runInEdt
       }
-      closeEditor(NO_GRAPHICS)
+      closeEditor(VisualizationBundle.message("graphics.not.available"))
       val editor = UiCustomizer.instance.createImageEditor(project, file, this)
       adjustImageZoom(editor.zoomModel)
       removeImageInfoLabelAndActionToolBar(editor)
@@ -275,7 +276,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     }
   }
 
-  private fun closeEditor(message: String) {
+  private fun closeEditor(@Nls message: String) {
     label.text = message
     currentEditor?.let { Disposer.dispose(it) }
     rootPanel.contentComponent = null
@@ -314,7 +315,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     }
   }
 
-  private fun createInfoPanelWithLink(message: String, linkText: String, linkAction: () -> Unit): JPanel {
+  private fun createInfoPanelWithLink(@Nls message: String, @Nls linkText: String, linkAction: () -> Unit): JPanel {
     return JPanel().apply {
       layout = BoxLayout(this, BoxLayout.Y_AXIS)
       add(Box.createVerticalGlue())
@@ -336,10 +337,6 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     private val isHiDpi = JreHiDpiUtil.isJreHiDPI(null as GraphicsConfiguration?) || UIUtil.isRetina()
     private val scaleMultiplier = if (!isHiDpi) 1 else 2
     private const val imageInsets = ImageComponent.IMAGE_INSETS
-    private const val NO_GRAPHICS = "No graphics available"
-    private const val GRAPHICS_COULD_NOT_BE_LOADED = "Graphics couldn't be loaded"
-
-    private val LOADING_MESSAGE = VisualizationBundle.message("graphics.loading")
 
     fun calculateImageSizeForRegion(region: Dimension, topOffset: Int = 0): Dimension {
       return Dimension(region.width - imageInsets * 2, region.height - imageInsets * 2 - topOffset)

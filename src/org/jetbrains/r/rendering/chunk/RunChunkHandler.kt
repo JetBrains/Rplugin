@@ -191,7 +191,7 @@ object RunChunkHandler {
     val prepare = if (isFirstChunk) rInterop.interpreter.prepareForExecution() else resolvedPromise()
     editor.rMarkdownNotebook?.get(inlayElement)?.let { e ->
       e.clearOutputs(removeFiles = false)
-      e.updateProgressStatus(InlayProgressStatus(ProgressStatus.RUNNING, statusText = ""))
+      e.updateProgressStatus(InlayProgressStatus(ProgressStatus.RUNNING))
     }
     prepare.onProcessed {
       executeCode(request, console, codeElement, beforeChunkPromise) {
@@ -281,10 +281,10 @@ object RunChunkHandler {
   private fun updateProgressBar(editor: EditorEx, inlayElement: PsiElement) {
     val inlaysManager = InlaysManager.getEditorManager(editor)
     inlaysManager?.updateCell(inlayElement, listOf(), createTextOutput = true)
-    inlaysManager?.updateInlayProgressStatus(inlayElement, InlayProgressStatus(ProgressStatus.RUNNING, ""))
+    inlaysManager?.updateInlayProgressStatus(inlayElement, InlayProgressStatus(ProgressStatus.RUNNING))
     editor.rMarkdownNotebook?.get(inlayElement)?.let { e ->
       e.updateOutputs()
-      e.updateProgressStatus(InlayProgressStatus(ProgressStatus.RUNNING, ""))
+      e.updateProgressStatus(InlayProgressStatus(ProgressStatus.RUNNING))
     }
   }
 
@@ -311,10 +311,10 @@ object RunChunkHandler {
       console.resetHandler()
     }
     if (ApplicationManager.getApplication().isUnitTestMode) return
-    val status = when {
-      result == null -> InlayProgressStatus(ProgressStatus.STOPPED_ERROR, "")
+    @Suppress("HardCodedStringLiteral") val status = when {
+      result == null -> InlayProgressStatus(ProgressStatus.STOPPED_ERROR)
       result.exception != null -> InlayProgressStatus(ProgressStatus.STOPPED_ERROR, result.exception)
-      else -> InlayProgressStatus(ProgressStatus.STOPPED_OK, "")
+      else -> InlayProgressStatus(ProgressStatus.STOPPED_OK)
     }
     val inlaysManager = InlaysManager.getEditorManager(editor)
     inlaysManager?.updateCell(inlayElement, createTextOutput = !success)
@@ -384,6 +384,4 @@ object RunChunkHandler {
     val chunkExecutionState = project.chunkExecutionState ?: return
     chunkExecutionState.interrupt.get()?.invoke()
   }
-
-  private fun escape(text: String) = text.replace("""\""", """\\""").replace("""'""", """\'""")
 }

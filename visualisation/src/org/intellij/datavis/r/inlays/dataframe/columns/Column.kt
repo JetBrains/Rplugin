@@ -4,7 +4,9 @@
 
 package org.intellij.datavis.r.inlays.dataframe.columns
 
-abstract class Column<T>(val name: String, protected val data: ArrayList<T>) :Iterable<T>{
+import com.intellij.openapi.util.NlsSafe
+
+abstract class Column<T>(@NlsSafe val name: String, protected val data: ArrayList<T>) : Iterable<T>{
 
     /** Number of rows. */
     val size: Int = data.size

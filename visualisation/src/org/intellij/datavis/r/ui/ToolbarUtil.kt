@@ -8,12 +8,16 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.actionSystem.impl.ActionButton
+import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.AnActionButton
 import com.intellij.ui.DumbAwareActionButton
 import javax.swing.Icon
 import javax.swing.JComponent
 
 object ToolbarUtil {
+  @NlsSafe
+  val EMPTY_STRING = ""
+
   fun createActionToolbar(actionGroups: List<List<AnAction>>): JComponent {
     return createActionToolbar(ActionPlaces.UNKNOWN, actionGroups)
   }
@@ -47,11 +51,11 @@ object ToolbarUtil {
   }
 
   inline fun <reified A : AnAction>createAnActionButton(noinline onClick: () -> Unit): AnActionButton {
-    return createAnActionButton(A::class.qualifiedName ?: "", onClick)
+    return createAnActionButton(A::class.qualifiedName ?: EMPTY_STRING, onClick)
   }
 
   inline fun <reified A : AnAction>createAnActionButton(noinline canClick: () -> Boolean, noinline onClick: () -> Unit): AnActionButton {
-    return createAnActionButton(A::class.qualifiedName ?: "", canClick, onClick)
+    return createAnActionButton(A::class.qualifiedName ?: EMPTY_STRING, canClick, onClick)
   }
 
   fun createAnActionButton(id: String, onClick: Runnable): AnActionButton {
@@ -174,6 +178,7 @@ object ToolbarUtil {
       return holder.getHintForDisabled()?.let { createDescriptionWithHint(it) } ?: fallbackDescription
     }
 
+    @NlsSafe
     private fun createDescriptionWithHint(hint: String): String? {
       return fallbackDescription?.let { "$it ($hint)" }
     }

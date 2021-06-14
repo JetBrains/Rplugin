@@ -103,7 +103,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
         } else if (isStandalone) {
           val newSize = preferredImageSize
           if (newSize.isValid) {
-            graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
+            graphicsPanel.showLoadingMessage(RBundle.message("graphics.panel.wrapper.waiting"))
             rescale(newSize, targetResolution)
           }
         }
@@ -177,7 +177,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     if (usesViewer) {
       localResolution = targetResolution
     } else {
-      graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
+      graphicsPanel.showLoadingMessage(RBundle.message("graphics.panel.wrapper.waiting"))
       rescaleIfNecessary()
     }
   }
@@ -210,7 +210,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   private fun showPlotError(error: RPlotError) {
     val message = RPlotUtil.getErrorDescription(error)
     if (snapshot != null) {
-      graphicsPanel.showMessageWithLink(message, SWITCH_TEXT) {
+      graphicsPanel.showMessageWithLink(message, RBundle.message("plot.viewer.switch.to.builtin")) {
         isStandalone = false
       }
     } else {
@@ -309,9 +309,6 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     private const val RESIZE_TIME_SPAN = 500
     private const val RESIZE_TASK_NAME = "Resize graphics"
     private const val RESIZE_TASK_IDENTITY = "Resizing graphics"
-    private val WAITING_MESSAGE = RBundle.message("graphics.panel.wrapper.waiting")
-    private val SWITCH_TEXT = RBundle.message("plot.viewer.switch.to.builtin")
-
     private val Dimension.isValid: Boolean
       get() = width > 0 && height > 0
   }

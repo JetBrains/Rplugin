@@ -16,17 +16,10 @@ import javax.swing.JPanel
  * Toolbar background is dark on Darkula and white on other themes.
  */
 class NotebookInlayToolbar : JPanel(FlowLayout(FlowLayout.LEFT)) {
-
   fun setDefaultState(runAction: (() -> Unit)) {
     removeAll()
     add(ActionLink(VisualizationBundle.message("notebook.inlay.run.cell")) { runAction.invoke() })
     add(JLabel(VisualizationBundle.message("notebook.inlay.to.see.results")))
-    repaint()
-  }
-
-  fun setDescription(value: String?) {
-    removeAll()
-    add(JLabel(value))
     repaint()
   }
 }

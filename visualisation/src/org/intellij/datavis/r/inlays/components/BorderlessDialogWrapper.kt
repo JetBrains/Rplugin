@@ -7,11 +7,12 @@ package org.intellij.datavis.r.inlays.components
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.util.SystemInfo
+import org.jetbrains.annotations.Nls
 import javax.swing.Action
 import javax.swing.JComponent
 import javax.swing.border.Border
 
-abstract class BorderlessDialogWrapper(project: Project, private val dialogTitle: String, ideModalityType: IdeModalityType) :
+abstract class BorderlessDialogWrapper(project: Project, @Nls private val dialogTitle: String, ideModalityType: IdeModalityType) :
   DialogWrapper(project, null, true, ideModalityType, false)
 {
   override fun init() {

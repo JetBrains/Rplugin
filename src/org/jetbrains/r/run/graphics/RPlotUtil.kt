@@ -1,8 +1,10 @@
 package org.jetbrains.r.run.graphics
 
 import com.intellij.openapi.editor.colors.EditorColorsManager
+import com.intellij.openapi.util.NlsSafe
 import com.intellij.util.ui.ImageUtil
 import org.intellij.datavis.r.inlays.components.ImageInverter
+import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rinterop.*
 import java.awt.Color
@@ -20,11 +22,6 @@ import kotlin.math.min
 
 object RPlotUtil {
   private const val PROTOCOL_VERSION = 11
-
-  private val UNKNOWN_PARSING_ERROR_TEXT = RBundle.message("plot.viewer.unknown.parsing.error")
-  private val GENERIC_PARSING_ERROR_TEXT = RBundle.message("plot.viewer.figure.parsing.failure")
-  private val GROWING_TEXT_ERROR_TEXT = RBundle.message("plot.viewer.growing.text.error")
-  private val TOO_COMPLEX_ERROR_TEXT = RBundle.message("plot.viewer.too.complex.error")
 
   fun writeTo(directory: File, plot: Plot, number: Int) {
     val plotFile = getPlotFile(directory, number)
@@ -55,12 +52,13 @@ object RPlotUtil {
     return "recorded_v${PROTOCOL_VERSION}_${number}.plot"
   }
 
+  @Nls
   fun getErrorDescription(error: RPlotError): String {
     return when (error) {
-      RPlotError.UNKNOWN -> UNKNOWN_PARSING_ERROR_TEXT
-      RPlotError.GROWING_TEXT -> GROWING_TEXT_ERROR_TEXT
-      RPlotError.TOO_COMPLEX -> TOO_COMPLEX_ERROR_TEXT
-      else -> GENERIC_PARSING_ERROR_TEXT
+      RPlotError.UNKNOWN -> RBundle.message("plot.viewer.unknown.parsing.error")
+      RPlotError.GROWING_TEXT -> RBundle.message("plot.viewer.growing.text.error")
+      RPlotError.TOO_COMPLEX -> RBundle.message("plot.viewer.too.complex.error")
+      else -> RBundle.message("plot.viewer.figure.parsing.failure")
     }
   }
 

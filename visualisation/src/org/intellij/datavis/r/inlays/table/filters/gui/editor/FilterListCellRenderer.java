@@ -82,7 +82,7 @@ class FilterListCellRenderer extends JComponent implements ListCellRenderer {
             }
 
            // prepareComponentLook(this, isSelected, currentCustomChoice);
-            setText((value == null) ? "" : value.toString());
+            setText((value == null) ? "" : value.toString()); //NON-NLS
 
             return this;
         }

@@ -6,6 +6,7 @@ import com.intellij.openapi.progress.util.ColorProgressBar
 import com.intellij.ui.JBColor
 import com.intellij.ui.scale.JBUIScale
 import org.intellij.datavis.r.ui.UiCustomizer
+import org.jetbrains.annotations.Nls
 import java.awt.BorderLayout
 import java.awt.Color
 import javax.swing.*
@@ -17,7 +18,7 @@ enum class ProgressStatus {
   RUNNING, STOPPED_OK, STOPPED_ERROR
 }
 
-data class InlayProgressStatus(val progress: ProgressStatus, val statusText: String)
+data class InlayProgressStatus(val progress: ProgressStatus, @Nls val statusText: String = "")
 
 fun buildProgressStatusComponent(progressStatus: InlayProgressStatus, editor: Editor): JComponent? {
   if (progressStatus.progress == ProgressStatus.STOPPED_OK && progressStatus.statusText.isEmpty()) return null

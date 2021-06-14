@@ -6,6 +6,8 @@ package org.intellij.datavis.r.inlays.components
 
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.util.ui.components.BorderLayoutPanel
+import org.intellij.datavis.r.VisualizationBundle
+import org.jetbrains.annotations.Nls
 import java.awt.BorderLayout
 import java.awt.Component
 import javax.swing.JPanel
@@ -45,10 +47,10 @@ class NotebookTabs private constructor(private val editor: BorderLayoutPanel) : 
   init {
     editor.addToBottom(this)
     val center = (editor.layout as BorderLayout).getLayoutComponent(BorderLayout.CENTER)
-    addTab("Code", center)
+    addTab(VisualizationBundle.message("notebook.tabs.code.title"), center)
   }
 
-  fun addTab(name: String, page: Component) {
+  fun addTab(@Nls name: String, page: Component) {
     val tab = JToggleButton(name)
 
     val action = {

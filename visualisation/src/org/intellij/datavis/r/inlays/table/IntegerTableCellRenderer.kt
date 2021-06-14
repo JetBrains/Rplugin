@@ -4,15 +4,12 @@
 
 package org.intellij.datavis.r.inlays.table
 
-import org.jetbrains.annotations.NonNls
 import javax.swing.table.DefaultTableCellRenderer
 
 
-@NonNls
-private const val NULL = "<null>"
-
 class IntegerTableCellRenderer : DefaultTableCellRenderer() {
   override fun setValue(value: Any?) {
-    text = if(value as Int == Int.MIN_VALUE) NULL else value.toString()
+    @Suppress("HardCodedStringLiteral")
+    text = if(value as Int == Int.MIN_VALUE) NULL_VALUE else value.toString()
   }
 }
