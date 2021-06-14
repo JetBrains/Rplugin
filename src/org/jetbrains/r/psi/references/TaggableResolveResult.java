@@ -25,7 +25,7 @@ class TaggableResolveResult extends PsiElementResolveResult {
     private Set<ResolveTag> tags = Sets.newHashSet();
 
 
-    public TaggableResolveResult(@NotNull PsiElement element) {
+    TaggableResolveResult(@NotNull PsiElement element) {
         super(element);
     }
 

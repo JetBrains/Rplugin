@@ -726,7 +726,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
     public void actionPerformed(@NotNull AnActionEvent e) {
     }
 
-    public MyTextSearchField() {
+    MyTextSearchField() {
       super("", "", null);
       myField = new SearchTextField();
     }
@@ -746,7 +746,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
 
     private final TableModelListener myListDataListener = e -> refilter();
 
-    public MyFilteringTableModel(TableModel originalModel) {
+    MyFilteringTableModel(TableModel originalModel) {
       myOriginalModel = originalModel;
       myOriginalModel.addTableModelListener(myListDataListener);
     }

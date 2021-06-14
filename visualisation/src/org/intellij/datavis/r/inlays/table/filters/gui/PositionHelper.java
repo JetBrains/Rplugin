@@ -34,7 +34,7 @@ class PositionHelper implements PropertyChangeListener {
     /** The handled filter header. */
     TableFilterHeader filterHeader;
 
-    public PositionHelper(TableFilterHeader filterHeader) {
+    PositionHelper(TableFilterHeader filterHeader) {
         this.filterHeader = filterHeader;
     }
 

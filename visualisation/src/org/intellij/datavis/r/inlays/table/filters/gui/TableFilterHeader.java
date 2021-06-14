@@ -533,7 +533,7 @@ public class TableFilterHeader extends JPanel implements PropertyChangeListener 
          * It will automatically create an editor of the current EditorMode for
          * each column.
          */
-        public FilterColumnsControllerPanel(Font  font,
+        FilterColumnsControllerPanel(Font  font,
                                             Color foreground,
                                             Color background) {
             super(null);
@@ -840,7 +840,7 @@ public class TableFilterHeader extends JPanel implements PropertyChangeListener 
             TableColumn tc;
 
             /** Constructor. */
-            public FilterColumnPanel(TableColumn tc, FilterEditor editor) {
+            FilterColumnPanel(TableColumn tc, FilterEditor editor) {
                 super(new BorderLayout());
 
                 setOpaque(false);

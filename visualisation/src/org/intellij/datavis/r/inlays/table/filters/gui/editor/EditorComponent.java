@@ -49,7 +49,7 @@ class EditorComponent extends JTextField {
     PopupComponent popup;
     static final Pattern newLinePattern = Pattern.compile("[\n\r\t\f]");
 
-    public EditorComponent(FilterEditor editor,
+    EditorComponent(FilterEditor editor,
                            PopupComponent popupComponent) {
 
         super(15); // created with 15 columns

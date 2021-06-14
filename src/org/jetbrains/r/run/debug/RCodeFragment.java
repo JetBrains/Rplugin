@@ -19,7 +19,7 @@ import org.jetbrains.r.psi.RFileImpl;
 
 class RCodeFragment extends RFileImpl {
 
-    public RCodeFragment(@NotNull final Project project, @NotNull final String name, @NotNull final String text) {
+    RCodeFragment(@NotNull final Project project, @NotNull final String name, @NotNull final String text) {
         super(createLightVirtualFileViewProvider(project, name, text));
 
         ((SingleRootFileViewProvider) getViewProvider()).forceCachedPsi(this);
