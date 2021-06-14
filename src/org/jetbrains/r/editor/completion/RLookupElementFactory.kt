@@ -12,7 +12,9 @@ import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.TextRange
+import icons.RIcons
 import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.associatedS4GenericInfo
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpResponse
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.psi.TableColumnInfo
@@ -180,6 +182,19 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
       RLookupElement(lookupString, bold, icon, packageName = packageName, itemText = "\"$lookupString\"", tailText = tailText),
       QUOTE_INSERT_HANDLER, priority
     )
+  }
+
+  fun createMachineLearningCompletionLookupElement(variant: MachineLearningCompletionHttpResponse.CompletionVariant): LookupElement {
+    val element = RLookupElement(variant.text, true, RIcons.MachineLearning)
+    return createLookupElementWithPriority(element, BasicInsertHandler(), variant.score)
+  }
+
+  fun createMergedMachineLearningCompletionLookupElement(lookupElement: LookupElement,
+                                                         mlVariant: MachineLearningCompletionHttpResponse.CompletionVariant): LookupElement {
+    val priority = lookupElement.`as`(PrioritizedLookupElement.CLASS_CONDITION_KEY)?.run {
+      maxOf(priority, mlVariant.score)
+    } ?: mlVariant.score
+    return createLookupElementWithPriority(lookupElement, BasicInsertHandler(), priority)
   }
 
   private fun createOperatorLookupElement(functionAssignment: RAssignmentStatement, isLocal: Boolean): LookupElement {

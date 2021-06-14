@@ -5,19 +5,22 @@
 package org.jetbrains.r.editor
 
 import com.google.gson.Gson
-import com.intellij.codeInsight.completion.*
-import com.intellij.codeInsight.lookup.LookupElement
+import com.intellij.codeInsight.completion.CompletionInitializationContext
+import com.intellij.codeInsight.completion.CompletionParameters
+import com.intellij.codeInsight.completion.CompletionProvider
+import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.util.ProgressIndicatorUtils.awaitWithCheckCanceled
 import com.intellij.openapi.progress.util.ProgressIndicatorUtils.withTimeout
 import com.intellij.util.ProcessingContext
 import com.intellij.util.concurrency.AppExecutorUtil.getAppExecutorService
 import com.intellij.util.io.HttpRequests
+import org.jetbrains.r.editor.completion.RLookupElementFactory
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpRequest
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpResponse
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerService
 import java.io.IOException
-import java.util.concurrent.*
+import java.util.concurrent.CompletableFuture
 
 
 internal class MachineLearningCompletionProvider : CompletionProvider<CompletionParameters>() {
@@ -26,6 +29,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
     private val serverService = MachineLearningCompletionServerService.getInstance()
     private val GSON = Gson()
     private val LOG = Logger.getInstance(MachineLearningCompletionProvider::class.java)
+    private val lookupElementFactory = RLookupElementFactory()
   }
 
   private fun constructRequest(parameters: CompletionParameters): MachineLearningCompletionHttpRequest {
@@ -55,14 +59,6 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
       getAppExecutorService())
   }
 
-  private fun mergePriority(lookupElement: LookupElement,
-                            mlVariant: MachineLearningCompletionHttpResponse.CompletionVariant): LookupElement {
-    val priority = lookupElement.`as`(PrioritizedLookupElement.CLASS_CONDITION_KEY)?.run {
-      maxOf(priority, mlVariant.score)
-    } ?: mlVariant.score
-    return PrioritizedLookupElement.withPriority(lookupElement, priority)
-  }
-
   private fun addFutureCompletions(parameters: CompletionParameters,
                                    futureResponse: CompletableFuture<MachineLearningCompletionHttpResponse>,
                                    result: CompletionResultSet,
@@ -89,7 +85,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
         return@runRemainingContributors
       }
 
-      val newLookupElement = mergePriority(lookupElement, mlVariant)
+      val newLookupElement = lookupElementFactory.createMergedMachineLearningCompletionLookupElement(lookupElement, mlVariant)
 
       result.addElement(newLookupElement)
     }
@@ -108,7 +104,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
     for (key in otherCompletionVariants) {
       mlCompletionResult.remove(key)
     }
-    result.addAllElements(mlCompletionResult.values.map { it.asLookupElement() })
+    result.addAllElements(mlCompletionResult.values.map(lookupElementFactory::createMachineLearningCompletionLookupElement))
     result.restartCompletionWhenNothingMatches()
   }
 
