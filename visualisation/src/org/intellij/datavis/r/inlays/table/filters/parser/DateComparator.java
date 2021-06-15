@@ -92,7 +92,7 @@ abstract public class DateComparator implements Comparator<Date> {
     static class TimeComparator extends DateComparator {
         int divisor;
 
-        TimeComparator(int divisor) {
+        public TimeComparator(int divisor) {
             this.divisor = divisor;
         }
 
@@ -105,7 +105,7 @@ abstract public class DateComparator implements Comparator<Date> {
     static class YearComparator extends DateComparator {
         Calendar calendar;
 
-        YearComparator(Calendar calendar) {
+        public YearComparator(Calendar calendar) {
             this.calendar = calendar;
         }
 
@@ -125,7 +125,7 @@ abstract public class DateComparator implements Comparator<Date> {
 
     /** DateComparator that simply compares the year and month's fields. */
     static class MonthYearComparator extends YearComparator {
-        MonthYearComparator(Calendar calendar) {
+        public MonthYearComparator(Calendar calendar) {
             super(calendar);
         }
 
@@ -137,7 +137,7 @@ abstract public class DateComparator implements Comparator<Date> {
 
     /** DateComparator that simply compares the year/month/day's fields. */
     static class DayMonthYearComparator extends YearComparator {
-        DayMonthYearComparator(Calendar calendar) {
+        public DayMonthYearComparator(Calendar calendar) {
             super(calendar);
         }
 

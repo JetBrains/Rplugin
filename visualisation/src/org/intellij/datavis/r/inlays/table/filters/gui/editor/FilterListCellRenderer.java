@@ -63,7 +63,7 @@ class FilterListCellRenderer extends JComponent implements ListCellRenderer {
         CustomChoice currentCustomChoice;
         boolean isSelected;
 
-        DefaultRenderer(JList referenceList) {
+        public DefaultRenderer(JList referenceList) {
             setOpaque(false);
             setComponentOrientation(referenceList.getComponentOrientation());
         }
@@ -104,7 +104,7 @@ class FilterListCellRenderer extends JComponent implements ListCellRenderer {
      */
     private final ListCellRenderer defaultRenderer;
 
-    FilterListCellRenderer(IFilterEditor editor, JList mainList) {
+    public FilterListCellRenderer(IFilterEditor editor, JList mainList) {
         setUserRenderer(null);
         setDoubleBuffered(true);
         this.editor = editor;
