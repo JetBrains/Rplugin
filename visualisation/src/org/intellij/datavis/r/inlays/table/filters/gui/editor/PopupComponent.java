@@ -51,7 +51,7 @@ abstract class PopupComponent implements PopupMenuListener {
     JList historyList;
 
 
-    PopupComponent(IFilterEditor editor,
+    public PopupComponent(IFilterEditor editor,
                           Format format,
                           Comparator choicesComparator,
                           Comparator stringComparator) {

@@ -25,7 +25,7 @@ class NonAdaptiveChoicesHandler extends ChoicesHandler {
     // entry used to filter rows
     private RowEntry rowEntry;
 
-    NonAdaptiveChoicesHandler(FiltersHandler handler) {
+    public NonAdaptiveChoicesHandler(FiltersHandler handler) {
         super(handler);
     }
 
