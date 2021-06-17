@@ -137,10 +137,10 @@ internal class CollapsingComponent(
     }
 
     private fun updateUIFromEditor() {
-      val attrs = editor.colorsScheme.getAttributes(EditorColors.FOLDED_TEXT_ATTRIBUTES)
+      val fontType = editor.colorsScheme.getAttributes(EditorColors.FOLDED_TEXT_ATTRIBUTES)?.fontType ?: Font.PLAIN
       foreground = JBUI.CurrentTheme.ActionsList.MNEMONIC_FOREGROUND
       background = UiCustomizer.instance.getTextOutputBackground(editor)
-      font = EditorUtil.fontForChar(text.first(), attrs.fontType, editor).font
+      font = EditorUtil.fontForChar(text.first(), fontType, editor).font
     }
   }
 
