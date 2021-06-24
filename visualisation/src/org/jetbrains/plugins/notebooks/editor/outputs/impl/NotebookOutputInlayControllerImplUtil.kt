@@ -10,6 +10,7 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.annotations.TestOnly
+import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
 import org.jetbrains.plugins.notebooks.editor.SwingClientProperty
 import org.jetbrains.plugins.notebooks.editor.cellSelectionModel
 import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputInlayController
@@ -73,17 +74,32 @@ fun markScrollingPosition(virtualFile: VirtualFile, project: Project) {
 
 fun markScrollingPosition(editor: Editor) {
   val visibleArea: Rectangle = editor.scrollingModel.visibleAreaOnScrollingFinished
+  val selectedCell = editor.cellSelectionModel?.selectedCells?.firstOrNull()
+  var targetCell: NotebookCellLines.Interval? = null
+  if (selectedCell != null) {
+    val cellYTop = editor.logicalPositionToXY(LogicalPosition(selectedCell.lines.first, 0)).y
+    if (cellYTop >= visibleArea.y &&
+        cellYTop <= visibleArea.y + visibleArea.height) {
+      targetCell = selectedCell
+    }
+  }
+  markScrollingPosition(editor, targetCell)
+}
+
+fun markScrollingPosition(editor: Editor, targetCell: NotebookCellLines.Interval?) {
+  val visibleArea: Rectangle = editor.scrollingModel.visibleAreaOnScrollingFinished
   if (visibleArea.height <= 0) {
     return
   }
   var topLine: Int = editor.xyToVisualPosition(visibleArea.location).line
 
   if (editor is EditorImpl) {
-    val selectedCell = editor.cellSelectionModel?.selectedCells?.firstOrNull()
-    if (selectedCell != null && editor.logicalPositionToXY(LogicalPosition(selectedCell.lines.first, 0)).y >= visibleArea.y && editor.logicalPositionToXY(LogicalPosition(selectedCell.lines.first, 0)).y <= visibleArea.y + visibleArea.height) {
-      topLine = selectedCell.lines.first
+    if (targetCell != null) {
+      topLine = targetCell.lines.first
     } else {
-      while (topLine < editor.document.lineCount - 1 && editor.logicalPositionToXY(LogicalPosition(topLine, 0)).y < visibleArea.y) {
+      // Looking for the first cell that starts on the screen
+      while (topLine < editor.document.lineCount - 1 && editor.logicalPositionToXY(LogicalPosition(topLine, 0)).y < visibleArea.y &&
+             editor.logicalPositionToXY(LogicalPosition(topLine + 1, 0)).y <= visibleArea.y + visibleArea.height) {
         topLine++
       }
     }

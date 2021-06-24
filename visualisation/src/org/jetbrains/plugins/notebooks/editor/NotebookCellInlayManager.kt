@@ -26,7 +26,6 @@ import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.notebooks.editor.outputs.impl.DOCUMENT_BEING_UPDATED
-import org.jetbrains.plugins.notebooks.editor.outputs.impl.markScrollingPosition
 import java.awt.Graphics
 import javax.swing.JComponent
 import kotlin.math.max
@@ -189,7 +188,6 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
   }
 
   private fun updateConsequentInlays(interestingRange: IntRange) {
-    markScrollingPosition(editor)
     val matchingIntervals = notebookCellLines.getMatchingCells(interestingRange)
     val fullInterestingRange =
       if (matchingIntervals.isNotEmpty()) matchingIntervals.first().lines.first..matchingIntervals.last().lines.last

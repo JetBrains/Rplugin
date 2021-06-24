@@ -4,11 +4,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.DumbAware
 import com.intellij.util.castSafelyTo
 import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayManager
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
+import org.jetbrains.plugins.notebooks.editor.getCell
 import org.jetbrains.plugins.notebooks.editor.notebookCellLinesInterval
 import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputInlayController
 
@@ -22,6 +24,8 @@ internal class NotebookOutputCollapseAllAction private constructor() : ToggleAct
     !allCollapsingComponents(e).any { it.isSeen }
 
   override fun setSelected(e: AnActionEvent, state: Boolean) {
+    markScrollingPositionBeforeOutputCollapseToggle(e)
+
     for (component in allCollapsingComponents(e)) {
       component.isSeen = !state
     }
@@ -48,6 +52,8 @@ internal class NotebookOutputCollapseAllInCellAction private constructor() : Tog
   }
 
   override fun setSelected(e: AnActionEvent, state: Boolean) {
+    markScrollingPositionBeforeOutputCollapseToggle(e)
+
     getCollapsingComponents(e)?.forEach {
       it.isSeen = !state
     }
@@ -64,10 +70,7 @@ internal class NotebookOutputCollapseSingleInCellAction private constructor() : 
     getExpectedComponent(e)?.isSeen?.let { !it } ?: false
 
   override fun setSelected(e: AnActionEvent, state: Boolean) {
-    val inlayManager = e.notebookCellInlayManager
-    if (inlayManager != null) {
-      markScrollingPosition(inlayManager.editor)
-    }
+    markScrollingPositionBeforeOutputCollapseToggle(e)
     getExpectedComponent(e)?.isSeen = !state
   }
 
@@ -96,3 +99,35 @@ private val AnActionEvent.notebookCellInlayManager: NotebookCellInlayManager?
 
 private val AnActionEvent.notebookEditor: EditorImpl?
   get() = notebookCellInlayManager?.editor
+
+/**
+ * Chooses the output's cell or the next one depending on scrolling position
+ */
+private fun findTargetCellForCollapseAction(editor: Editor, outputCell: NotebookCellLines.Interval): NotebookCellLines.Interval {
+  val outputCellBottom = editor.logicalPositionToXY(LogicalPosition(outputCell.lines.last, 0)).y + editor.lineHeight
+  val visibleArea = editor.scrollingModel.visibleAreaOnScrollingFinished
+  if (outputCellBottom < visibleArea.y) {
+    if (outputCell.lines.last < editor.document.lineCount - 1) {
+      val nextCell = editor.getCell(outputCell.lines.last + 1)
+      val nextCellTop = editor.logicalPositionToXY(LogicalPosition(nextCell.lines.first, 0)).y
+      if (nextCellTop < visibleArea.y + visibleArea.height) {
+        return nextCell
+      }
+    }
+  }
+  return outputCell
+}
+
+private fun markScrollingPositionBeforeOutputCollapseToggle(e: AnActionEvent) {
+  val inlayManager = e.notebookCellInlayManager
+  if (inlayManager != null) {
+    val cell = e.dataContext.notebookCellLinesInterval
+    if (cell != null) {
+      val targetCell = findTargetCellForCollapseAction(inlayManager.editor, cell)
+      markScrollingPosition(inlayManager.editor, targetCell)
+    }
+    else {
+      markScrollingPosition(inlayManager.editor)
+    }
+  }
+}
