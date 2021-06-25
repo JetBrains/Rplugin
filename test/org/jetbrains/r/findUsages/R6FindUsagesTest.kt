@@ -25,8 +25,8 @@ class R6FindUsagesTest : FindUsagesTestBase() {
          light_idea_test_case (2)
            (2)
            test.R (2)
-             3obj${"$"}someField
-             4obj${"$"}someField
+            3obj${"$"}someField
+            4obj${"$"}someField
     """)
   }
 
@@ -45,7 +45,7 @@ class R6FindUsagesTest : FindUsagesTestBase() {
          light_idea_test_case (1)
            (1)
            test.R (1)
-             3obj${"$"}someMethod()
+            3obj${"$"}someMethod()
     """)
   }
 
@@ -64,8 +64,8 @@ class R6FindUsagesTest : FindUsagesTestBase() {
          light_idea_test_case (2)
            (2)
            test.R (2)
-             3obj${'$'}someField
-             4obj${'$'}someMethod()${'$'}someField
+            3obj${'$'}someField
+            4obj${'$'}someMethod()${'$'}someField
     """)
   }
 
@@ -91,9 +91,9 @@ class R6FindUsagesTest : FindUsagesTestBase() {
          light_idea_test_case (3)
            (3)
            test.R (3)
-             4self${'$'}sum <- self${'$'}sum + x
-             10x${'$'}add(4)${'$'}sum
-             11x${'$'}sum
+            4self${'$'}sum <- self${'$'}sum + x
+            10x${'$'}add(4)${'$'}sum
+            11x${'$'}sum
     """)
   }
 
@@ -112,8 +112,8 @@ class R6FindUsagesTest : FindUsagesTestBase() {
          light_idea_test_case (2)
            (2)
            test.R (2)
-             3obj${"$"}someField
-             4obj${"$"}someField
+            3obj${"$"}someField
+            4obj${"$"}someField
     """)
   }
 
@@ -132,7 +132,7 @@ class R6FindUsagesTest : FindUsagesTestBase() {
          light_idea_test_case (1)
            (1)
            test.R (1)
-             4obj${'$'}someField
+            4obj${'$'}someField
     """)
   }
 }
