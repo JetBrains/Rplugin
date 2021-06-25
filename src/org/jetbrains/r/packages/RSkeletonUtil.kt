@@ -19,6 +19,7 @@ import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.RPluginUtil
+import org.jetbrains.r.classes.S4ClassInfo
 import org.jetbrains.r.interpreter.RMultiOutputProcessor
 import org.jetbrains.r.interpreter.runHelper
 import org.jetbrains.r.interpreter.runMultiOutputHelper
@@ -41,7 +42,7 @@ import java.util.concurrent.TimeUnit
 
 
 object RSkeletonUtil {
-  private const val CUR_SKELETON_VERSION = 13
+  private const val CUR_SKELETON_VERSION = 14
   const val SKELETON_DIR_NAME = "r_skeletons"
   private const val MAX_THREAD_POOL_SIZE = 4
   private const val FAILED_SUFFIX = ".failed"
@@ -293,7 +294,7 @@ object RSkeletonUtil {
       }
       else if (types.contains("classRepresentation") && parts.size > typesEndIndex) {
         builder.type = RLibrarySymbol.Type.S4CLASS
-        val s4ClassRepresentationBuilder = RLibrarySymbol.S4ClassRepresentation.newBuilder()
+        val s4ClassRepresentationBuilder = S4ClassInfo.newBuilder()
 
         s4ClassRepresentationBuilder.packageName = packageName
         val (slots, slotsEndIndex) = readRepeatedAttribute(parts, typesEndIndex) {
@@ -305,7 +306,7 @@ object RSkeletonUtil {
         val isVirtual = parts[superClassesEndIndex] == "TRUE"
 
         for (i in slots.indices step 3) {
-          val slotBuilder = RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.newBuilder()
+          val slotBuilder = S4ClassInfo.S4ClassSlot.newBuilder()
           slotBuilder.name = slots[i]
           slotBuilder.type = slots[i + 1]
           slotBuilder.declarationClass = slots[i + 2]
@@ -313,7 +314,7 @@ object RSkeletonUtil {
         }
 
         for (i in superClasses.indices step 2) {
-          val superClassBuilder = RLibrarySymbol.S4ClassRepresentation.S4SuperClass.newBuilder()
+          val superClassBuilder = S4ClassInfo.S4SuperClass.newBuilder()
           superClassBuilder.name = superClasses[i]
           superClassBuilder.distance = superClasses[i + 1].toInt()
           s4ClassRepresentationBuilder.addSuperClasses(superClassBuilder)

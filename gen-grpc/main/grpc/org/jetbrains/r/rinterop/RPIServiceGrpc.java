@@ -1795,28 +1795,28 @@ public final class RPIServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
-      org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoByObjectNameMethod;
+      org.jetbrains.r.classes.S4ClassInfo> getGetS4ClassInfoByObjectNameMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "getS4ClassInfoByObjectName",
       requestType = org.jetbrains.r.rinterop.RRef.class,
-      responseType = org.jetbrains.r.rinterop.S4ClassInfo.class,
+      responseType = org.jetbrains.r.classes.S4ClassInfo.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
-      org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoByObjectNameMethod() {
-    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoByObjectNameMethod;
+      org.jetbrains.r.classes.S4ClassInfo> getGetS4ClassInfoByObjectNameMethod() {
+    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.classes.S4ClassInfo> getGetS4ClassInfoByObjectNameMethod;
     if ((getGetS4ClassInfoByObjectNameMethod = RPIServiceGrpc.getGetS4ClassInfoByObjectNameMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
         if ((getGetS4ClassInfoByObjectNameMethod = RPIServiceGrpc.getGetS4ClassInfoByObjectNameMethod) == null) {
           RPIServiceGrpc.getGetS4ClassInfoByObjectNameMethod = getGetS4ClassInfoByObjectNameMethod =
-              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.S4ClassInfo>newBuilder()
+              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.classes.S4ClassInfo>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getS4ClassInfoByObjectName"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   org.jetbrains.r.rinterop.RRef.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.S4ClassInfo.getDefaultInstance()))
+                  org.jetbrains.r.classes.S4ClassInfo.getDefaultInstance()))
               .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getS4ClassInfoByObjectName"))
               .build();
         }
@@ -1826,28 +1826,28 @@ public final class RPIServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
-      org.jetbrains.r.rinterop.R6ClassInfo> getGetR6ClassInfoByObjectNameMethod;
+      org.jetbrains.r.classes.R6ClassInfo> getGetR6ClassInfoByObjectNameMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "getR6ClassInfoByObjectName",
       requestType = org.jetbrains.r.rinterop.RRef.class,
-      responseType = org.jetbrains.r.rinterop.R6ClassInfo.class,
+      responseType = org.jetbrains.r.classes.R6ClassInfo.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
-      org.jetbrains.r.rinterop.R6ClassInfo> getGetR6ClassInfoByObjectNameMethod() {
-    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.R6ClassInfo> getGetR6ClassInfoByObjectNameMethod;
+      org.jetbrains.r.classes.R6ClassInfo> getGetR6ClassInfoByObjectNameMethod() {
+    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.classes.R6ClassInfo> getGetR6ClassInfoByObjectNameMethod;
     if ((getGetR6ClassInfoByObjectNameMethod = RPIServiceGrpc.getGetR6ClassInfoByObjectNameMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
         if ((getGetR6ClassInfoByObjectNameMethod = RPIServiceGrpc.getGetR6ClassInfoByObjectNameMethod) == null) {
           RPIServiceGrpc.getGetR6ClassInfoByObjectNameMethod = getGetR6ClassInfoByObjectNameMethod =
-              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.R6ClassInfo>newBuilder()
+              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.classes.R6ClassInfo>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getR6ClassInfoByObjectName"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   org.jetbrains.r.rinterop.RRef.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.R6ClassInfo.getDefaultInstance()))
+                  org.jetbrains.r.classes.R6ClassInfo.getDefaultInstance()))
               .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getR6ClassInfoByObjectName"))
               .build();
         }
@@ -2849,28 +2849,28 @@ public final class RPIServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
-      org.jetbrains.r.rinterop.ShortS4ClassInfoList> getGetLoadedShortS4ClassInfosMethod;
+      org.jetbrains.r.classes.ShortS4ClassInfoList> getGetLoadedShortS4ClassInfosMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "getLoadedShortS4ClassInfos",
       requestType = com.google.protobuf.Empty.class,
-      responseType = org.jetbrains.r.rinterop.ShortS4ClassInfoList.class,
+      responseType = org.jetbrains.r.classes.ShortS4ClassInfoList.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
-      org.jetbrains.r.rinterop.ShortS4ClassInfoList> getGetLoadedShortS4ClassInfosMethod() {
-    io.grpc.MethodDescriptor<com.google.protobuf.Empty, org.jetbrains.r.rinterop.ShortS4ClassInfoList> getGetLoadedShortS4ClassInfosMethod;
+      org.jetbrains.r.classes.ShortS4ClassInfoList> getGetLoadedShortS4ClassInfosMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, org.jetbrains.r.classes.ShortS4ClassInfoList> getGetLoadedShortS4ClassInfosMethod;
     if ((getGetLoadedShortS4ClassInfosMethod = RPIServiceGrpc.getGetLoadedShortS4ClassInfosMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
         if ((getGetLoadedShortS4ClassInfosMethod = RPIServiceGrpc.getGetLoadedShortS4ClassInfosMethod) == null) {
           RPIServiceGrpc.getGetLoadedShortS4ClassInfosMethod = getGetLoadedShortS4ClassInfosMethod =
-              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, org.jetbrains.r.rinterop.ShortS4ClassInfoList>newBuilder()
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, org.jetbrains.r.classes.ShortS4ClassInfoList>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getLoadedShortS4ClassInfos"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.google.protobuf.Empty.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.ShortS4ClassInfoList.getDefaultInstance()))
+                  org.jetbrains.r.classes.ShortS4ClassInfoList.getDefaultInstance()))
               .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getLoadedShortS4ClassInfos"))
               .build();
         }
@@ -2880,28 +2880,28 @@ public final class RPIServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
-      org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoByClassNameMethod;
+      org.jetbrains.r.classes.S4ClassInfo> getGetS4ClassInfoByClassNameMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "getS4ClassInfoByClassName",
       requestType = com.google.protobuf.StringValue.class,
-      responseType = org.jetbrains.r.rinterop.S4ClassInfo.class,
+      responseType = org.jetbrains.r.classes.S4ClassInfo.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
-      org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoByClassNameMethod() {
-    io.grpc.MethodDescriptor<com.google.protobuf.StringValue, org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoByClassNameMethod;
+      org.jetbrains.r.classes.S4ClassInfo> getGetS4ClassInfoByClassNameMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.StringValue, org.jetbrains.r.classes.S4ClassInfo> getGetS4ClassInfoByClassNameMethod;
     if ((getGetS4ClassInfoByClassNameMethod = RPIServiceGrpc.getGetS4ClassInfoByClassNameMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
         if ((getGetS4ClassInfoByClassNameMethod = RPIServiceGrpc.getGetS4ClassInfoByClassNameMethod) == null) {
           RPIServiceGrpc.getGetS4ClassInfoByClassNameMethod = getGetS4ClassInfoByClassNameMethod =
-              io.grpc.MethodDescriptor.<com.google.protobuf.StringValue, org.jetbrains.r.rinterop.S4ClassInfo>newBuilder()
+              io.grpc.MethodDescriptor.<com.google.protobuf.StringValue, org.jetbrains.r.classes.S4ClassInfo>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getS4ClassInfoByClassName"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.google.protobuf.StringValue.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.S4ClassInfo.getDefaultInstance()))
+                  org.jetbrains.r.classes.S4ClassInfo.getDefaultInstance()))
               .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getS4ClassInfoByClassName"))
               .build();
         }
@@ -2911,28 +2911,28 @@ public final class RPIServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
-      org.jetbrains.r.rinterop.ShortR6ClassInfoList> getGetLoadedShortR6ClassInfosMethod;
+      org.jetbrains.r.classes.ShortR6ClassInfoList> getGetLoadedShortR6ClassInfosMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "getLoadedShortR6ClassInfos",
       requestType = com.google.protobuf.Empty.class,
-      responseType = org.jetbrains.r.rinterop.ShortR6ClassInfoList.class,
+      responseType = org.jetbrains.r.classes.ShortR6ClassInfoList.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
-      org.jetbrains.r.rinterop.ShortR6ClassInfoList> getGetLoadedShortR6ClassInfosMethod() {
-    io.grpc.MethodDescriptor<com.google.protobuf.Empty, org.jetbrains.r.rinterop.ShortR6ClassInfoList> getGetLoadedShortR6ClassInfosMethod;
+      org.jetbrains.r.classes.ShortR6ClassInfoList> getGetLoadedShortR6ClassInfosMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, org.jetbrains.r.classes.ShortR6ClassInfoList> getGetLoadedShortR6ClassInfosMethod;
     if ((getGetLoadedShortR6ClassInfosMethod = RPIServiceGrpc.getGetLoadedShortR6ClassInfosMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
         if ((getGetLoadedShortR6ClassInfosMethod = RPIServiceGrpc.getGetLoadedShortR6ClassInfosMethod) == null) {
           RPIServiceGrpc.getGetLoadedShortR6ClassInfosMethod = getGetLoadedShortR6ClassInfosMethod =
-              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, org.jetbrains.r.rinterop.ShortR6ClassInfoList>newBuilder()
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, org.jetbrains.r.classes.ShortR6ClassInfoList>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getLoadedShortR6ClassInfos"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.google.protobuf.Empty.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.ShortR6ClassInfoList.getDefaultInstance()))
+                  org.jetbrains.r.classes.ShortR6ClassInfoList.getDefaultInstance()))
               .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getLoadedShortR6ClassInfos"))
               .build();
         }
@@ -2942,28 +2942,28 @@ public final class RPIServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
-      org.jetbrains.r.rinterop.R6ClassInfo> getGetR6ClassInfoByClassNameMethod;
+      org.jetbrains.r.classes.R6ClassInfo> getGetR6ClassInfoByClassNameMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "getR6ClassInfoByClassName",
       requestType = com.google.protobuf.StringValue.class,
-      responseType = org.jetbrains.r.rinterop.R6ClassInfo.class,
+      responseType = org.jetbrains.r.classes.R6ClassInfo.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
-      org.jetbrains.r.rinterop.R6ClassInfo> getGetR6ClassInfoByClassNameMethod() {
-    io.grpc.MethodDescriptor<com.google.protobuf.StringValue, org.jetbrains.r.rinterop.R6ClassInfo> getGetR6ClassInfoByClassNameMethod;
+      org.jetbrains.r.classes.R6ClassInfo> getGetR6ClassInfoByClassNameMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.StringValue, org.jetbrains.r.classes.R6ClassInfo> getGetR6ClassInfoByClassNameMethod;
     if ((getGetR6ClassInfoByClassNameMethod = RPIServiceGrpc.getGetR6ClassInfoByClassNameMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
         if ((getGetR6ClassInfoByClassNameMethod = RPIServiceGrpc.getGetR6ClassInfoByClassNameMethod) == null) {
           RPIServiceGrpc.getGetR6ClassInfoByClassNameMethod = getGetR6ClassInfoByClassNameMethod =
-              io.grpc.MethodDescriptor.<com.google.protobuf.StringValue, org.jetbrains.r.rinterop.R6ClassInfo>newBuilder()
+              io.grpc.MethodDescriptor.<com.google.protobuf.StringValue, org.jetbrains.r.classes.R6ClassInfo>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getR6ClassInfoByClassName"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.google.protobuf.StringValue.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.R6ClassInfo.getDefaultInstance()))
+                  org.jetbrains.r.classes.R6ClassInfo.getDefaultInstance()))
               .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getR6ClassInfoByClassName"))
               .build();
         }
@@ -3440,14 +3440,14 @@ public final class RPIServiceGrpc {
     /**
      */
     public void getS4ClassInfoByObjectName(org.jetbrains.r.rinterop.RRef request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.S4ClassInfo> responseObserver) {
+        io.grpc.stub.StreamObserver<org.jetbrains.r.classes.S4ClassInfo> responseObserver) {
       asyncUnimplementedUnaryCall(getGetS4ClassInfoByObjectNameMethod(), responseObserver);
     }
 
     /**
      */
     public void getR6ClassInfoByObjectName(org.jetbrains.r.rinterop.RRef request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.R6ClassInfo> responseObserver) {
+        io.grpc.stub.StreamObserver<org.jetbrains.r.classes.R6ClassInfo> responseObserver) {
       asyncUnimplementedUnaryCall(getGetR6ClassInfoByObjectNameMethod(), responseObserver);
     }
 
@@ -3687,28 +3687,28 @@ public final class RPIServiceGrpc {
     /**
      */
     public void getLoadedShortS4ClassInfos(com.google.protobuf.Empty request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ShortS4ClassInfoList> responseObserver) {
+        io.grpc.stub.StreamObserver<org.jetbrains.r.classes.ShortS4ClassInfoList> responseObserver) {
       asyncUnimplementedUnaryCall(getGetLoadedShortS4ClassInfosMethod(), responseObserver);
     }
 
     /**
      */
     public void getS4ClassInfoByClassName(com.google.protobuf.StringValue request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.S4ClassInfo> responseObserver) {
+        io.grpc.stub.StreamObserver<org.jetbrains.r.classes.S4ClassInfo> responseObserver) {
       asyncUnimplementedUnaryCall(getGetS4ClassInfoByClassNameMethod(), responseObserver);
     }
 
     /**
      */
     public void getLoadedShortR6ClassInfos(com.google.protobuf.Empty request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ShortR6ClassInfoList> responseObserver) {
+        io.grpc.stub.StreamObserver<org.jetbrains.r.classes.ShortR6ClassInfoList> responseObserver) {
       asyncUnimplementedUnaryCall(getGetLoadedShortR6ClassInfosMethod(), responseObserver);
     }
 
     /**
      */
     public void getR6ClassInfoByClassName(com.google.protobuf.StringValue request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.R6ClassInfo> responseObserver) {
+        io.grpc.stub.StreamObserver<org.jetbrains.r.classes.R6ClassInfo> responseObserver) {
       asyncUnimplementedUnaryCall(getGetR6ClassInfoByClassNameMethod(), responseObserver);
     }
 
@@ -4118,14 +4118,14 @@ public final class RPIServiceGrpc {
             asyncUnaryCall(
               new MethodHandlers<
                 org.jetbrains.r.rinterop.RRef,
-                org.jetbrains.r.rinterop.S4ClassInfo>(
+                org.jetbrains.r.classes.S4ClassInfo>(
                   this, METHODID_GET_S4CLASS_INFO_BY_OBJECT_NAME)))
           .addMethod(
             getGetR6ClassInfoByObjectNameMethod(),
             asyncUnaryCall(
               new MethodHandlers<
                 org.jetbrains.r.rinterop.RRef,
-                org.jetbrains.r.rinterop.R6ClassInfo>(
+                org.jetbrains.r.classes.R6ClassInfo>(
                   this, METHODID_GET_R6CLASS_INFO_BY_OBJECT_NAME)))
           .addMethod(
             getGetTableColumnsInfoMethod(),
@@ -4356,28 +4356,28 @@ public final class RPIServiceGrpc {
             asyncUnaryCall(
               new MethodHandlers<
                 com.google.protobuf.Empty,
-                org.jetbrains.r.rinterop.ShortS4ClassInfoList>(
+                org.jetbrains.r.classes.ShortS4ClassInfoList>(
                   this, METHODID_GET_LOADED_SHORT_S4CLASS_INFOS)))
           .addMethod(
             getGetS4ClassInfoByClassNameMethod(),
             asyncUnaryCall(
               new MethodHandlers<
                 com.google.protobuf.StringValue,
-                org.jetbrains.r.rinterop.S4ClassInfo>(
+                org.jetbrains.r.classes.S4ClassInfo>(
                   this, METHODID_GET_S4CLASS_INFO_BY_CLASS_NAME)))
           .addMethod(
             getGetLoadedShortR6ClassInfosMethod(),
             asyncUnaryCall(
               new MethodHandlers<
                 com.google.protobuf.Empty,
-                org.jetbrains.r.rinterop.ShortR6ClassInfoList>(
+                org.jetbrains.r.classes.ShortR6ClassInfoList>(
                   this, METHODID_GET_LOADED_SHORT_R6CLASS_INFOS)))
           .addMethod(
             getGetR6ClassInfoByClassNameMethod(),
             asyncUnaryCall(
               new MethodHandlers<
                 com.google.protobuf.StringValue,
-                org.jetbrains.r.rinterop.R6ClassInfo>(
+                org.jetbrains.r.classes.R6ClassInfo>(
                   this, METHODID_GET_R6CLASS_INFO_BY_CLASS_NAME)))
           .build();
     }
@@ -4874,7 +4874,7 @@ public final class RPIServiceGrpc {
     /**
      */
     public void getS4ClassInfoByObjectName(org.jetbrains.r.rinterop.RRef request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.S4ClassInfo> responseObserver) {
+        io.grpc.stub.StreamObserver<org.jetbrains.r.classes.S4ClassInfo> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getGetS4ClassInfoByObjectNameMethod(), getCallOptions()), request, responseObserver);
     }
@@ -4882,7 +4882,7 @@ public final class RPIServiceGrpc {
     /**
      */
     public void getR6ClassInfoByObjectName(org.jetbrains.r.rinterop.RRef request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.R6ClassInfo> responseObserver) {
+        io.grpc.stub.StreamObserver<org.jetbrains.r.classes.R6ClassInfo> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getGetR6ClassInfoByObjectNameMethod(), getCallOptions()), request, responseObserver);
     }
@@ -5155,7 +5155,7 @@ public final class RPIServiceGrpc {
     /**
      */
     public void getLoadedShortS4ClassInfos(com.google.protobuf.Empty request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ShortS4ClassInfoList> responseObserver) {
+        io.grpc.stub.StreamObserver<org.jetbrains.r.classes.ShortS4ClassInfoList> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getGetLoadedShortS4ClassInfosMethod(), getCallOptions()), request, responseObserver);
     }
@@ -5163,7 +5163,7 @@ public final class RPIServiceGrpc {
     /**
      */
     public void getS4ClassInfoByClassName(com.google.protobuf.StringValue request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.S4ClassInfo> responseObserver) {
+        io.grpc.stub.StreamObserver<org.jetbrains.r.classes.S4ClassInfo> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getGetS4ClassInfoByClassNameMethod(), getCallOptions()), request, responseObserver);
     }
@@ -5171,7 +5171,7 @@ public final class RPIServiceGrpc {
     /**
      */
     public void getLoadedShortR6ClassInfos(com.google.protobuf.Empty request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ShortR6ClassInfoList> responseObserver) {
+        io.grpc.stub.StreamObserver<org.jetbrains.r.classes.ShortR6ClassInfoList> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getGetLoadedShortR6ClassInfosMethod(), getCallOptions()), request, responseObserver);
     }
@@ -5179,7 +5179,7 @@ public final class RPIServiceGrpc {
     /**
      */
     public void getR6ClassInfoByClassName(com.google.protobuf.StringValue request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.R6ClassInfo> responseObserver) {
+        io.grpc.stub.StreamObserver<org.jetbrains.r.classes.R6ClassInfo> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getGetR6ClassInfoByClassNameMethod(), getCallOptions()), request, responseObserver);
     }
@@ -5633,14 +5633,14 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public org.jetbrains.r.rinterop.S4ClassInfo getS4ClassInfoByObjectName(org.jetbrains.r.rinterop.RRef request) {
+    public org.jetbrains.r.classes.S4ClassInfo getS4ClassInfoByObjectName(org.jetbrains.r.rinterop.RRef request) {
       return blockingUnaryCall(
           getChannel(), getGetS4ClassInfoByObjectNameMethod(), getCallOptions(), request);
     }
 
     /**
      */
-    public org.jetbrains.r.rinterop.R6ClassInfo getR6ClassInfoByObjectName(org.jetbrains.r.rinterop.RRef request) {
+    public org.jetbrains.r.classes.R6ClassInfo getR6ClassInfoByObjectName(org.jetbrains.r.rinterop.RRef request) {
       return blockingUnaryCall(
           getChannel(), getGetR6ClassInfoByObjectNameMethod(), getCallOptions(), request);
     }
@@ -5881,28 +5881,28 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public org.jetbrains.r.rinterop.ShortS4ClassInfoList getLoadedShortS4ClassInfos(com.google.protobuf.Empty request) {
+    public org.jetbrains.r.classes.ShortS4ClassInfoList getLoadedShortS4ClassInfos(com.google.protobuf.Empty request) {
       return blockingUnaryCall(
           getChannel(), getGetLoadedShortS4ClassInfosMethod(), getCallOptions(), request);
     }
 
     /**
      */
-    public org.jetbrains.r.rinterop.S4ClassInfo getS4ClassInfoByClassName(com.google.protobuf.StringValue request) {
+    public org.jetbrains.r.classes.S4ClassInfo getS4ClassInfoByClassName(com.google.protobuf.StringValue request) {
       return blockingUnaryCall(
           getChannel(), getGetS4ClassInfoByClassNameMethod(), getCallOptions(), request);
     }
 
     /**
      */
-    public org.jetbrains.r.rinterop.ShortR6ClassInfoList getLoadedShortR6ClassInfos(com.google.protobuf.Empty request) {
+    public org.jetbrains.r.classes.ShortR6ClassInfoList getLoadedShortR6ClassInfos(com.google.protobuf.Empty request) {
       return blockingUnaryCall(
           getChannel(), getGetLoadedShortR6ClassInfosMethod(), getCallOptions(), request);
     }
 
     /**
      */
-    public org.jetbrains.r.rinterop.R6ClassInfo getR6ClassInfoByClassName(com.google.protobuf.StringValue request) {
+    public org.jetbrains.r.classes.R6ClassInfo getR6ClassInfoByClassName(com.google.protobuf.StringValue request) {
       return blockingUnaryCall(
           getChannel(), getGetR6ClassInfoByClassNameMethod(), getCallOptions(), request);
     }
@@ -6266,7 +6266,7 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.S4ClassInfo> getS4ClassInfoByObjectName(
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.classes.S4ClassInfo> getS4ClassInfoByObjectName(
         org.jetbrains.r.rinterop.RRef request) {
       return futureUnaryCall(
           getChannel().newCall(getGetS4ClassInfoByObjectNameMethod(), getCallOptions()), request);
@@ -6274,7 +6274,7 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.R6ClassInfo> getR6ClassInfoByObjectName(
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.classes.R6ClassInfo> getR6ClassInfoByObjectName(
         org.jetbrains.r.rinterop.RRef request) {
       return futureUnaryCall(
           getChannel().newCall(getGetR6ClassInfoByObjectNameMethod(), getCallOptions()), request);
@@ -6539,7 +6539,7 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.ShortS4ClassInfoList> getLoadedShortS4ClassInfos(
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.classes.ShortS4ClassInfoList> getLoadedShortS4ClassInfos(
         com.google.protobuf.Empty request) {
       return futureUnaryCall(
           getChannel().newCall(getGetLoadedShortS4ClassInfosMethod(), getCallOptions()), request);
@@ -6547,7 +6547,7 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.S4ClassInfo> getS4ClassInfoByClassName(
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.classes.S4ClassInfo> getS4ClassInfoByClassName(
         com.google.protobuf.StringValue request) {
       return futureUnaryCall(
           getChannel().newCall(getGetS4ClassInfoByClassNameMethod(), getCallOptions()), request);
@@ -6555,7 +6555,7 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.ShortR6ClassInfoList> getLoadedShortR6ClassInfos(
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.classes.ShortR6ClassInfoList> getLoadedShortR6ClassInfos(
         com.google.protobuf.Empty request) {
       return futureUnaryCall(
           getChannel().newCall(getGetLoadedShortR6ClassInfosMethod(), getCallOptions()), request);
@@ -6563,7 +6563,7 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.R6ClassInfo> getR6ClassInfoByClassName(
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.classes.R6ClassInfo> getR6ClassInfoByClassName(
         com.google.protobuf.StringValue request) {
       return futureUnaryCall(
           getChannel().newCall(getGetR6ClassInfoByClassNameMethod(), getCallOptions()), request);
@@ -6913,11 +6913,11 @@ public final class RPIServiceGrpc {
           break;
         case METHODID_GET_S4CLASS_INFO_BY_OBJECT_NAME:
           serviceImpl.getS4ClassInfoByObjectName((org.jetbrains.r.rinterop.RRef) request,
-              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.S4ClassInfo>) responseObserver);
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.classes.S4ClassInfo>) responseObserver);
           break;
         case METHODID_GET_R6CLASS_INFO_BY_OBJECT_NAME:
           serviceImpl.getR6ClassInfoByObjectName((org.jetbrains.r.rinterop.RRef) request,
-              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.R6ClassInfo>) responseObserver);
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.classes.R6ClassInfo>) responseObserver);
           break;
         case METHODID_GET_TABLE_COLUMNS_INFO:
           serviceImpl.getTableColumnsInfo((org.jetbrains.r.rinterop.TableColumnsInfoRequest) request,
@@ -7049,19 +7049,19 @@ public final class RPIServiceGrpc {
           break;
         case METHODID_GET_LOADED_SHORT_S4CLASS_INFOS:
           serviceImpl.getLoadedShortS4ClassInfos((com.google.protobuf.Empty) request,
-              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ShortS4ClassInfoList>) responseObserver);
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.classes.ShortS4ClassInfoList>) responseObserver);
           break;
         case METHODID_GET_S4CLASS_INFO_BY_CLASS_NAME:
           serviceImpl.getS4ClassInfoByClassName((com.google.protobuf.StringValue) request,
-              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.S4ClassInfo>) responseObserver);
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.classes.S4ClassInfo>) responseObserver);
           break;
         case METHODID_GET_LOADED_SHORT_R6CLASS_INFOS:
           serviceImpl.getLoadedShortR6ClassInfos((com.google.protobuf.Empty) request,
-              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ShortR6ClassInfoList>) responseObserver);
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.classes.ShortR6ClassInfoList>) responseObserver);
           break;
         case METHODID_GET_R6CLASS_INFO_BY_CLASS_NAME:
           serviceImpl.getR6ClassInfoByClassName((com.google.protobuf.StringValue) request,
-              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.R6ClassInfo>) responseObserver);
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.classes.R6ClassInfo>) responseObserver);
           break;
         default:
           throw new AssertionError();

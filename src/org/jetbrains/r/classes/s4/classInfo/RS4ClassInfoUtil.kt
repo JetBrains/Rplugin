@@ -13,6 +13,7 @@ import org.jetbrains.r.classes.s4.RS4Util
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.packages.RPackageProjectManager
 import org.jetbrains.r.psi.api.*
+import org.jetbrains.r.psi.impl.RCallExpressionImpl
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 import org.jetbrains.r.psi.references.RSearchScopeUtil
 import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
@@ -160,7 +161,7 @@ object RS4ClassInfoUtil {
   }
 
   /**
-   * Most likely you need [RCallExpression.getAssociatedS4ClassInfo], not this function
+   * Most likely you need [RCallExpression.associatedS4ClassInfo], not this function
    */
   fun parseS4ClassInfo(callExpression: RCallExpression): RS4ClassInfo? {
     if (!callExpression.isFunctionFromLibrarySoft("setClass", "methods")) return null
@@ -339,3 +340,14 @@ object RS4ClassInfoUtil {
 
   private val SET_CLASS_DEFINITION_KEY: Key<RAssignmentStatement> = Key.create("S4_SET_CLASS_DEFINITION")
 }
+
+val RCallExpression.associatedS4ClassInfo: RS4ClassInfo?
+  get() = when (this) {
+    is RCallExpressionImpl -> {
+      val stub = greenStub
+      if (stub != null) stub.s4ClassInfo
+      else RS4ClassInfoUtil.parseS4ClassInfo(this)
+    }
+    is RSkeletonCallExpression -> stub.s4ClassInfo
+    else -> null
+  }

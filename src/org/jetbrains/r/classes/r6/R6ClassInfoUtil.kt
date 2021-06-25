@@ -14,6 +14,7 @@ import org.jetbrains.r.psi.impl.RMemberExpressionImpl
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 import org.jetbrains.r.psi.references.RSearchScopeUtil
 import org.jetbrains.r.psi.stubs.classes.R6ClassNameIndex
+import org.jetbrains.r.skeleton.psi.RSkeletonCallExpression
 
 object R6ClassInfoUtil {
   const val R6PackageName = "R6"
@@ -222,8 +223,9 @@ object R6ClassInfoUtil {
                                            callExpressions: List<RExpression>,
                                            isPublicScope: Boolean) {
     callExpressions.forEach {
-      if (it.lastChild is RFunctionExpression && !it.name.isNullOrEmpty()) {
-        r6ClassMethods.add(R6ClassMethod(it.name!!, isPublicScope))
+      val lastChild = it.lastChild
+      if (lastChild is RFunctionExpression && !it.name.isNullOrEmpty()) {
+        r6ClassMethods.add(R6ClassMethod(it.name!!, lastChild.parameterList?.text ?: "", isPublicScope))
       }
     }
   }
@@ -237,3 +239,14 @@ object R6ClassInfoUtil {
     }
   }
 }
+
+val RCallExpression.associatedR6ClassInfo: R6ClassInfo?
+  get() = when (this) {
+    is RCallExpressionImpl -> {
+      val stub = greenStub
+      if (stub != null) stub.r6ClassInfo
+      else R6ClassInfoUtil.parseR6ClassInfo(this)
+    }
+    is RSkeletonCallExpression -> stub.r6ClassInfo
+    else -> null
+  }

@@ -18,6 +18,7 @@ abstract class RClassesUtilTestsBase : RProcessHandlerBaseTestCase() {
   }
 
   protected fun getRCallExpressionFromAssignment(assignmentStatement: RAssignmentStatement): RCallExpression? {
+
     if (assignmentStatement.children?.size!! < 3) return null
     return assignmentStatement.children[2] as RCallExpression;
   }

@@ -8,7 +8,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.stubs.BinaryFileStubBuilder
 import com.intellij.psi.stubs.Stub
 import com.intellij.util.indexing.FileContent
-import org.jetbrains.r.classes.r6.*
 import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfo
 import org.jetbrains.r.classes.s4.classInfo.RS4ClassSlot
 import org.jetbrains.r.classes.s4.classInfo.RS4SuperClass
@@ -48,22 +47,10 @@ class RSkeletonFileStubBuilder : BinaryFileStubBuilder {
                                                    },
                                                  s4ClassRepresentation.superClassesList.map {
                                                    RS4SuperClass(it.name, it.distance) },
-                                                   s4ClassRepresentation.isVirtual),
-                                      null)
+                                                   s4ClassRepresentation.isVirtual
+                                      )
+          )
         }
-
-        RepresentationCase.R6CLASSREPRESENTATION -> {
-          val r6ClassRepresentation = symbol.r6ClassRepresentation
-          RSkeletonCallExpressionStub(skeletonFileStub,
-                                      R_SKELETON_CALL_EXPRESSION,
-                                      null,
-                                      R6ClassInfo(symbol.name,
-                                                  r6ClassRepresentation.superClassesList,
-                                                  r6ClassRepresentation.fieldsList.map { R6ClassField(it.name, it.isPublic) },
-                                                  r6ClassRepresentation.methodsList.map { R6ClassMethod(it.name, it.isPublic) },
-                                                  r6ClassRepresentation.activeBindingsList.map { R6ClassActiveBinding(it.name) }))
-        }
-
         else -> {
           val functionRepresentation = symbol.functionRepresentation
           val (s4GenericOrMethodInfo, extraNamedArguments) =

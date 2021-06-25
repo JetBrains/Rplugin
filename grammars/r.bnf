@@ -133,7 +133,7 @@ fake assignment_statement ::= {
 
 // Direct usage produce "employs left-recursion unsupported by generator" warning
 fake call_expression ::= {
-  methods=[ getArgumentList getExpression getAssociatedS4ClassInfo getAssociatedR6ClassInfo ]
+  methods=[ getArgumentList getExpression ]
   extends="org.jetbrains.r.psi.impl.RCallExpressionBase"
   stubClass="org.jetbrains.r.psi.stubs.RCallExpressionStub"
   implements="org.jetbrains.r.psi.api.RExpression"

@@ -4,11 +4,10 @@
 
 package org.jetbrains.r.classes.r6.context
 
-import org.jetbrains.r.classes.common.context.LibraryClassContext
 import org.jetbrains.r.psi.api.RPsiElement
 import java.lang.reflect.ParameterizedType
 
-abstract class R6ContextProvider<T : LibraryClassContext> {
+abstract class R6ContextProvider<T : R6Context> {
   abstract fun getR6ContextInner(element: RPsiElement): T?
   abstract fun getContext(element: RPsiElement): T?
 
@@ -16,16 +15,16 @@ abstract class R6ContextProvider<T : LibraryClassContext> {
   private val contextClass = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>
 
   companion object {
-    fun getProviders(): List<R6ContextProvider<out LibraryClassContext>> = listOf(
+    fun getProviders(): List<R6ContextProvider<out R6Context>> = listOf(
       R6CreateClassContextProvider(),
       R6SetClassMembersContextProvider()
     )
 
-    fun getR6Context(element: RPsiElement): LibraryClassContext? {
-      return getR6Context(element, LibraryClassContext::class.java)
+    fun getR6Context(element: RPsiElement): R6Context? {
+      return getR6Context(element, R6Context::class.java)
     }
 
-    fun <T : LibraryClassContext> getR6Context(element: RPsiElement, vararg searchedContexts: Class<out T>): T? {
+    fun <T : R6Context> getR6Context(element: RPsiElement, vararg searchedContexts: Class<out T>): T? {
       for (provider in getProviders()) {
         if (searchedContexts.any { it.isAssignableFrom(provider.contextClass) }) {
           val s4Context = provider.getContext(element)

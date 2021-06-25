@@ -51,5 +51,5 @@ data class RSkeletonS4ClassPomTarget(val setClass: RSkeletonCallExpression) : RP
       }
     }
   }
-  override fun getName(): String = setClass.stub.s4ClassInfo!!.className
+  override fun getName(): String = setClass.stub.s4ClassInfo.className
 }

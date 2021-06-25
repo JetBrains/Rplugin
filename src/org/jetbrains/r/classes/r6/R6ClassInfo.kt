@@ -13,7 +13,7 @@ import com.intellij.util.io.StringRef
 // "All items in public, private, and active must have unique names."
 interface IR6ClassMember { val name: String }
 data class R6ClassField(override val name: String, val isPublic: Boolean = true) : IR6ClassMember
-data class R6ClassMethod(override val name: String, val isPublic: Boolean = true) : IR6ClassMember
+data class R6ClassMethod(override val name: String, val parametersList: String, val isPublic: Boolean = true) : IR6ClassMember
 data class R6ClassActiveBinding(override val name: String) : IR6ClassMember
 
 data class R6ClassInfo(val className: String,
@@ -32,12 +32,13 @@ data class R6ClassInfo(val className: String,
     DataInputOutputUtilRt.writeSeq(dataStream, superClasses) { dataStream.writeName(it) }
 
     DataInputOutputUtilRt.writeSeq(dataStream, fields) {
-      dataStream.writeName(it.name);
+      dataStream.writeName(it.name)
       dataStream.writeBoolean(it.isPublic)
     }
 
     DataInputOutputUtilRt.writeSeq(dataStream, methods) {
-      dataStream.writeName(it.name);
+      dataStream.writeName(it.name)
+      dataStream.writeName(it.parametersList)
       dataStream.writeBoolean(it.isPublic)
     }
 
@@ -59,8 +60,9 @@ data class R6ClassInfo(val className: String,
 
       val methods = DataInputOutputUtilRt.readSeq(dataStream) {
         val name = StringRef.toString(dataStream.readName())
+        val parametersList = dataStream.readNameString()!!
         val isPublic = dataStream.readBoolean()
-        R6ClassMethod(name, isPublic)
+        R6ClassMethod(name, parametersList, isPublic)
       }
 
       val activeBindings = DataInputOutputUtilRt.readSeq(dataStream) {
@@ -76,7 +78,7 @@ data class R6ClassInfo(val className: String,
 class R6ClassKeywordsProvider {
   companion object {
     val predefinedClassMethods = listOf(
-      R6ClassMethod("clone", true)
+      R6ClassMethod("clone", "", true)
     )
 
     val visibilityModifiers = listOf(

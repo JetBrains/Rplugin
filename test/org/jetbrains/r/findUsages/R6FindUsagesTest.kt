@@ -17,15 +17,16 @@ class R6FindUsagesTest : FindUsagesTestBase() {
         obj${'$'}someField
         obj${'$'}<caret>someField
     """, """
-      Usage (2 usages)
+      <root> (2)
        Variable
         someField = 0
-       Found usages (2 usages)
-        Unclassified (2 usages)
-         light_idea_test_case (2 usages)
-           (2 usages)
-           3obj${"$"}someField
-           4obj${"$"}someField
+       Usages in Project Files (2)
+        Unclassified (2)
+         light_idea_test_case (2)
+           (2)
+           test.R (2)
+             3obj${"$"}someField
+             4obj${"$"}someField
     """)
   }
 
@@ -36,14 +37,15 @@ class R6FindUsagesTest : FindUsagesTestBase() {
         obj${'$'}<caret>someMethod()
         obj${'$'}someField
     """, """
-      Usage (1 usage)
+      <root> (1)
        Variable
         someMethod = function(x = 1) { print(x) }
-       Found usages (1 usage)
-        Unclassified (1 usage)
-         light_idea_test_case (1 usage)
-           (1 usage)
-           3obj${"$"}someMethod()
+       Usages in Project Files (1)
+        Unclassified (1)
+         light_idea_test_case (1)
+           (1)
+           test.R (1)
+             3obj${"$"}someMethod()
     """)
   }
 
@@ -54,15 +56,16 @@ class R6FindUsagesTest : FindUsagesTestBase() {
         obj${'$'}someField
         obj${'$'}someMethod()${'$'}<caret>someField
     """, """
-      Usage (2 usages)
+      <root> (2)
        Variable
         someField = 0
-       Found usages (2 usages)
-        Unclassified (2 usages)
-         light_idea_test_case (2 usages)
-           (2 usages)
-           3obj${'$'}someField
-           4obj${'$'}someMethod()${'$'}someField
+       Usages in Project Files (2)
+        Unclassified (2)
+         light_idea_test_case (2)
+           (2)
+           test.R (2)
+             3obj${'$'}someField
+             4obj${'$'}someMethod()${'$'}someField
     """)
   }
 
@@ -80,16 +83,17 @@ class R6FindUsagesTest : FindUsagesTestBase() {
       x${"$"}add(4)${"$"}sum
       x${"$"}sum
     """, """
-      Usage (3 usages)
+      <root> (3)
        Variable
         sum = 0
-       Found usages (3 usages)
-        Unclassified (3 usages)
-         light_idea_test_case (3 usages)
-           (3 usages)
-           4self${'$'}sum <- self${'$'}sum + x
-           10x${'$'}add(4)${'$'}sum
-           11x${'$'}sum
+       Usages in Project Files (3)
+        Unclassified (3)
+         light_idea_test_case (3)
+           (3)
+           test.R (3)
+             4self${'$'}sum <- self${'$'}sum + x
+             10x${'$'}add(4)${'$'}sum
+             11x${'$'}sum
     """)
   }
 
@@ -100,15 +104,16 @@ class R6FindUsagesTest : FindUsagesTestBase() {
         obj${'$'}someField
         obj${'$'}someField
     """, """
-      Usage (2 usages)
+      <root> (2)
        Variable
         someField
-       Found usages (2 usages)
-        Unclassified (2 usages)
-         light_idea_test_case (2 usages)
-           (2 usages)
-           3obj${"$"}someField
-           4obj${"$"}someField
+       Usages in Project Files (2)
+        Unclassified (2)
+         light_idea_test_case (2)
+           (2)
+           test.R (2)
+             3obj${"$"}someField
+             4obj${"$"}someField
     """)
   }
 
@@ -119,14 +124,15 @@ class R6FindUsagesTest : FindUsagesTestBase() {
       obj <- ChildClass${'$'}new()
       obj${'$'}<caret>someField
     """, """
-      Usage (1 usage)
+      <root> (1)
        Variable
         someField = 0
-       Found usages (1 usage)
-        Unclassified (1 usage)
-         light_idea_test_case (1 usage)
-           (1 usage)
-           4obj${'$'}someField
+       Usages in Project Files (1)
+        Unclassified (1)
+         light_idea_test_case (1)
+           (1)
+           test.R (1)
+             4obj${'$'}someField
     """)
   }
 }

@@ -30,10 +30,7 @@ class RS4SourceManager(private val project: Project) {
   private val rInteropFiles = ConcurrentHashMap<RConsoleRuntimeInfo, RInterop.Cached<ConcurrentHashMap<String, Optional<RCallExpression>>>>()
 
   fun getCallFromSkeleton(setClass: RSkeletonCallExpression): RCallExpression {
-    if (setClass.stub.s4ClassInfo == null) {
-      throw UnsupportedOperationException()
-    }
-    return files.getOrPut(setClass) { infoToDeclaration(setClass.stub.s4ClassInfo!!) }
+    return files.getOrPut(setClass) { infoToDeclaration(setClass.stub.s4ClassInfo) }
   }
 
   fun getSourceCallFromInterop(runtimeInfo: RConsoleRuntimeInfo, className: String): RCallExpression? {

@@ -900,7 +900,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       val res = executeWithCheckCancel(asyncStub::getR6ClassInfoByObjectName, ref.proto)
       R6ClassInfo(res.className, res.superClassesList,
                   res.fieldsList.map { R6ClassField(it.name, it.isPublic) },
-                  res.methodsList.map { R6ClassMethod(it.name, it.isPublic) },
+                  res.methodsList.map { R6ClassMethod(it.name, it.parameterList, it.isPublic) },
                   res.activeBindingsList.map { R6ClassActiveBinding(it.name) })
     } catch (e: RInteropTerminated) {
       null
@@ -912,7 +912,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       val res = executeWithCheckCancel(asyncStub::getR6ClassInfoByClassName, StringValue.of(className))
       R6ClassInfo(res.className, res.superClassesList,
                   res.fieldsList.map { R6ClassField(it.name, it.isPublic) },
-                  res.methodsList.map { R6ClassMethod(it.name, it.isPublic) },
+                  res.methodsList.map { R6ClassMethod(it.name, it.parameterList, it.isPublic) },
                   res.activeBindingsList.map { R6ClassActiveBinding(it.name) })
     } catch (e: RInteropTerminated) {
       null

@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import org.jetbrains.r.classes.s4.RS4Resolver
 import org.jetbrains.r.classes.s4.RS4Util
+import org.jetbrains.r.classes.s4.classInfo.associatedS4ClassInfo
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RCallExpressionImpl

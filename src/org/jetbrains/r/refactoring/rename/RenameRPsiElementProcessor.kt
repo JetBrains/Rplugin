@@ -13,7 +13,8 @@ import com.intellij.usageView.UsageInfo
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.classes.s4.classInfo.RStringLiteralPomTarget
-import org.jetbrains.r.classes.s4.context.RS4ContextProvider.Companion.setClassTypeProvider
+import org.jetbrains.r.classes.s4.context.RS4ContextProvider
+import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassClassNameContext
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.refactoring.RRefactoringUtil
@@ -40,7 +41,7 @@ class RenameRPsiElementProcessor : RenamePsiElementProcessor() {
         else null
       }
       is RStringLiteralExpression -> {
-        val context = setClassTypeProvider.getContext(element)
+        val context = RS4ContextProvider.getS4Context(element, RS4SetClassClassNameContext::class)
         if (context != null) element else null
       }
       else -> null

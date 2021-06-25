@@ -9,8 +9,6 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.jetbrains.r.parsing.RElementTypes.*;
 import org.jetbrains.r.psi.api.*;
-import org.jetbrains.r.classes.r6.R6ClassInfo;
-import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfo;
 import org.jetbrains.r.psi.stubs.RCallExpressionStub;
 import com.intellij.psi.stubs.IStubElementType;
 
@@ -44,18 +42,6 @@ public class RCallExpressionImpl extends RCallExpressionBase implements RCallExp
   @NotNull
   public RExpression getExpression() {
     return RPsiImplUtil.getExpression(this);
-  }
-
-  @Override
-  @Nullable
-  public RS4ClassInfo getAssociatedS4ClassInfo() {
-    return RPsiImplUtil.getAssociatedS4ClassInfo(this);
-  }
-
-  @Override
-  @Nullable
-  public R6ClassInfo getAssociatedR6ClassInfo() {
-    return RPsiImplUtil.getAssociatedR6ClassInfo(this);
   }
 
 }

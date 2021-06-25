@@ -9,20 +9,18 @@ import com.intellij.pom.PomTargetPsiElement
 import com.intellij.psi.util.CachedValue
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
-import org.jetbrains.r.classes.common.context.LibraryClassContext
-import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassTypeContextProvider
-import org.jetbrains.r.classes.common.context.ILibraryClassContext
 import org.jetbrains.r.classes.s4.context.methods.RS4SetGenericProvider
 import org.jetbrains.r.classes.s4.context.methods.RS4SetGenericValueClassesContext
 import org.jetbrains.r.classes.s4.context.methods.RS4SetMethodProvider
 import org.jetbrains.r.classes.s4.context.methods.RS4SetMethodSignatureClassNameContext
+import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassTypeContextProvider
 import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassTypeUsageContext
 import org.jetbrains.r.classes.s4.context.setClass.RS4SlotDeclarationContextProvider
 import org.jetbrains.r.psi.api.RPsiElement
 import java.lang.reflect.ParameterizedType
 import kotlin.reflect.KClass
 
-abstract class RS4ContextProvider<T : LibraryClassContext> {
+abstract class RS4ContextProvider<T : RS4Context> {
 
   fun getContext(element: RPsiElement): T? {
     return if (element is PomTargetPsiElement) getS4ContextForPomTarget(element)
@@ -53,14 +51,14 @@ abstract class RS4ContextProvider<T : LibraryClassContext> {
       setMethodProvider,
     )
 
-    fun getS4Context(element: RPsiElement): LibraryClassContext? = getS4Context(element, LibraryClassContext::class)
+    fun getS4Context(element: RPsiElement): RS4Context? = getS4Context(element, RS4Context::class)
 
-    fun <T : LibraryClassContext> getS4Context(element: RPsiElement, vararg searchedContexts: KClass<out T>): T? {
+    fun <T : RS4Context> getS4Context(element: RPsiElement, vararg searchedContexts: KClass<out T>): T? {
       return getS4Context(element, *searchedContexts.map { it.java }.toTypedArray())
     }
 
     @JvmStatic
-    fun <T : LibraryClassContext> getS4Context(element: RPsiElement, vararg searchedContexts: Class<out T>): T? {
+    fun <T : RS4Context> getS4Context(element: RPsiElement, vararg searchedContexts: Class<out T>): T? {
       for (provider in allProviders) {
         if (searchedContexts.any { provider.contextClass.isAssignableFrom(it) || it.isAssignableFrom(provider.contextClass) }) {
           val s4Context = provider.getContext(element) ?: continue

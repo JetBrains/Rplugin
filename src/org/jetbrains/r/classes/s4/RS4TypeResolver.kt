@@ -59,7 +59,7 @@ object RS4TypeResolver {
             is RNamedArgument -> resolveElement.assignedValue?.name
             is PomTargetPsiElement -> {
               when (val target = resolveElement.target) {
-                is RSkeletonS4SlotPomTarget -> target.setClass.stub.s4ClassInfo!!.slots.firstOrNull { it.name == target.name }?.type
+                is RSkeletonS4SlotPomTarget -> target.setClass.stub.s4ClassInfo.slots.firstOrNull { it.name == target.name }?.type
                 is RS4ComplexSlotPomTarget -> target.slot.type
                 is RStringLiteralPomTarget -> "ANY"
                 else -> null

@@ -188,9 +188,8 @@ class RCompletionContributor : CompletionContributor() {
             is R6ClassActiveBinding
               -> result.consume(rCompletionElementFactory.createAtAccess(r6Member.name))
             is R6ClassMethod
-              -> result.consume(rCompletionElementFactory.createFunctionLookupElement(r6Member.name))
+              -> result.consume(rCompletionElementFactory.createFunctionLookupElement(r6Member.name, r6Member.parametersList))
           }
-
           shownNames.add(r6Member.name)
           hasNewResults = true
         }
@@ -571,7 +570,7 @@ class RCompletionContributor : CompletionContributor() {
       val runtimeInfo = file.runtimeInfo
       val loadedPackages = runtimeInfo?.loadedPackages?.keys
       val shownNames = HashSet<String>()
-      RS4ClassNameIndex.processAllS4ClassInfos(project, scope, Processor { (declaration, info) ->
+      RS4ClassNameIndex.processAllClassInfos(project, scope, Processor { (declaration, info) ->
         if (omitVirtual && info.isVirtual) return@Processor true
         if (nameToOmit != info.className) {
           result.addS4ClassName(classNameExpression, declaration, info, shownNames, loadedPackages)

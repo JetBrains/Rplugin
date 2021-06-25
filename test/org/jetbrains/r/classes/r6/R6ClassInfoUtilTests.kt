@@ -64,125 +64,76 @@ class R6ClassInfoUtilTests : RClassesUtilTestsBase() {
       """.trimIndent()
 
   fun testGetAssociatedClassName(){
-    val rAssignmentStatement = getRootElementOfPsi(fullClassCodeDefinition) as RAssignmentStatement
-    val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
-    val className = R6ClassInfoUtil.getAssociatedClassNameFromR6ClassCall(rCallExpression!!)
+    val rCallExpression = doTestBase(fullClassCodeDefinition)
+    val className = R6ClassInfoUtil.getAssociatedClassNameFromR6ClassCall(rCallExpression)
     assertEquals("Car", className)
   }
 
   fun testGetAssociatedClassNameFromInstantiationCall(){
-    val rAssignmentStatement = getRootElementOfPsi("""
-      obj <- MyClass${'$'}new()
-    """.trimIndent()) as RAssignmentStatement
-
-    val call = rAssignmentStatement.lastChild as RCallExpression
+    val call = doTestBase("obj <- MyClass${'$'}new()")
     val className = R6ClassInfoUtil.getAssociatedClassNameFromInstantiationCall(call)
     assertEquals("MyClass", className)
   }
 
   fun testGetAssociatedSuperClasses(){
-    val psiTree = getRootElementOfPsi("""
+    val rCallExpression = doTestBase("""
       SuperParentClass <- R6Class("SuperParentClass")
       ParentClass <- R6Class("ParentClass", inherit = SuperParentClass)
       ChildClass <- R6Class("ChildClass", inherit = ParentClass)
-    """.trimIndent()).parent
+    """.trimIndent())
 
-    val lastClassAssignment = PsiTreeUtil.getChildrenOfType(psiTree, RAssignmentStatement::class.java).last() as RAssignmentStatement
-    val rCallExpression = getRCallExpressionFromAssignment(lastClassAssignment)
-    val superClassNames = R6ClassInfoUtil.getAssociatedSuperClassesHierarchy(rCallExpression!!)
-
+    val superClassNames = R6ClassInfoUtil.getAssociatedSuperClassesHierarchy(rCallExpression)
     assertNotNull(superClassNames)
-    assert(superClassNames!!.contains("ParentClass"))
-    assert(superClassNames.contains("SuperParentClass"))
+    assertContainsElements(superClassNames!!, "ParentClass", "SuperParentClass")
   }
 
-  fun testClassContainsFields(){
-    val rAssignmentStatement = getRootElementOfPsi(fullClassCodeDefinition) as RAssignmentStatement
-    val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
-    val classFields = R6ClassInfoUtil.getAssociatedFields(rCallExpression!!)
-
-    assertNotNull(classFields)
-
-    val classFieldsNames = classFields!!.map { it.name }
-    assertContainsElements(classFieldsNames, "weight")
-    assertEquals(true, classFields[0].isPublic)
-
-    assertContainsElements(classFieldsNames, "speed")
-    assertEquals(true, classFields[1].isPublic)
-
-    assertContainsElements(classFieldsNames, "engine_rpm")
-    assertEquals(false, classFields[2].isPublic)
-  }
-
-  fun testClassContainsMethods(){
-    val rAssignmentStatement = getRootElementOfPsi(fullClassCodeDefinition) as RAssignmentStatement
-    val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
-    val classMethods = R6ClassInfoUtil.getAssociatedMethods(rCallExpression!!)
-
-    assertNotNull(classMethods)
-
-    val classMethodsNames = classMethods!!.map { it.name }
-    assertContainsElements(classMethodsNames, "accelerate")
-    assertEquals(classMethods[0].isPublic, true)
-
-    assertContainsElements(classMethodsNames, "slowDown")
-    assertEquals(classMethods[1].isPublic, true)
-
-    assertContainsElements(classMethodsNames, "maximize")
-    assertEquals(classMethods[2].isPublic, false)
-  }
-
+  fun testClassContainsFields() = doFieldsTest(fullClassCodeDefinition, "weight" to true, "speed" to true, "engine_rpm" to false)
+  fun testClassContainsMethods() = doMethodsTest(fullClassCodeDefinition, "accelerate" to true, "slowDown" to true, "maximize" to false)
   fun testGetAssociatedActiveBindings(){
-    val rAssignmentStatement = getRootElementOfPsi(fullClassCodeDefinition) as RAssignmentStatement
-    val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
-    val classActiveBindings = R6ClassInfoUtil.getAssociatedActiveBindings(rCallExpression!!)
+    val rCallExpression = doTestBase(fullClassCodeDefinition)
+    val classActiveBindings = R6ClassInfoUtil.getAssociatedActiveBindings(rCallExpression)
 
     assertNotNull(classActiveBindings)
     assertEquals(classActiveBindings!!.size, 1)
-
-    val classActiveBindingsNames = classActiveBindings.map { it.name }
-    assertContainsElements(classActiveBindingsNames, "random")
+    assertContainsElements(classActiveBindings.map { it.name }, "random")
   }
 
-  fun testGetShortenedClassAssociatedFields(){
-    val rAssignmentStatement = getRootElementOfPsi(shortedClassCodeDefinition) as RAssignmentStatement
-    val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
-    val classFields = R6ClassInfoUtil.getAssociatedFields(rCallExpression!!)
+  fun testGetShortenedClassAssociatedFields() = doFieldsTest(shortedClassCodeDefinition, "weight" to true, "speed" to true)
+  fun testGetShortenedClassAssociatedMethods() = doMethodsTest(shortedClassCodeDefinition, "accelerate" to true, "slowDown" to true)
+  fun testGetMembers(){
+    val rCallExpression = doTestBase(fullClassCodeDefinition)
+    val classMethods = R6ClassInfoUtil.getAssociatedMembers(rCallExpression)
+
+    assertNotNull(classMethods)
+    assertContainsElements(classMethods!!.map { it.name }, "weight", "speed", "engine_rpm", "maximize", "accelerate", "slowDown")
+  }
+
+  private fun doClassNameTest(text: String, className: String) {
+    val call = doTestBase(text)
+    val actualClassName = R6ClassInfoUtil.getAssociatedClassNameFromR6ClassCall(call)
+    assertEquals(className, actualClassName)
+  }
+
+  private fun doFieldsTest(text: String, vararg fields: Pair<String, Boolean>) {
+    val rCallExpression = doTestBase(text)
+    val classFields = R6ClassInfoUtil.getAssociatedFields(rCallExpression)
 
     assertNotNull(classFields)
-
-    val classFieldsNames = classFields!!.map { it.name }
-    assertContainsElements(classFieldsNames, "weight")
-    assertContainsElements(classFieldsNames, "speed")
-    classFields.forEach { assertEquals(true, it.isPublic) }
+    assertContainsElements(classFields!!.map { it.name }, fields.map { it.first })
+    assertEquals(classFields.map { it.isPublic }, fields.map { it.second })
   }
 
-  fun testGetShortenedClassAssociatedMethods(){
-    val rAssignmentStatement = getRootElementOfPsi(shortedClassCodeDefinition) as RAssignmentStatement
-    val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
-    val classMethods = R6ClassInfoUtil.getAssociatedMethods(rCallExpression!!)
+  private fun doMethodsTest(text: String, vararg fields: Pair<String, Boolean>) {
+    val rCallExpression = doTestBase(text)
+    val classMethods = R6ClassInfoUtil.getAssociatedMethods(rCallExpression)
 
     assertNotNull(classMethods)
-
-    val classMethodsNames = classMethods!!.map { it.name }
-    assertContainsElements(classMethodsNames, "accelerate")
-    assertContainsElements(classMethodsNames, "slowDown")
-    classMethods.forEach { assertEquals(true, it.isPublic) }
+    assertContainsElements(classMethods!!.map { it.name }, fields.map { it.first })
+    assertEquals(classMethods.map { it.isPublic }, fields.map { it.second })
   }
 
-  fun testGetMembers(){
-    val rAssignmentStatement = getRootElementOfPsi(fullClassCodeDefinition) as RAssignmentStatement
-    val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
-    val classMethods = R6ClassInfoUtil.getAssociatedMembers(rCallExpression!!)
-
-    assertNotNull(classMethods)
-
-    val classMethodsNames = classMethods!!.map { it.name }
-    assertContainsElements(classMethodsNames, "weight")
-    assertContainsElements(classMethodsNames, "speed")
-    assertContainsElements(classMethodsNames, "engine_rpm")
-    assertContainsElements(classMethodsNames, "maximize")
-    assertContainsElements(classMethodsNames, "accelerate")
-    assertContainsElements(classMethodsNames, "slowDown")
+  private fun doTestBase(text: String): RCallExpression {
+    val rFile = myFixture.configureByText("foo.R", text)
+    return PsiTreeUtil.getChildrenOfType(rFile, RAssignmentStatement::class.java).last().assignedValue as RCallExpression
   }
 }

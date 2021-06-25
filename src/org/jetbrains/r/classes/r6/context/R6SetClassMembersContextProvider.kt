@@ -7,7 +7,6 @@ package org.jetbrains.r.classes.r6.context
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.classes.common.context.LibraryClassContext
 import org.jetbrains.r.classes.r6.R6ClassInfoUtil
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RMemberExpression
@@ -15,7 +14,7 @@ import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.psi.references.RSearchScopeUtil
 import org.jetbrains.r.psi.stubs.classes.R6ClassNameIndex
 
-sealed class R6SetClassMembersContext : LibraryClassContext {
+sealed class R6SetClassMembersContext : R6Context {
   override val functionName = R6ClassInfoUtil.functionSet
 }
 

@@ -105,11 +105,8 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
     }
   }
 
-  fun createFunctionLookupElement(lookupString: String): LookupElement {
-    val icon = AllIcons.Nodes.Function
-    return createLookupElementWithGrouping(RLookupElement(lookupString, false, icon),
-                                           functionInsertHandler.getInsertHandlerForLookupString(lookupString),
-                                           GLOBAL_GROUPING)
+  fun createFunctionLookupElement(functionName: String, functionParameters: String): LookupElement {
+    return createFunctionLookupElement(functionName, AllIcons.Nodes.Function, functionParameters, null, true)
   }
 
   fun createFunctionLookupElement(functionAssignment: RAssignmentStatement, isLocal: Boolean = false): LookupElement {
@@ -135,8 +132,12 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
     return createFunctionLookupElement(name, AllIcons.Nodes.Method, functionParameters, genericExpression, genericExpression is RCallExpression)
   }
 
-  private fun createFunctionLookupElement(name: String, icon: Icon, functionParameters: String, def: RPsiElement, isLocal: Boolean = false): LookupElement {
-    val packageName = if (isLocal) null else RPackage.getOrCreateRPackageBySkeletonFile(def.containingFile)?.name
+  private fun createFunctionLookupElement(name: String,
+                                          icon: Icon,
+                                          functionParameters: String,
+                                          def: RPsiElement?,
+                                          isLocal: Boolean = false): LookupElement {
+    val packageName = if (isLocal) null else def?.let { RPackage.getOrCreateRPackageBySkeletonFile(it.containingFile)?.name }
     return createLookupElementWithGrouping(RLookupElement(name, false, icon, packageName, functionParameters),
                                            functionInsertHandler.getInsertHandlerForFunctionCall(functionParameters),
                                            if (isLocal) VARIABLE_GROUPING else GLOBAL_GROUPING)

@@ -6,8 +6,6 @@ import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.StubBasedPsiElement;
 import org.jetbrains.r.psi.stubs.RCallExpressionStub;
-import org.jetbrains.r.classes.r6.R6ClassInfo;
-import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfo;
 
 public interface RCallExpression extends RExpression, RS4GenericOrMethodHolder, StubBasedPsiElement<RCallExpressionStub> {
 
@@ -16,11 +14,5 @@ public interface RCallExpression extends RExpression, RS4GenericOrMethodHolder, 
 
   @NotNull
   RExpression getExpression();
-
-  @Nullable
-  RS4ClassInfo getAssociatedS4ClassInfo();
-
-  @Nullable
-  R6ClassInfo getAssociatedR6ClassInfo();
 
 }

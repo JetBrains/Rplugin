@@ -21,10 +21,6 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.r.RElementGenerator
-import org.jetbrains.r.classes.r6.R6ClassInfo
-import org.jetbrains.r.classes.r6.R6ClassInfoUtil
-import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfo
-import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfoUtil
 import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.RElementFilters
@@ -396,16 +392,6 @@ internal object RPsiImplUtil {
   @JvmStatic
   fun getExpression(callExpression: RCallExpressionImpl): RExpression {
     return PsiTreeUtil.getChildOfType(callExpression, RExpression::class.java)!!
-  }
-
-  @JvmStatic
-  fun getAssociatedS4ClassInfo(callExpression: RCallExpressionImpl): RS4ClassInfo? {
-    return callExpression.greenStub?.s4ClassInfo ?: RS4ClassInfoUtil.parseS4ClassInfo(callExpression)
-  }
-
-  @JvmStatic
-  fun getAssociatedR6ClassInfo(callExpression: RCallExpressionImpl): R6ClassInfo? {
-    return callExpression.greenStub?.r6ClassInfo ?: R6ClassInfoUtil.parseR6ClassInfo(callExpression)
   }
 
   private fun getLoopImpl(element: RPsiElement): RLoopStatement? {

@@ -12,10 +12,7 @@ import com.intellij.usageView.UsageViewNodeTextLocation
 import com.intellij.usageView.UsageViewShortNameLocation
 import com.intellij.usageView.UsageViewTypeLocation
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.classes.s4.classInfo.RS4ComplexSlotPomTarget
-import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4ClassPomTarget
-import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4SlotPomTarget
-import org.jetbrains.r.classes.s4.classInfo.RStringLiteralPomTarget
+import org.jetbrains.r.classes.s4.classInfo.*
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassClassNameContext
 

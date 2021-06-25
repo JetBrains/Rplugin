@@ -11,6 +11,7 @@ import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfoUtil.toComplexSlots
 import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfoUtil.toSlot
 import org.jetbrains.r.classes.s4.classInfo.RS4ClassSlot
 import org.jetbrains.r.classes.s4.classInfo.RSkeletonS4SlotPomTarget
+import org.jetbrains.r.classes.s4.classInfo.associatedS4ClassInfo
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.api.*

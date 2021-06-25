@@ -5,7 +5,6 @@
 package org.jetbrains.r.classes.s4.context
 
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.classes.common.context.LibraryClassContext
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.RCallExpression
@@ -13,7 +12,7 @@ import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 
-sealed class RS4NewObjectContext : LibraryClassContext {
+sealed class RS4NewObjectContext : RS4Context {
   override val functionName: String = "new"
 }
 
