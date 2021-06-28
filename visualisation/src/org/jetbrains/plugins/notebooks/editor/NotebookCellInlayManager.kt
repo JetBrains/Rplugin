@@ -2,6 +2,7 @@ package org.jetbrains.plugins.notebooks.editor
 
 import com.intellij.ide.DataManager
 import com.intellij.ide.ui.LafManagerListener
+import com.intellij.notebook.editor.BackedVirtualFile
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.actionSystem.PlatformDataKeys
@@ -17,6 +18,10 @@ import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.ex.RangeHighlighterEx
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.*
+import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.TextEditor
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.util.Processor
@@ -26,6 +31,8 @@ import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.notebooks.editor.outputs.impl.DOCUMENT_BEING_UPDATED
+import org.jetbrains.plugins.notebooks.editor.outputs.impl.clearScrollingPosition
+import org.jetbrains.plugins.notebooks.editor.outputs.impl.markScrollingPosition
 import java.awt.Graphics
 import javax.swing.JComponent
 import kotlin.math.max
@@ -90,7 +97,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
 
     handleRefreshedDocument()
 
-    addDocumentListener()
+    addDocumentListener(editor.project)
 
     val appMessageBus = ApplicationManager.getApplication().messageBus.connect(editor.disposable)
 
@@ -129,7 +136,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
     inlaysChanged()
   }
 
-  private fun addDocumentListener() {
+  private fun addDocumentListener(project: Project?) {
     val documentListener = object : DocumentListener {
       private var matchingCellsBeforeChange: List<NotebookCellLines.Interval> = emptyList()
       private var isBulkModeEnabled = false;
@@ -149,6 +156,14 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
 
       override fun beforeDocumentChange(event: DocumentEvent) {
         event.document.putUserData(DOCUMENT_BEING_UPDATED, true)
+
+        if (project != null) {
+          val file = FileDocumentManager.getInstance().getFile(event.document)
+          if (file is BackedVirtualFile) {
+            FileEditorManager.getInstance(project).getAllEditors(file.originFile).filterIsInstance<TextEditor>().map { it.editor }.forEach { clearScrollingPosition(it) }
+          }
+        }
+
         if (isBulkModeEnabled) return
         val document = event.document
         val logicalLines = interestingLogicalLines(document, event.offset, event.oldLength)
@@ -188,6 +203,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
   }
 
   private fun updateConsequentInlays(interestingRange: IntRange) {
+    markScrollingPosition(editor)
     val matchingIntervals = notebookCellLines.getMatchingCells(interestingRange)
     val fullInterestingRange =
       if (matchingIntervals.isNotEmpty()) matchingIntervals.first().lines.first..matchingIntervals.last().lines.last

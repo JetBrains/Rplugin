@@ -111,3 +111,8 @@ fun markScrollingPosition(editor: Editor, targetCell: NotebookCellLines.Interval
   editor.putUserData(TARGET_LINE_KEY, lineToKeep)
   editor.putUserData(TARGET_LINE_SHIFT_KEY, shift)
 }
+
+fun clearScrollingPosition(editor: Editor) {
+  editor.putUserData(TARGET_LINE_KEY, null)
+  editor.putUserData(TARGET_LINE_SHIFT_KEY, null)
+}
