@@ -30,13 +30,12 @@ import com.intellij.util.castSafelyTo
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.plugins.notebooks.editor.outputs.impl.DOCUMENT_BEING_UPDATED
-import org.jetbrains.plugins.notebooks.editor.outputs.impl.clearScrollingPosition
-import org.jetbrains.plugins.notebooks.editor.outputs.impl.markScrollingPosition
 import java.awt.Graphics
 import javax.swing.JComponent
 import kotlin.math.max
 import kotlin.math.min
+
+val DOCUMENT_BEING_UPDATED = Key.create<Boolean>("DOCUMENT_BEING_UPDATED")
 
 class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
   private val inlays: MutableMap<Inlay<*>, NotebookCellInlayController> = HashMap()
@@ -160,7 +159,9 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
         if (project != null) {
           val file = FileDocumentManager.getInstance().getFile(event.document)
           if (file is BackedVirtualFile) {
-            FileEditorManager.getInstance(project).getAllEditors(file.originFile).filterIsInstance<TextEditor>().map { it.editor }.forEach { clearScrollingPosition(it) }
+            FileEditorManager.getInstance(project).getAllEditors(file.originFile).filterIsInstance<TextEditor>().map { it.editor }.forEach {
+              it.notebookCellEditorScrollingPositionKeeper?.clearScrollingPosition(it)
+            }
           }
         }
 
@@ -203,7 +204,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
   }
 
   private fun updateConsequentInlays(interestingRange: IntRange) {
-    markScrollingPosition(editor)
+    editor.notebookCellEditorScrollingPositionKeeper?.savePosition()
     val matchingIntervals = notebookCellLines.getMatchingCells(interestingRange)
     val fullInterestingRange =
       if (matchingIntervals.isNotEmpty()) matchingIntervals.first().lines.first..matchingIntervals.last().lines.last

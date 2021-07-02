@@ -8,10 +8,7 @@ import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.DumbAware
 import com.intellij.util.castSafelyTo
-import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayManager
-import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
-import org.jetbrains.plugins.notebooks.editor.getCell
-import org.jetbrains.plugins.notebooks.editor.notebookCellLinesInterval
+import org.jetbrains.plugins.notebooks.editor.*
 import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputInlayController
 
 internal class NotebookOutputCollapseAllAction private constructor() : ToggleAction(), DumbAware {
@@ -119,15 +116,10 @@ private fun findTargetCellForCollapseAction(editor: Editor, outputCell: Notebook
 }
 
 private fun markScrollingPositionBeforeOutputCollapseToggle(e: AnActionEvent) {
-  val inlayManager = e.notebookCellInlayManager
-  if (inlayManager != null) {
-    val cell = e.dataContext.notebookCellLinesInterval
-    if (cell != null) {
-      val targetCell = findTargetCellForCollapseAction(inlayManager.editor, cell)
-      markScrollingPosition(inlayManager.editor, targetCell)
-    }
-    else {
-      markScrollingPosition(inlayManager.editor)
-    }
-  }
+  val cell = e.dataContext.notebookCellLinesInterval ?: return
+  val editor = e.notebookCellInlayManager?.editor ?: return
+  val jupyterEditorScrollingPositionKeeper = editor.notebookCellEditorScrollingPositionKeeper ?: return
+
+  val targetCell = findTargetCellForCollapseAction(editor, cell)
+  jupyterEditorScrollingPositionKeeper.savePosition(targetCell)
 }
