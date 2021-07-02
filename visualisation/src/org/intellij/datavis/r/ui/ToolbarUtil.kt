@@ -11,6 +11,7 @@ import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.AnActionButton
 import com.intellij.ui.DumbAwareActionButton
+import org.jetbrains.annotations.Nls
 import javax.swing.Icon
 import javax.swing.JComponent
 
@@ -119,6 +120,7 @@ object ToolbarUtil {
       return true
     }
 
+    @Nls
     fun getHintForDisabled(): String? {
       return null
     }
@@ -127,6 +129,7 @@ object ToolbarUtil {
       return null
     }
 
+    @Nls
     fun getAlternativeEnabledDescription(): String? {
       return null
     }
@@ -166,14 +169,17 @@ object ToolbarUtil {
       return holder.getAlternativeEnabledIcon()?.takeIf { isEnabled } ?: fallbackIcon
     }
 
+    @Nls
     private fun createDescription(isEnabled: Boolean): String? {
       return if (isEnabled) createEnabledDescription() else createDisabledDescription()
     }
 
+    @Nls
     private fun createEnabledDescription(): String? {
       return holder.getAlternativeEnabledDescription() ?: fallbackDescription
     }
 
+    @Nls
     private fun createDisabledDescription(): String? {
       return holder.getHintForDisabled()?.let { createDescriptionWithHint(it) } ?: fallbackDescription
     }
