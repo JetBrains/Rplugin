@@ -37,6 +37,7 @@ import org.intellij.datavis.r.inlays.dataframe.DataFrameCSVAdapter
 import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.intellij.datavis.r.ui.ToolbarUtil
 import org.intellij.datavis.r.ui.UiCustomizer
+import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.concurrency.Promise
 import java.awt.Dimension
@@ -125,8 +126,8 @@ abstract class InlayOutput(parent: Disposable, val editor: Editor, private val c
     }
   }
 
-  protected fun saveWithFileChooser(title: String,
-                                    description: String,
+  protected fun saveWithFileChooser(@Nls title: String,
+                                    @Nls description: String,
                                     extension: Array<String>,
                                     defaultName: String,
                                     onChoose: (File) -> Unit) {
@@ -301,8 +302,8 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
   }
 
   override fun saveAs() {
-    val title = "Export as txt"
-    val description = "Export console content to text file"
+    val title = VisualizationBundle.message("inlay.action.export.as.txt.title")
+    val description = VisualizationBundle.message("inlay.action.export.as.txt.description")
     saveWithFileChooser(title, description, arrayOf("txt"), "output") { destination ->
       destination.bufferedWriter().use { out ->
         out.write(console.text)
@@ -427,8 +428,8 @@ class InlayOutputHtml(parent: Disposable, editor: Editor, clearAction: () -> Uni
   }
 
   override fun saveAs() {
-    val title = "Export as txt"
-    val description = "Exports the selected range or whole table if nothing is selected as csv or tsv file"
+    val title = VisualizationBundle.message("inlay.action.export.as.txt.title")
+    val description = VisualizationBundle.message("inlay.action.exports.range.csv.description")
     saveWithFileChooser(title, description, arrayOf("txt"), "output") { destination ->
       saveJsCallback.addHandler(object : java.util.function.Function<String, JBCefJSQuery.Response> {
         override fun apply(selection: String): JBCefJSQuery.Response {
