@@ -25,6 +25,7 @@ import org.jetbrains.r.refactoring.RNamesValidator
 import javax.swing.Icon
 import kotlin.math.min
 
+const val MACHINE_LEARNING_PRIORITY = 150.0
 const val ARGUMENT_VALUE_PRIORITY = 140.0
 const val LIBRARY_METHOD_PRIORITY = 120.0
 const val TABLE_MANIPULATION_PRIORITY = 110.0
@@ -195,7 +196,7 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
 
   fun createMachineLearningCompletionLookupElement(variant: MachineLearningCompletionHttpResponse.CompletionVariant): LookupElement {
     val element = RLookupElement(variant.text, true, RIcons.MachineLearning)
-    val prioritized = createLookupElementWithPriority(element, BasicInsertHandler(), variant.score)
+    val prioritized = createLookupElementWithPriority(element, BasicInsertHandler(), variant.score + MACHINE_LEARNING_PRIORITY)
     return RMachineLearningCompletionLookupElement(prioritized)
   }
 

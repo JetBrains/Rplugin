@@ -38,6 +38,7 @@ class MachineLearningCompletionDownloadModelService {
                                          onSuccessCallback: (T) -> Unit): Unit =
       object : Task.Modal(null, title, true) {
 
+        @Volatile
         private lateinit var result: T
 
         override fun run(indicator: ProgressIndicator) {
