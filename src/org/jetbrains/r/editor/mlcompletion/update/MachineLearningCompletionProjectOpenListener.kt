@@ -3,6 +3,7 @@ package org.jetbrains.r.editor.mlcompletion.update
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.roots.ProjectFileIndex
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionNotifications.showPopup
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
@@ -15,18 +16,20 @@ class MachineLearningCompletionProjectOpenListener : ProjectManagerListener {
   }
 
   override fun projectOpened(project: Project) {
-    if (!MachineLearningCompletionSettings.getInstance().state.isEnabled
-        || isNotRProject(project)) {
-      return
-    }
-    if (!notifiedAnyProject.compareAndSet(false, true)) {
+    if (notifiedAnyProject.get() || !MachineLearningCompletionSettings.getInstance().state.isEnabled) {
       return
     }
 
-    val modelDownloaderService = MachineLearningCompletionDownloadModelService.getInstance()
-    modelDownloaderService.initiateUpdateCycle(isModal = false, reportIgnored = false) { (artifactsToUpdate, size) ->
-      if (artifactsToUpdate.isNotEmpty()) {
-        showPopup(project, artifactsToUpdate, size)
+    runAsync {
+      if (isNotRProject(project) || !notifiedAnyProject.compareAndSet(false, true)) {
+        return@runAsync
+      }
+
+      val modelDownloaderService = MachineLearningCompletionDownloadModelService.getInstance()
+      modelDownloaderService.initiateUpdateCycle(isModal = false, reportIgnored = false) { (artifactsToUpdate, size) ->
+        if (artifactsToUpdate.isNotEmpty()) {
+          showPopup(project, artifactsToUpdate, size)
+        }
       }
     }
   }
