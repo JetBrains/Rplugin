@@ -200,7 +200,7 @@ class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
     }
 
     override fun loadR6ClassInfoByObjectName(objectName: String): R6ClassInfo? {
-      throw NotImplementedError()
+      return null
     }
 
     override fun loadExtraNamedArguments(functionName: String, functionExpression: RFunctionExpression): RExtraNamedArgumentsInfo {
