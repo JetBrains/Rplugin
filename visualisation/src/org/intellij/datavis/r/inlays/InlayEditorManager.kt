@@ -19,7 +19,6 @@ import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
 import com.intellij.openapi.editor.ex.FoldingListener
 import com.intellij.openapi.editor.ex.util.EditorScrollingPositionKeeper
-import com.intellij.openapi.editor.ex.util.EditorScrollingPositionKeeperProvider
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -59,7 +58,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
 
   private val inlays: MutableMap<PsiElement, NotebookInlayComponentPsi> = LinkedHashMap()
   private val inlayElements = LinkedHashSet<PsiElement>()
-  private val scrollKeeper: EditorScrollingPositionKeeper = ApplicationManager.getApplication().getService(EditorScrollingPositionKeeperProvider::class.java).createEditorScrollingPositionKeeper(editor)
+  private val scrollKeeper: EditorScrollingPositionKeeper = EditorScrollingPositionKeeper(editor)
   private val viewportQueue = MergingUpdateQueue(VIEWPORT_TASK_NAME, VIEWPORT_TIME_SPAN, true, null, project)
   @Volatile private var toolbarUpdateScheduled: Boolean = false
 

@@ -1,14 +1,13 @@
 package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
-import com.intellij.openapi.editor.ex.util.EditorScrollingPositionKeeperProvider
+import com.intellij.openapi.editor.ex.util.EditorScrollingPositionKeeper
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -191,8 +190,7 @@ private fun addBlockElement(editor: Editor, offset: Int, inlayComponent: Noteboo
 
 
 private fun setupInlayComponent(editor: Editor, inlayComponent: NotebookInlayComponent) {
-  val scrollKeeper = ApplicationManager.getApplication().getService(EditorScrollingPositionKeeperProvider::class.java)
-    .createEditorScrollingPositionKeeper(editor)
+  val scrollKeeper = EditorScrollingPositionKeeper(editor)
 
   fun updateInlaysInEditor(editor: Editor) {
     val end = editor.xyToLogicalPosition(Point(0, Int.MAX_VALUE))
