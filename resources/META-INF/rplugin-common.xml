@@ -369,7 +369,9 @@ You can find the source code in the following repositories:
 
     <projectListeners>
       <listener class="org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionProjectOpenListener"
-                topic="com.intellij.openapi.project.ProjectManagerListener" />
+                topic="com.intellij.openapi.project.ProjectManagerListener"
+                activeInHeadlessMode="false"
+                activeInTestMode="false"/>
       <listener class="org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupTracker"
                 topic="com.intellij.codeInsight.lookup.LookupManagerListener"
                 activeInTestMode="false"/>
