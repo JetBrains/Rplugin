@@ -1286,7 +1286,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   }
 
   fun invalidateCaches() {
-    invokeLater { PsiManager.getInstance(project).dropPsiCaches() }
+    invokeLater { if (!project.isDisposed) { PsiManager.getInstance(project).dropPsiCaches() } }
     cacheIndex.incrementAndGet()
   }
 
