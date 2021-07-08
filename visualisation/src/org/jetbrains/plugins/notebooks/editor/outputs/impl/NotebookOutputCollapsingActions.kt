@@ -121,5 +121,5 @@ private fun markScrollingPositionBeforeOutputCollapseToggle(e: AnActionEvent) {
   val jupyterEditorScrollingPositionKeeper = editor.notebookCellEditorScrollingPositionKeeper ?: return
 
   val targetCell = findTargetCellForCollapseAction(editor, cell)
-  jupyterEditorScrollingPositionKeeper.savePosition(targetCell)
+  jupyterEditorScrollingPositionKeeper.savePosition(targetCell.lines.first)
 }

@@ -13,7 +13,7 @@ val EDITOR_SCROLLING_POSITION_KEEPER_KEY = Key.create<EditorScrollingPositionKee
 interface NotebookCellEditorScrollingPositionKeeper {
   fun savePosition()
 
-  fun savePosition(targetCell: NotebookCellLines.Interval?)
+  fun savePosition(targetLine: Int?)
 
   fun restorePosition(stopAnimation: Boolean)
 
@@ -32,5 +32,5 @@ fun saveScrollingPosition(virtualFile: VirtualFile, project: Project) {
 }
 
 fun saveScrollingPosition(editor: Editor, targetCell: NotebookCellLines.Interval?) {
-  editor.notebookCellEditorScrollingPositionKeeper?.savePosition(targetCell)
+  editor.notebookCellEditorScrollingPositionKeeper?.savePosition(targetCell?.lines?.first)
 }
