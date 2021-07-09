@@ -1,6 +1,5 @@
 package org.jetbrains.r.rinterop.rstudioapi
 
-import com.intellij.analysis.problemsView.toolWindow.ProblemsView
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
