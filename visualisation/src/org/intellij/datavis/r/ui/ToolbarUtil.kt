@@ -8,6 +8,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.actionSystem.impl.ActionButton
+import com.intellij.openapi.util.NlsActions
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.AnActionButton
 import com.intellij.ui.DumbAwareActionButton
@@ -129,7 +130,7 @@ object ToolbarUtil {
       return null
     }
 
-    @Nls
+    @NlsActions.ActionDescription
     fun getAlternativeEnabledDescription(): String? {
       return null
     }
@@ -169,7 +170,7 @@ object ToolbarUtil {
       return holder.getAlternativeEnabledIcon()?.takeIf { isEnabled } ?: fallbackIcon
     }
 
-    @Nls
+    @NlsActions.ActionDescription
     private fun createDescription(isEnabled: Boolean): String? {
       return if (isEnabled) createEnabledDescription() else createDisabledDescription()
     }
