@@ -505,7 +505,9 @@ class RGraphicsExportDialog(
 
     private val INVALID_INTEGER_INPUT_MESSAGE = RBundle.message("graphics.panel.settings.dialog.invalid.integer.input")
 
+    @Nls
     private val CHOOSE_DIRECTORY_DESCRIPTION = RBundle.message("graphics.panel.export.dialog.choose.directory.description")
+    @Nls
     private val CHOOSE_DIRECTORY_TITLE = RBundle.message("graphics.panel.export.dialog.choose.directory.title")
     private val PROJECT_DIRECTORY_HINT = RBundle.message("import.data.dialog.project.directory.hint")
 
