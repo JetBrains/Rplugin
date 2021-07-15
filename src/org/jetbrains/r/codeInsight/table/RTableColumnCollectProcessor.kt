@@ -1,7 +1,7 @@
 package org.jetbrains.r.codeInsight.table
 
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.util.CommonProcessors
-import org.apache.commons.lang.StringUtils
 import org.jetbrains.r.psi.TableColumnInfo
 
 open class RTableColumnCollectProcessor : CommonProcessors.CollectProcessor<TableColumnInfo>() {
@@ -9,7 +9,7 @@ open class RTableColumnCollectProcessor : CommonProcessors.CollectProcessor<Tabl
     return super.getResults().groupBy { it.name }
       .map { (name, list) ->
         list.groupBy { it.quoteNeeded }.map {(quoteNeeded, list) -> TableColumnInfo(name,
-                                                                                    StringUtils.join(list.mapNotNull { it.type }.toSet(), "/"),
+                                                                                    StringUtil.join(list.mapNotNull { it.type }.toSet(), "/"),
                                                                                     definition = list.mapNotNull { it.definition }.firstOrNull(),
                                                                                     quoteNeeded = quoteNeeded)}
 
