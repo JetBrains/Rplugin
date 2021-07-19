@@ -1,7 +1,6 @@
-import org.apache.commons.io.FileUtils
-import org.apache.commons.lang3.SystemUtils
-import java.io.File
 
+import org.apache.commons.io.FileUtils
+import java.io.File
 import java.lang.ProcessBuilder.Redirect
 import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
@@ -25,8 +24,7 @@ fun main(args: Array<String>) {
   val rwrapperDirectory = File(args[0])
   val destinationDirectory = File(args[1])
   val customRWrapperPath = if (args.size > 2) File(args[2]) else null
-
-  if (SystemUtils.IS_OS_UNIX && customRWrapperPath == null) {
+  if (customRWrapperPath == null && !System.getProperty("os.name").startsWith("windows", ignoreCase = true)) {
     "./build_rwrapper.sh".runCommand(rwrapperDirectory)
   }
 
