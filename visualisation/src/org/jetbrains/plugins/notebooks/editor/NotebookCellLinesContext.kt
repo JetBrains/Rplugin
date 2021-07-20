@@ -26,17 +26,39 @@ inline fun getOffsetInEditorWithComponents(
   dataContext: DataContext,
   crossinline editorFilter: (Editor) -> Boolean,
 ): Pair<Editor, Int>? =
+  // If the focused component is the editor, it's assumed that the current cell is the cell under the caret.
   dataContext
     .getData(PlatformDataKeys.CONTEXT_COMPONENT)
     ?.castSafelyTo<EditorComponentImpl>()
     ?.editor
-    ?.takeIf(editorFilter)
+    ?.getOffsetFromCaret(editorFilter)
+
+  // Otherwise, some component inside an editor can be focused. In that case it's assumed that the current cell is the cell closest
+  // to the focused component.
+  ?: getOffsetInEditorByComponentHierarchy(dataContext.getData(PlatformDataKeys.CONTEXT_COMPONENT), editorFilter)
+
+  // If the focused component is out of the notebook editor, there still can be other editors inside the required one.
+  // If some of such editor is treated as the current editor, the current cell is the cell closest to the current editor.
+  ?: getOffsetInEditorByComponentHierarchy(dataContext.getData(PlatformDataKeys.EDITOR)?.contentComponent, editorFilter)
+
+  // When a user clicks on a gutter, it's the only focused component, and it doesn't connected to the editor. However, vertical offsets
+  // in the gutter can be juxtaposed to the editor.
+  ?: getOffsetFromGutter(dataContext, editorFilter)
+
+  // When a user clicks on some toolbar on some menu component, it becomes the focused components. Usually, such components have an
+  // assigned editor. In that case it's assumed that the current cell is the cell under the caret.
+  ?: dataContext.getData(PlatformDataKeys.EDITOR)
+    ?.getOffsetFromCaret(editorFilter)
+
+/** Private API. */
+@PublishedApi
+internal inline fun Editor.getOffsetFromCaret(
+  crossinline editorFilter: (Editor) -> Boolean,
+): Pair<Editor, Int>? =
+  takeIf(editorFilter)
     ?.let { notebookEditor ->
       notebookEditor to notebookEditor.caretModel.offset.coerceAtMost(notebookEditor.document.textLength - 1).coerceAtLeast(0)
     }
-  ?: getOffsetInEditorByComponentHierarchy(dataContext.getData(PlatformDataKeys.CONTEXT_COMPONENT), editorFilter)
-  ?: getOffsetInEditorByComponentHierarchy(dataContext.getData(PlatformDataKeys.EDITOR)?.contentComponent, editorFilter)
-  ?: getOffsetFromGutter(dataContext, editorFilter)
 
 /** Private API. */
 @PublishedApi
