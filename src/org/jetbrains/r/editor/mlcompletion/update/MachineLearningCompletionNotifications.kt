@@ -9,6 +9,7 @@ import com.intellij.openapi.ui.DialogWrapper
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.update.UpdateUtils.showSizeMb
+import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import java.util.concurrent.atomic.AtomicReference
 
 
@@ -65,6 +66,12 @@ object MachineLearningCompletionNotifications {
                                   artifacts,
                                   RBundle.message("notification.ml.update.askToDownload.content", showSizeMb(size)),
                                   RBundle.message("notification.ml.update.askToDownload.downloadButton"))
+      .addAction(object : NotificationAction(RBundle.message("notification.ml.update.askToDownload.disable")) {
+        override fun actionPerformed(e: AnActionEvent, notification: Notification) {
+          MachineLearningCompletionSettings.getInstance().state.isEnabled = false
+          notification.expire()
+        }
+      })
       .tryNotifyAndSetAsActive(project)
 
   private fun askForUpdate(project: Project?, artifacts: List<MachineLearningCompletionRemoteArtifact>, size: Long): Unit =
