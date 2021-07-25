@@ -41,12 +41,6 @@ class MachineLearningCompletionLocalServerServiceImpl : MachineLearningCompletio
   override val requestTimeoutMs
     get() = settings.state.requestTimeoutMs
 
-  init {
-    if (settings.state.isEnabled) {
-      launchServer(settings.state.hostOrDefault(), settings.state.port)
-    }
-  }
-
   @Synchronized
   private fun tryRelaunchServer(host: String = settings.state.hostOrDefault(),
                         port: Int = settings.state.port) {
