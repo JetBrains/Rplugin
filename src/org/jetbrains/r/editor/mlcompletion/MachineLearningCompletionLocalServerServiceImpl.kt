@@ -10,6 +10,7 @@ import com.intellij.util.io.HttpRequests
 import org.jetbrains.io.mandatory.NullCheckingFactory
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.withTryLock
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
+import org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener
 import java.io.File
 import java.io.IOException
 import java.nio.file.Path
@@ -41,6 +42,17 @@ class MachineLearningCompletionLocalServerServiceImpl : MachineLearningCompletio
 
   private val serverAddress
     get() = "http://${settings.state.host}:${settings.state.port}"
+
+  init {
+    MachineLearningCompletionSettingsChangeListener { beforeState, afterState ->
+      val becameDisabled = beforeState.isEnabled && !afterState.isEnabled
+      val addressChanged = (beforeState.host != afterState.host || beforeState.port != afterState.port)
+
+      if (becameDisabled || (afterState.isEnabled && addressChanged)) {
+        shutdownServer()
+      }
+    }.subscribe(this)
+  }
 
   override fun shouldAttemptCompletion(): Boolean {
     return settings.state.isEnabled
