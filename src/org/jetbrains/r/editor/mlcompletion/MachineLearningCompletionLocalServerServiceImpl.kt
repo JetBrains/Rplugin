@@ -8,6 +8,7 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.io.HttpRequests
 import org.jetbrains.io.mandatory.NullCheckingFactory
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.withTryLock
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import java.io.File
 import java.io.IOException
@@ -81,7 +82,7 @@ class MachineLearningCompletionLocalServerServiceImpl : MachineLearningCompletio
   }
 
   private fun tryLaunchServer(host: String = settings.state.hostOrDefault(),
-                              port: Int = settings.state.port): Unit = serverLock.withLock {
+                              port: Int = settings.state.port): Unit = serverLock.withTryLock(Unit) {
     if (System.currentTimeMillis() - lastRelaunchInitializedTime < RELAUNCH_TIMEOUT_MS) {
       return
     }
