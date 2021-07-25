@@ -18,6 +18,7 @@ import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpResponse
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionLocalServerService
 import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupStatistics
 import org.jetbrains.r.editor.mlcompletion.sorting.MachineLearningCompletionSorter
+import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import java.util.concurrent.CompletableFuture
 
 internal class MachineLearningCompletionProvider : CompletionProvider<CompletionParameters>() {
@@ -42,7 +43,8 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
     val sorter = MachineLearningCompletionSorter.createSorter(parameters, result.prefixMatcher)
     result.runRemainingContributors(parameters, result::passResult, true, sorter)
 
-    val timeToWait = startTime - System.currentTimeMillis() + serverService.requestTimeoutMs
+    val requestTimeoutMs = MachineLearningCompletionSettings.getInstance().state.requestTimeoutMs
+    val timeToWait = startTime - System.currentTimeMillis() + requestTimeoutMs
     // If request has been received then add completions anyway otherwise wait for result with checkCanceled
     val mlCompletionResponse =
       when {
