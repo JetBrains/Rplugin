@@ -9,8 +9,6 @@ interface MachineLearningCompletionLocalServerService : Disposable {
     fun getInstance(): MachineLearningCompletionLocalServerService = service()
   }
 
-  val requestTimeoutMs: Int
-
   fun shouldAttemptCompletion(): Boolean
 
   fun sendCompletionRequest(requestData: MachineLearningCompletionHttpRequest): CompletableFuture<MachineLearningCompletionHttpResponse?>

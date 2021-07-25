@@ -38,9 +38,6 @@ class MachineLearningCompletionLocalServerServiceImpl : MachineLearningCompletio
   private val serverAddress
     get() = "http://${settings.state.host}:${settings.state.port}"
 
-  override val requestTimeoutMs
-    get() = settings.state.requestTimeoutMs
-
   @Synchronized
   private fun tryRelaunchServer(host: String = settings.state.hostOrDefault(),
                         port: Int = settings.state.port) {
