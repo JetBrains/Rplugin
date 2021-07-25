@@ -8,13 +8,13 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Version
 import org.jetbrains.annotations.Nls
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.withTryLock
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionLocalArtifact
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionUpdateAction
 import org.jetbrains.r.editor.mlcompletion.update.VersionConverter
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -22,19 +22,6 @@ class MachineLearningCompletionModelFilesService {
 
   companion object {
     fun getInstance() = service<MachineLearningCompletionModelFilesService>()
-
-    private inline fun <T> Lock.withTryLock(lockFailedValue: T, action: () -> T): T =
-      if (tryLock()) {
-        try {
-          action()
-        }
-        finally {
-          unlock()
-        }
-      }
-      else {
-        lockFailedValue
-      }
 
     private fun getArtifactVersion(versionFile: String): Version? = File(versionFile).takeIf { it.exists() }
       ?.run { VersionConverter.fromString(readText().trim()) }
