@@ -1,24 +1,15 @@
 package org.jetbrains.r.editor.mlcompletion
 
-import com.intellij.execution.process.ProcessIOExecutorService
 import com.intellij.ide.ApplicationInitializedListener
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionDownloadModelService
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionNotifications
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionRemoteArtifact
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionUpdateAction
-import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener
 
 class MachineLearningCompletionInitializerListener : ApplicationInitializedListener {
   override fun componentsInitialized() {
-    tryLaunchServer()
     registerOnEnabledListener()
-  }
-
-  private fun tryLaunchServer() {
-    if (MachineLearningCompletionSettings.getInstance().state.isEnabled) {
-      ProcessIOExecutorService.INSTANCE.execute(MachineLearningCompletionServerService.getInstance()::tryRelaunchServer)
-    }
   }
 
   private fun registerOnEnabledListener(): Unit = MachineLearningCompletionSettingsChangeListener { beforeState, afterState ->

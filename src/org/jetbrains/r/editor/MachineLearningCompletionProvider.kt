@@ -4,8 +4,6 @@
 
 package org.jetbrains.r.editor
 
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonParseException
 import com.intellij.codeInsight.completion.CompletionInitializationContext
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
@@ -14,21 +12,18 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.util.ProgressIndicatorUtils.awaitWithCheckCanceled
 import com.intellij.openapi.progress.util.ProgressIndicatorUtils.withTimeout
 import com.intellij.util.ProcessingContext
-import com.intellij.util.concurrency.AppExecutorUtil.getAppExecutorService
-import com.intellij.util.io.HttpRequests
-import org.jetbrains.io.mandatory.NullCheckingFactory
 import org.jetbrains.r.editor.completion.RLookupElementFactory
-import org.jetbrains.r.editor.mlcompletion.*
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpRequest
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpResponse
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionLocalServerService
 import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupStatistics
 import org.jetbrains.r.editor.mlcompletion.sorting.MachineLearningCompletionSorter
-import java.io.IOException
 import java.util.concurrent.CompletableFuture
 
 internal class MachineLearningCompletionProvider : CompletionProvider<CompletionParameters>() {
 
   companion object {
-    private val serverService = MachineLearningCompletionServerService.getInstance()
-    private val GSON = GsonBuilder().registerTypeAdapterFactory(NullCheckingFactory.INSTANCE).create()
+    private val serverService = MachineLearningCompletionLocalServerService.getInstance()
     private val LOG = Logger.getInstance(MachineLearningCompletionProvider::class.java)
     private val lookupElementFactory = RLookupElementFactory()
   }
@@ -38,29 +33,6 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
     val localTextContent = parameters.position.text
     val isInsideToken = localTextContent != CompletionInitializationContext.DUMMY_IDENTIFIER_TRIMMED
     return MachineLearningCompletionHttpRequest(isInsideToken, previousText)
-  }
-
-  private fun processRequest(requestData: MachineLearningCompletionHttpRequest):
-    CompletableFuture<MachineLearningCompletionHttpResponse?> {
-    return CompletableFuture.supplyAsync(
-      {
-        try {
-          HttpRequests.post(serverService.serverAddress, "application/json")
-            .connect { request ->
-              request.write(GSON.toJson(requestData))
-              return@connect GSON.fromJson(request.reader.readText(),
-                                           MachineLearningCompletionHttpResponse::class.java)
-            }
-        }
-        catch (e: IOException) {
-          serverService.tryRelaunchServer()
-          null
-        }
-        catch (e: JsonParseException) {
-          null
-        }
-      },
-      getAppExecutorService())
   }
 
   private fun addFutureCompletions(parameters: CompletionParameters,
@@ -92,7 +64,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
       return
     }
     val inputMessage = constructRequest(parameters)
-    val futureResponse = processRequest(inputMessage)
+    val futureResponse = serverService.sendCompletionRequest(inputMessage)
 
     val resultWithSorter = result.withRelevanceSorter(MachineLearningCompletionSorter.createSorter(parameters, result.prefixMatcher))
     val processedResponse = addFutureCompletions(parameters, futureResponse, resultWithSorter, startTime)
