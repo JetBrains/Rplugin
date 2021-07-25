@@ -6,6 +6,7 @@ import com.intellij.codeInsight.lookup.LookupItem
 import com.intellij.openapi.util.Key
 import org.jetbrains.r.editor.completion.RLookupElement
 import org.jetbrains.r.editor.completion.RMachineLearningCompletionLookupElement
+import java.util.concurrent.locks.Lock
 
 object MachineLearningCompletionUtils {
   fun LookupElement.isRLookupElement(): Boolean = `as`(RLookupElement::class.java) is RLookupElement
@@ -24,4 +25,17 @@ object MachineLearningCompletionUtils {
   fun LookupElement.markAsMergedLookupElement() = putUserData(mergedKey, true)
 
   fun LookupElement.isMergedLookupElement() = getUserData(mergedKey) ?: false
+
+  inline fun <T> Lock.withTryLock(lockFailedValue: T, action: () -> T): T =
+    if (tryLock()) {
+      try {
+        action()
+      }
+      finally {
+        unlock()
+      }
+    }
+    else {
+      lockFailedValue
+    }
 }
