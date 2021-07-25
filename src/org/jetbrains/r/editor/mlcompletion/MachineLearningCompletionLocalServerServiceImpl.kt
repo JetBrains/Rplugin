@@ -9,7 +9,6 @@ import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.io.HttpRequests
 import org.jetbrains.io.mandatory.NullCheckingFactory
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
-import org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener
 import java.io.File
 import java.io.IOException
 import java.nio.file.Path
@@ -43,18 +42,6 @@ class MachineLearningCompletionLocalServerServiceImpl : MachineLearningCompletio
     get() = settings.state.requestTimeoutMs
 
   init {
-    MachineLearningCompletionSettingsChangeListener { beforeState, afterState ->
-        if (beforeState == afterState) {
-          return@MachineLearningCompletionSettingsChangeListener
-        }
-        if (beforeState.isEnabled && !afterState.isEnabled) {
-          shutdownServer()
-        }
-        else {
-          tryRelaunchServer(afterState.hostOrDefault(), afterState.port)
-        }
-    }.subscribe(this)
-
     if (settings.state.isEnabled) {
       launchServer(settings.state.hostOrDefault(), settings.state.port)
     }
