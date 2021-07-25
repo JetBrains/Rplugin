@@ -6,6 +6,7 @@ import com.intellij.codeInsight.lookup.LookupItem
 import com.intellij.openapi.util.Key
 import org.jetbrains.r.editor.completion.RLookupElement
 import org.jetbrains.r.editor.completion.RMachineLearningCompletionLookupElement
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.Lock
 
 object MachineLearningCompletionUtils {
@@ -38,4 +39,6 @@ object MachineLearningCompletionUtils {
     else {
       lockFailedValue
     }
+
+  fun currentTimeMillis(): Long = TimeUnit.MILLISECONDS.convert(System.nanoTime(), TimeUnit.NANOSECONDS)
 }

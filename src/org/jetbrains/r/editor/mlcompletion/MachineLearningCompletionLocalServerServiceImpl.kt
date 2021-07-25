@@ -15,7 +15,6 @@ import java.io.IOException
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -38,7 +37,7 @@ class MachineLearningCompletionLocalServerServiceImpl : MachineLearningCompletio
   private val serverLock = ReentrantLock()
   @Volatile
   private var localServer: Process? = null
-  private var lastRelaunchInitializedTime: Long = TimeUnit.MILLISECONDS.convert(System.nanoTime(), TimeUnit.NANOSECONDS)
+  private var lastRelaunchInitializedTime: Long = MachineLearningCompletionUtils.currentTimeMillis()
 
   private val serverAddress
     get() = "http://${settings.state.host}:${settings.state.port}"
@@ -83,10 +82,10 @@ class MachineLearningCompletionLocalServerServiceImpl : MachineLearningCompletio
 
   private fun tryLaunchServer(host: String = settings.state.hostOrDefault(),
                               port: Int = settings.state.port): Unit = serverLock.withTryLock(Unit) {
-    if (System.currentTimeMillis() - lastRelaunchInitializedTime < RELAUNCH_TIMEOUT_MS) {
+    if (MachineLearningCompletionUtils.currentTimeMillis() - lastRelaunchInitializedTime < RELAUNCH_TIMEOUT_MS) {
       return
     }
-    lastRelaunchInitializedTime = TimeUnit.MILLISECONDS.convert(System.nanoTime(), TimeUnit.NANOSECONDS)
+    lastRelaunchInitializedTime = MachineLearningCompletionUtils.currentTimeMillis()
     shutdownServer()
 
     completionFilesService.tryRunActionOnFiles { completionFiles ->
