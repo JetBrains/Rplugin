@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Version
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionLocalArtifact
+import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionUpdateAction
 import org.jetbrains.r.editor.mlcompletion.update.VersionConverter
 import java.io.File
 import java.nio.file.Files
@@ -91,8 +92,13 @@ class MachineLearningCompletionModelFilesService {
       artifact.localVersionProperty.reset()
     }
 
-  fun tryRunActionOnFiles(action: (MachineLearningCompletionModelFiles) -> Unit): Boolean =
-    appLock.withTryLock(false) {
+  fun tryRunActionOnFiles(action: (MachineLearningCompletionModelFiles) -> Unit): Boolean {
+    if (!MachineLearningCompletionUpdateAction.canInitiateUpdateAction.get()) {
+      // Currently files are being updated
+      return false
+    }
+
+    return appLock.withTryLock(false) {
       modelLock.withTryLock(false) {
         if (MachineLearningCompletionModelFiles.available()) {
           action(MachineLearningCompletionModelFiles)
@@ -101,6 +107,7 @@ class MachineLearningCompletionModelFilesService {
         return false
       }
     }
+  }
 
   fun registerVersionChangeListener(artifact: MachineLearningCompletionLocalArtifact,
                                     disposable: Disposable? = null,

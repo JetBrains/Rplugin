@@ -3,8 +3,8 @@ package org.jetbrains.r.editor.mlcompletion.update
 import com.intellij.openapi.observable.properties.AtomicBooleanProperty
 import com.intellij.openapi.project.Project
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionLocalServerService
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
-import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerService
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -20,9 +20,7 @@ class MachineLearningCompletionUpdateAction(val project: Project?,
       return
     }
 
-    val serverService = MachineLearningCompletionServerService.getInstance()
-    serverService.shutdownBlocking()
-
+    MachineLearningCompletionLocalServerService.getInstance().prepareForLocalUpdate()
     val numberOfTasks = artifacts.size
     val releaseFlagCallback = UpdateUtils.createSharedCallback(numberOfTasks) {
       canInitiateUpdateAction.set(true)
@@ -30,7 +28,6 @@ class MachineLearningCompletionUpdateAction(val project: Project?,
 
     val updateCompletedCallback = UpdateUtils.createSharedCallback(numberOfTasks) {
       MachineLearningCompletionNotifications.notifyUpdateCompleted(project)
-      serverService.tryRelaunchServer()
     }
 
     val localServerDirectory = Path.of(MachineLearningCompletionModelFilesService.getInstance().localServerDirectory!!)

@@ -1,26 +1,30 @@
 package org.jetbrains.r.editor.mlcompletion
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.components.service
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonParseException
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.util.concurrency.AppExecutorUtil
+import com.intellij.util.io.HttpRequests
+import org.jetbrains.io.mandatory.NullCheckingFactory
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener
 import java.io.File
+import java.io.IOException
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
-class MachineLearningCompletionServerService : Disposable {
+class MachineLearningCompletionLocalServerServiceImpl : MachineLearningCompletionLocalServerService {
 
   companion object {
+    private val GSON = GsonBuilder().registerTypeAdapterFactory(NullCheckingFactory.INSTANCE).create()
     private val settings = MachineLearningCompletionSettings.getInstance()
     private val completionFilesService = MachineLearningCompletionModelFilesService.getInstance()
-    private val LOG = Logger.getInstance(MachineLearningCompletionServerService::class.java)
+    private val LOG = Logger.getInstance(MachineLearningCompletionLocalServerServiceImpl::class.java)
     private const val RELAUNCH_TIMEOUT_MS = 30_000L
-
-    fun getInstance() = service<MachineLearningCompletionServerService>()
 
     private fun Path.asLaunchCommand(): String =
       when {
@@ -32,10 +36,10 @@ class MachineLearningCompletionServerService : Disposable {
   private var localServer: Process? = null
   private var lastRelaunchInitializedTime: Long = TimeUnit.MILLISECONDS.convert(System.nanoTime(), TimeUnit.NANOSECONDS)
 
-  val serverAddress
+  private val serverAddress
     get() = "http://${settings.state.host}:${settings.state.port}"
 
-  val requestTimeoutMs
+  override val requestTimeoutMs
     get() = settings.state.requestTimeoutMs
 
   init {
@@ -57,7 +61,7 @@ class MachineLearningCompletionServerService : Disposable {
   }
 
   @Synchronized
-  fun tryRelaunchServer(host: String = settings.state.hostOrDefault(),
+  private fun tryRelaunchServer(host: String = settings.state.hostOrDefault(),
                         port: Int = settings.state.port) {
     if (System.currentTimeMillis() - lastRelaunchInitializedTime < RELAUNCH_TIMEOUT_MS) {
       return
@@ -67,8 +71,34 @@ class MachineLearningCompletionServerService : Disposable {
     launchServer(host, port)
   }
 
-  fun shouldAttemptCompletion(): Boolean {
+  override fun shouldAttemptCompletion(): Boolean {
     return settings.state.isEnabled
+  }
+
+  override fun sendCompletionRequest(requestData: MachineLearningCompletionHttpRequest)
+    : CompletableFuture<MachineLearningCompletionHttpResponse?> =
+    CompletableFuture.supplyAsync(
+      {
+        try {
+          HttpRequests.post(serverAddress, "application/json")
+            .connect { request ->
+              request.write(GSON.toJson(requestData))
+              return@connect GSON.fromJson(request.reader.readText(), MachineLearningCompletionHttpResponse::class.java)
+            }
+        }
+        catch (e: IOException) {
+          tryRelaunchServer()
+          null
+        }
+        catch (e: JsonParseException) {
+          null
+        }
+      },
+      AppExecutorUtil.getAppExecutorService())
+
+  override fun prepareForLocalUpdate() {
+    shutdownServer()
+    localServer?.waitFor()
   }
 
   private fun launchServer(host: String, port: Int): Boolean = completionFilesService.tryRunActionOnFiles { completionFiles ->
@@ -93,14 +123,9 @@ class MachineLearningCompletionServerService : Disposable {
     }
   }
 
-  fun shutdownServer(): Unit? = localServer?.run {
+  private fun shutdownServer(): Unit? = localServer?.run {
     descendants().forEach(ProcessHandle::destroy)
     destroy()
-  }
-
-  fun shutdownBlocking() {
-    shutdownServer()
-    localServer?.waitFor()
   }
 
   override fun dispose() {
