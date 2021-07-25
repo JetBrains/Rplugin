@@ -15,6 +15,8 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 class MachineLearningCompletionLocalServerServiceImpl : MachineLearningCompletionLocalServerService {
 
@@ -32,22 +34,13 @@ class MachineLearningCompletionLocalServerServiceImpl : MachineLearningCompletio
       }
   }
 
+  private val serverLock = ReentrantLock()
+  @Volatile
   private var localServer: Process? = null
   private var lastRelaunchInitializedTime: Long = TimeUnit.MILLISECONDS.convert(System.nanoTime(), TimeUnit.NANOSECONDS)
 
   private val serverAddress
     get() = "http://${settings.state.host}:${settings.state.port}"
-
-  @Synchronized
-  private fun tryRelaunchServer(host: String = settings.state.hostOrDefault(),
-                        port: Int = settings.state.port) {
-    if (System.currentTimeMillis() - lastRelaunchInitializedTime < RELAUNCH_TIMEOUT_MS) {
-      return
-    }
-    lastRelaunchInitializedTime = TimeUnit.MILLISECONDS.convert(System.nanoTime(), TimeUnit.NANOSECONDS)
-    shutdownServer()
-    launchServer(host, port)
-  }
 
   override fun shouldAttemptCompletion(): Boolean {
     return settings.state.isEnabled
@@ -57,6 +50,10 @@ class MachineLearningCompletionLocalServerServiceImpl : MachineLearningCompletio
     : CompletableFuture<MachineLearningCompletionHttpResponse?> =
     CompletableFuture.supplyAsync(
       {
+        if (localServer == null) {
+          tryLaunchServer()
+        }
+
         try {
           HttpRequests.post(serverAddress, "application/json")
             .connect { request ->
@@ -65,7 +62,7 @@ class MachineLearningCompletionLocalServerServiceImpl : MachineLearningCompletio
             }
         }
         catch (e: IOException) {
-          tryRelaunchServer()
+          tryLaunchServer()
           null
         }
         catch (e: JsonParseException) {
@@ -79,34 +76,46 @@ class MachineLearningCompletionLocalServerServiceImpl : MachineLearningCompletio
     localServer?.waitFor()
   }
 
-  private fun launchServer(host: String, port: Int): Boolean = completionFilesService.tryRunActionOnFiles { completionFiles ->
-    completionFiles.localServerAppExecutableFile?.let { appFile ->
-      try {
-        FileUtil.setExecutable(File(appFile))
-        val launchCommand = Paths.get(appFile).asLaunchCommand()
-        val processBuilder = ProcessBuilder(launchCommand,
-                                            "--config=${completionFiles.localServerConfigFile}",
-                                            "--host=$host",
-                                            "--port=$port")
-          .redirectOutput(ProcessBuilder.Redirect.DISCARD)
-          .redirectError(ProcessBuilder.Redirect.DISCARD)
-          .directory(File(completionFiles.localServerDirectory!!))
-        processBuilder.environment()
-          .putAll(MachineLearningCompletionLocalServerVariables.SERVER_ENVIRONMENT)
-        localServer = processBuilder.start()
-      }
-      catch (e: Exception) {
-        LOG.warn("Exception has occurred in R ML Completion server thread", e)
+  override fun dispose() {
+    shutdownServer()
+  }
+
+  private fun tryLaunchServer(host: String = settings.state.hostOrDefault(),
+                              port: Int = settings.state.port): Unit = serverLock.withLock {
+    if (System.currentTimeMillis() - lastRelaunchInitializedTime < RELAUNCH_TIMEOUT_MS) {
+      return
+    }
+    lastRelaunchInitializedTime = TimeUnit.MILLISECONDS.convert(System.nanoTime(), TimeUnit.NANOSECONDS)
+    shutdownServer()
+
+    completionFilesService.tryRunActionOnFiles { completionFiles ->
+      completionFiles.localServerAppExecutableFile?.let { appFile ->
+        try {
+          FileUtil.setExecutable(File(appFile))
+          val launchCommand = Paths.get(appFile).asLaunchCommand()
+          val processBuilder = ProcessBuilder(launchCommand,
+                                              "--config=${completionFiles.localServerConfigFile}",
+                                              "--host=$host",
+                                              "--port=$port")
+            .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+            .redirectError(ProcessBuilder.Redirect.DISCARD)
+            .directory(File(completionFiles.localServerDirectory!!))
+          processBuilder.environment()
+            .putAll(MachineLearningCompletionLocalServerVariables.SERVER_ENVIRONMENT)
+          localServer = processBuilder.start()
+        }
+        catch (e: Exception) {
+          LOG.warn("Exception has occurred in R ML Completion server thread", e)
+        }
       }
     }
   }
 
-  private fun shutdownServer(): Unit? = localServer?.run {
-    descendants().forEach(ProcessHandle::destroy)
-    destroy()
-  }
-
-  override fun dispose() {
-    shutdownServer()
+  private fun shutdownServer(): Unit = serverLock.withLock {
+    localServer?.run {
+      descendants().forEach(ProcessHandle::destroy)
+      destroy()
+    }
+    localServer = null
   }
 }
