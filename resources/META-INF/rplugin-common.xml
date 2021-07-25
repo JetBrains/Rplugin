@@ -370,13 +370,13 @@ You can find the source code in the following repositories:
     <applicationListeners>
       <listener class="org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionCheckForUpdatesOnEnabledListener"
                 topic="org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener"/>
-    </applicationListeners>
-
-    <projectListeners>
       <listener class="org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionProjectOpenListener"
                 topic="com.intellij.openapi.project.ProjectManagerListener"
                 activeInHeadlessMode="false"
                 activeInTestMode="false"/>
+    </applicationListeners>
+
+    <projectListeners>
       <listener class="org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupTracker"
                 topic="com.intellij.codeInsight.lookup.LookupManagerListener"
                 activeInTestMode="false"/>
