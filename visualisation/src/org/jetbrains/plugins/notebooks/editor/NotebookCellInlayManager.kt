@@ -2,7 +2,6 @@ package org.jetbrains.plugins.notebooks.editor
 
 import com.intellij.ide.DataManager
 import com.intellij.ide.ui.LafManagerListener
-import com.intellij.notebook.editor.BackedVirtualFile
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.actionSystem.PlatformDataKeys
@@ -18,10 +17,6 @@ import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.ex.RangeHighlighterEx
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.*
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.TextEditor
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.util.Processor
@@ -34,8 +29,6 @@ import java.awt.Graphics
 import javax.swing.JComponent
 import kotlin.math.max
 import kotlin.math.min
-
-val DOCUMENT_BEING_UPDATED = Key.create<Boolean>("DOCUMENT_BEING_UPDATED")
 
 class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
   private val inlays: MutableMap<Inlay<*>, NotebookCellInlayController> = HashMap()
@@ -96,7 +89,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
 
     handleRefreshedDocument()
 
-    addDocumentListener(editor.project)
+    addDocumentListener()
 
     val appMessageBus = ApplicationManager.getApplication().messageBus.connect(editor.disposable)
 
@@ -135,7 +128,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
     inlaysChanged()
   }
 
-  private fun addDocumentListener(project: Project?) {
+  private fun addDocumentListener() {
     val documentListener = object : DocumentListener {
       private var matchingCellsBeforeChange: List<NotebookCellLines.Interval> = emptyList()
       private var isBulkModeEnabled = false;
@@ -154,17 +147,6 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
       }
 
       override fun beforeDocumentChange(event: DocumentEvent) {
-        event.document.putUserData(DOCUMENT_BEING_UPDATED, true)
-
-        if (project != null) {
-          val file = FileDocumentManager.getInstance().getFile(event.document)
-          if (file is BackedVirtualFile) {
-            FileEditorManager.getInstance(project).getAllEditors(file.originFile).filterIsInstance<TextEditor>().map { it.editor }.forEach {
-              it.notebookCellEditorScrollingPositionKeeper?.clearScrollingPosition(it)
-            }
-          }
-        }
-
         if (isBulkModeEnabled) return
         val document = event.document
         val logicalLines = interestingLogicalLines(document, event.offset, event.oldLength)
@@ -173,7 +155,6 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
       }
 
       override fun documentChanged(event: DocumentEvent) {
-        event.document.putUserData(DOCUMENT_BEING_UPDATED, false)
         if (isBulkModeEnabled) return
         val logicalLines = interestingLogicalLines(event.document, event.offset, event.newLength)
         ensureInlaysAndHighlightersExist(matchingCellsBeforeChange, logicalLines)
