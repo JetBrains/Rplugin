@@ -100,6 +100,9 @@ fun Editor.getCell(line: Int): NotebookCellLines.Interval =
 fun Editor.getCells(lines: IntRange): List<NotebookCellLines.Interval> =
   NotebookCellLines.get(this).getCells(lines).toList()
 
+fun Editor.getCellByOrdinal(ordinal: Int): NotebookCellLines.Interval =
+  NotebookCellLines.get(this).getIterator(ordinal).next()
+
 fun NotebookCellLines.getCells(lines: IntRange): Sequence<NotebookCellLines.Interval> =
   intervalsIterator(lines.first).asSequence().takeWhile { it.lines.first <= lines.last }
 

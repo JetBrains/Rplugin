@@ -5,11 +5,13 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.Disposer
 import com.intellij.util.castSafelyTo
+import com.intellij.util.messages.Topic
 import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
 import org.jetbrains.plugins.notebooks.editor.SwingClientProperty
@@ -26,6 +28,13 @@ import java.awt.Toolkit
 import javax.swing.JComponent
 
 private const val DEFAULT_INLAY_HEIGHT = 200
+
+// ToDo: merge with NotebookOutputListener
+interface OutputListener {
+  fun beforeOutputCreated(inlayEditor: Editor, line: Int) {}
+  fun outputCreated(inlayEditor: Editor, line: Int) {}
+}
+val OUTPUT_LISTENER: Topic<OutputListener> = Topic.create("OutputAdded", OutputListener::class.java)
 
 val EditorCustomElementRenderer.notebookInlayOutputComponent: JComponent?
   get() = castSafelyTo<JComponent>()?.components?.firstOrNull()?.castSafelyTo<SurroundingComponent>()
@@ -52,6 +61,8 @@ class NotebookOutputInlayController private constructor(
 
   private val innerComponent = InnerComponent(editor)
   private val outerComponent = SurroundingComponent.create(editor, innerComponent)
+
+  private val inlayLine = lines.last
 
   override val inlay: Inlay<*> =
     editor.addComponentInlay(
@@ -203,11 +214,15 @@ class NotebookOutputInlayController private constructor(
       .firstOrNull()
 
   private fun <K : NotebookOutputDataKey> createOutput(factory: NotebookOutputComponentFactory<*, K>,
-                                                       outputDataKey: K): NotebookOutputComponentFactory.CreatedComponent<*>? =
-    factory.createComponent(editor, outputDataKey)?.also {
+                                                       outputDataKey: K): NotebookOutputComponentFactory.CreatedComponent<*>? {
+    ApplicationManager.getApplication().messageBus.syncPublisher(OUTPUT_LISTENER).beforeOutputCreated(editor, inlayLine)
+    val result = factory.createComponent(editor, outputDataKey)?.also {
       it.component.outputComponentFactory = factory
       it.component.gutterPainter = it.gutterPainter
     }
+    ApplicationManager.getApplication().messageBus.syncPublisher(OUTPUT_LISTENER).outputCreated(editor, inlayLine)
+    return result
+  }
 
   class Factory : NotebookCellInlayController.Factory {
     override fun compute(
