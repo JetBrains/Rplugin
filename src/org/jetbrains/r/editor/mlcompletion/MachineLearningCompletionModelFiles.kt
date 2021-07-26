@@ -36,16 +36,26 @@ object MachineLearningCompletionModelFiles {
     mkdir()
   }
 
+  private fun resolvePathToExecutable(localServerAppDirectory: String?): String? =
+    resolveWithNullable(localServerAppDirectory, "path_to_executable.txt")
+      ?.let { File(it) }
+      ?.takeIf { it.exists() }
+      ?.let {
+        val pathToExecutable = it.readText(Charsets.UTF_8).trim()
+        return resolveWithNullable(localServerAppDirectory, pathToExecutable)
+      }
+    ?: resolveWithNullable(MachineLearningCompletionModelFiles.localServerAppDirectory, "run_demo",
+                           when {
+                             SystemInfo.isWindows -> "run_demo.exe"
+                             else -> "run_demo"
+                           })
+
   val localServerDirectory = resolveWithNullable(RPluginUtil.helperPathOrNull, "python_server")
     ?.apply { File(this).mkdir() }
   val localServerModelDirectory = resolveWithNullable(localServerDirectory, "model")
   val localServerAppDirectory = resolveWithNullable(localServerDirectory, "app")
 
-  val localServerAppExecutableFile = resolveWithNullable(localServerAppDirectory, "run_demo",
-                                                         when {
-                                                           SystemInfo.isWindows -> "run_demo.exe"
-                                                           else -> "run_demo"
-                                                         })
+  val localServerAppExecutableFile = resolvePathToExecutable(localServerAppDirectory)
   val localServerConfigFile = resolveWithNullable(localServerAppDirectory, "config.yml")
 
   val modelVersionFilePath = resolveWithNullable(localServerModelDirectory, "version.txt")
