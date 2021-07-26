@@ -185,7 +185,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
   }
 
   private fun updateConsequentInlays(interestingRange: IntRange) {
-    editor.notebookCellEditorScrollingPositionKeeper?.savePosition()
+    editor.notebookCellEditorScrollingPositionKeeper?.saveSelectedCellPosition()
     val matchingIntervals = notebookCellLines.getMatchingCells(interestingRange)
     val fullInterestingRange =
       if (matchingIntervals.isNotEmpty()) matchingIntervals.first().lines.first..matchingIntervals.last().lines.last

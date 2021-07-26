@@ -66,7 +66,7 @@ internal class InnerComponent(private val editor: EditorImpl) : JPanel() {
 
     val newComponentHeights = components.sumBy { it.height }
     if (oldComponentHeights != newComponentHeights) {
-      editor.notebookCellEditorScrollingPositionKeeper?.restorePosition(false)
+      editor.notebookCellEditorScrollingPositionKeeper?.adjustScrollingPosition()
     }
   }
 

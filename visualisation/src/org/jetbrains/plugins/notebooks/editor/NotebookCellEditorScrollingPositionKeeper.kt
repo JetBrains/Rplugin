@@ -13,7 +13,7 @@ interface NotebookCellEditorScrollingPositionKeeper {
   /**
    * Attaches scrolling position to the selected cell
    */
-  fun savePosition()
+  fun saveSelectedCellPosition()
 
   /**
    * Attaches scrolling position to the [targetLine] if provided otherwise to the selected cell
@@ -23,7 +23,7 @@ interface NotebookCellEditorScrollingPositionKeeper {
   /**
    * Keeps target cell(s) on the visible part of the editor
    */
-  fun restorePosition(disableAnimation: Boolean)
+  fun adjustScrollingPosition()
 }
 
 val Editor.notebookCellEditorScrollingPositionKeeper
@@ -33,6 +33,6 @@ fun saveScrollingPosition(virtualFile: VirtualFile, project: Project) {
   val fileEditors = FileEditorManager.getInstance(project).getAllEditors(virtualFile)
   val editors = fileEditors.filterIsInstance<TextEditor>().map { it.editor }
   for (editor in editors) {
-    editor.notebookCellEditorScrollingPositionKeeper?.savePosition()
+    editor.notebookCellEditorScrollingPositionKeeper?.saveSelectedCellPosition()
   }
 }
