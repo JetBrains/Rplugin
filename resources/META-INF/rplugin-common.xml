@@ -537,7 +537,8 @@ You can find the source code in the following repositories:
         <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService"/>
 
         <applicationService serviceInterface="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionLocalServerService"
-                            serviceImplementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionLocalServerServiceImpl"/>
+                            serviceImplementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionLocalServerServiceImpl"
+                            testServiceImplementation="org.jetbrains.r.mock.MockMachineLearningCompletionServer"/>
 
         <projectService serviceInterface="org.jetbrains.r.interpreter.RInterpreterManager"
                         serviceImplementation="org.jetbrains.r.interpreter.RInterpreterManagerImpl"/>
