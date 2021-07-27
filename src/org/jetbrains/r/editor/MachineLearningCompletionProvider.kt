@@ -24,7 +24,6 @@ import java.util.concurrent.CompletableFuture
 internal class MachineLearningCompletionProvider : CompletionProvider<CompletionParameters>() {
 
   companion object {
-    private val serverService = MachineLearningCompletionLocalServerService.getInstance()
     private val LOG = Logger.getInstance(MachineLearningCompletionProvider::class.java)
     private val lookupElementFactory = RLookupElementFactory()
   }
@@ -62,6 +61,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
 
   override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
     val startTime = System.currentTimeMillis()
+    val serverService = MachineLearningCompletionLocalServerService.getInstance()
     if (!serverService.shouldAttemptCompletion()) {
       return
     }
