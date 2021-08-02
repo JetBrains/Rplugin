@@ -6,6 +6,7 @@ package org.jetbrains.r.projectGenerator.step
 
 import com.intellij.ide.util.projectWizard.ModuleWizardStep
 import com.intellij.ide.util.projectWizard.WizardContext
+import com.intellij.ide.wizard.AbstractWizard
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
 import org.jetbrains.r.projectGenerator.template.RProjectGenerator
@@ -16,7 +17,7 @@ class RGeneratorSettingsWizardStep(private val generator: RProjectGenerator, con
   private var projectSettingsStep: RProjectSettingsStep? = null
   private var panel: JPanel? = null
 
-  private val wizard = context.wizard
+  private val wizard = context.getUserData(AbstractWizard.KEY)!!
 
   init {
     Disposer.register(context.getDisposable(), this)
