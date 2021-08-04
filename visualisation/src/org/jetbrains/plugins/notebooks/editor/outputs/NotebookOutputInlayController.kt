@@ -31,8 +31,8 @@ private const val DEFAULT_INLAY_HEIGHT = 200
 
 // ToDo: merge with NotebookOutputListener
 interface OutputListener {
-  fun beforeOutputCreated(inlayEditor: Editor, line: Int) {}
-  fun outputCreated(inlayEditor: Editor, line: Int) {}
+  fun beforeOutputCreated(editor: Editor, line: Int) {}
+  fun outputCreated(editor: Editor, line: Int) {}
 }
 val OUTPUT_LISTENER: Topic<OutputListener> = Topic.create("OutputAdded", OutputListener::class.java)
 
@@ -45,7 +45,7 @@ val EditorCustomElementRenderer.notebookInlayOutputComponent: JComponent?
 class NotebookOutputInlayController private constructor(
   override val factory: NotebookCellInlayController.Factory,
   private val editor: EditorImpl,
-  lines: IntRange,
+  private val lines: IntRange,
 ) : NotebookCellInlayController {
 
   private companion object {
@@ -61,8 +61,6 @@ class NotebookOutputInlayController private constructor(
 
   private val innerComponent = InnerComponent(editor)
   private val outerComponent = SurroundingComponent.create(editor, innerComponent)
-
-  private val inlayLine = lines.last
 
   override val inlay: Inlay<*> =
     editor.addComponentInlay(
@@ -215,12 +213,12 @@ class NotebookOutputInlayController private constructor(
 
   private fun <K : NotebookOutputDataKey> createOutput(factory: NotebookOutputComponentFactory<*, K>,
                                                        outputDataKey: K): NotebookOutputComponentFactory.CreatedComponent<*>? {
-    ApplicationManager.getApplication().messageBus.syncPublisher(OUTPUT_LISTENER).beforeOutputCreated(editor, inlayLine)
+    ApplicationManager.getApplication().messageBus.syncPublisher(OUTPUT_LISTENER).beforeOutputCreated(editor, lines.last)
     val result = factory.createComponent(editor, outputDataKey)?.also {
       it.component.outputComponentFactory = factory
       it.component.gutterPainter = it.gutterPainter
     }
-    ApplicationManager.getApplication().messageBus.syncPublisher(OUTPUT_LISTENER).outputCreated(editor, inlayLine)
+    ApplicationManager.getApplication().messageBus.syncPublisher(OUTPUT_LISTENER).outputCreated(editor, lines.last)
     return result
   }
 
