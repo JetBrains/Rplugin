@@ -94,7 +94,8 @@ class MachineLearningCompletionLocalServerServiceImpl : MachineLearningCompletio
 
   private fun tryLaunchServer(host: String = settings.state.hostOrDefault(),
                               port: Int = settings.state.port): Unit = serverLock.withTryLock(Unit) {
-    if (MachineLearningCompletionUtils.currentTimeMillis() - lastRelaunchInitializedTime < RELAUNCH_TIMEOUT_MS) {
+    if (localServer != null
+        && MachineLearningCompletionUtils.currentTimeMillis() - lastRelaunchInitializedTime < RELAUNCH_TIMEOUT_MS) {
       return
     }
     lastRelaunchInitializedTime = MachineLearningCompletionUtils.currentTimeMillis()
