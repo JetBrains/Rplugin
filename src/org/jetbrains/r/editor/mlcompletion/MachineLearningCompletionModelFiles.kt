@@ -1,16 +1,20 @@
 package org.jetbrains.r.editor.mlcompletion
 
+import com.intellij.lang.LangBundle
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.platform.templates.github.ZipUtil
+import com.intellij.util.io.Decompressor
 import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
 import com.intellij.util.io.isFile
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionLocalArtifact
 import java.io.File
+import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
 
 /**
  * Methods are not thread-safe, do not use directly.
@@ -67,12 +71,37 @@ object MachineLearningCompletionModelFiles {
       is MachineLearningCompletionLocalArtifact.Application -> localServerAppDirectory
     } ?: return false)
 
+    val topLevelDirectoryName: String = findSingleTopLevelDirectory(zipFile) ?: return false
+
     dstDir.clearDirectory()
 
-    ZipUtil.unzip(progress, dstDir, zipFile, null, null, true)
+    progress.text = LangBundle.message("progress.text.extracting")
+    val zip = Decompressor.Zip(zipFile)
+      .withZipExtensions()
+      .removePrefixPath(topLevelDirectoryName)  // Strip top level directory
+    zip.extract(dstDir)
 
     return true
   }
+
+  // Archive is expected to contain a single top level directory
+  // This method verifies it and finds a name of this directory
+  private fun findSingleTopLevelDirectory(zipFile: File): String? = ZipFile(zipFile).entries().asSequence()
+    .fold<ZipEntry, Path?>(null) { topLevelDirectory, zipEntry ->
+      val entryPath = Path.of(zipEntry.name)
+      val entryTopLevelDirectory = entryPath.subpath(0, 1)
+
+      if (entryPath == entryTopLevelDirectory && !zipEntry.isDirectory) {
+        return@findSingleTopLevelDirectory null
+      }
+
+      when (topLevelDirectory) {
+        null -> entryTopLevelDirectory
+        else -> topLevelDirectory.takeIf { it == entryTopLevelDirectory }
+                ?: return@findSingleTopLevelDirectory null
+      }
+    }?.toString()
+
 
   fun available(): Boolean = modelAvailable() && applicationAvailable()
 
