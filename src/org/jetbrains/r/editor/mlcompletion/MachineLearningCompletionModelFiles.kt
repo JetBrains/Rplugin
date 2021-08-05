@@ -59,7 +59,10 @@ object MachineLearningCompletionModelFiles {
   val localServerModelDirectory = resolveWithNullable(localServerDirectory, "model")
   val localServerAppDirectory = resolveWithNullable(localServerDirectory, "app")
 
-  val localServerAppExecutableFile = resolvePathToExecutable(localServerAppDirectory)
+  @Suppress("ObjectPropertyName")
+  private var _localServerAppExecutableFile = resolvePathToExecutable(localServerAppDirectory)
+  val localServerAppExecutableFile: String?
+    get() = _localServerAppExecutableFile
   val localServerConfigFile = resolveWithNullable(localServerAppDirectory, "config.yml")
 
   val modelVersionFilePath = resolveWithNullable(localServerModelDirectory, "version.txt")
@@ -80,6 +83,10 @@ object MachineLearningCompletionModelFiles {
       .withZipExtensions()
       .removePrefixPath(topLevelDirectoryName)  // Strip top level directory
     zip.extract(dstDir)
+
+    if (artifact is MachineLearningCompletionLocalArtifact.Application) {
+      _localServerAppExecutableFile = resolvePathToExecutable(localServerAppDirectory)
+    }
 
     return true
   }
