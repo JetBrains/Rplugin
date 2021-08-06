@@ -262,7 +262,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
     }
     else {
       RPsiUtil.resolveCall((call as? RCallExpression) ?: return null)
-        .maxBy { RSkeletonUtil.skeletonFileToRPackage(it.containingFile)?.name == packageName }
+        .maxByOrNull { RSkeletonUtil.skeletonFileToRPackage(it.containingFile)?.name == packageName }
         ?.parameterNameList?.map { it }
     }
     return RArgumentInfo.getArgumentInfo(argumentHolder, allArgumentNames ?: return null)

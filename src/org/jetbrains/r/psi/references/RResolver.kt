@@ -185,7 +185,7 @@ object RResolver {
     }
     if (runtimeInfo != null) {
       val loadedPackages = runtimeInfo.loadedPackages
-      val topResolveResult = resolveResults.minBy { getLoadingNumber(loadedPackages, it) } ?: return resolveResults
+      val topResolveResult = resolveResults.minByOrNull { getLoadingNumber(loadedPackages, it) } ?: return resolveResults
       if (getLoadingNumber(loadedPackages, topResolveResult) != Int.MAX_VALUE) {
         return arrayOf(topResolveResult)
       }

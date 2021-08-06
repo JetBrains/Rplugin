@@ -86,7 +86,7 @@ class RIntroduceVariableHandler : RIntroduceLocalHandler() {
     return if (blockParent == commonParent) {
       occurrences
         .map { PsiTreeUtil.findPrevParent(blockParent, it) as RExpression }
-        .minBy { it.textRange.startOffset }!!
+        .minByOrNull { it.textRange.startOffset }!!
     } else {
       PsiTreeUtil.findPrevParent(blockParent, commonParent) as RExpression
     }
