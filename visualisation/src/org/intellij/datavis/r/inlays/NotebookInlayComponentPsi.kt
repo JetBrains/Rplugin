@@ -8,6 +8,7 @@ import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.colors.EditorColors
+import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.*
 import com.intellij.openapi.util.Disposer
@@ -92,7 +93,7 @@ private fun createSeparatorHighlighter(editor: EditorImpl, textRange: TextRange)
     customRenderer = NotebookInlayComponent.separatorRenderer
     lineMarkerRenderer = LineMarkerRenderer { _, g, r ->
       @Suppress("INACCESSIBLE_TYPE")
-      val gutterWidth = (editor.gutterComponentEx as JComponent).width
+      val gutterWidth = ((editor as EditorEx).gutterComponentEx as JComponent).width
 
       val y = r.y + r.height - editor.lineHeight
       g.color = editor.colorsScheme.getColor(EditorColors.RIGHT_MARGIN_COLOR)
