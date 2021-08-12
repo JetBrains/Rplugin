@@ -21,6 +21,7 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.ui.popup.AbstractPopup
+import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
@@ -65,7 +66,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
 
   private val localFunctionRequiredPackage = listOf(RequiredPackage("roxygen2"))
 
-  override fun getQuickNavigateInfo(element: PsiElement?, originalElement: PsiElement?): String? {
+  override fun getQuickNavigateInfo(element: PsiElement?, originalElement: PsiElement?): @Nls String? {
     return RQuickNavigateBuilder.getQuickNavigationInfo(element, originalElement)
   }
 
@@ -204,7 +205,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     return path
   }
 
-  override fun generateHoverDoc(element: PsiElement, originalElement: PsiElement?): String? {
+  override fun generateHoverDoc(element: PsiElement, originalElement: PsiElement?): @Nls String? {
     if (element.language != RLanguage.INSTANCE || element is PsiComment) return null
 
     // On hover popup appears only if doc exists, we can't do this asynchronously
@@ -215,7 +216,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     return generateDocSupplier(element, originalElement)?.get()?.docText
   }
 
-  override fun generateDoc(psiElement: PsiElement?, identifier: PsiElement?): String? {
+  override fun generateDoc(psiElement: PsiElement?, identifier: PsiElement?): @Nls String? {
     if (psiElement == null || psiElement.language != RLanguage.INSTANCE || psiElement is PsiComment) return null
     psiElement.getCopyableUserData(ELEMENT_TEXT)?.let {
       psiElement.putCopyableUserData(ELEMENT_TEXT, null)
@@ -336,7 +337,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     sink.accept(docComment)
   }
 
-  override fun generateRenderedDoc(comment: PsiDocCommentBase): String? {
+  override fun generateRenderedDoc(comment: PsiDocCommentBase): @Nls String? {
     val containingFile = comment.containingFile
     if (containingFile !is RFile) {
       return null
