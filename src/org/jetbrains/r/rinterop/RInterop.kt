@@ -1300,7 +1300,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     return e
   }
 
-  inner class Cached<T>(defaultValue: T? = null, val f: () -> T) {
+  inner class Cached<T : Any>(defaultValue: T? = null, val f: () -> T) {
     private var previousValue = defaultValue ?: f()
     private val cached = object : AtomicClearableLazyValue<T>() {
       override fun compute(): T {
