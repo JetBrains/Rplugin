@@ -47,22 +47,20 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
     }
   }
 
+  private fun findAction(actionGroup: DefaultActionGroup, javaClass: Class<*>): AnAction? {
+    return actionGroup.childActionsOrStubs.firstOrNull { javaClass.isInstance(it) }
+  }
+
   private fun updateActionGroup(actionGroup: DefaultActionGroup) {
-    actionGroup.remove(actionGroup.childActionsOrStubs[5]) // remove Restore Size
-    actionGroup.remove(actionGroup.childActionsOrStubs[4]) // remove Show Toolbar
-    val fontSize = actionGroup.childActionsOrStubs[3]
-    actionGroup.remove(fontSize)
-    actionGroup.remove(actionGroup.childActionsOrStubs[2]) // remove Show on Mouse Move
-    actionGroup.remove(actionGroup.childActionsOrStubs[1]) // remove Open as Tool Window
-    val innerActionGroup = actionGroup.childActionsOrStubs[0] as DefaultActionGroup // action group with back and forward buttons
-    innerActionGroup.remove(innerActionGroup.childActionsOrStubs[2]) // remove edit action
+    val backAction = findAction(actionGroup, BackAction::class.java)
+    val forwardAction = findAction(actionGroup, ForwardAction::class.java)
 
-    actionGroup.add(wrapAction(innerActionGroup.childActionsOrStubs[0]))
-    actionGroup.add(wrapAction(innerActionGroup.childActionsOrStubs[1]))
+    actionGroup.removeAll()
 
-    innerActionGroup.removeAll()
+    backAction?.let { actionGroup.add(wrapAction(it)) }
+    forwardAction?.let { actionGroup.add(wrapAction(it)) }
 
-    addActions(innerActionGroup)
+    addActions(actionGroup)
   }
 
   private fun wrapAction(anAction: AnAction): AnAction {
