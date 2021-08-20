@@ -1,6 +1,8 @@
 package org.jetbrains.r.editor.ui
 
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
@@ -100,7 +102,7 @@ internal class RMarkdownCellToolbarController private constructor(
 
 
 private class RMarkdownCellToolbarPanelUI(private val editor: EditorImpl) : PanelUI() {
-  override fun getPreferredSize(c: JComponent): Dimension? {
+  override fun getPreferredSize(c: JComponent): Dimension {
     val preferredSize = super.getPreferredSize(c)
     with(editor.notebookAppearance) {
       val height = max(preferredSize?.height ?: 0, INNER_CELL_TOOLBAR_HEIGHT + SPACE_BELOW_CELL_TOOLBAR)
@@ -126,6 +128,7 @@ private class RMarkdownCellToolbarPanel(editor: EditorImpl, pointer: NotebookInt
     layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
 
     val toolbar = ActionManager.getInstance().createActionToolbar("InlineToolbar", createToolbarActionGroup(editor, pointer), true)
+    toolbar.setTargetComponent(this)
     add(toolbar.component)
     toolbar.component.isOpaque = false
     toolbar.component.cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
