@@ -18,15 +18,15 @@ import kotlin.reflect.full.createInstance
 class NewScriptTest : RUsefulTestCase() {
 
   fun testRScriptCreate() {
-    doTest(NewRScriptAction::class, "R", NewRScriptAction.NEW_R_SCRIPT_TEMPLATE_NAME, "Created by")
+    doTest(NewRScriptAction::class, "R", NewRScriptAction.NEW_R_SCRIPT_TEMPLATE_NAME)
   }
 
   fun testRMarkdownCreate() {
     addLibraries()
-    doTest(NewRMarkdownAction::class, "rmd", NewRMarkdownAction.NOTEBOOK_TEMPLATE_NAME, "html_notebook")
-    doTest(NewRMarkdownAction::class, "rmd", NewRMarkdownAction.DOCUMENT_TEMPLATE_NAME, "html_document")
-    doTest(NewRMarkdownAction::class, "rmd", NewRMarkdownAction.PRESENTATION_TEMPLATE_NAME, "ioslides_presentation")
-    doTest(NewRMarkdownAction::class, "rmd", NewRMarkdownAction.SHINY_TEMPLATE_NAME, "shiny")
+    doTest(NewRMarkdownAction::class, "rmd", NewRMarkdownAction.NOTEBOOK_TEMPLATE_NAME)
+    doTest(NewRMarkdownAction::class, "rmd", NewRMarkdownAction.DOCUMENT_TEMPLATE_NAME)
+    doTest(NewRMarkdownAction::class, "rmd", NewRMarkdownAction.PRESENTATION_TEMPLATE_NAME)
+    doTest(NewRMarkdownAction::class, "rmd", NewRMarkdownAction.SHINY_TEMPLATE_NAME)
   }
 
   private fun findSrcDir(): PsiDirectory {
@@ -35,14 +35,12 @@ class NewScriptTest : RUsefulTestCase() {
 
   private fun <T : TestableCreateFileFromTemplateAction> doTest(fileCreatorClass: KClass<T>,
                                                                 extension: String,
-                                                                templateName: String,
-                                                                subString: String) {
+                                                                templateName: String) {
     val fileName = "$templateName.Rmd"
     val newFile = runWriteAction {
       fileCreatorClass.createInstance().createTestFile(fileName, templateName, findSrcDir())
     }
     assertNotNull(newFile)
     assertEquals("$fileName.$extension", newFile!!.name)
-    assertTrue(newFile.text.contains(subString))
   }
 }
