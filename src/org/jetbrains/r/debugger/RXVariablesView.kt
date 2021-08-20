@@ -273,7 +273,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
       }
     })
     actions.addAction(createImportActionGroup())
-    val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, actions, false) as ActionToolbarImpl
+    val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, actions, false) as ActionToolbarImpl
     toolbar.setTargetComponent(tree)
     getPanel().add(toolbar.getComponent(), BorderLayout.WEST)
   }
