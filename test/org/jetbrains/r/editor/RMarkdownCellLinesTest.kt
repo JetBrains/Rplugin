@@ -113,6 +113,41 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     }
   }
 
+  @Test
+  fun `add code cell after text`(): Unit = edt {
+    fixture.openNotebookTextInEditor("text<caret>")
+    assertCodeCells {
+      markers {
+        marker(MARKDOWN, 0, 4)
+      }
+      intervals {
+        interval(MARKDOWN, 0..0)
+      }
+    }
+
+    assertCodeCells {
+      fixture.performEditorAction("RMarkdownNewChunk")
+
+      markers {
+        marker(MARKDOWN, 0, 5)
+        marker(CODE, 5, 12)
+        marker(MARKDOWN, 17, 0)
+      }
+      intervals {
+        interval(MARKDOWN, 0..0)
+        interval(CODE, 1..3)
+        interval(MARKDOWN, 4..4)
+      }
+      intervalListenerCall(1) {
+        before {
+        }
+        after {
+          interval(CODE, 1..3)
+          interval(MARKDOWN, 4..4)
+        }
+      }
+    }
+  }
 
   @Test
   fun `two code cells`(): Unit = edt {
