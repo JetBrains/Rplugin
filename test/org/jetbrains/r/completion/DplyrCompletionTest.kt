@@ -169,7 +169,7 @@ class DplyrCompletionTest : RColumnCompletionTest() {
     addRuntimeInfo()
     val columns = arrayOf("birth_year", "eye_color", "films", "gender", "hair_color",
                           "height", "homeworld", "mass", "name", "skin_color",
-                          "species", "starships", "stars", "vehicles")
+                          "species", "starships", "vehicles")
     val completeBasic = myFixture.completeBasic()
     UsefulTestCase.assertContainsElements(completeBasic.take(columns.size + 1).map { it.toString() }, *columns)
   }
