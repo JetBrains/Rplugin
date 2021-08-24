@@ -15,6 +15,7 @@ import com.intellij.openapi.util.NlsContexts.Label
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import org.intellij.datavis.r.VisualizationBundle
+import org.jetbrains.annotations.Nls
 import java.awt.image.BufferedImage
 import java.io.File
 import java.nio.file.Paths
@@ -22,8 +23,11 @@ import javax.imageio.ImageIO
 import javax.imageio.ImageTypeSpecifier
 
 object InlayOutputUtil {
+  @Nls
   private val EXPORT_FAILURE_TITLE = VisualizationBundle.message("inlay.output.export.failure")
+  @Nls
   private val EXPORT_FAILURE_DETAILS = VisualizationBundle.message("inlay.output.export.failure.details")
+  @Nls
   private val EXPORT_FAILURE_DESCRIPTION = VisualizationBundle.message("inlay.output.export.failure.description")
 
   fun saveImageWithFileChooser(project: Project, image: BufferedImage, onSave: ((File) -> Unit)? = null) {
@@ -53,7 +57,7 @@ object InlayOutputUtil {
     return ImageIO.getImageWriters(this, format).asSequence().any()
   }
 
-  fun chooseDirectory(project: Project, title: String, description: String): VirtualFile? {
+  fun chooseDirectory(project: Project, @Nls title: String, @Nls description: String): VirtualFile? {
     val descriptor = WritableDirectoryChooserDescriptor(title, description)
     val chooser = FileChooserDialogImpl(descriptor, project)
     val toSelect = project.virtualBaseDir.wrapInArray()
@@ -107,7 +111,7 @@ object InlayOutputUtil {
     Messages.showErrorDialog(content, EXPORT_FAILURE_TITLE)
   }
 
-  private class WritableDirectoryChooserDescriptor(title: String, description: String) :
+  private class WritableDirectoryChooserDescriptor(@Nls title: String, @Nls description: String) :
     FileChooserDescriptor(false, true, false, false, false, false)
   {
     init {

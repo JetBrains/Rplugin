@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.resolve
 
+import com.intellij.openapi.util.RecursionManager
 import com.intellij.pom.PomTargetPsiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
@@ -248,6 +249,17 @@ class RS4ClassResolveTest : RConsoleBaseTestCase() {
     rInterop.executeCode(decl)
     doSlotTest(decl, "obj <- new(Class = 'MyClass')\nobj@e<caret>ee",
                RS4ClassSlot("eee", "numeric", "MyClass"), isUserDefined = false, inConsole = true)
+  }
+
+  fun testPreventResolveRecursion() {
+    val file = myFixture.configureByText(RFileType, """
+      setGeneric("filter", function(x, y) x + y)
+      fil<caret>ter(starwars, mass)
+    """.trimIndent())
+    RecursionManager.disableMissedCacheAssertions(myFixture.projectDisposable)
+    val result = resolve().mapNotNull { it.element }.single()
+    val actual = ((result as PomTargetPsiElement).target as RStringLiteralPomTarget).literal.parent.parent
+    assertEquals(file.firstChild, actual)
   }
 
   private fun doSlotTest(classDeclaration: String,

@@ -3,12 +3,14 @@ package org.jetbrains.r.editor.mlcompletion.update
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationGroupManager
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.update.UpdateUtils.showSizeMb
+import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import java.util.concurrent.atomic.AtomicReference
 
 
@@ -39,7 +41,7 @@ object MachineLearningCompletionNotifications {
                                             @Nls text: String,
                                             @Nls actionText: String): Notification =
     NotificationGroupManager.getInstance().getNotificationGroup(GROUP_NAME)
-      .createNotification(notificationsTitle, text)
+      .createNotification(notificationsTitle, text, NotificationType.INFORMATION)
       .addAction(object : NotificationAction(actionText) {
         override fun actionPerformed(e: AnActionEvent, notification: Notification) {
           MachineLearningCompletionUpdateAction(project, artifacts).performAsync()
@@ -65,6 +67,12 @@ object MachineLearningCompletionNotifications {
                                   artifacts,
                                   RBundle.message("notification.ml.update.askToDownload.content", showSizeMb(size)),
                                   RBundle.message("notification.ml.update.askToDownload.downloadButton"))
+      .addAction(object : NotificationAction(RBundle.message("notification.ml.update.askToDownload.disable")) {
+        override fun actionPerformed(e: AnActionEvent, notification: Notification) {
+          MachineLearningCompletionSettings.getInstance().state.isEnabled = false
+          notification.expire()
+        }
+      })
       .tryNotifyAndSetAsActive(project)
 
   private fun askForUpdate(project: Project?, artifacts: List<MachineLearningCompletionRemoteArtifact>, size: Long): Unit =
@@ -82,11 +90,13 @@ object MachineLearningCompletionNotifications {
 
   fun notifyUpdateCompleted(project: Project?): Unit =
     NotificationGroupManager.getInstance().getNotificationGroup(GROUP_NAME)
-      .createNotification(notificationsTitle, RBundle.message("notification.ml.update.updateCompleted.content"))
+      .createNotification(notificationsTitle, RBundle.message("notification.ml.update.updateCompleted.content"),
+                          NotificationType.INFORMATION)
       .notify(project)
 
   fun notifyUpdateFailed(project: Project?, artifact: MachineLearningCompletionArtifact): Unit =
     NotificationGroupManager.getInstance().getNotificationGroup(GROUP_NAME)
-      .createNotification(notificationsTitle, RBundle.message("notification.ml.update.updateFailed.content", artifact.visibleName))
+      .createNotification(notificationsTitle, RBundle.message("notification.ml.update.updateFailed.content", artifact.visibleName),
+                          NotificationType.INFORMATION)
       .notify(project)
 }

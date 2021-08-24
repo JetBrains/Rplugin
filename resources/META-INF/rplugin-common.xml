@@ -370,9 +370,16 @@ You can find the source code in the following repositories:
         <editor.outputs.notebookOutputDataKeyExtractor implementation="org.jetbrains.r.editor.ui.RMarkdownOutputDataKeyExtractor"/>
     </extensions>
 
-    <projectListeners>
+    <applicationListeners>
+      <listener class="org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionCheckForUpdatesOnEnabledListener"
+                topic="org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener"/>
       <listener class="org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionProjectOpenListener"
-                topic="com.intellij.openapi.project.ProjectManagerListener" />
+                topic="com.intellij.openapi.project.ProjectManagerListener"
+                activeInHeadlessMode="false"
+                activeInTestMode="false"/>
+    </applicationListeners>
+
+    <projectListeners>
       <listener class="org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupTracker"
                 topic="com.intellij.codeInsight.lookup.LookupManagerListener"
                 activeInTestMode="false"/>
@@ -531,7 +538,9 @@ You can find the source code in the following repositories:
 
         <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService"/>
 
-        <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerService"/>
+        <applicationService serviceInterface="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionLocalServerService"
+                            serviceImplementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionLocalServerServiceImpl"
+                            testServiceImplementation="org.jetbrains.r.mock.MockMachineLearningCompletionServer"/>
 
         <projectService serviceInterface="org.jetbrains.r.interpreter.RInterpreterManager"
                         serviceImplementation="org.jetbrains.r.interpreter.RInterpreterManagerImpl"/>
@@ -792,9 +801,6 @@ You can find the source code in the following repositories:
       <configurationType implementation="org.jetbrains.r.run.configuration.RRunConfigurationType"/>
       <runConfigurationProducer implementation="org.jetbrains.r.run.configuration.RRunConfigurationProducer"/>
       <programRunner implementation="org.jetbrains.r.run.configuration.RProgramRunner"/>
-
-      <!-- R machine learning completion -->
-      <applicationInitializedListener implementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionInitializerListener"/>
 
       <!-- FUS -->
       <lookup.usageDetails implementation="org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupUsageDescriptor"/>

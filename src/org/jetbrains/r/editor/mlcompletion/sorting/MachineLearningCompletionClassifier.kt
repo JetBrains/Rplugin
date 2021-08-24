@@ -5,6 +5,7 @@ import com.intellij.codeInsight.lookup.ComparingClassifier
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.util.ProcessingContext
 import com.intellij.util.SmartList
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.isMergedLookupElement
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.isRLookupElement
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.isRMachineLearningLookupElement
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.markAsMergedLookupElement
@@ -27,36 +28,34 @@ class MachineLearningCompletionClassifier(next: Classifier<LookupElement>)
     }
 
   override fun classify(source: MutableIterable<LookupElement>, context: ProcessingContext): MutableIterable<LookupElement> {
-    val filtered = StreamSupport.stream(source.spliterator(), false)
+    StreamSupport.stream(source.spliterator(), false)
       .collect(Collectors.groupingBy(LookupElement::getLookupString, Collectors.toCollection(::SmartList)))
-      .mapValues(::resolveCollisions)
-      .values.flatten()
+      .forEach(::resolveCollisions)
+
+    val filtered = source.filterNot { it.isRMachineLearningLookupElement() && it.isMergedLookupElement() }
 
     return super.classify(filtered, context)
   }
 
-  private fun resolveCollisions(collisions: Map.Entry<String, MutableList<LookupElement>>): List<LookupElement> {
+  private fun resolveCollisions(collisions: Map.Entry<String, List<LookupElement>>) {
     val lookupString = collisions.key
     val elements = collisions.value
 
     require(elements.isNotEmpty())
     if (elements.size == 1) {
-      return elements
+      return
     }
 
     val containsRElements = elements.any { it.isRLookupElement() && !it.isRMachineLearningLookupElement() }
     if (!containsRElements) {
-      return elements
+      return
     }
 
-    val mlElementIndex = elements.indexOfFirst { it.isRMachineLearningLookupElement() }.takeIf { it != -1 }
-                         ?: return elements
-
-    val mlPriority = elements.removeAt(mlElementIndex).priority ?: DEFAULT_PRIORITY
+    val mlElement = elements.firstOrNull { it.isRMachineLearningLookupElement() }
+                    ?: return
+    val mlPriority = mlElement.priority ?: DEFAULT_PRIORITY
     mlScores.putIfAbsent(lookupString, mlPriority)
 
     elements.forEach { it.markAsMergedLookupElement() }
-
-    return elements
   }
 }

@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.notebooks.editor.outputs.impl
 
 import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.colors.EditorColors
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.util.EditorUtil
@@ -64,6 +65,11 @@ internal class CollapsingComponent(
   override fun updateUI() {
     super.updateUI()
     isOpaque = false
+  }
+
+  override fun remove(index: Int) {
+    LOG.error("Components should not be deleted from $this", Throwable())
+    super.remove(index)
   }
 
   val mainComponent: JComponent get() = getComponent(0) as JComponent
@@ -148,6 +154,8 @@ internal class CollapsingComponent(
     const val MIN_HEIGHT_TO_COLLAPSE = 50
     const val COLLAPSING_RECT_WIDTH = 22
     private const val COLLAPSING_RECT_MARGIN_Y_BOTTOM = 5
+
+    private val LOG by lazy { logger<CollapsingComponent>() }
 
     @JvmStatic
     fun collapseRectHorizontalLeft(editor: EditorEx): Int =

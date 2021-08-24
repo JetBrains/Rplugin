@@ -91,7 +91,11 @@ object RResolver {
     val statements = RAssignmentNameIndex.find(name, element.project, globalSearchScope)
     val exported = statements.filter { it !is RSkeletonAssignmentStatement || it.stub.exported }
     addResolveResults(result, exported)
-    RS4Resolver.resolveS4GenericOrMethods(element, name, result, globalSearchScope)
+
+    // R-1291: independent 'Table columns resolver' and `S4 generic resolver` enter in endless recursion
+    RecursionManager.doPreventingRecursion(element, false) {
+      RS4Resolver.resolveS4GenericOrMethods(element, name, result, globalSearchScope)
+    }
   }
 
   fun resolveInFilesOrLibrary(element: PsiElement,

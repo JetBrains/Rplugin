@@ -39,7 +39,7 @@ sealed class MachineLearningCompletionRemoteArtifact(val localDelegate: MachineL
   val latestVersion: Version = parseVersionOrThrow(latestVersionString)
 
   companion object {
-    const val REPOSITORY_URL = "https://packages.jetbrains.team/maven/p/mlrcc/r-ml-completion-artifacts"
+    const val REPOSITORY_URL = "https://packages.jetbrains.team/maven/p/mlrcc/r-ml-completion-artifacts-release"
     const val GROUP_ID = "org.jetbrains.r.deps.mlcompletion"
 
     fun createSubclassInstances(): List<MachineLearningCompletionRemoteArtifact> =
