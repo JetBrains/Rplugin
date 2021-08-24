@@ -3,7 +3,7 @@ package org.jetbrains.r.run
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.editor.impl.EditorComponentImpl
 import com.intellij.openapi.editor.impl.EditorImpl
@@ -60,7 +60,7 @@ class RRunConfigurationProducerTest : RUsefulTestCase() {
     val element = myFixture.file.findElementAt(myFixture.caretOffset)
     val configurationContext = object : ConfigurationContext(element!!) {
       override fun getDataContext(): DataContext {
-        return SimpleDataContext.getSimpleContext(PlatformDataKeys.CONTEXT_COMPONENT, editorComponent, super.getDataContext())
+        return SimpleDataContext.getSimpleContext(PlatformCoreDataKeys.CONTEXT_COMPONENT, editorComponent, super.getDataContext())
       }
     }
     val runConfigurationFromContext = RRunConfigurationProducer().createConfigurationFromContext(configurationContext)
