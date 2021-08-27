@@ -5,6 +5,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.testFramework.ThreadTracker
 import org.jetbrains.plugins.notebooks.editor.CodeCellLinesChecker
+import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.CellType.CODE
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.CellType.MARKDOWN
 import org.jetbrains.plugins.notebooks.editor.edt
@@ -633,11 +634,20 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
   }
 
   private fun assertCodeCells(description: String = "", handler: CodeCellLinesChecker.() -> Unit) {
-    CodeCellLinesChecker(description) { fixture.editor as EditorImpl }.invoke(handler)
+    CodeCellLinesChecker(description, doIncrementalCheck = false) { fixture.editor as EditorImpl }.invoke(handler)
   }
 
   @Before
   fun before() {
     ThreadTracker.longRunningThreadCreated(ApplicationManager.getApplication(), "Timer-", "BaseDataReader", "rwrapper")
   }
+}
+
+private fun CodeCellLinesChecker.IntervalsSetter.interval(cellType: NotebookCellLines.CellType, lines: IntRange) {
+  val markerLines = when (cellType) {
+    CODE -> NotebookCellLines.MarkerLines.BOTH
+    else -> NotebookCellLines.MarkerLines.NO
+  }
+
+  interval(cellType, lines, markerLines)
 }
