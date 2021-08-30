@@ -23,7 +23,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(MARKDOWN, 0, 20)
       }
       intervals {
         interval(MARKDOWN, 0..2)
@@ -41,7 +40,8 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(CODE, 0, 20)
+        marker(CODE, 0, 7)
+        marker(CODE, 17, 3)
       }
       intervals {
         interval(CODE, 0..2)
@@ -62,9 +62,12 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(CODE, 0, 17)
-        marker(CODE, 17, 16)
-        marker(CODE, 33, 20)
+        marker(CODE, 0, 13)
+        marker(CODE, 13, 4)
+        marker(CODE, 17, 12)
+        marker(CODE, 29, 4)
+        marker(CODE, 33, 17)
+        marker(CODE, 50, 3)
       }
       intervals {
         interval(CODE, 0..1)
@@ -84,7 +87,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(MARKDOWN, 0, 30)
       }
       intervals {
         interval(MARKDOWN, 0..2)
@@ -104,8 +106,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(MARKDOWN, 0, 9)
-        marker(MARKDOWN, 9, 40)
       }
       intervals {
         interval(MARKDOWN, 0..0)
@@ -119,7 +119,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     fixture.openNotebookTextInEditor("text<caret>")
     assertCodeCells {
       markers {
-        marker(MARKDOWN, 0, 4)
       }
       intervals {
         interval(MARKDOWN, 0..0)
@@ -130,9 +129,8 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       fixture.performEditorAction("RMarkdownNewChunk")
 
       markers {
-        marker(MARKDOWN, 0, 5)
-        marker(CODE, 5, 12)
-        marker(MARKDOWN, 17, 0)
+        marker(CODE, 5, 7)
+        marker(CODE, 13, 4)
       }
       intervals {
         interval(MARKDOWN, 0..0)
@@ -163,8 +161,10 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(CODE, 0, 23)
-        marker(CODE, 23, 22)
+        marker(CODE, 0, 7)
+        marker(CODE, 19, 4)
+        marker(CODE, 23, 7)
+        marker(CODE, 42, 3)
       }
       intervals {
         interval(CODE, 0..2)
@@ -184,8 +184,8 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(CODE, 0, 16)
-        marker(MARKDOWN, 16, 0)
+        marker(CODE, 0, 7)
+        marker(CODE, 12, 4)
         // last line has zero symbols
       }
       intervals {
@@ -212,7 +212,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(MARKDOWN, 0, 110)
       }
       intervals {
         interval(MARKDOWN, 0..9)
@@ -229,8 +228,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(MARKDOWN, 0, 10)
-        marker(MARKDOWN, 10, 15)
       }
       intervals {
         interval(MARKDOWN, 0..0)
@@ -250,7 +247,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(MARKDOWN, 0, 40)
       }
       intervals {
         interval(MARKDOWN, 0..3)
@@ -270,7 +266,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(MARKDOWN, 0, 55)
       }
       intervals {
         interval(MARKDOWN, 0..4)
@@ -290,7 +285,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(MARKDOWN, 0, 54)
       }
       intervals {
         interval(MARKDOWN, 0..4)
@@ -309,8 +303,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(MARKDOWN, 0, 49)
-        marker(MARKDOWN, 49, 88)
       }
       intervals {
         interval(MARKDOWN, 0..1)
@@ -326,7 +318,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     assertCodeCells("add text") {
       fixture.type("add\nmultiline text")
       markers {
-        marker(MARKDOWN, 0, 18)
       }
       intervals {
         interval(MARKDOWN, 0..1)
@@ -345,7 +336,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       fixture.performEditorAction(IdeActions.ACTION_SELECT_ALL)
       fixture.performEditorAction(IdeActions.ACTION_EDITOR_DELETE)
       markers {
-        marker(MARKDOWN, 0, 0)
       }
       intervals {
         interval(MARKDOWN, 0..0)
@@ -373,7 +363,8 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
         ``
       """.trimIndent())
       markers {
-        marker(CODE, 0, 15)
+        marker(CODE, 0, 7)
+        marker(CODE, 12, 3)
       }
       intervals {
         interval(CODE, 0..2)
@@ -408,7 +399,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       fixture.performEditorAction(IdeActions.ACTION_SELECT_ALL)
       fixture.performEditorAction(IdeActions.ACTION_EDITOR_DELETE)
       markers {
-        marker(MARKDOWN, 0, 0)
       }
       intervals {
         interval(MARKDOWN, 0..0)
@@ -434,7 +424,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(MARKDOWN, 0, 32)
       }
       intervals {
         interval(MARKDOWN, 0..2)
@@ -446,7 +435,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       // actually it types ```<caret>`,
       // ``` is valid start of cell, but ```` is invalid and ignored
       markers {
-        marker(MARKDOWN, 0, 36)
       }
       intervals {
         interval(MARKDOWN, 0..2)
@@ -456,8 +444,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     assertCodeCells("complete start of the cell to ```{r}") {
       fixture.type("{r}")
       markers {
-        marker(MARKDOWN, 0, 16)
-        marker(MARKDOWN, 16, 23)
       }
       intervals {
         interval(MARKDOWN, 0..0)
@@ -479,8 +465,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       // line with ```{r}``` isn't a chunk
       fixture.type("``")
       markers {
-        marker(MARKDOWN, 0, 16)
-        marker(MARKDOWN, 16, 25)
       }
       intervals {
         interval(MARKDOWN, 0..0)
@@ -500,9 +484,8 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     assertCodeCells("make valid code chunk") {
       fixture.type("\n")
       markers {
-        marker(MARKDOWN, 0, 16)
-        marker(CODE, 16, 11)
-        marker(MARKDOWN, 27, 15)
+        marker(CODE, 16, 7)
+        marker(CODE, 23, 4)
       }
       intervals {
         interval(MARKDOWN, 0..0)
@@ -533,9 +516,8 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(MARKDOWN, 0, 7)
-        marker(CODE, 7, 16)
-        marker(MARKDOWN, 23, 6)
+        marker(CODE, 7, 7)
+        marker(CODE, 19, 4)
       }
       intervals {
         interval(MARKDOWN, 0..0)
@@ -548,7 +530,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       fixture.performEditorAction(IdeActions.ACTION_EDITOR_DELETE_LINE)
 
       markers {
-        marker(MARKDOWN, 0, 22)
       }
       intervals {
         interval(MARKDOWN, 0..3)
@@ -576,8 +557,8 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(CODE, 0, 11)
-        marker(MARKDOWN, 11, 9)
+        marker(CODE, 0, 7)
+        marker(CODE, 7, 4)
       }
       intervals {
         interval(CODE, 0..1)
@@ -591,8 +572,8 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
         fixture.type("\n")
 
         markers {
-          marker(CODE, 0, 12)
-          marker(MARKDOWN, 12, 9)
+          marker(CODE, 0, 7)
+          marker(CODE, 8, 4)
         }
         intervals {
           interval(CODE, 0..2)
@@ -613,8 +594,8 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
         fixture.type("\b")
 
         markers {
-          marker(CODE, 0, 11)
-          marker(MARKDOWN, 11, 9)
+          marker(CODE, 0, 7)
+          marker(CODE, 7, 4)
         }
         intervals {
           interval(CODE, 0..1)

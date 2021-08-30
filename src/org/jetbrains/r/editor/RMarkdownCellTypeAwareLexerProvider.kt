@@ -24,7 +24,7 @@ class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesL
   override fun shouldParseWholeFile(): Boolean = true
 
   override fun create(document: Document): NotebookCellLines =
-    NonIncrementalCellLines.get(document, this, ::generateIntervals)
+    NonIncrementalCellLines.get(document, generateIntervals)
 
   override fun markerSequence(chars: CharSequence, ordinalIncrement: Int, offsetIncrement: Int): Sequence<NotebookCellLines.Marker> =
     sequence {
@@ -54,6 +54,12 @@ class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesL
           length = 0
         ))
       }
+    }
+
+  private val generateIntervals: (Document) -> List<NotebookCellLines.Interval> =
+    { document ->
+      val markers = markerSequence(document.charsSequence, 0, 0).toList()
+      markers.map { toInterval(document, it) }
     }
 }
 
@@ -156,9 +162,6 @@ private fun consumeToEndOfLine(lexer: Lexer) {
   }
   consumeEndOfLine(lexer)
 }
-
-private fun generateIntervals(document: Document, markers: List<NotebookCellLines.Marker>): List<NotebookCellLines.Interval> =
-  markers.map { toInterval(document, it) }
 
 private fun toInterval(document: Document, marker: NotebookCellLines.Marker): NotebookCellLines.Interval {
   // for RMarkdown markers offset + length == nextMarker.offset, actually markers are intervals
