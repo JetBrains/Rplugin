@@ -171,14 +171,14 @@ private fun toInterval(document: Document, marker: NotebookCellLines.Marker): No
     if (marker.length == 0) startLine
     else document.getLineNumber(marker.offset + marker.length - 1)
 
-  val markerLines =
-    if (marker.type == NotebookCellLines.CellType.CODE) NotebookCellLines.MarkerLines.BOTH
-    else NotebookCellLines.MarkerLines.NO
+  val markersAtLines =
+    if (marker.type == NotebookCellLines.CellType.CODE) NotebookCellLines.MarkersAtLines.TOP_AND_BOTTOM
+    else NotebookCellLines.MarkersAtLines.NO
 
   return NotebookCellLines.Interval(
     ordinal = marker.ordinal,
     type = marker.type,
     lines = startLine..endLine,
-    markers = markerLines,
+    markers = markersAtLines,
   )
 }

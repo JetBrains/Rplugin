@@ -625,10 +625,10 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 }
 
 private fun CodeCellLinesChecker.IntervalsSetter.interval(cellType: NotebookCellLines.CellType, lines: IntRange) {
-  val markerLines = when (cellType) {
-    CODE -> NotebookCellLines.MarkerLines.BOTH
-    else -> NotebookCellLines.MarkerLines.NO
+  val markersAtLines = when (cellType) {
+    CODE -> NotebookCellLines.MarkersAtLines.TOP_AND_BOTTOM
+    else -> NotebookCellLines.MarkersAtLines.NO
   }
 
-  interval(cellType, lines, markerLines)
+  interval(cellType, lines, markersAtLines)
 }
