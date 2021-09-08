@@ -10,8 +10,6 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.keymap.KeymapManager
@@ -31,13 +29,9 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.DocumentUtil
 import com.intellij.xdebugger.XSourcePositionWrapper
-import com.intellij.xdebugger.breakpoints.ui.XBreakpointGroup
-import com.intellij.xdebugger.breakpoints.ui.XBreakpointGroupingRule
 import com.intellij.xdebugger.impl.DebuggerSupport
 import com.intellij.xdebugger.impl.XDebuggerUtilImpl
 import com.intellij.xdebugger.impl.actions.DebuggerToggleActionHandler
-import com.intellij.xdebugger.impl.breakpoints.ui.BreakpointItem
-import com.intellij.xdebugger.impl.breakpoints.ui.BreakpointPanelProvider
 import com.intellij.xdebugger.impl.frame.XDebuggerFramesList
 import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
 import icons.RIcons
@@ -413,28 +407,6 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
 }
 
 class RDebuggerSupport : DebuggerSupport() {
-  override fun getBreakpointPanelProvider(): BreakpointPanelProvider<*> {
-    return object : BreakpointPanelProvider<Any>() {
-      override fun createBreakpointsGroupingRules(rules: MutableCollection<XBreakpointGroupingRule<Any, XBreakpointGroup>>?) {
-      }
-
-      override fun addListener(listener: BreakpointsListener?, project: Project?, disposable: Disposable?) {
-      }
-
-      override fun getPriority() = 0
-
-      override fun findBreakpoint(project: Project, document: Document, offset: Int): Any? = null
-
-      override fun getBreakpointGutterIconRenderer(breakpoint: Any?): GutterIconRenderer? = null
-
-      override fun onDialogClosed(project: Project?) {
-      }
-
-      override fun provideBreakpointItems(project: Project?, items: MutableCollection<BreakpointItem>?) {
-      }
-    }
-  }
-
   override fun getMuteBreakpointsHandler(): DebuggerToggleActionHandler {
     return object : DebuggerToggleActionHandler() {
       override fun isEnabled(project: Project, event: AnActionEvent?): Boolean {
