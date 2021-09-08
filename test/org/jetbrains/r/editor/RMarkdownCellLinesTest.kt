@@ -615,7 +615,7 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
   }
 
   private fun assertCodeCells(description: String = "", handler: CodeCellLinesChecker.() -> Unit) {
-    CodeCellLinesChecker(description, doIncrementalCheck = false) { fixture.editor as EditorImpl }.invoke(handler)
+    CodeCellLinesChecker(description) { fixture.editor as EditorImpl }.invoke(handler)
   }
 
   @Before
