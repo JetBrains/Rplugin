@@ -22,7 +22,7 @@ class RSettingsProjectConfigurable(private val project: Project) : SearchableCon
     return configurable?.isModified ?: false
   }
 
-  override fun getHelpTopic(): String? {
+  override fun getHelpTopic(): String {
     return HELP_TOPIC
   }
 
@@ -31,7 +31,7 @@ class RSettingsProjectConfigurable(private val project: Project) : SearchableCon
   }
 
   override fun getDisplayName(): String {
-    return NAME
+    return RBundle.message("project.settings.module.name")
   }
 
   override fun apply() {
@@ -53,6 +53,5 @@ class RSettingsProjectConfigurable(private val project: Project) : SearchableCon
 
   companion object {
     private const val HELP_TOPIC = "reference.settings.project.interpreter"
-    private val NAME = RBundle.message("project.settings.module.name")
   }
 }
