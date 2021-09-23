@@ -4,13 +4,23 @@
 
 package org.jetbrains.r.annotator
 
+import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.psi.PsiElement
+import com.intellij.psi.impl.source.tree.injected.changesHandler.range
 
 class RAnnotator : Annotator {
   override fun annotate(psiElement: PsiElement, holder: AnnotationHolder) {
-    val visitor = RAnnotatorVisitor(holder)
+    val infos = ArrayList<HighlightInfo>()
+    val visitor = RAnnotatorVisitor(infos, holder.currentAnnotationSession)
     psiElement.accept(visitor)
+    for (info: HighlightInfo in infos) {
+      val builder = holder.newAnnotation(info.severity, info.description).range(info.range)
+      if (info.forcedTextAttributes != null) {
+        builder.enforcedTextAttributes(info.forcedTextAttributes)
+      }
+      builder.create()
+    }
   }
 }

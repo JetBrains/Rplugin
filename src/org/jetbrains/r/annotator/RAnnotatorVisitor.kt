@@ -4,7 +4,9 @@
 
 package org.jetbrains.r.annotator
 
-import com.intellij.lang.annotation.AnnotationHolder
+import com.intellij.codeInsight.daemon.impl.HighlightInfo
+import com.intellij.codeInsight.daemon.impl.HighlightInfoType
+import com.intellij.lang.annotation.AnnotationSession
 import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.colors.CodeInsightColors
@@ -28,7 +30,7 @@ import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.getKind
 import org.jetbrains.r.psi.isFunctionFromLibrary
 
-class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
+class RAnnotatorVisitor(private val holder: MutableList<HighlightInfo>, val annotationSession: AnnotationSession) : RVisitor() {
 
   override fun visitCallExpression(callExpression: RCallExpression) {
     val expression = callExpression.expression
@@ -52,7 +54,11 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
           PsiTreeUtil.getParentOfType(element, RArgumentList::class.java) == null &&
           !isDotsFunctionDefinition(element) &&
           !declaredDotsParameter(element)) {
-        holder.createWarningAnnotation(element, RBundle.message("inspection.message.used.in.incorrect.context"))
+        val info = HighlightInfo.newHighlightInfo(HighlightInfoType.WARNING).range(element).descriptionAndTooltip(
+          RBundle.message("inspection.message.used.in.incorrect.context")).create()
+        if (info != null) {
+          holder.add(info)
+        }
       }
     }
   }
@@ -84,14 +90,22 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
     if (right is RStringLiteralExpression || right is RIdentifierExpression) {
       highlight(right, FIELD)
     } else {
-      holder.createErrorAnnotation(right, RBundle.message("inspection.message.r.grammar.doesn.t.allow.here", right.text))
+      val info = HighlightInfo.newHighlightInfo(HighlightInfoType.ERROR).range(right).descriptionAndTooltip(
+        RBundle.message("inspection.message.r.grammar.doesn.t.allow.here", right.text)).create()
+      if (info != null) {
+        holder.add(info)
+      }
     }
   }
 
   override fun visitNoCommaTail(noComma: RNoCommaTail) {
     val reportElement = PsiTreeUtil.findChildOfAnyType(noComma, RExpression::class.java, RNamedArgument::class.java) ?: return
     val offset = reportElement.textRange.startOffset
-    holder.createErrorAnnotation(TextRange(offset, offset + 1), RBundle.message("inspection.message.missing.comma"))
+    val info = HighlightInfo.newHighlightInfo(HighlightInfoType.ERROR).range(TextRange(offset, offset + 1)).descriptionAndTooltip(
+      RBundle.message("inspection.message.missing.comma")).create()
+    if (info != null) {
+      holder.add(info)
+    }
   }
 
   override fun visitStringLiteralExpression(o: RStringLiteralExpression) {
@@ -107,22 +121,33 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
     val range = reference.rangeInElement
     if (range.isEmpty) return
 
-    var message = holder.currentAnnotationSession.getUserData(sourceTooltipMessageKey)
+    var message = annotationSession.getUserData(sourceTooltipMessageKey)
     if (message == null) {
       message = sourceTooltipMessage
-      holder.currentAnnotationSession.putUserData(sourceTooltipMessageKey, message)
+      annotationSession.putUserData(sourceTooltipMessageKey, message)
     }
-    val annotation = holder.createInfoAnnotation(range.shiftRight(o.textOffset), message)
-    annotation.textAttributes = CodeInsightColors.INACTIVE_HYPERLINK_ATTRIBUTES
+    val info = HighlightInfo.newHighlightInfo(HighlightInfoType.INFORMATION).range(range.shiftRight(o.textOffset)).descriptionAndTooltip(
+      message).textAttributes(CodeInsightColors.INACTIVE_HYPERLINK_ATTRIBUTES).create()
+    if (info != null) {
+      holder.add(info)
+    }
   }
 
   override fun visitInvalidLiteral(invalid: RInvalidLiteral) {
-    holder.createErrorAnnotation(invalid, RBundle.message("inspection.message.unclosed.string.literal"))
+    val info = HighlightInfo.newHighlightInfo(HighlightInfoType.ERROR).range(invalid).descriptionAndTooltip(
+      RBundle.message("inspection.message.unclosed.string.literal")).create()
+    if (info != null) {
+      holder.add(info)
+    }
   }
 
   private fun highlight(element: PsiElement, colorKey: TextAttributesKey) {
-    val annotationText = if (ApplicationManager.getApplication().isUnitTestMode) colorKey.externalName else null
-    holder.createInfoAnnotation(element, annotationText).textAttributes = colorKey
+    val builder = HighlightInfo.newHighlightInfo(HighlightInfoType.INFORMATION).range(element).textAttributes(colorKey)
+    if (ApplicationManager.getApplication().isUnitTestMode) builder.descriptionAndTooltip(colorKey.externalName)
+    val info = builder.create()
+    if (info != null) {
+      holder.add(info)
+    }
   }
 
   private fun analyzeIdentifierExpression(element: RIdentifierExpression): TextAttributesKey? {

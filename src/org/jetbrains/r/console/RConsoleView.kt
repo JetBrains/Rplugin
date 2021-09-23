@@ -238,9 +238,9 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
   }
 
   fun annotateForHistory() {
-    val annotationSession = AnnotationSession(file)
-    val annotationHolder = AnnotationHolderImpl(annotationSession)
-    val annotator = RAnnotatorVisitor(annotationHolder)
+    val holder:MutableList<HighlightInfo> = ArrayList()
+
+    val annotator = RAnnotatorVisitor(holder, AnnotationSession(file))
 
     file.accept(object : RRecursiveElementVisitor() {
       override fun visitElement(element: PsiElement) {
@@ -249,10 +249,9 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
       }
     })
 
-    val infos = annotationHolder.map { HighlightInfo.fromAnnotation(it) }
     val to = DocumentMarkupModel.forDocument(editor.document, project, true)
     val input = consoleEditor.document.charsSequence
-    scheduleAnnotationsForHistory(to, input, infos, TextRange(0, input.length))
+    scheduleAnnotationsForHistory(to, input, holder, TextRange(0, input.length))
   }
 
   private fun scheduleAnnotationsForHistory(to: MarkupModel, input: CharSequence, infos: List<HighlightInfo>, textRange: TextRange) {
