@@ -17,6 +17,7 @@ data class RImportOptions(val mode: String, val additional: Map<String, String>)
 class RDataImporter(private val interop: RInterop) {
   @Volatile
   private var lastLocalAndHostPath: Pair<String, String>? = null
+  private val OUTPUT_NUMBER = "[1]"
 
   fun importData(name: String, path: LocalOrRemotePath, options: RImportOptions): RReference {
     val pathOnHost = getPathOnHost(path)
@@ -51,10 +52,12 @@ class RDataImporter(private val interop: RInterop) {
     // Note: expected format
     //  - for failure: "NULL"
     //  - for success: "[1] errorCount\n"
-    if (output == "NULL" || output.length < 6 || !output.startsWith("[1]")) {
+    val errorCounterIndex = output.indexOf(OUTPUT_NUMBER)
+    if (errorCounterIndex < 0 || output.length < errorCounterIndex + 4) {
       throw RuntimeException("Failed to preview data import.\nStdout was: '$output'\nStderr was: '$error'")
     }
-    return output.substring(4, output.length - 1).toInt()
+    val errorCountMessage = output.substring(errorCounterIndex + OUTPUT_NUMBER.length)
+    return errorCountMessage.trim().toInt()
   }
 
   private fun refOf(name: String): RReference {
