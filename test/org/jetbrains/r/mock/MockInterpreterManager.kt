@@ -11,11 +11,11 @@ import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.settings.RInterpreterSettingsProvider
 
 class MockInterpreterManager(project: Project) : RInterpreterManager {
-  override val interpreterLocation: RInterpreterLocation =
+  override var interpreterLocation: RInterpreterLocation? =
     RInterpreterSettingsProvider.getProviders().asSequence().mapNotNull { it.provideInterpreterForTests() }.firstOrNull() ?:
       RLocalInterpreterLocation(RInterpreterUtil.suggestHomePath())
 
-  override val interpreterOrNull: RInterpreter = interpreterLocation.createInterpreter(project)
+  override val interpreterOrNull: RInterpreter = interpreterLocation!!.createInterpreter(project)
 
   override fun getInterpreterAsync(force: Boolean) = resolvedPromise(interpreterOrNull)
 

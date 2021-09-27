@@ -63,6 +63,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
                 invokeAndWaitIfNeeded {
                   if (project.isDisposed) return@invokeAndWaitIfNeeded
                   RSettings.getInstance(project).interpreterLocation = interpreterInfo.interpreterLocation
+                  RInterpreterManager.getInstance(project).interpreterLocation = interpreterInfo.interpreterLocation
                 }
               }
             }, RBundle.message("console.starting.label.text"), false, project)

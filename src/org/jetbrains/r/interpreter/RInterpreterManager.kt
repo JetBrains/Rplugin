@@ -30,7 +30,7 @@ import java.nio.file.Paths
 
 interface RInterpreterManager {
   val interpreterOrNull: RInterpreter?
-  val interpreterLocation: RInterpreterLocation?
+  var interpreterLocation: RInterpreterLocation?
 
   fun getInterpreterAsync(force: Boolean = false): Promise<RInterpreter>
 
@@ -90,7 +90,6 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
 
   @Volatile
   override var interpreterLocation = fetchInterpreterLocation()
-    private set
 
   init {
     if (!ApplicationManager.getApplication().isUnitTestMode) {
