@@ -31,7 +31,7 @@ class NewRScriptAction : TestableCreateFileFromTemplateAction(RBundle.message("c
   }
 
   override fun getActionName(directory: PsiDirectory, newName: String, templateName: String): String {
-    return RBundle.message("create.r.script.text")
+    return RBundle.message("create.r.script.name")
   }
 
   override fun createFile(name: String?, templateName: String, directory: PsiDirectory): PsiFile? {
