@@ -20,8 +20,8 @@ import org.jetbrains.r.rmarkdown.RMarkdownFileType
  * <br></br>
  * The template data is stored in resources/fileTemplates/internal/RMarkdown.rmd.ft
  */
-class NewRMarkdownAction : TestableCreateFileFromTemplateAction("RMarkdown file",
-                                                                "Creates a new RMarkdown file",
+class NewRMarkdownAction : TestableCreateFileFromTemplateAction(RBundle.message("create.new.r.markdown.file.template.name"),
+                                                                RBundle.message("create.new.r.markdown.file.template.description"),
                                                                 RMarkdownFileType.icon), DumbAware {
 
   override fun buildDialog(project: Project, directory: PsiDirectory, builder: CreateFileFromTemplateDialog.Builder) {
