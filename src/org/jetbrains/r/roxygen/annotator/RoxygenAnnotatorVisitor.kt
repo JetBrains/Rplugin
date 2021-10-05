@@ -3,7 +3,9 @@
  */
 package org.jetbrains.r.roxygen.annotator
 
+import com.intellij.lang.annotation.AnnotationBuilder
 import com.intellij.lang.annotation.AnnotationHolder
+import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.psi.PsiElement
@@ -34,6 +36,13 @@ class RoxygenAnnotatorVisitor(private val holder: AnnotationHolder) : RoxygenVis
 
   private fun highlight(element: PsiElement, colorKey: TextAttributesKey) {
     val annotationText = if (ApplicationManager.getApplication().isUnitTestMode) colorKey.externalName else null
-    holder.createInfoAnnotation(element, annotationText).textAttributes = colorKey
+    val annotationBuilder: AnnotationBuilder
+    if (annotationText == null) {
+      annotationBuilder = holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+    }
+    else {
+      annotationBuilder = holder.newAnnotation(HighlightSeverity.INFORMATION, annotationText)
+    }
+    annotationBuilder.range(element.textRange).create()
   }
 }
