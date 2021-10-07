@@ -12,6 +12,7 @@ import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.run.visualize.*
+import org.jetbrains.r.run.visualize.RImportDataDialog.Companion.toRBoolean
 import java.nio.file.Paths
 import kotlin.math.sin
 
@@ -34,6 +35,7 @@ class RDataImporterTest : RProcessHandlerBaseTestCase() {
     checkPackage("readr")
     val expected = prepareExpectedDoubleDataFrame()
     val options = RImportCsvDataDialog.collectOptions()
+    (options.additional as MutableMap)["showColumnTypes"] = false.toRBoolean()
     checkPreviewAndImport(CSV_FILE_NAME, options, expected)
   }
 
