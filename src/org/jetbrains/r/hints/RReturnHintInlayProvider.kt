@@ -29,6 +29,12 @@ class RReturnHintInlayProvider : InlayHintsProvider<RReturnHintInlayProvider.Set
 
   override val name: String = RBundle.message("inlay.hints.function.return.expression.name")
   override val key: SettingsKey<Settings> = settingsKey
+  override val groupId: String
+    get() = VALUES_GROUP
+
+  override fun getProperty(key: String): String {
+    return RBundle.getMessage(key)
+  }
 
   override fun createSettings() = Settings()
 
@@ -107,7 +113,7 @@ class RReturnHintInlayProvider : InlayHintsProvider<RReturnHintInlayProvider.Set
                                                 { settings.showImplicitReturn = it }))
   }
 
-  override val previewText: String?
+  override val previewText: String
     @AnLanguage("R")
     get() = """
       single_result <- function() {
