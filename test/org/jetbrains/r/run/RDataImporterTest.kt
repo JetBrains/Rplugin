@@ -25,6 +25,8 @@ class RDataImporterTest : RProcessHandlerBaseTestCase() {
     importer = RDataImporter(rInterop)
   }
 
+  override fun alwaysCreateNewInterop() = true
+
   fun testBase() {
     val expected = prepareExpectedIntDataFrame()
     val options = RImportBaseDataDialog.collectOptions()

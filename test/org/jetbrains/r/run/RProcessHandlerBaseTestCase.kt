@@ -37,6 +37,8 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
   protected open val customDeadline: Long? = null
   protected lateinit var interpreter: RInterpreter
 
+  open fun alwaysCreateNewInterop() = false
+
   override fun setUp() {
     super.setUp()
     Files.createDirectories(project.stateStore.projectBasePath)
@@ -44,7 +46,7 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
     setupMockInterpreterManager()
     setupMockInterpreterStateManager()
     interpreter = RInterpreterManager.getInterpreterAsync(project).blockingGet(DEFAULT_TIMEOUT)!!
-    rInterop = getRInterop(interpreter)
+    rInterop = if (alwaysCreateNewInterop()) createRInterop(interpreter) else getRInterop(interpreter)
     // we want be sure that the interpreter is initialized
     rInterop.executeCode("1")
   }
@@ -181,6 +183,10 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
         }
         throw IllegalStateException("Should not happen")
       }
+    }
+
+    private fun createRInterop(interpreter: RInterpreter): RInterop {
+      return RInteropUtil.runRWrapperAndInterop(interpreter).blockingGet(DEFAULT_TIMEOUT)!!
     }
 
     private fun getRInterop(interpreter: RInterpreter): RInterop {
