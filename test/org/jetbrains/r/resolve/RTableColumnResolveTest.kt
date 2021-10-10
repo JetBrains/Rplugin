@@ -1,7 +1,6 @@
 package org.jetbrains.r.resolve
 
 import com.intellij.openapi.fileTypes.LanguageFileType
-import com.intellij.openapi.util.SystemInfo.isLinux
 import junit.framework.TestCase
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
@@ -132,9 +131,6 @@ class RTableColumnResolveTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testDplyrRelocate() {
-    if (!isLinux) {
-      return
-    }
     doTest(
       "column_one = letters",
 
