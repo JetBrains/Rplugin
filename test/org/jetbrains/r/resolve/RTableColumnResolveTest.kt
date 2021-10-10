@@ -133,7 +133,7 @@ class RTableColumnResolveTest : RProcessHandlerBaseTestCase() {
 
   fun testDplyrRelocate() {
     if (!isLinux) {
-      return;
+      return
     }
     doTest(
       "column_one = letters",
@@ -194,11 +194,8 @@ class RTableColumnResolveTest : RProcessHandlerBaseTestCase() {
 
 
   fun testResolveInDataTableSubscription() {
-    if (!isLinux) {
-      return;
-    }
     doTest(
-      "my_column_d := 1 + 2",
+      "my_column_d",
 
       """
         dt <- dt[, my_column_d := 1 + 2, my_column_d]

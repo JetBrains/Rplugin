@@ -115,6 +115,12 @@ object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
           parameterJ.argumentList.expressionList.forEach{ arguments.add(it) }
         }
       }
+      is RAssignmentStatement -> {
+        val assignee = parameterJ.getAssignee()
+        if (assignee != null) {
+          arguments.add(assignee)
+        }
+      }
     }
 
     val processedColumns = ArrayList<String>()
