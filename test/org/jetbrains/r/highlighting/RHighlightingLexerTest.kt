@@ -36,6 +36,7 @@ class RHighlightingLexerTest : TestCase() {
   }
 
 
+  @Suppress("InvalidBundleOrProperty") //workaround to avoid false-positive: KTIJ-19892
   fun testNumericFloat() {
     doTest("0.1", "NUMERIC")
   }
