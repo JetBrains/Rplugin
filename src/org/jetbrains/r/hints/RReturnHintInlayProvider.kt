@@ -29,8 +29,8 @@ class RReturnHintInlayProvider : InlayHintsProvider<RReturnHintInlayProvider.Set
 
   override val name: String = RBundle.message("inlay.hints.function.return.expression.name")
   override val key: SettingsKey<Settings> = settingsKey
-  override val groupId: String
-    get() = VALUES_GROUP
+  override val group: InlayGroup
+    get() = InlayGroup.VALUES_GROUP
 
   override fun getProperty(key: String): String {
     return RBundle.getMessage(key)
