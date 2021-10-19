@@ -357,14 +357,16 @@ You can find the source code in the following repositories:
     </actions>
 
     <extensions defaultExtensionNs="org.jetbrains.plugins.notebooks">
-        <notebookCellLinesProvider language="RMarkdown"
-                                   implementationClass="org.jetbrains.r.editor.RMarkdownCellLinesProvider"/>
-        <notebookCellSelectionModelProvider language="RMarkdown"
-                                            implementationClass="org.jetbrains.r.editor.RMarkdownCellSelectionModelProvider"/>
-        <editor.notebookEditorAppearanceProvider implementation="org.jetbrains.r.editor.RMarkdownNotebookEditorAppearanceProvider"/>
-        <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownCellToolbarController$Factory"/>
-        <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownOutputInlayController$Factory"/>
-        <editor.outputs.notebookOutputDataKeyExtractor implementation="org.jetbrains.r.editor.ui.RMarkdownOutputDataKeyExtractor"/>
+      <notebookCellLinesProvider language="RMarkdown"
+                                 implementationClass="org.jetbrains.r.editor.RMarkdownCellLinesProvider"/>
+      <notebookCellSelectionModelProvider language="RMarkdown"
+                                          implementationClass="org.jetbrains.r.editor.RMarkdownCellSelectionModelProvider"/>
+      <editor.notebookEditorAppearanceProvider implementation="org.jetbrains.r.editor.RMarkdownNotebookEditorAppearanceProvider"/>
+      <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownCellToolbarController$Factory"/>
+      <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownOutputInlayController$Factory"/>
+      <notebookIntervalPointerFactoryProvider language="RMarkdown"
+                                              implementationClass="org.jetbrains.r.editor.RMarkdownIntervalPointerFactoryProvider"/>
+      <editor.outputs.notebookOutputDataKeyExtractor implementation="org.jetbrains.r.editor.ui.RMarkdownOutputDataKeyExtractor"/>
     </extensions>
 
     <applicationListeners>
