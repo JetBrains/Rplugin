@@ -147,7 +147,7 @@ private class RReturnHintLineExtensionPainter(private val project: Project, priv
 
   private fun getLineHint(lineNumber: Int): List<String>? {
     if (lineNumber >= document.lineCount) return null
-    if (Disposer.isDisposed(project)) return null
+    if (project.isDisposed()) return null
     val lineEndOffset = document.getLineEndOffset(lineNumber)
     return returnHintsModel.getExtensionInfo(document, lineEndOffset)?.map { it.hintText }
   }
