@@ -238,10 +238,6 @@ project(":") {
     tasks.buildPlugin {
         from("r-helpers")
     }
-
-    dependencies {
-        testCompile(group = "org.tukaani", name =  "xz", version = "1.8")
-    }
 }
 
 tasks {
