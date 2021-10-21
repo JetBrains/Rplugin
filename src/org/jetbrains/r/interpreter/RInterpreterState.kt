@@ -310,8 +310,11 @@ interface RInterpreterState {
     }
   }
 
-  private fun updateSkeletons() {
-    val dumbModeTask = object : DumbModeTask(rInterop) {
+    private fun updateSkeletons() {
+      DumbService.getInstance(project).queueTask(MyDumbModeTask(rInterop))
+    }
+
+    private inner class MyDumbModeTask(val rInterop: RInterop) : DumbModeTask() {
       override fun performInDumbMode(indicator: ProgressIndicator) {
         if (!project.isOpen || project.isDisposed) return
         if (RSkeletonUtil.updateSkeletons(rInterop, indicator)) {
@@ -323,18 +326,19 @@ interface RInterpreterState {
         isSkeletonInitialized = true
         RInterpreterUtil.updateIndexableSet(project)
       }
+
+      override fun tryMergeWith(taskFromQueue: DumbModeTask): DumbModeTask? =
+        if (taskFromQueue is MyDumbModeTask && taskFromQueue.rInterop == rInterop) this else null
     }
-    DumbService.getInstance(project).queueTask(dumbModeTask)
-  }
 
-  private fun refreshSkeletons() {
-    if (!project.isOpen || project.isDisposed) return
-    val skeletonsDirectory = LocalFileSystem.getInstance().refreshAndFindFileByPath(skeletonsDirectory) ?: return
-    VfsUtil.markDirtyAndRefresh(false, true, true, skeletonsDirectory)
-    WriteAction.runAndWait<Exception> { PsiDocumentManagerImpl.getInstance(project).commitAllDocuments() }
-  }
+    private fun refreshSkeletons() {
+      if (!project.isOpen || project.isDisposed) return
+      val skeletonsDirectory = LocalFileSystem.getInstance().refreshAndFindFileByPath(skeletonsDirectory) ?: return
+      VfsUtil.markDirtyAndRefresh(false, true, true, skeletonsDirectory)
+      WriteAction.runAndWait<Exception> { PsiDocumentManagerImpl.getInstance(project).commitAllDocuments() }
+    }
 
-  companion object {
-    val LOG = Logger.getInstance(RInterpreterState::class.java)
+    companion object {
+      val LOG = Logger.getInstance(RInterpreterState::class.java)
+    }
   }
-}
