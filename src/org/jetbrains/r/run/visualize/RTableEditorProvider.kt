@@ -59,7 +59,7 @@ class RTableEditorProvider : FileEditorProvider, DumbAware {
 private class TableFileEditor(private val tableFile: RTableVirtualFile) : UserDataHolderBase(), FileEditor {
   override fun getComponent(): JComponent = tableFile.table
   override fun getName(): String = tableFile.name
-  override fun getFile(): VirtualFile? = tableFile
+  override fun getFile(): VirtualFile = tableFile
   override fun getPreferredFocusedComponent(): JComponent? = null
 
   private val propertyChangeSupport = PropertyChangeSupport(this)
