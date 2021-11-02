@@ -21,6 +21,7 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.wm.impl.status.FatalErrorWidgetFactory
 import com.intellij.util.PathUtilRt
+import com.intellij.util.system.CpuArch
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RPluginUtil
@@ -267,7 +268,7 @@ object RInteropUtil {
 
   fun getSystemSuffix(operatingSystem: OperatingSystem): String = when (operatingSystem) {
     OperatingSystem.LINUX -> "x64-linux"
-    OperatingSystem.MAC_OS -> "x64-osx"
+    OperatingSystem.MAC_OS -> if (CpuArch.isArm64()) "arm64-osx" else "x64-osx"
     OperatingSystem.WINDOWS -> "x64-windows.exe"
   }
 
