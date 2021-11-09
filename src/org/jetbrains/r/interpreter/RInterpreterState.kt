@@ -91,7 +91,7 @@ interface RInterpreterState {
 
   private val updateEpoch = AtomicInteger(0)
 
-  private val name2PsiFile = ContainerUtil.createConcurrentSoftKeySoftValueMap<String, PsiFile?>()
+  private val name2PsiFile = ContainerUtil.createConcurrentSoftKeySoftValueMap<String, PsiFile>()
   private var name2libraryPaths: Map<String, RInterpreterState.LibraryPath> = emptyMap()
   private var name2installedPackages: Map<String, RInstalledPackage> = emptyMap()
 
@@ -136,7 +136,9 @@ interface RInterpreterState {
     val rInstalledPackage = getPackageByName(name) ?: return null
     val virtualFile = RSkeletonUtil.installedPackageToSkeletonFile(skeletonsDirectory, rInstalledPackage) ?: return null
     val psiFile = PsiManager.getInstance(project).findFile(virtualFile)
-    name2PsiFile[name] = psiFile
+    if (psiFile != null) {
+      name2PsiFile[name] = psiFile
+    }
     return psiFile
   }
 
