@@ -24,7 +24,7 @@ class PsiToInterval(project: Project, editor: EditorImpl, extractPsi: (NotebookC
     fun scheduleUpdateForCommittedDocument() {
       PsiDocumentManager.getInstance(project).performForCommittedDocument(editor.document) {
         psiToInterval.clear()
-        if (!Disposer.isDisposed(editor.disposable)) {
+        if (!editor.isDisposed) {
           for (interval in NotebookCellLines.get(editor).intervals) {
             extractPsi(interval)?.let { psi ->
               psiToInterval[psi] = pointerFactory.create(interval)

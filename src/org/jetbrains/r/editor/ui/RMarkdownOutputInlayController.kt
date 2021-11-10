@@ -113,7 +113,7 @@ class RMarkdownOutputInlayController private constructor(
   }
 
   private fun resetComponent() {
-    if (Disposer.isDisposed(editor.disposable))
+    if (editor.isDisposed)
       return
 
     inlayComponent.clearOutputs()
@@ -319,7 +319,7 @@ class RMarkdownNotebook(project: Project, editor: EditorImpl) {
 
   private fun updateInlaysForViewport(editor: EditorImpl) {
     invokeLater {
-      if (Disposer.isDisposed(editor.disposable)) return@invokeLater
+      if (editor.isDisposed) return@invokeLater
       val viewportRange = calculateViewportRange(editor)
       val expansionRange = calculateInlayExpansionRange(editor, viewportRange)
       outputs.values.forEach {
