@@ -365,7 +365,7 @@ You can find the source code in the following repositories:
       <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownCellToolbarController$Factory"/>
       <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownOutputInlayController$Factory"/>
       <notebookIntervalPointerFactoryProvider language="RMarkdown"
-                                              implementationClass="org.jetbrains.r.editor.RMarkdownIntervalPointerFactoryProvider"/>
+                                              implementationClass="org.jetbrains.plugins.notebooks.editor.NotebookIntervalPointerFactoryImplProvider"/>
       <editor.outputs.notebookOutputDataKeyExtractor implementation="org.jetbrains.r.editor.ui.RMarkdownOutputDataKeyExtractor"/>
     </extensions>
 
