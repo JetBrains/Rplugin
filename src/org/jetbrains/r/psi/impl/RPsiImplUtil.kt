@@ -15,10 +15,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.tree.TokenSet
-import com.intellij.psi.util.CachedValueProvider
-import com.intellij.psi.util.CachedValuesManager
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.elementType
+import com.intellij.psi.util.*
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.r.RElementGenerator
 import org.jetbrains.r.parsing.RElementTypes.*
@@ -380,7 +377,7 @@ internal object RPsiImplUtil {
 
   @JvmStatic
   fun getAssignedValue(namedArgument: RNamedArgument): RExpression? {
-    val expressionList = PsiTreeUtil.getChildrenOfTypeAsList(namedArgument, RExpression::class.java)
+    val expressionList = namedArgument.childrenOfType<RExpression>()
     return if (expressionList.size > 1) expressionList[1] else null
   }
 
