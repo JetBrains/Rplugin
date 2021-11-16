@@ -5,6 +5,7 @@
 
 package org.jetbrains.r.run.debug
 
+import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
@@ -18,7 +19,7 @@ import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 internal object RLineBreakpointUtils {
   fun canPutAt(project: Project, file: VirtualFile, line: Int): Boolean {
-    return (file.fileType == RFileType || file.fileType == RMarkdownFileType) &&
+    return (FileTypeRegistry.getInstance().isFileOfType(file, RFileType) || FileTypeRegistry.getInstance().isFileOfType(file, RMarkdownFileType)) &&
            !RSourceFileManager.isInvalid(file.url) &&
            isStoppable(project, file, line, !RSourceFileManager.isTemporary(file))
   }

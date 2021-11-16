@@ -9,6 +9,7 @@ import com.intellij.openapi.fileEditor.FileEditorPolicy
 import com.intellij.openapi.fileEditor.FileEditorProvider
 import com.intellij.openapi.fileEditor.impl.text.TextEditorImpl
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider
+import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -18,7 +19,7 @@ class RMarkdownFileEditorProvider : FileEditorProvider, DumbAware {
 
   override fun getEditorTypeId() = "rmarkdown-editor"
 
-  override fun accept(project: Project, file: VirtualFile) = file.fileType == RMarkdownFileType
+  override fun accept(project: Project, file: VirtualFile) = FileTypeRegistry.getInstance().isFileOfType(file, RMarkdownFileType)
 
   override fun createEditor(project: Project, file: VirtualFile): FileEditor {
     val editor = TextEditorProvider.getInstance().createEditor(project, file) as TextEditorImpl

@@ -9,6 +9,7 @@ package org.jetbrains.r.packages
 
 import com.intellij.openapi.diagnostic.Attachment
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressIndicatorProvider
 import com.intellij.openapi.util.SystemInfo
@@ -438,7 +439,7 @@ data class RPackage(val name: String, val version: String) {
      * if [file] type is Skeleton File Type, returns package and version which was used for its generation or null otherwise
      */
     fun getOrCreateRPackageBySkeletonFile(file: PsiFile): RPackage? {
-      if (file.virtualFile.fileType != RSkeletonFileType) return null
+      if (!FileTypeRegistry.getInstance().isFileOfType(file.virtualFile, RSkeletonFileType)) return null
       return CachedValuesManager.getCachedValue(file) {
         CachedValueProvider.Result(RSkeletonUtil.skeletonFileToRPackage(file.virtualFile), file)
       }

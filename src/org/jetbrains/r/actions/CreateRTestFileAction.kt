@@ -12,6 +12,7 @@ import com.intellij.ide.util.PsiNavigationSupport
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.vfs.VirtualFile
@@ -134,7 +135,7 @@ fun isPsiFileForTest(file: PsiFile?): Boolean {
 }
 
 fun isVirtualFileForTest(file: VirtualFile, project: Project): Boolean {
-  return file.fileType == RFileType
+  return FileTypeRegistry.getInstance().isFileOfType(file, RFileType)
          && RPackageBuildUtil.isPackage(project)
          // According to https://cran.r-project.org/doc/manuals/R-exts.html#Package-subdirectories there could be only unix and windows
          // subdirectories in R package

@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.rmarkdown
 
+import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.psi.util.PsiTreeUtil.findChildOfAnyType
 import com.jetbrains.python.inspections.PyInspectionExtension
 import com.jetbrains.python.psi.PyElement
@@ -11,5 +12,5 @@ import com.jetbrains.python.psi.PyFile
 
 class RMarkdownPyInspectionExtension : PyInspectionExtension() {
   override fun ignoreInterpreterWarnings(file: PyFile) =
-    file.virtualFile?.let { it.fileType == RMarkdownFileType && findChildOfAnyType(file, PyElement::class.java) == null } ?: false
+    file.virtualFile?.let { FileTypeRegistry.getInstance().isFileOfType(it, RMarkdownFileType) && findChildOfAnyType(file, PyElement::class.java) == null } ?: false
 }

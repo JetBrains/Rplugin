@@ -8,6 +8,7 @@ import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.wm.ToolWindowManager
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
@@ -17,7 +18,7 @@ class RConsoleEditorFactoryListener : EditorFactoryListener {
   override fun editorCreated(event: EditorFactoryEvent) {
     val project = event.editor.project ?: return
     val file = FileDocumentManager.getInstance().getFile(event.editor.document) ?: return
-    if (file.fileType == RFileType || file.fileType == RMarkdownFileType) {
+    if (FileTypeRegistry.getInstance().isFileOfType(file, RFileType) || FileTypeRegistry.getInstance().isFileOfType(file, RMarkdownFileType)) {
     val toolWindowManager = ToolWindowManager.getInstance(project)
     toolWindowManager.invokeLater(Runnable {
       val toolWindow = toolWindowManager.getToolWindow(RConsoleToolWindowFactory.ID)

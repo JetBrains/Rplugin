@@ -1,5 +1,6 @@
 package org.jetbrains.r.editor.mlcompletion.update
 
+import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.roots.ProjectFileIndex
@@ -35,5 +36,5 @@ class MachineLearningCompletionProjectOpenListener : ProjectManagerListener {
   }
 
   private fun isNotRProject(project: Project): Boolean =
-    ProjectFileIndex.getInstance(project).iterateContent { it.fileType != RFileType }
+    ProjectFileIndex.getInstance(project).iterateContent { !FileTypeRegistry.getInstance().isFileOfType(it, RFileType) }
 }

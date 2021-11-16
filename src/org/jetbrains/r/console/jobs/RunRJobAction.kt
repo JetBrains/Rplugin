@@ -6,6 +6,7 @@ package org.jetbrains.r.console.jobs
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import org.jetbrains.r.RFileType
@@ -26,7 +27,7 @@ class RunRJobAction : DumbAwareAction() {
   companion object {
     fun showDialog(project: Project) = RInterpreterManager.getInterpreterAsync(project).onSuccess { interpreter ->
       val selectedFile = FileEditorManager.getInstance(project).selectedFiles.firstOrNull()
-      val script= selectedFile?.takeIf { it.fileType == RFileType }
+      val script= selectedFile?.takeIf { FileTypeRegistry.getInstance().isFileOfType(it, RFileType) }
       val workingDirectory =
         RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.workingDir?.takeIf { it.isNotEmpty() }
         ?: interpreter.basePath
