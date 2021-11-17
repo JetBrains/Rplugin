@@ -8,7 +8,10 @@ import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputDataKeyExtra
 import org.jetbrains.r.rendering.chunk.ChunkPath
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
 
-data class RMarkdownInlayOutputDataKey(val inlayOutput: InlayOutput): NotebookOutputDataKey
+data class RMarkdownInlayOutputDataKey(val inlayOutput: InlayOutput): NotebookOutputDataKey {
+  override fun getContentForDiffing(): String = inlayOutput.data
+
+}
 
 class RMarkdownOutputDataKeyExtractor: NotebookOutputDataKeyExtractor {
   override fun extract(editor: EditorImpl, interval: NotebookCellLines.Interval): List<NotebookOutputDataKey>? {
