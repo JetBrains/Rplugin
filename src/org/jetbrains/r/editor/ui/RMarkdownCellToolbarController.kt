@@ -9,8 +9,8 @@ import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorEmbeddedComponentManager
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.TextAttributes
-import org.jetbrains.plugins.notebooks.editor.*
-import org.jetbrains.plugins.notebooks.editor.ui.SteadyUIPanel
+import org.jetbrains.plugins.notebooks.visualization.*
+import org.jetbrains.plugins.notebooks.visualization.ui.SteadyUIPanel
 import org.jetbrains.r.rendering.chunk.RunChunkNavigator
 import java.awt.Cursor
 import java.awt.Dimension

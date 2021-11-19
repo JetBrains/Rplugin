@@ -21,7 +21,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import org.intellij.datavis.r.inlays.InlaysManager
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
-import org.jetbrains.plugins.notebooks.editor.NotebookIntervalPointer
+import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.r.actions.*
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager

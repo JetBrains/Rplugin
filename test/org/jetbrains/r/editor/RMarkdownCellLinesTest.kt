@@ -4,11 +4,11 @@ import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.testFramework.ThreadTracker
-import org.jetbrains.plugins.notebooks.editor.CodeCellLinesChecker
-import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
-import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.CellType.CODE
-import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.CellType.MARKDOWN
-import org.jetbrains.plugins.notebooks.editor.edt
+import org.jetbrains.plugins.notebooks.visualization.CodeCellLinesChecker
+import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
+import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines.CellType.CODE
+import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines.CellType.MARKDOWN
+import org.jetbrains.plugins.notebooks.visualization.edt
 import org.junit.Before
 import org.junit.Test
 

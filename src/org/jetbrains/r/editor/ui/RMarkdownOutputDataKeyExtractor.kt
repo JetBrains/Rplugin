@@ -2,9 +2,9 @@ package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.editor.impl.EditorImpl
 import org.intellij.datavis.r.inlays.InlayOutput
-import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
-import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputDataKey
-import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputDataKeyExtractor
+import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
+import org.jetbrains.plugins.notebooks.visualization.outputs.NotebookOutputDataKey
+import org.jetbrains.plugins.notebooks.visualization.outputs.NotebookOutputDataKeyExtractor
 import org.jetbrains.r.rendering.chunk.ChunkPath
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
 

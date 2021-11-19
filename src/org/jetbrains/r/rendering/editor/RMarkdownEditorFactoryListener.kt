@@ -5,9 +5,9 @@ import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.psi.PsiDocumentManager
-import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayManager
-import org.jetbrains.plugins.notebooks.editor.NotebookEditorAppearanceProvider
-import org.jetbrains.plugins.notebooks.editor.NotebookGutterRenderer
+import org.jetbrains.plugins.notebooks.visualization.NotebookCellInlayManager
+import org.jetbrains.plugins.notebooks.visualization.NotebookEditorAppearanceProvider
+import org.jetbrains.plugins.notebooks.visualization.NotebookGutterRenderer
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 class RMarkdownEditorFactoryListener : EditorFactoryListener {

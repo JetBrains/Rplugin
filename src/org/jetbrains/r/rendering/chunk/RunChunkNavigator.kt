@@ -11,7 +11,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.JBPopupMenu
 import com.intellij.psi.PsiElement
-import org.jetbrains.plugins.notebooks.editor.NotebookIntervalPointer
+import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.r.actions.RActionUtil
 
 import java.awt.event.MouseEvent

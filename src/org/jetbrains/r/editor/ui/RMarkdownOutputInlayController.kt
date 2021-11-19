@@ -19,7 +19,7 @@ import com.intellij.util.ui.update.Update
 import org.intellij.datavis.r.inlays.*
 import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
-import org.jetbrains.plugins.notebooks.editor.*
+import org.jetbrains.plugins.notebooks.visualization.*
 import org.jetbrains.r.rendering.chunk.ChunkDescriptorProvider
 import org.jetbrains.r.rendering.chunk.ChunkPath
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor

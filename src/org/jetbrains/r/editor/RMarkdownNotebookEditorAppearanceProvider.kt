@@ -4,7 +4,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsScheme
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.editor.impl.EditorImpl
-import org.jetbrains.plugins.notebooks.editor.*
+import org.jetbrains.plugins.notebooks.visualization.*
 import org.jetbrains.r.rendering.editor.RMarkdownEditorFactoryListener
 import java.awt.Color
 
