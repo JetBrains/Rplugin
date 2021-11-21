@@ -9,8 +9,14 @@ import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.util.Version
 import com.intellij.ui.JBColor
-import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.dialog
+import com.intellij.ui.dsl.builder.*
+import com.intellij.ui.dsl.builder.Cell
+import com.intellij.ui.dsl.builder.Row
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.selected
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.intellij.ui.layout.*
 import com.intellij.util.text.DateFormatUtil
 import com.intellij.util.ui.JBUI
@@ -49,11 +55,6 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     private fun updateVersionLabel(label: JLabel, version: Version?) {
       label.text = version?.toString() ?: RBundle.message("project.settings.ml.completion.version.none")
     }
-
-    private fun Row.enableSubRowsIf(predicate: ComponentPredicate) {
-      subRowsEnabled = predicate.invoke()
-      predicate.addListener { subRowsEnabled = it }
-    }
   }
 
   private val modality = ModalityState.current()
@@ -62,84 +63,88 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
 
   override fun createPanel(): DialogPanel {
     return panel {
-      titledRow(displayName) {
+      group(displayName) {
 
-        row {
-          cell {
-            label(RBundle.message("project.settings.ml.completion.version.app"))
-            versionLabel(MachineLearningCompletionLocalArtifact.Application)
-            label(RBundle.message("project.settings.ml.completion.version.model")).withLargeLeftGap()
-            versionLabel(MachineLearningCompletionLocalArtifact.Model)
-          }
+        row(RBundle.message("project.settings.ml.completion.version.app")) {
+          versionLabel(MachineLearningCompletionLocalArtifact.Application)
+          versionLabel(MachineLearningCompletionLocalArtifact.Model)
+            .label(RBundle.message("project.settings.ml.completion.version.model"))
         }
 
         row {
-          cell {
-            checkForUpdatesButton()
-            lastCheckedLabel().withLargeLeftGap()
-          }
-        }.largeGapAfter()
+          checkForUpdatesButton()
+          lastCheckedLabel()
+        }.bottomGap(BottomGap.SMALL)
 
+        lateinit var enableCompletionCheckbox: Cell<JBCheckBox>
         row {
-          val enableCompletionCheckbox = checkBox(RBundle.message("project.settings.ml.completion.checkbox"),
-                                                  settings.state::isEnabled)
-          enableSubRowsIf(enableCompletionCheckbox.selected)
+          enableCompletionCheckbox = checkBox(RBundle.message("project.settings.ml.completion.checkbox"))
+            .bindSelected(settings.state::isEnabled)
+        }
 
-          row {
-            label(RBundle.message("project.settings.ml.completion.server.label"))
-          }
-
-          row {
-            cell(isFullWidth = true) {
-              label(RBundle.message("project.settings.ml.completion.host.label"))
-              textField({ settings.state.host ?: "" }, {}).enabled(false)
-              label(RBundle.message("project.settings.ml.completion.port.label"))
-              intTextField(settings.state::port, columns = PORT_FIELD_WIDTH, range = PORT_RANGE)
+        indent {
+          panel {
+            row {
+              label(RBundle.message("project.settings.ml.completion.server.label"))
             }
-          }
 
-          row {
-            cell {
-              label(RBundle.message("project.settings.ml.completion.timeout.label"))
-              intTextField(settings.state::requestTimeoutMs, columns = TIMEOUT_FIELD_WIDTH, range = TIMEOUT_RANGE_MS)
+            row(RBundle.message("project.settings.ml.completion.host.label")) {
+              textField()
+                .bindText({ settings.state.host ?: "" }, {})
+                .resizableColumn()
+                .horizontalAlign(HorizontalAlign.FILL)
+                .enabled(false)
+              intTextField(range = PORT_RANGE)
+                .bindIntText(settings.state::port)
+                .columns(PORT_FIELD_WIDTH)
+                .label(RBundle.message("project.settings.ml.completion.port.label"))
+            }.layout(RowLayout.INDEPENDENT)
+
+            row(RBundle.message("project.settings.ml.completion.timeout.label")) {
+              intTextField(range = TIMEOUT_RANGE_MS)
+                .bindIntText(settings.state::requestTimeoutMs)
+                .columns(TIMEOUT_FIELD_WIDTH)
+                .gap(RightGap.SMALL)
               label(IdeBundle.message("label.milliseconds"))
             }
-          }
+          }.enabledIf(enableCompletionCheckbox.selected)
         }
       }
     }.withBorder(JBUI.Borders.emptyTop(TOP_PANEL_OFFSET))
   }
 
-  private fun Cell.lastCheckedLabel(): CellBuilder<JLabel> {
-    val label = JBLabel()
-    label.foreground = JBColor.GRAY
+  private fun Row.lastCheckedLabel(): Cell<JLabel> {
+    val result = label("")
+      .applyToComponent {
+        foreground = JBColor.GRAY
+      }
 
-    updateLastCheckedLabel(label, settings.state.lastUpdateCheckTimestampMs)
+    updateLastCheckedLabel(result.component, settings.state.lastUpdateCheckTimestampMs)
 
     disposable?.let {
       MachineLearningCompletionSettingsChangeListener { beforeState, afterState ->
         if (beforeState.lastUpdateCheckTimestampMs != afterState.lastUpdateCheckTimestampMs) {
           invokeLaterWithTabModality {
-            updateLastCheckedLabel(label, afterState.lastUpdateCheckTimestampMs)
+            updateLastCheckedLabel(result.component, afterState.lastUpdateCheckTimestampMs)
           }
         }
       }.subscribe(it)
     }
 
-    return component(label)
+    return result
   }
 
-  private fun Cell.versionLabel(artifact: MachineLearningCompletionLocalArtifact): CellBuilder<JLabel> {
-    val label = JBLabel()
-    updateVersionLabel(label, artifact.currentVersion)
+  private fun Row.versionLabel(artifact: MachineLearningCompletionLocalArtifact): Cell<JLabel> {
+    val result = label("")
+    updateVersionLabel(result.component, artifact.currentVersion)
 
     disposable?.let { disposable ->
       MachineLearningCompletionModelFilesService.getInstance().registerVersionChangeListener(artifact, disposable) {
-        invokeLaterWithTabModality { updateVersionLabel(label, it) }
+        invokeLaterWithTabModality { updateVersionLabel(result.component, it) }
       }
     }
 
-    return component(label)
+    return result
   }
 
   override fun apply() {
@@ -148,7 +153,8 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     MachineLearningCompletionSettingsChangeListener.notifySettingsChanged(beforeState, settings.state)
   }
 
-  private fun Cell.checkForUpdatesButton(): CellBuilder<JButton> = button(RBundle.message("project.settings.ml.completion.button.checkForUpdates")) {
+  private fun Row.checkForUpdatesButton(): Cell<JButton> = button(
+    RBundle.message("project.settings.ml.completion.button.checkForUpdates")) {
     MachineLearningCompletionDownloadModelService.getInstance()
       .initiateUpdateCycle(isModal = true, reportIgnored = true, { showFailedToCheckForUpdatesDialog() }) { (artifacts, size) ->
         if (artifacts.isNotEmpty()) {
@@ -158,7 +164,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
           showNoAvailableUpdateDialog()
         }
       }
-  }.enableIf(object : ComponentPredicate() {
+  }.enabledIf(object : ComponentPredicate() {
     override fun invoke(): Boolean =
       MachineLearningCompletionUpdateAction.canInitiateUpdateAction.get()
 
