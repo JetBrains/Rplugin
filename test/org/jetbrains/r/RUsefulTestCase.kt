@@ -114,7 +114,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
 
   private fun createFixture(): CodeInsightTestFixture {
     val factory = IdeaTestFixtureFactory.getFixtureFactory()
-    val fixtureBuilder = factory.createLightFixtureBuilder()
+    val fixtureBuilder = factory.createLightFixtureBuilder(getTestName(false))
     val fixture = fixtureBuilder.fixture
     return IdeaTestFixtureFactory.getFixtureFactory().createCodeInsightFixture(fixture, LightTempDirTestFixtureImpl(true))
   }
