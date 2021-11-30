@@ -3,6 +3,7 @@
  */
 package org.jetbrains.r
 
+import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.ide.plugins.cl.PluginAwareClassLoader
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.extensions.PluginDescriptor
@@ -14,7 +15,9 @@ object RPluginUtil {
   const val PLUGIN_ID = "R4Intellij"
   private const val PLUGIN_NAME = "rplugin"
 
-  fun getPlugin(): PluginDescriptor = (RPluginUtil::class.java.classLoader as PluginAwareClassLoader).pluginDescriptor
+  fun getPlugin(): PluginDescriptor =
+    (RPluginUtil::class.java.classLoader as? PluginAwareClassLoader)?.pluginDescriptor
+    ?: PluginManagerCore.getPlugin(PluginManagerCore.CORE_ID)!!  // Happens when running an IDE from sources
 
   fun findFileInRHelpers(relativePath: String): File {
     return Path.of(helpersPath, relativePath).toFile()
