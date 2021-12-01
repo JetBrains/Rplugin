@@ -9,9 +9,9 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.util.ui.JBUI
-import org.intellij.datavis.r.inlays.components.EmptyComponentPanel
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.EmptyComponentPanel
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.run.viewer.RViewerUtils
 import java.io.File

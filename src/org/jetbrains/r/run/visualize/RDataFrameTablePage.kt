@@ -31,10 +31,10 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
 import icons.VisualisationIcons
-import org.intellij.datavis.r.inlays.ClipboardUtils
-import org.intellij.datavis.r.inlays.table.filters.gui.TableFilterHeader
-import org.intellij.datavis.r.ui.MaterialTableUtils
 import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.filters.gui.TableFilterHeader
+import org.jetbrains.plugins.notebooks.visualization.r.ui.MaterialTableUtils
 import org.jetbrains.r.RBundle
 import java.awt.BorderLayout
 import java.awt.Event

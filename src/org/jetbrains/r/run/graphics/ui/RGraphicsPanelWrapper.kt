@@ -11,8 +11,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
-import org.intellij.datavis.r.inlays.components.GraphicsPanel
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.GraphicsPanel
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.run.graphics.*

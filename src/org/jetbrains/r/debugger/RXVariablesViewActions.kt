@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.debugger
 
-import org.intellij.datavis.r.ui.DumbAwareActionAdapter
+import org.jetbrains.plugins.notebooks.visualization.r.ui.DumbAwareActionAdapter
 
 class RImportBaseDataAction : DumbAwareActionAdapter()
 

@@ -11,12 +11,18 @@ import com.intellij.ui.components.JBLoadingPanel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBEmptyBorder
 import com.intellij.util.ui.JBInsets
-import org.intellij.datavis.r.inlays.components.EmptyComponentPanel
-import org.intellij.datavis.r.ui.MaterialTable
-import org.intellij.datavis.r.ui.MaterialTableUtils
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.EmptyComponentPanel
+import org.jetbrains.plugins.notebooks.visualization.r.ui.MaterialTable
+import org.jetbrains.plugins.notebooks.visualization.r.ui.MaterialTableUtils
 import org.jetbrains.r.RBundle
-import java.awt.*
-import javax.swing.*
+import java.awt.BorderLayout
+import java.awt.Font
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
+import javax.swing.BoxLayout
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JPanel
 
 class RImportDataPreviewer(private val parent: Disposable, emptyComponent: JComponent, private val statusComponent: JComponent) {
   private val loadingPanel = JBLoadingPanel(BorderLayout(), parent).apply {

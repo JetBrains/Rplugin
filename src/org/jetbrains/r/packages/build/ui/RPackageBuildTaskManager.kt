@@ -10,10 +10,10 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.plugins.notebooks.visualization.r.ui.ToolbarUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
-import org.intellij.datavis.r.ui.ToolbarUtil
 import javax.swing.Icon
 
 class RPackageBuildTaskManager(

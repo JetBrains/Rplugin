@@ -8,9 +8,9 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.psi.SyntaxTraverser
 import junit.framework.TestCase
-import org.intellij.datavis.r.inlays.InlayOutput
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes.FENCE_LANG
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayOutput
 import org.jetbrains.r.blockingGetAndDispatchEvents
 import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.debugger.RDebuggerUtil
@@ -18,7 +18,6 @@ import org.jetbrains.r.rinterop.RDebuggerTestHelper
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import java.awt.Dimension
-import java.io.File
 
 class RunChunkTest : RConsoleBaseTestCase() {
 

@@ -5,7 +5,7 @@
 package org.jetbrains.r.rendering.chunk
 
 import com.intellij.openapi.project.Project
-import org.intellij.datavis.r.inlays.components.GraphicsManagerProvider
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.GraphicsManagerProvider
 
 class ChunkGraphicsManagerProvider : GraphicsManagerProvider {
   override fun getManager(project: Project) = ChunkGraphicsManager(project)

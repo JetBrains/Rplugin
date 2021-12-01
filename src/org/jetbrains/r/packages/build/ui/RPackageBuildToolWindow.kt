@@ -5,16 +5,18 @@
 package org.jetbrains.r.packages.build.ui
 
 import com.intellij.execution.impl.ConsoleViewImpl
-import com.intellij.execution.process.*
+import com.intellij.execution.process.BaseProcessHandler
+import com.intellij.execution.process.ProcessAdapter
+import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.util.Disposer
-import org.intellij.datavis.r.ui.ToolbarUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.plugins.notebooks.visualization.r.ui.ToolbarUtil
 import org.jetbrains.r.execution.ExecuteExpressionUtils.launchScript
 import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterManager

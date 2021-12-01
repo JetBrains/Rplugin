@@ -37,7 +37,7 @@ import com.intellij.xdebugger.impl.frame.actions.XWatchesTreeActionBase
 import com.intellij.xdebugger.impl.ui.DebuggerUIUtil
 import com.intellij.xdebugger.impl.ui.tree.XDebuggerTree
 import com.intellij.xdebugger.impl.ui.tree.nodes.*
-import org.intellij.datavis.r.ui.ToolbarUtil
+import org.jetbrains.plugins.notebooks.visualization.r.ui.ToolbarUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.RDebuggerPanel

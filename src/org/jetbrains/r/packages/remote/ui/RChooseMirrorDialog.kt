@@ -7,7 +7,7 @@ package org.jetbrains.r.packages.remote.ui
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
-import org.intellij.datavis.r.inlays.components.DialogUtil
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.DialogUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.remote.RMirror
 import javax.swing.BoxLayout

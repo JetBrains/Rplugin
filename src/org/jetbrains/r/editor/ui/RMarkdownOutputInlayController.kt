@@ -16,10 +16,10 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
-import org.intellij.datavis.r.inlays.*
-import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.plugins.notebooks.visualization.*
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.*
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayProgressStatus
 import org.jetbrains.r.rendering.chunk.ChunkDescriptorProvider
 import org.jetbrains.r.rendering.chunk.ChunkPath
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor

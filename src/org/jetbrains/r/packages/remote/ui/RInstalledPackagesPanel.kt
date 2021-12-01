@@ -17,8 +17,8 @@ import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.PackagesNotificationPanel
 import com.intellij.webcore.packaging.RepoPackage
 import icons.RIcons
-import org.intellij.datavis.r.ui.ToolbarUtil
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.plugins.notebooks.visualization.r.ui.ToolbarUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterManager
