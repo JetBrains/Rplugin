@@ -1,8 +1,8 @@
 <idea-plugin allow-bundled-update="true">
-    <!-- ensure compatibility with all intellij products-->
-    <depends>com.intellij.modules.lang</depends>
-    <depends>com.intellij.modules.xdebugger</depends>
-    <depends>org.intellij.plugins.markdown</depends>
+    <dependencies>
+        <module name="intellij.notebooks.visualization"/>
+        <plugin id="org.intellij.plugins.markdown"/>
+    </dependencies>
 
     <description><![CDATA[
 <html>
