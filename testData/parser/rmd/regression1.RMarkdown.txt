@@ -1,11 +1,11 @@
 R Markdown
   ASTWrapperPsiElement(Markdown:Markdown:MARKDOWN_FILE)
-    MarkdownParagraphImpl(Markdown:PARAGRAPH)
+    MarkdownParagraph(Markdown:PARAGRAPH)
       PsiElement(Markdown:Markdown:TEXT)('There was assertion error during parsing of this markdown file')
       PsiElement(Markdown:Markdown:!)('!')
     PsiWhiteSpace('\n')
     PsiWhiteSpace('\n')
-    MarkdownParagraphImpl(Markdown:PARAGRAPH)
+    MarkdownParagraph(Markdown:PARAGRAPH)
       PsiElement(Markdown:Markdown:TEXT)('Some link')
       PsiWhiteSpace(' ')
       MarkdownShortReferenceLink(Markdown:Markdown:SHORT_REFERENCE_LINK)

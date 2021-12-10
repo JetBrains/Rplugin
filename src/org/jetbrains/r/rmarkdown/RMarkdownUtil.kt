@@ -11,7 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SyntaxTraverser
-import org.intellij.plugins.markdown.lang.psi.impl.MarkdownParagraphImpl
+import org.intellij.plugins.markdown.lang.psi.impl.MarkdownParagraph
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RequiredPackage
@@ -67,8 +67,8 @@ object RMarkdownUtil {
     false
   }
 
-  fun findMarkdownParagraph(file: PsiFile): MarkdownParagraphImpl? =
-    SyntaxTraverser.psiTraverser(file).firstOrNull { it is MarkdownParagraphImpl } as MarkdownParagraphImpl?
+  fun findMarkdownParagraph(file: PsiFile): MarkdownParagraph? =
+    SyntaxTraverser.psiTraverser(file).firstOrNull { it is MarkdownParagraph } as MarkdownParagraph?
 
   val IS_SHINY = Key<Boolean>("org.jetbrains.r.rmarkdown.IsShiny")
   private val RUNTIME_SHINY_REGEX = Regex("\\s*runtime\\s*:\\s*shiny.*")

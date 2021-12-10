@@ -2,7 +2,7 @@ R Markdown
   ASTWrapperPsiElement(Markdown:Markdown:MARKDOWN_FILE)
     PsiElement(Markdown:Markdown:HORIZONTAL_RULE)('---')
     PsiWhiteSpace('\n')
-    MarkdownParagraphImpl(Markdown:PARAGRAPH)
+    MarkdownParagraph(Markdown:PARAGRAPH)
       PsiElement(Markdown:Markdown:TEXT)('title')
       PsiElement(Markdown:Markdown::)(':')
       PsiWhiteSpace(' ')
