@@ -20,8 +20,7 @@ import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.MarkdownPsiElement
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFenceImpl
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownFile
-import org.intellij.plugins.markdown.lang.psi.impl.MarkdownHeaderImpl
-import org.jetbrains.r.parsing.RElementTypes
+import org.intellij.plugins.markdown.lang.psi.impl.MarkdownHeader
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -179,7 +178,7 @@ object RMarkdownPsiUtil {
   }
 
   private fun isFitElement(element: PsiElement?): Boolean {
-    return element is MarkdownHeaderImpl // || isExeRFence(element)
+    return element is MarkdownHeader // || isExeRFence(element)
   }
 
   private fun isExeRFence(element: PsiElement?) = element is MarkdownCodeFenceImpl && getExecutableFenceLabelInt(element) != null
