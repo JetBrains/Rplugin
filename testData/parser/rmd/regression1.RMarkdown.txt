@@ -9,7 +9,7 @@ R Markdown
       PsiElement(Markdown:Markdown:TEXT)('Some link')
       PsiWhiteSpace(' ')
       MarkdownShortReferenceLinkImpl(Markdown:Markdown:SHORT_REFERENCE_LINK)
-        MarkdownLinkLabelImpl(Markdown:Markdown:LINK_LABEL)
+        MarkdownLinkLabel(Markdown:Markdown:LINK_LABEL)
           PsiElement(Markdown:Markdown:[)('[')
           ASTWrapperPsiElement(Markdown:Markdown:CODE_SPAN)
             PsiElement(Markdown:Markdown:BACKTICK)('`')
