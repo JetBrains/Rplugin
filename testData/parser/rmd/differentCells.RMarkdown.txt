@@ -65,7 +65,7 @@ R Markdown
       PsiElement(Markdown:Markdown:CODE_FENCE_END)('```')
     PsiWhiteSpace('\n')
     PsiWhiteSpace('\n')
-    MarkdownBlockQuoteImpl(Markdown:Markdown:BLOCK_QUOTE)
+    MarkdownBlockQuote(Markdown:Markdown:BLOCK_QUOTE)
       PsiElement(Markdown:Markdown:BLOCK_QUOTE)('> ')
       MarkdownParagraphImpl(Markdown:PARAGRAPH)
         PsiElement(Markdown:Markdown:TEXT)('Here is a quote,')
