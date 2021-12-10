@@ -9,7 +9,7 @@ import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.ui.breadcrumbs.BreadcrumbsProvider
-import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFenceImpl
+import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownFile
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
@@ -30,7 +30,7 @@ class RBreadcrumbsProvider : BreadcrumbsProvider {
            RPsiUtil.isSectionDivider(element) ||
            element is RFile ||
            element is MarkdownFile ||
-           element is MarkdownCodeFenceImpl
+           element is MarkdownCodeFence
   }
 
   private fun assignmentShouldBeShown(element: PsiElement) =
@@ -44,7 +44,7 @@ class RBreadcrumbsProvider : BreadcrumbsProvider {
       is PsiComment -> RPsiUtil.extractNameFromSectionComment(element)
       is RFile -> element.name
       is MarkdownFile -> element.name
-      is MarkdownCodeFenceImpl -> RMarkdownPsiUtil.getExecutableFenceLabel(element)
+      is MarkdownCodeFence -> RMarkdownPsiUtil.getExecutableFenceLabel(element)
       else -> "unknown"
     }
   }

@@ -18,7 +18,7 @@ import com.intellij.psi.util.PsiUtilCore
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypeSets.*
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.MarkdownPsiElement
-import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFenceImpl
+import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownFile
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownHeader
 import java.util.regex.Matcher
@@ -92,7 +92,7 @@ object RMarkdownPsiUtil {
    *          2) empty string if the fence is unnamed or
    *          3) `null` if it is not executable fence at all
    */
-  fun getExecutableFenceLabel(fence: MarkdownCodeFenceImpl): String {
+  fun getExecutableFenceLabel(fence: MarkdownCodeFence): String {
     val label = getExecutableFenceLabelInt(fence) ?: return ""
     if (label == "") {
       val unnamedFences = getOrCalculateUnnamedExecutableFences(fence.containingFile)
@@ -181,7 +181,7 @@ object RMarkdownPsiUtil {
     return element is MarkdownHeader // || isExeRFence(element)
   }
 
-  private fun isExeRFence(element: PsiElement?) = element is MarkdownCodeFenceImpl && getExecutableFenceLabelInt(element) != null
+  private fun isExeRFence(element: PsiElement?) = element is MarkdownCodeFence && getExecutableFenceLabelInt(element) != null
 
   /**
    * @return There are 3 variants:
@@ -206,7 +206,7 @@ object RMarkdownPsiUtil {
     val rmdDoc = file.firstChild
     var id = 1
     for (child in rmdDoc.children) {
-      if (child is MarkdownCodeFenceImpl && getExecutableFenceLabelInt(child) == "") {
+      if (child is MarkdownCodeFence && getExecutableFenceLabelInt(child) == "") {
         result[child] = id++
       }
     }

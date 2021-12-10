@@ -20,7 +20,7 @@ import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.util.PsiTreeUtil
 import org.intellij.datavis.r.inlays.InlaysManager
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
-import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFenceImpl
+import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
 import org.jetbrains.plugins.notebooks.editor.NotebookIntervalPointer
 import org.jetbrains.r.actions.*
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
@@ -127,7 +127,7 @@ private fun getCodeFenceByEvent(e: AnActionEvent): PsiElement? {
                ?: return null
   val file = e.psiFile ?: return null
   val markdown = SourceTreeToPsiMap.treeElementToPsi(file.node.findLeafElementAt(offset))
-  val markdownCodeFence = PsiTreeUtil.getParentOfType(markdown, MarkdownCodeFenceImpl::class.java) ?: return null
+  val markdownCodeFence = PsiTreeUtil.getParentOfType(markdown, MarkdownCodeFence::class.java) ?: return null
   if (markdownCodeFence.children.size < 2) return null
   return markdownCodeFence.children[1].takeIf {  isChunkFenceLang(it) }
 }

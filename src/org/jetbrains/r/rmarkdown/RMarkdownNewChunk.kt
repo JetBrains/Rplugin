@@ -16,7 +16,7 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.impl.source.tree.TreeUtil.findLastLeaf
 import com.intellij.psi.util.PsiTreeUtil
-import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFenceImpl
+import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.caret
 import org.jetbrains.r.actions.editor
@@ -36,7 +36,7 @@ class RMarkdownNewChunk : DumbAwareAction(), RPromotedAction {
     }
     else {
       val leafAtCaret = (atOffset(offset) ?: findLastLeaf(file.node))?.psi ?: return
-      val markdownCodeFence = PsiTreeUtil.getParentOfType(leafAtCaret, MarkdownCodeFenceImpl::class.java)
+      val markdownCodeFence = PsiTreeUtil.getParentOfType(leafAtCaret, MarkdownCodeFence::class.java)
 
       whereToInsert = when {
         markdownCodeFence != null -> markdownCodeFence.textRange.endOffset

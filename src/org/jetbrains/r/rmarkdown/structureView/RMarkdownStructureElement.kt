@@ -16,7 +16,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.PsiFileImpl
-import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFenceImpl
+import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
 import org.intellij.plugins.markdown.structureView.MarkdownBasePresentation
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.psi.RStructureViewElement
@@ -50,7 +50,7 @@ class RMarkdownStructureElement internal constructor(element: PsiElement) : PsiT
 
     val itemPresent = (element as? NavigationItem)?.presentation
     if (itemPresent != null) {
-      return if (element is MarkdownCodeFenceImpl) {
+      return if (element is MarkdownCodeFence) {
         val label = RMarkdownPsiUtil.getExecutableFenceLabel(element)
         object : ItemPresentation {
           override fun getLocationString(): String? = itemPresent.locationString
@@ -78,7 +78,7 @@ class RMarkdownStructureElement internal constructor(element: PsiElement) : PsiT
     val result = ArrayList<StructureViewTreeElement>()
 
     val element: PsiElement? = this.element
-    if (element is MarkdownCodeFenceImpl) {
+    if (element is MarkdownCodeFence) {
       val rFence = element.node.findChildByType(R_FENCE_ELEMENT_TYPE)
       if (rFence != null) {
         val guestRoots = getFenceGuestRRoots(rFence.textRange)
