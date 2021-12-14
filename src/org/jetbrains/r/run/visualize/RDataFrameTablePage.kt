@@ -30,8 +30,8 @@ import com.intellij.ui.SideBorder
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
-import icons.VisualisationIcons
 import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.plugins.notebooks.visualization.VisualisationIcons
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.filters.gui.TableFilterHeader
 import org.jetbrains.plugins.notebooks.visualization.r.ui.MaterialTableUtils

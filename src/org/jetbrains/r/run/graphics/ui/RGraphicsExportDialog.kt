@@ -16,8 +16,8 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.DocumentAdapter
 import com.intellij.util.ui.JBUI
-import icons.VisualisationIcons
 import org.jetbrains.annotations.Nls
+import org.jetbrains.plugins.notebooks.visualization.VisualisationIcons
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.BorderlessDialogWrapper
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.DialogUtil
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.GraphicsPanel
