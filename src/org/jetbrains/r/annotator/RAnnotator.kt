@@ -25,6 +25,9 @@ class RAnnotator : Annotator {
         builder = holder.newAnnotation(info.severity, info.description)
       }
       builder.range(info.range)
+      if (info.forcedTextAttributesKey != null) {
+        builder.textAttributes(info.forcedTextAttributesKey)
+      }
       if (info.forcedTextAttributes != null) {
         builder.enforcedTextAttributes(info.forcedTextAttributes)
       }
