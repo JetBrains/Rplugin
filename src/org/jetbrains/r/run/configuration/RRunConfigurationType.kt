@@ -8,6 +8,6 @@ import org.jetbrains.r.RBundle
 
 private const val ID = "R"
 
-class RRunConfigurationType : SimpleConfigurationType(ID, RBundle.message("r.run.configuration.type.name"), null, NotNullLazyValue.createValue { RIcons.R }) {
+class RRunConfigurationType : SimpleConfigurationType(ID, RBundle.message("r.run.configuration.type.name"), null, NotNullLazyValue.lazy { RIcons.R }) {
   override fun createTemplateConfiguration(project: Project) = RRunConfiguration(project, this)
 }
