@@ -104,7 +104,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
   }
 
   companion object {
-    internal const val ID = "R Console"
+    internal const val ID = "R_Console"
     private val CONSOLE_CONTENT_KEY = Key.create<Unit>("org.jetbrains.r.console.content.console")
     private val CONSOLE_PLACEHOLDER_KEY = Key.create<Unit>("org.jetbrains.r.console.content.placeholder")
 

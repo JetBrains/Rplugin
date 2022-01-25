@@ -53,7 +53,7 @@ class RJobsToolWindowFactory : ToolWindowFactory, DumbAware {
   }
 
   companion object {
-    internal const val ID = "R Jobs"
+    internal const val ID = "R_Jobs"
 
     fun focusOnJobs(project: Project) {
       getRJobsToolWindows(project)?.show(null)
