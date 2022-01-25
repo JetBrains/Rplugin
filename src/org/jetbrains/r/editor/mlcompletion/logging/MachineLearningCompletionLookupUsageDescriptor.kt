@@ -4,38 +4,45 @@ import com.intellij.codeInsight.lookup.Lookup
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.impl.LookupImpl
 import com.intellij.codeInsight.lookup.impl.LookupUsageDescriptor
-import com.intellij.internal.statistic.eventLog.FeatureUsageData
+import com.intellij.internal.statistic.eventLog.events.EventPair
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.isMergedLookupElement
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.isRLookupElement
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.isRMachineLearningLookupElement
+import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionCollectorExtension.Companion.contextType
+import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionCollectorExtension.Companion.mlAppVersion
+import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionCollectorExtension.Companion.mlEnabled
+import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionCollectorExtension.Companion.mlModelVersion
+import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionCollectorExtension.Companion.mlNProposedVariants
+import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionCollectorExtension.Companion.mlTimeMs
+import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionCollectorExtension.Companion.lookupElementOrigin
+import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionCollectorExtension.Companion.responseReceived
 import org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupStatistics.Companion.rStatistics
 
 class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
 
-  private enum class RLookupElementOrigin { ORIGINAL, ML_COMPLETION, MERGED }
+  internal enum class RLookupElementOrigin { ORIGINAL, ML_COMPLETION, MERGED }
 
   override fun getExtensionKey(): String = "r_ml"
 
-  override fun fillUsageData(lookup: Lookup, usageData: FeatureUsageData) {
+  override fun getAdditionalUsageData(lookup: Lookup): List<EventPair<*>> {
     val selectedElement = lookup.currentItem
     if (!lookup.isCompletion || lookup !is LookupImpl
         || selectedElement == null || !selectedElement.isRLookupElement()) {
-      return
+      return emptyList()
     }
+    val data = ArrayList<EventPair<*>>()
+    data.add(lookupElementOrigin.with(selectedElement.origin))
 
-    usageData.apply {
-      addData("r_lookup_element_origin", selectedElement.origin.name)
-
-      lookup.rStatistics?.let { statistics ->
-        addData("r_ml_response_received", statistics.mlCompletionResponseReceived)
-        addData("r_context_type", statistics.completionContextType.name)
-        addData("r_ml_time_ms", statistics.mlCompletionTimeMs)
-        addData("r_ml_n_proposed_variants", statistics.mlCompletionNProposedVariants)
-        addData("r_ml_enabled", statistics.mlCompletionIsEnabled)
-        addData("r_ml_app_version", statistics.mlCompletionAppVersion)
-        addData("r_ml_model_version", statistics.mlCompletionModelVersion)
-      }
+    lookup.rStatistics?.let { statistics ->
+      data.add(responseReceived.with(statistics.mlCompletionResponseReceived))
+      data.add(contextType.with(statistics.completionContextType))
+      data.add(mlTimeMs.with(statistics.mlCompletionTimeMs))
+      data.add(mlNProposedVariants.with(statistics.mlCompletionNProposedVariants))
+      data.add(mlEnabled.with(statistics.mlCompletionIsEnabled))
+      data.add(mlAppVersion.with(statistics.mlCompletionAppVersion))
+      data.add(mlModelVersion.with(statistics.mlCompletionModelVersion))
     }
+    return data
   }
 
   private val LookupElement.origin: RLookupElementOrigin
