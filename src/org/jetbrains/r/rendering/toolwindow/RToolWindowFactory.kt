@@ -20,6 +20,7 @@ import com.intellij.ui.content.ContentFactory
 import com.intellij.webcore.packaging.PackagesNotificationPanel
 import icons.RIcons
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.packages.build.ui.RPackageBuildToolWindow
@@ -74,12 +75,12 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
   }
 
   companion object {
-    const val PLOTS = "Plots"
-    const val VIEWER = "Viewer"
-    const val PACKAGES = "Packages"
-    const val HELP = "Documentation"
-    const val BUILD = "Build"
-    const val ID = "R Tools"
+    val PLOTS = RBundle.message("r.toolwindow.Plots")
+    val VIEWER = RBundle.message("r.toolwindow.Viewer")
+    val PACKAGES = RBundle.message("r.toolwindow.Packages")
+    val HELP = RBundle.message("r.toolwindow.Documentation")
+    val BUILD = RBundle.message("r.toolwindow.Build")
+    val ID = "R_Tools"
 
     fun showDocumentation(psiElement: PsiElement) {
       if (ApplicationManager.getApplication().isUnitTestMode) return
