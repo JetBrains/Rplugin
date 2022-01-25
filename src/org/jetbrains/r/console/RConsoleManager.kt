@@ -183,7 +183,7 @@ class RConsoleManager(private val project: Project) {
           result.setError(it)
         }
       }.onError {
-        result.setError("Cannot run console until path to viable R interpreter is specified")
+        result.setError(RBundle.message("r.console.missing.path.to.r.message"))
       }
       return result
     }
