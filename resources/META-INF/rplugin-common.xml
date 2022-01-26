@@ -521,8 +521,8 @@ You can find the source code in the following repositories:
         <!-- Settings -->
         <projectConfigurable groupId="project"
                              id="org.jetbrains.r.configuration.RSettingsProjectConfigurable"
-                             bundle="messages.AppEngineBundle"
-                             key="configurable.AppEngineModulesConfigurable.display.name"
+                             bundle="messages.RPluginBundle"
+                             key="r.settings"
                              instance="org.jetbrains.r.configuration.RSettingsProjectConfigurable"/>
 
         <applicationService serviceImplementation="org.jetbrains.r.settings.RInterpreterSettings"/>
