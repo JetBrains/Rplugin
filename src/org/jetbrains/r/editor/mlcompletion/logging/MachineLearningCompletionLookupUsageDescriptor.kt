@@ -1,8 +1,8 @@
 package org.jetbrains.r.editor.mlcompletion.logging
 
-import com.intellij.codeInsight.lookup.Lookup
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.impl.LookupImpl
+import com.intellij.codeInsight.lookup.impl.LookupResultDescriptor
 import com.intellij.codeInsight.lookup.impl.LookupUsageDescriptor
 import com.intellij.internal.statistic.eventLog.events.EventPair
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionUtils.isMergedLookupElement
@@ -24,7 +24,8 @@ class MachineLearningCompletionLookupUsageDescriptor : LookupUsageDescriptor {
 
   override fun getExtensionKey(): String = "r_ml"
 
-  override fun getAdditionalUsageData(lookup: Lookup): List<EventPair<*>> {
+  override fun getAdditionalUsageData(lookupResultDescriptor: LookupResultDescriptor): List<EventPair<*>> {
+    val lookup = lookupResultDescriptor.lookup
     val selectedElement = lookup.currentItem
     if (!lookup.isCompletion || lookup !is LookupImpl
         || selectedElement == null || !selectedElement.isRLookupElement()) {
