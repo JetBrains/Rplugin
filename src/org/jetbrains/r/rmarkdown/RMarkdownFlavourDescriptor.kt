@@ -15,7 +15,9 @@ import org.intellij.markdown.flavours.gfm.table.GitHubTableMarkerProvider
 import org.intellij.markdown.html.GeneratingProvider
 import org.intellij.markdown.lexer.MarkdownLexer
 import org.intellij.markdown.parser.*
+import org.intellij.markdown.parser.constraints.CommonMarkdownConstraints
 import org.intellij.markdown.parser.constraints.MarkdownConstraints
+import org.intellij.markdown.parser.constraints.getCharsEaten
 import org.intellij.markdown.parser.markerblocks.MarkerBlockProvider
 import org.intellij.markdown.parser.markerblocks.providers.*
 import org.intellij.markdown.parser.sequentialparsers.SequentialParser
@@ -41,7 +43,7 @@ object RMarkdownFlavourDescriptor : CommonMarkFlavourDescriptor() {
 
 private object RMarkdownProcessFactory : MarkerProcessorFactory {
   override fun createMarkerProcessor(productionHolder: ProductionHolder): MarkerProcessor<*> {
-    return RMarkdownMarkerProcessor(productionHolder, MarkdownConstraints.BASE)
+    return RMarkdownMarkerProcessor(productionHolder, CommonMarkdownConstraints.BASE)
   }
 }
 
@@ -60,7 +62,7 @@ private class RMarkdownMarkerProcessor(productionHolder: ProductionHolder,
       ListMarkerProvider(),
       HtmlBlockProvider(),
       GitHubTableMarkerProvider(),
-      AtxHeaderProvider(false),
+      AtxHeaderProvider(),
       CommentAwareLinkReferenceDefinitionProvider()
     )
 
@@ -82,7 +84,8 @@ private class RMarkdownMarkerProcessor(productionHolder: ProductionHolder,
       return
     }
 
-    val type = when (constraints.getLastType()) {
+    check(constraints.types.isNotEmpty())
+    val type = when (constraints.types.last()) {
       '>' ->
         MarkdownTokenTypes.BLOCK_QUOTE
       '.', ')' ->
