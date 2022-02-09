@@ -37,8 +37,8 @@ class RResizablePanel(
     minimumSize = Dimension(MIN_WIDTH, MIN_HEIGHT)
     addMouseListener(listener)
     addMouseMotionListener(listener)
-    add(child, PALETTE_LAYER)
-    add(manipulator, DEFAULT_LAYER)
+    add(child, PALETTE_LAYER as Any)
+    add(manipulator, DEFAULT_LAYER as Any)
     updateChildrenBounds(width, height)
   }
 
