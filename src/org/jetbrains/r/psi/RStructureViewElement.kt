@@ -95,7 +95,7 @@ class RStructureViewElement(private val element: PsiElement) : StructureViewTree
     return when {
       element is RAssignmentStatement && element.assignedValue is RFunctionExpression -> PlatformIcons.FUNCTION_ICON
       element is RAssignmentStatement -> PlatformIcons.VARIABLE_ICON
-      open -> IconLoader.getIcon("/nodes/folderOpen.png")
+      open -> IconLoader.getIcon("nodes/folderOpen.png", RStructureViewElement::class.java.classLoader)
       else -> PlatformIcons.FOLDER_ICON
     }
   }
