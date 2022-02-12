@@ -16,7 +16,7 @@ import java.io.PrintWriter
 import java.nio.charset.StandardCharsets
 
 val grpcVersion = "1.31.1"
-val protobufVersion = "3.15.8"
+val protobufVersion = "3.19.4"
 
 val isTeamCity = System.getenv("RPLUGIN_CI") == "TeamCity"
 
