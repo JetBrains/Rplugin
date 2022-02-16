@@ -5,6 +5,7 @@
 
 package org.jetbrains.r.psi.impl;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.stubs.IStubElementType;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +17,7 @@ import org.jetbrains.r.psi.stubs.RAssignmentStub;
 public abstract class RAssignmentBase extends RBaseElementImpl<RAssignmentStub>
                                       implements RExpression, PsiNameIdentifierOwner {
 
-    RAssignmentBase(@NotNull com.intellij.lang.ASTNode node) {
+    RAssignmentBase(@NotNull ASTNode node) {
         super(node);
     }
 

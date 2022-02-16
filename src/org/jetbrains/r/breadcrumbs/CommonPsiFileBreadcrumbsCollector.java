@@ -26,6 +26,7 @@ import com.intellij.xml.breadcrumbs.BreadcrumbsForceShownSettings;
 import com.intellij.xml.breadcrumbs.BreadcrumbsPresentationProvider;
 import com.intellij.xml.breadcrumbs.BreadcrumbsUtilEx;
 import com.intellij.xml.breadcrumbs.CrumbPresentation;
+import com.intellij.xml.breadcrumbs.PsiFileBreadcrumbsCollector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,11 +36,12 @@ import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 /**
- * It is copy-paste from {@link com.intellij.xml.breadcrumbs.PsiFileBreadcrumbsCollector} with customizable crumbs
- * @see CommonPsiFileBreadcrumbsCollector#createCrumb(com.intellij.psi.PsiElement, com.intellij.ui.breadcrumbs.BreadcrumbsProvider, com.intellij.xml.breadcrumbs.CrumbPresentation)
+ * It is copy-paste from {@link PsiFileBreadcrumbsCollector} with customizable crumbs
+ *
+ * @see CommonPsiFileBreadcrumbsCollector#createCrumb(PsiElement, BreadcrumbsProvider, CrumbPresentation)
  */
 public class CommonPsiFileBreadcrumbsCollector extends FileBreadcrumbsCollector {
-  private final static Logger LOG = Logger.getInstance(com.intellij.xml.breadcrumbs.PsiFileBreadcrumbsCollector.class);
+  private final static Logger LOG = Logger.getInstance(PsiFileBreadcrumbsCollector.class);
 
   private final Project myProject;
 
@@ -97,7 +99,6 @@ public class CommonPsiFileBreadcrumbsCollector extends FileBreadcrumbsCollector 
         propertyChanged(event);
       }
     }, disposable);
-
   }
 
   @Override
@@ -129,8 +130,7 @@ public class CommonPsiFileBreadcrumbsCollector extends FileBreadcrumbsCollector 
     return new CommonPsiCrumb(element, provider, presentation);
   }
 
-  @Nullable
-  private static CrumbPresentation[] getCrumbPresentations(final PsiElement[] elements) {
+  private static CrumbPresentation @Nullable [] getCrumbPresentations(final PsiElement[] elements) {
     for (BreadcrumbsPresentationProvider provider : BreadcrumbsPresentationProvider.EP_NAME.getExtensionList()) {
       final CrumbPresentation[] presentations = provider.getCrumbPresentations(elements);
       if (presentations != null) {
@@ -248,7 +248,9 @@ public class CommonPsiFileBreadcrumbsCollector extends FileBreadcrumbsCollector 
   }
 
   @Nullable
-  private static BreadcrumbsProvider findProviderForElement(@NotNull PsiElement element, BreadcrumbsProvider defaultProvider, boolean checkSettings) {
+  private static BreadcrumbsProvider findProviderForElement(@NotNull PsiElement element,
+                                                            BreadcrumbsProvider defaultProvider,
+                                                            boolean checkSettings) {
     Language language = element.getLanguage();
     if (checkSettings && !BreadcrumbsUtilEx.isBreadcrumbsShownFor(language)) return defaultProvider;
     BreadcrumbsProvider provider = BreadcrumbsUtil.getInfoProvider(language);
@@ -264,12 +266,11 @@ public class CommonPsiFileBreadcrumbsCollector extends FileBreadcrumbsCollector 
     return elements;
   }
 
-  @Nullable
-  public static PsiElement[] getLinePsiElements(Document document,
-                                                int offset,
-                                                VirtualFile file,
-                                                Project project,
-                                                BreadcrumbsProvider infoProvider) {
+  public static PsiElement @Nullable [] getLinePsiElements(Document document,
+                                                           int offset,
+                                                           VirtualFile file,
+                                                           Project project,
+                                                           BreadcrumbsProvider infoProvider) {
     Collection<Pair<PsiElement, BreadcrumbsProvider>> pairs = getLineElements(document, offset, file, project, infoProvider, false);
     return pairs == null ? null : toPsiElementArray(pairs);
   }

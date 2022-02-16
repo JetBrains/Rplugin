@@ -63,7 +63,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RInstalledPackagesPanelBase extends JPanel {
-  private static final Logger LOG = Logger.getInstance(com.intellij.webcore.packaging.InstalledPackagesPanel.class);
+  private static final Logger LOG = Logger.getInstance(InstalledPackagesPanel.class);
 
   private static final String LOADING_PACKAGES_LIST_TITLE = "Loading Packages List";
 
@@ -74,13 +74,13 @@ public class RInstalledPackagesPanelBase extends JPanel {
   private static final String OPEN_LINK_ACTION_ID = "org.jetbrains.r.packages.remote.ui.ROpenLinkAction";
   private static final String UNINSTALL_ACTION_ID = "org.jetbrains.r.packages.remote.ui.RUninstallAction";
 
-  public static int IS_LOADED_COLUMN = 0;
-  public static int PACKAGE_NAME_COLUMN = 1;
-  public static int DESCRIPTION_COLUMN = 2;
-  public static int VERSION_COLUMN = 3;
-  public static int BROWSE_COLUMN = 4;
-  public static int UNINSTALL_COLUMN = 5;
-  public  static String TITLE = "Title";
+  public static final int IS_LOADED_COLUMN = 0;
+  public static final int PACKAGE_NAME_COLUMN = 1;
+  public static final int DESCRIPTION_COLUMN = 2;
+  public static final int VERSION_COLUMN = 3;
+  public static final int BROWSE_COLUMN = 4;
+  public static final int UNINSTALL_COLUMN = 5;
+  public static final String TITLE = "Title";
 
   private final AnActionButton myUpgradeButton;
   protected final AnActionButton myInstallButton;
@@ -282,7 +282,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
   }
 
   @NotNull
-  private Point getMouseColumnRow(Point screen, JTable table) {
+  private static Point getMouseColumnRow(Point screen, JTable table) {
     Point location = new Point(screen);
     SwingUtilities.convertPointFromScreen(location, table);
     int columnAtPoint = table.columnAtPoint(location);
