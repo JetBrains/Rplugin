@@ -268,7 +268,7 @@ object RInteropUtil {
 
   fun getSystemSuffix(operatingSystem: OperatingSystem): String = when (operatingSystem) {
     OperatingSystem.LINUX -> "x64-linux"
-    OperatingSystem.MAC_OS -> if (CpuArch.isArm64()) "x64-osx" else "arm64-osx"
+    OperatingSystem.MAC_OS -> if (CpuArch.isArm64()) "arm64-osx" else "x64-osx"
     OperatingSystem.WINDOWS -> "x64-windows.exe"
   }
 
