@@ -7,29 +7,25 @@ import com.intellij.openapi.editor.Document
 import com.intellij.psi.tree.IElementType
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.lexer.MarkdownLexerAdapter
-import org.jetbrains.plugins.notebooks.visualization.NonIncrementalCellLines
+import org.jetbrains.plugins.notebooks.visualization.IntervalsGenerator
+import org.jetbrains.plugins.notebooks.visualization.NonIncrementalCellLinesProvider
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLinesLexer
-import org.jetbrains.plugins.notebooks.visualization.NotebookCellLinesProvider
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
-class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesLexer {
-  private fun getCellType(tokenType: IElementType): NotebookCellLines.CellType? =
-    when (tokenType) {
-      RMarkdownCellType.MARKDOWN_CELL.elementType -> NotebookCellLines.CellType.MARKDOWN
-      RMarkdownCellType.CODE_CELL.elementType -> NotebookCellLines.CellType.CODE
-      else -> null
-    }
+class RMarkdownCellLinesProvider : NonIncrementalCellLinesProvider(RMarkdownIntervalsGenerator())
 
-  override fun shouldParseWholeFile(): Boolean = true
 
-  override fun create(document: Document): NotebookCellLines =
-    NonIncrementalCellLines.get(document, generateIntervals)
+private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLinesLexer {
+  override fun makeIntervals(document: Document): List<NotebookCellLines.Interval> {
+    val markers = markerSequence(document.charsSequence, 0, 0).toList()
+    return markers.map { toInterval(document, it) }
+  }
 
   override fun markerSequence(chars: CharSequence, ordinalIncrement: Int, offsetIncrement: Int): Sequence<NotebookCellLines.Marker> =
     sequence {
       var lastMarker: NotebookCellLines.Marker? = null
-      val seq = NotebookCellLinesLexer.defaultMarkerSequence({ RMarkdownMergingLangLexer() }, this@RMarkdownCellLinesProvider::getCellType,
+      val seq = NotebookCellLinesLexer.defaultMarkerSequence({ RMarkdownMergingLangLexer() }, ::getCellType,
                                                              chars, ordinalIncrement, offsetIncrement)
 
       for (marker in seq) {
@@ -56,12 +52,14 @@ class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesL
       }
     }
 
-  private val generateIntervals: (Document) -> List<NotebookCellLines.Interval> =
-    { document ->
-      val markers = markerSequence(document.charsSequence, 0, 0).toList()
-      markers.map { toInterval(document, it) }
+  private fun getCellType(tokenType: IElementType): NotebookCellLines.CellType? =
+    when (tokenType) {
+      RMarkdownCellType.MARKDOWN_CELL.elementType -> NotebookCellLines.CellType.MARKDOWN
+      RMarkdownCellType.CODE_CELL.elementType -> NotebookCellLines.CellType.CODE
+      else -> null
     }
 }
+
 
 internal enum class RMarkdownCellType(val debugName: String) {
   MARKDOWN_CELL("MARKDOWN_CELL"),
