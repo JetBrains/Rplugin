@@ -17,6 +17,7 @@ import org.jetbrains.r.RLanguage
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import java.util.function.Supplier
 
+@Deprecated("V2 implementation doesn't allow customization of the tool window in plugins")
 class RDocToolWindowManager : AbstractDocToolWindowManager() {
 
   override fun createToolWindow(element: PsiElement, originalElement: PsiElement?, documentationManager: DocumentationManager): ToolWindow {
