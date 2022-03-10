@@ -804,7 +804,7 @@ You can find the source code in the following repositories:
 
       <!-- FUS -->
       <lookup.usageDetails implementation="org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupUsageDescriptor"/>
-      <statistics.collectorExtension implementation="org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionCollectorExtension"/>
+      <statistics.collectorExtension implementation="org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupUsageDescriptor$MachineLearningCompletionCollectorExtension"/>
     </extensions>
 
   <extensions defaultExtensionNs="org.intellij.intelliLang">
