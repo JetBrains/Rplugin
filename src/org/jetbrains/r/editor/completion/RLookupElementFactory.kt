@@ -14,9 +14,7 @@ import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.ClassConditionKey
 import com.intellij.openapi.util.TextRange
-import icons.RIcons
 import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.associatedS4GenericInfo
-import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpResponse
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.psi.TableColumnInfo
@@ -25,7 +23,6 @@ import org.jetbrains.r.refactoring.RNamesValidator
 import javax.swing.Icon
 import kotlin.math.min
 
-const val MACHINE_LEARNING_PRIORITY = 150.0
 const val ARGUMENT_VALUE_PRIORITY = 140.0
 const val LIBRARY_METHOD_PRIORITY = 120.0
 const val TABLE_MANIPULATION_PRIORITY = 110.0
@@ -82,13 +79,6 @@ interface RLookupElementInsertHandler {
 class REmptyLookupElementInsertHandler : RLookupElementInsertHandler {
   override fun getInsertHandlerForAssignment(assignment: RAssignmentStatement) = BasicInsertHandler<LookupElement>()
   override fun getInsertHandlerForLookupString(lookupString: String) = BasicInsertHandler<LookupElement>()
-}
-
-class RMachineLearningCompletionLookupElement(delegate: LookupElement) : LookupElementDecorator<LookupElement>(delegate) {
-  companion object {
-    val CLASS_CONDITION_KEY: ClassConditionKey<RMachineLearningCompletionLookupElement> =
-      ClassConditionKey.create(RMachineLearningCompletionLookupElement::class.java)
-  }
 }
 
 class RLookupElementFactory(private val functionInsertHandler: RLookupElementInsertHandler = REmptyLookupElementInsertHandler(),
@@ -204,12 +194,6 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
       RLookupElement(lookupString, bold, icon, packageName = packageName, itemText = "\"$lookupString\"", tailText = tailText),
       QUOTE_INSERT_HANDLER, priority
     )
-  }
-
-  fun createMachineLearningCompletionLookupElement(variant: MachineLearningCompletionHttpResponse.CompletionVariant): LookupElement {
-    val element = RLookupElement(variant.text, true, RIcons.MachineLearning)
-    val prioritized = createLookupElementWithPriority(element, BasicInsertHandler(), variant.score + MACHINE_LEARNING_PRIORITY)
-    return RMachineLearningCompletionLookupElement(prioritized)
   }
 
   private fun createOperatorLookupElement(functionAssignment: RAssignmentStatement, isLocal: Boolean): LookupElement {

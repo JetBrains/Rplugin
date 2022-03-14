@@ -369,21 +369,6 @@ You can find the source code in the following repositories:
       <editor.outputs.notebookOutputDataKeyExtractor implementation="org.jetbrains.r.editor.ui.RMarkdownOutputDataKeyExtractor"/>
     </extensions>
 
-    <applicationListeners>
-      <listener class="org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionCheckForUpdatesOnEnabledListener"
-                topic="org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener"/>
-      <listener class="org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionProjectOpenListener"
-                topic="com.intellij.openapi.project.ProjectManagerListener"
-                activeInHeadlessMode="false"
-                activeInTestMode="false"/>
-    </applicationListeners>
-
-    <projectListeners>
-      <listener class="org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupTracker"
-                topic="com.intellij.codeInsight.lookup.LookupManagerListener"
-                activeInTestMode="false"/>
-    </projectListeners>
-
     <extensions defaultExtensionNs="com.intellij">
         <lang.elementManipulator forClass="org.jetbrains.r.psi.api.RStringLiteralExpression"
                                  implementationClass="org.jetbrains.r.psi.impl.RStringLiteralManipulator"/>
@@ -474,7 +459,6 @@ You can find the source code in the following repositories:
         <usageTypeProvider implementation="org.jetbrains.r.roxygen.usage.RoxygenUsageTypeProvider"/>
         <targetElementEvaluator language="R" implementationClass="org.jetbrains.r.codeInsight.findUsages.RTargetElementEvaluator"/>
 
-        <completion.contributor language="R" implementationClass="org.jetbrains.r.editor.RMachineLearningCompletionContributor"/>
         <completion.contributor language="R" implementationClass="org.jetbrains.r.editor.RCompletionContributor"/>
         <completion.contributor language="Roxygen" implementationClass="org.jetbrains.r.roxygen.RoxygenCompletionContributor"/>
         <completion.contributor language="Markdown" implementationClass="org.jetbrains.r.editor.RMarkdownCompletionContributor"/>
@@ -530,18 +514,6 @@ You can find the source code in the following repositories:
         <applicationService serviceImplementation="org.jetbrains.r.settings.REditorSettings"/>
 
         <applicationService serviceImplementation="org.jetbrains.r.packages.remote.RPackageDescriptionCache"/>
-
-        <applicationService serviceImplementation="org.jetbrains.r.settings.MachineLearningCompletionSettings"/>
-
-        <codeCompletionConfigurable instance="org.jetbrains.r.settings.MachineLearningCompletionConfigurable"/>
-
-        <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.update.MachineLearningCompletionDownloadModelService"/>
-
-        <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService"/>
-
-        <applicationService serviceInterface="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionLocalServerService"
-                            serviceImplementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionLocalServerServiceImpl"
-                            testServiceImplementation="org.jetbrains.r.mock.MockMachineLearningCompletionServer"/>
 
         <projectService serviceInterface="org.jetbrains.r.interpreter.RInterpreterManager"
                         serviceImplementation="org.jetbrains.r.interpreter.RInterpreterManagerImpl"/>
@@ -793,7 +765,6 @@ You can find the source code in the following repositories:
       <notificationGroup id="RDataFrameViewer" displayType="BALLOON"/>
       <notificationGroup id="RMarkdownRenderError" displayType="BALLOON"/>
       <notificationGroup id="RMarkdownRunChunkStatus" displayType="BALLOON"/>
-      <notificationGroup id="RMachineLearningCompletion" displayType="BALLOON"/>
 
       <iconProvider implementation="org.jetbrains.r.icons.RProjectIconProvider" order="first"/>
 
@@ -802,9 +773,6 @@ You can find the source code in the following repositories:
       <runConfigurationProducer implementation="org.jetbrains.r.run.configuration.RRunConfigurationProducer"/>
       <programRunner implementation="org.jetbrains.r.run.configuration.RProgramRunner"/>
 
-      <!-- FUS -->
-      <lookup.usageDetails implementation="org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupUsageDescriptor"/>
-      <statistics.collectorExtension implementation="org.jetbrains.r.editor.mlcompletion.logging.MachineLearningCompletionLookupUsageDescriptor$MachineLearningCompletionCollectorExtension"/>
     </extensions>
 
   <extensions defaultExtensionNs="org.intellij.intelliLang">
