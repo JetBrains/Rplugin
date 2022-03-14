@@ -2,6 +2,7 @@
     <dependencies>
         <module name="intellij.notebooks.visualization"/>
         <plugin id="org.intellij.plugins.markdown"/>
+        <plugin id="org.intellij.intelliLang"/>
     </dependencies>
 
     <description><![CDATA[
