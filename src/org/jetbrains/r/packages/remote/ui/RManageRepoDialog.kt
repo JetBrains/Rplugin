@@ -108,7 +108,7 @@ class RManageRepoDialog(project: Project, private val onModified: (Boolean) -> U
 
   private fun addAction() {
     val url = Messages.showInputDialog(ADD_REPOSITORY_MESSAGE, ADD_REPOSITORY_TITLE, null)
-    if (url != null && !url.isBlank()) {
+    if (!url.isNullOrBlank()) {
       list.addItem(RUserRepository(url), url, true)
     }
   }
@@ -143,7 +143,7 @@ class RManageRepoDialog(project: Project, private val onModified: (Boolean) -> U
         return true
       }
     })
-    if (url != null && url.isNotBlank() && oldValue.url != url) {
+    if (!url.isNullOrBlank() && oldValue.url != url) {
       if (oldValue is RUserRepository) {  // Double check
         list.updateItem(oldValue, RUserRepository(url), url)
       }

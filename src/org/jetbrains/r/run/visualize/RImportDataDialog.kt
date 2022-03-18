@@ -215,7 +215,7 @@ abstract class RImportDataDialog(
 
   private fun updateVariableName() {
     var name = filePath?.let { FileUtilRt.getNameWithoutExtension(PathUtil.getFileName(it.path)) }
-    if (name == null || name.isBlank()) {
+    if (name.isNullOrBlank()) {
       name = DEFAULT_VARIABLE_NAME
     } else {
       name = replaceRestrictedCharacters(name)
