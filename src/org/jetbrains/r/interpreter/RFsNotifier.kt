@@ -169,7 +169,7 @@ class RFsNotifier(private val interpreter: RInterpreter): Disposable {
     private val LOG = Logger.getInstance(RLibraryWatcher::class.java)
 
     fun getFsNotifierExecutableName(operatingSystem: OperatingSystem) = when (operatingSystem) {
-      OperatingSystem.WINDOWS -> "fsnotifier-win.exe"
+      OperatingSystem.WINDOWS -> "fsnotifier-windows.exe"
       OperatingSystem.LINUX -> "fsnotifier-linux"
       OperatingSystem.MAC_OS -> "fsnotifier-osx"
     }
