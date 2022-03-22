@@ -22,18 +22,11 @@ import com.intellij.ui.breadcrumbs.BreadcrumbsUtil;
 import com.intellij.ui.components.breadcrumbs.Crumb;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.text.CharArrayUtil;
-import com.intellij.xml.breadcrumbs.BreadcrumbsForceShownSettings;
-import com.intellij.xml.breadcrumbs.BreadcrumbsPresentationProvider;
-import com.intellij.xml.breadcrumbs.BreadcrumbsUtilEx;
-import com.intellij.xml.breadcrumbs.CrumbPresentation;
-import com.intellij.xml.breadcrumbs.PsiFileBreadcrumbsCollector;
+import com.intellij.xml.breadcrumbs.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
+import java.util.*;
 
 /**
  * It is copy-paste from {@link PsiFileBreadcrumbsCollector} with customizable crumbs
@@ -109,7 +102,7 @@ public class CommonPsiFileBreadcrumbsCollector extends FileBreadcrumbsCollector 
     Collection<Pair<PsiElement, BreadcrumbsProvider>> pairs =
       getLineElements(document, offset, file, myProject, defaultInfoProvider, true);
 
-    if (pairs == null) return ContainerUtil.emptyIterable();
+    if (pairs == null) return Collections.emptyList();
 
     ArrayList<Crumb> result = new ArrayList<>(pairs.size());
     CrumbPresentation[] presentations = getCrumbPresentations(toPsiElementArray(pairs));
