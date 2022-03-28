@@ -10,6 +10,7 @@
             <include name="app.jar"/>
             <include name="rt.jar"/>
             <include name="util.jar"/>
+            <include name="util_rt.jar"/>
             <include name="winp-*.jar"/>
         </fileset>
     </path>
@@ -18,6 +19,7 @@
         <fileset dir="${dep.idea.lib.dir}">
             <include name="javac2.jar"/>
             <include name="util.jar"/>
+            <include name="util_rt.jar"/>
             <include name="asm-all.jar"/>
             <include name="jgoodies-forms.jar"/>
         </fileset>
