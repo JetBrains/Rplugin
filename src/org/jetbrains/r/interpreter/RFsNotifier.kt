@@ -9,6 +9,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
+import com.intellij.util.system.CpuArch
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.util.RPathUtil
@@ -91,7 +92,7 @@ class RFsNotifier(private val interpreter: RInterpreter): Disposable {
   }
 
   private fun runProcess(): ProcessHandler {
-    val executableName = getFsNotifierExecutableName(interpreter.hostOS)
+    val executableName = getFsNotifierExecutableName(interpreter.hostOS, interpreter.hostArch) ?: throw RuntimeException("fsnotifier is not supported for ${interpreter.hostOS} ${interpreter.hostArch}")
     val fsNotifierExecutable = RPluginUtil.findFileInRHelpers(executableName)
     if (!fsNotifierExecutable.exists()) {
       throw RuntimeException("fsNotifier: '$executableName' not found in helpers")
@@ -168,9 +169,13 @@ class RFsNotifier(private val interpreter: RInterpreter): Disposable {
   companion object {
     private val LOG = Logger.getInstance(RLibraryWatcher::class.java)
 
-    fun getFsNotifierExecutableName(operatingSystem: OperatingSystem) = when (operatingSystem) {
+    fun getFsNotifierExecutableName(operatingSystem: OperatingSystem, arch: CpuArch) = when (operatingSystem) {
       OperatingSystem.WINDOWS -> "fsnotifier-windows.exe"
-      OperatingSystem.LINUX -> "fsnotifier-linux"
+      OperatingSystem.LINUX -> when (arch) {
+        CpuArch.X86_64 -> "fsnotifier-linux"
+        CpuArch.ARM64 -> "fsnotifier-linux-aarch64"
+        else -> null
+      }
       OperatingSystem.MAC_OS -> "fsnotifier-osx"
     }
   }

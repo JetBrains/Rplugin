@@ -18,6 +18,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.system.CpuArch
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.compute
@@ -32,6 +33,7 @@ class RLocalInterpreterImpl(location: RLocalInterpreterLocation, project: Projec
   val interpreterPath = location.path
   override val basePath = project.basePath!!
   override val hostOS get() = OperatingSystem.current()
+  override val hostArch get() = CpuArch.CURRENT
   override val interpreterPathOnHost get() = interpreterPath
 
   override fun createRInteropForProcess(process: ProcessHandler, port: Int): RInterop {

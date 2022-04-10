@@ -15,6 +15,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.system.CpuArch
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
@@ -30,6 +31,8 @@ interface RInterpreter : RInterpreterInfo {
   val basePath: String
 
   val hostOS: OperatingSystem
+
+  val hostArch: CpuArch
 
   val interpreterPathOnHost: String
 
