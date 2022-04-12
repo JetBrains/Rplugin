@@ -87,5 +87,4 @@ private class TableFileEditor(private val tableFile: RTableVirtualFile) : UserDa
   override fun isModified(): Boolean = false
 
   override fun getBackgroundHighlighter(): BackgroundEditorHighlighter? = null
-  override fun getCurrentLocation(): FileEditorLocation? = null
 }
