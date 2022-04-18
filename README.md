@@ -8,7 +8,7 @@ can perform various statistical computing and enjoy your favorite
 features of the integrated development environment:
 
 - Coding assistance
-    - Error and syntax highlighting
+    - Error and syntax highlighting
     - Code completion
     - Intention actions and quick fixes
 
