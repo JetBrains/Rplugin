@@ -18,31 +18,32 @@ import org.jdom.JDOMException
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.RPluginUtil
 import java.net.URLEncoder
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 private const val KEY = "r.last.update.timestamp"
 
-class RUpdateComponent : EditorFactoryListener {
+internal class RUpdateComponent : EditorFactoryListener {
   override fun editorCreated(event: EditorFactoryEvent) {
     if (ApplicationManager.getApplication().isUnitTestMode) return
     val document = event.editor.document
 
     val file = FileDocumentManager.getInstance().getFile(document)
-    if (file != null && (file.fileType is RFileType || file.extension?.toLowerCase() == "rmd")) {
+    if (file != null && (file.fileType is RFileType || file.extension?.lowercase(Locale.getDefault()) == "rmd")) {
       checkForUpdates()
     }
   }
 
   private fun checkForUpdates() {
     val propertiesComponent = PropertiesComponent.getInstance()
-    val lastUpdate = propertiesComponent.getOrInitLong(KEY, 0)
+    val lastUpdate = propertiesComponent.getLong(KEY, 0)
     if (lastUpdate == 0L || System.currentTimeMillis() - lastUpdate > TimeUnit.DAYS.toMillis(1)) {
       ApplicationManager.getApplication().executeOnPooledThread {
         try {
           val buildNumber = ApplicationInfo.getInstance().build.asString()
           val plugin = RPluginUtil.getPlugin()
-          val pluginVersion = plugin.getVersion()
-          val pluginId = plugin.getPluginId().getIdString()
+          val pluginVersion = plugin.version
+          val pluginId = plugin.pluginId.idString
           val os = URLEncoder.encode(SystemInfo.OS_NAME + " " + SystemInfo.OS_VERSION, CharsetToolkit.UTF8)
           val uid = PluginDownloader.getMarketplaceDownloadsUUID()
           val url = "https://plugins.jetbrains.com/plugins/list" +
