@@ -1,6 +1,5 @@
 <idea-plugin allow-bundled-update="true">
     <dependencies>
-        <module name="intellij.notebooks.visualization"/>
         <plugin id="org.intellij.plugins.markdown"/>
     </dependencies>
 
@@ -73,7 +72,11 @@ You can find the source code in the following repositories:
 
         ]]></description>
 
-    <extensionPoints>
+  <content>
+    <module name="intellij.notebooks.visualization"/>
+  </content>
+
+  <extensionPoints>
       <extensionPoint qualifiedName="com.intellij.rmdFenceProvider"
                       interface="org.jetbrains.r.rmarkdown.RmdFenceProvider" dynamic="true"/>
 
