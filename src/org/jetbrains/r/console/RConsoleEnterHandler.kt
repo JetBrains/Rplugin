@@ -21,7 +21,7 @@ import com.intellij.psi.util.elementType
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.statistics.RStatistics
+import org.jetbrains.r.statistics.RWorkflowCollector.Companion.logConsoleMethodCall
 
 object RConsoleEnterHandler {
 
@@ -71,17 +71,13 @@ object RConsoleEnterHandler {
     }
   }
 
-  private val reportCallsFromConsole = setOf("install.packages", "install_github")
-
   fun analyzePrompt(consoleView: RConsoleView) {
     val file = consoleView.file
     file.accept(object : RRecursiveElementVisitor() {
       override fun visitCallExpression(call: RCallExpression) {
         super.visitCallExpression(call)
         val name = call.expression.text
-        if (reportCallsFromConsole.contains(name)) {
-          RStatistics.logConsoleMethodCall(consoleView.project, name)
-        }
+        logConsoleMethodCall(consoleView.project, name)
       }
     })
   }

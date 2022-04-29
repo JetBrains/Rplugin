@@ -378,8 +378,8 @@ You can find the source code in the following repositories:
         <additionalTextAttributes scheme="Default" file="colorSchemes/RLanguageDefault.xml"/>
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/RLanguageDarcula.xml"/>
 
-        <statistics.counterUsagesCollector groupId="r.interpreters" version="2"/>
-        <statistics.counterUsagesCollector groupId="r.workflow" version="2"/>
+        <statistics.counterUsagesCollector implementationClass="org.jetbrains.r.statistics.RInterpretersCollector"/>
+        <statistics.counterUsagesCollector implementationClass="org.jetbrains.r.statistics.RWorkflowCollector"/>
 
         <indexedRootsProvider implementation="org.jetbrains.r.settings.RIndexableSetContributor"/>
         <fileType name="R" implementationClass="org.jetbrains.r.RFileType" fieldName="INSTANCE" language="R" extensions="R;Rprofile"/>

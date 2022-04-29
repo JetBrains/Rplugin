@@ -24,7 +24,7 @@ import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RSettings
-import org.jetbrains.r.statistics.RStatistics
+import org.jetbrains.r.statistics.RInterpretersCollector
 import java.io.IOException
 import java.nio.file.Paths
 
@@ -151,7 +151,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
           interpreterOrNull = it
           ensureInterpreterStored(it)
           promise.setResult(it)
-          RStatistics.logSetupInterpreter(project, it)
+          RInterpretersCollector.logSetupInterpreter(project, it)
         }
       } catch (e: Throwable) {
         promise.setError(e)
