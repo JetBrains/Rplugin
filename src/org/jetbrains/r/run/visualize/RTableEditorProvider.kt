@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.run.visualize
 
-import com.intellij.codeHighlighting.BackgroundEditorHighlighter
 import com.intellij.icons.AllIcons
 import com.intellij.ide.actions.SplitAction
 import com.intellij.openapi.fileEditor.*
@@ -85,6 +84,4 @@ private class TableFileEditor(private val tableFile: RTableVirtualFile) : UserDa
   override fun getState(level: FileEditorStateLevel): FileEditorState = FileEditorState.INSTANCE
   override fun setState(state: FileEditorState) {}
   override fun isModified(): Boolean = false
-
-  override fun getBackgroundHighlighter(): BackgroundEditorHighlighter? = null
 }
