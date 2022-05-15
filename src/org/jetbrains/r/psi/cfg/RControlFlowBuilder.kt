@@ -169,7 +169,6 @@ private class RControlFlowBuilder: RRecursiveElementVisitor() {
     builder.startNode(o)
   }
 
-  @Suppress("Duplicates")
   override fun visitRepeatStatement(repeatStatement: RRepeatStatement) {
     val entry = builder.prevInstruction
     val oldSuccessors = SmartList(entry.allSucc())
@@ -200,7 +199,6 @@ private class RControlFlowBuilder: RRecursiveElementVisitor() {
     builder.startNode(o)
   }
 
-  @Suppress("Duplicates")
   override fun visitWhileStatement(whileStatement: RWhileStatement) {
     val entry = builder.prevInstruction
     val oldSuccessors = SmartList(entry.allSucc())

@@ -27,9 +27,7 @@ import org.jetbrains.r.psi.api.RIfStatement
 import org.jetbrains.r.psi.api.RLoopStatement
 import org.jetbrains.r.refactoring.RRefactoringUtil
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
-import java.util.*
 
-@Suppress("UnstableApiUsage")
 class RReturnHintPass(private val file: PsiFile,
                       editor: Editor,
                       private val needForceRepaint: Boolean,

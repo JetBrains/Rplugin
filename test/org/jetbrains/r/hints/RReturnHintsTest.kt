@@ -12,7 +12,6 @@ import org.jetbrains.r.RLanguage
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
-@Suppress("UnstableApiUsage")
 class RReturnHintsTest : RLightCodeInsightFixtureTestCase() {
 
   fun testSingleReturn() {

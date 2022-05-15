@@ -16,7 +16,6 @@ import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 
-@Suppress("UnstableApiUsage")
 class RInlayParameterHintsProvider : InlayParameterHintsProvider {
 
   override fun getSupportedOptions(): List<Option> = listOf(WRAP_DOTS_OPTION)

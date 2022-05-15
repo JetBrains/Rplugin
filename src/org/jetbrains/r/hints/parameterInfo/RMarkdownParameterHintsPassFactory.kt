@@ -11,7 +11,6 @@ import com.intellij.psi.PsiFile
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
-@Suppress("UnstableApiUsage")
 class RMarkdownParameterHintsPassFactory : ParameterHintsPassFactory() {
   override fun createHighlightingPass(file: PsiFile, editor: Editor): TextEditorHighlightingPass? {
     if (file.language != RMarkdownLanguage) return null

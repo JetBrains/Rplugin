@@ -32,7 +32,6 @@ internal class RMarkdownCellToolbarController private constructor(
   private val panel = RMarkdownCellToolbarPanel(editor, intervalPointer)
 
   init {
-    @Suppress("UsePropertyAccessSyntax")
     panel.setUI(RMarkdownCellToolbarPanelUI(editor))
   }
 

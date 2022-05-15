@@ -24,7 +24,6 @@ import javax.swing.JSpinner
 import javax.swing.text.DefaultFormatter
 import org.intellij.lang.annotations.Language as AnLanguage
 
-@Suppress("UnstableApiUsage")
 class RReturnHintInlayProvider : InlayHintsProvider<RReturnHintInlayProvider.Settings> {
 
   override val name: String = RBundle.message("inlay.hints.function.return.expression.name")
