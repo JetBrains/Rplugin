@@ -4,7 +4,7 @@
         <plugin id="org.intellij.plugins.markdown"/>
     </dependencies>
 
-    <idea-version since-build="221.5080" until-build="221.5080.*"/>
+    <idea-version since-build="221.5591" until-build="221.*"/>
 
     <description><![CDATA[
 <html>
