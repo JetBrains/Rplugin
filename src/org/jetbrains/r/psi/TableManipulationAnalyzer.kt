@@ -386,7 +386,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
     fun processOperandColumns(operandProcessorRunner: ProcessOperandColumnRunner?,
                               @Suppress("UNUSED_PARAMETER") expression: RExpression,
                               @Suppress("UNUSED_PARAMETER") callInfo: TableManipulationCallInfo<*>,
-                              @Suppress("UNUSED_PARAMETER") processor: Processor<TableColumnInfo>): Boolean {
+                              processor: Processor<TableColumnInfo>): Boolean {
       if (operandProcessorRunner != null) {
         return operandProcessorRunner(processor)
       }
@@ -451,7 +451,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
      * @return joined columns from argument table and call dot arguments
      */
     fun processOperandTableAndAllDotsColumns(operandProcessorRunner: ProcessOperandColumnRunner?,
-                                             @Suppress("UNUSED_PARAMETER") expression: RExpression,
+                                             expression: RExpression,
                                              callInfo: TableManipulationCallInfo<*>,
                                              processor: Processor<TableColumnInfo>): Boolean {
       if (operandProcessorRunner != null && !operandProcessorRunner(processor)) {
