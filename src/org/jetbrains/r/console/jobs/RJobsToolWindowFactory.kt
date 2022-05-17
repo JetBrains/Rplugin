@@ -19,7 +19,7 @@ class RJobsToolWindowFactory : ToolWindowFactory, DumbAware {
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
     toolWindow.component.putClientProperty(ToolWindowContentUi.HIDE_ID_LABEL, "true")
     val rJobsPanel = RJobPanel(project)
-    val content = ContentFactory.SERVICE.getInstance().createContent(rJobsPanel, RBundle.message("jobs.panel.title"), false)
+    val content = ContentFactory.getInstance().createContent(rJobsPanel, RBundle.message("jobs.panel.title"), false)
     rJobsPanel.jobsStatusCallback = { ongoing: Int, finished: Int, failed: Int ->
       content.displayName = buildDisplayName(ongoing, finished, failed)
     }

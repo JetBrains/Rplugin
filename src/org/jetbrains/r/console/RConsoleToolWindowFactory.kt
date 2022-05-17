@@ -205,7 +205,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
 
     fun addConsolePlaceholder(project: Project, contentIndex: Int? = null): Content? {
       val toolWindow = getRConsoleToolWindows(project) ?: return null
-      val contentFactory = ContentFactory.SERVICE.getInstance()
+      val contentFactory = ContentFactory.getInstance()
       val panel = BorderLayoutPanel()
       panel.addToCenter(JBLabel(RBundle.message("console.starting.label.text")).apply {
         horizontalAlignment = SwingConstants.CENTER
@@ -239,7 +239,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
     private fun tryAddContent(toolWindow: ToolWindow, project: Project) {
       if (toolWindow.contentManager.contents.count { isConsole(it) } == 0) {
         if (!RInterpreterManager.getInstance(project).hasInterpreter()) {
-          val contentFactory = ContentFactory.SERVICE.getInstance()
+          val contentFactory = ContentFactory.getInstance()
           val console = contentFactory.createContent(createNoInterpreterConsoleView(project).component,
                                                      NO_INTERPRETER_FOUND_DISPLAY_NAME,
                                                      true)
@@ -255,7 +255,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
     private fun createContent(contentDescriptor: RunContentDescriptor): Content {
       val panel = SimpleToolWindowPanel(false, true)
 
-      val content = ContentFactory.SERVICE.getInstance().createContent(panel, contentDescriptor.displayName, false)
+      val content = ContentFactory.getInstance().createContent(panel, contentDescriptor.displayName, false)
       content.isCloseable = true
 
       resetContent(contentDescriptor, panel, content)
