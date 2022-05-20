@@ -51,7 +51,7 @@ abstract class DependencyManagementFix(protected val missingPackages: List<Requi
 
     fun showErrorHint(descriptor: ProblemDescriptor, e: Throwable?) {
       runInEdt {
-        PsiEditorUtil.Service.getInstance().findEditorByPsiElement(descriptor.psiElement)?.let { editor ->
+        PsiEditorUtil.getInstance().findEditorByPsiElement(descriptor.psiElement)?.let { editor ->
           HintManager.getInstance().showErrorHint(editor, e.messageOrDefault)
         }
       }
