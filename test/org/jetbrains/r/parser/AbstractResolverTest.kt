@@ -28,7 +28,7 @@ abstract class AbstractResolverTest : RUsefulTestCase() {
         myFixture.enableInspections(
                 UnusedVariableInspection::class.java,
                 UnresolvedReferenceInspection::class.java
-        );
+        )
 
         myFixture.testHighlighting(testWarnings, false, false)
 

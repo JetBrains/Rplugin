@@ -55,7 +55,7 @@ class GRPCTester(path: String,
       println("Sending requestArray: " + request.toString())
       return Pair(function.call(rInterop.stub, request)!!, responseArray?.let { returnParseFrom?.call(it) } )
     }
-    return null;
+    return null
   }
 
   private fun getParseFrom(classifier: KClass<*>): KCallable<*>? {

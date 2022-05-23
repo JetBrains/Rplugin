@@ -260,7 +260,7 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
 
   private fun doDocumentationCommentTest(fileText: String, documentationFragment: String) {
     val virtualFile = rInterop.sourceFileManager.createFileForTest("test.R", fileText)
-    myFixture.openFileInEditor(virtualFile);
+    myFixture.openFileInEditor(virtualFile)
     myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
 
     val consumer = CollectConsumer<PsiDocCommentBase>()

@@ -105,13 +105,13 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
   }
 
   override fun removeWatches(nodes: MutableList<out XDebuggerTreeNode>?) {
-    ApplicationManager.getApplication().assertIsDispatchThread();
+    ApplicationManager.getApplication().assertIsDispatchThread()
     val rootNode = rootNode ?: return
     rootNode.removeChildren(nodes)
   }
 
   override fun removeAllWatches() {
-    ApplicationManager.getApplication().assertIsDispatchThread();
+    ApplicationManager.getApplication().assertIsDispatchThread()
     val rootNode = rootNode ?: return
     rootNode.removeAllChildren()
   }
@@ -121,7 +121,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
   }
 
   fun addWatchExpression(expression: XExpression, index: Int, navigateToWatchNode: Boolean, noDuplicates: Boolean) {
-    ApplicationManager.getApplication().assertIsDispatchThread();
+    ApplicationManager.getApplication().assertIsDispatchThread()
     val rootNode = rootNode ?: return
     if (noDuplicates) {
       val child = rootNode.watchChildren.firstOrNull { it.expression == expression }

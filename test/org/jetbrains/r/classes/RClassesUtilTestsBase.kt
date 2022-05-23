@@ -20,12 +20,12 @@ abstract class RClassesUtilTestsBase : RProcessHandlerBaseTestCase() {
   protected fun getRCallExpressionFromAssignment(assignmentStatement: RAssignmentStatement): RCallExpression? {
 
     if (assignmentStatement.children?.size!! < 3) return null
-    return assignmentStatement.children[2] as RCallExpression;
+    return assignmentStatement.children[2] as RCallExpression
   }
 
   protected fun getRootElementOfPsi(code: String): PsiElement {
     val rFile = myFixture.configureByText("foo.R", code) as RFile
-    val viewProvider = rFile.getViewProvider();
+    val viewProvider = rFile.getViewProvider()
     val rPsi = viewProvider.getPsi(RLanguage.INSTANCE)
     return rPsi.originalElement.firstChild
   }

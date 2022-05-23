@@ -96,7 +96,7 @@ class RJobRunnerTests : RConsoleBaseTestCase() {
   }
 
   private fun waitForTermination(processHandler: ProcessHandler) {
-    var timeout = 0;
+    var timeout = 0
     while (!processHandler.isProcessTerminated && timeout < 500) {
       Thread.sleep(10)
       timeout++

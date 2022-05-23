@@ -26,7 +26,7 @@ class RRunConfigurationProducer : LazyRunConfigurationProducer<RRunConfiguration
     }
 
     val dataContext = context.dataContext
-    val contextComponent = PlatformCoreDataKeys.CONTEXT_COMPONENT.getData(dataContext);
+    val contextComponent = PlatformCoreDataKeys.CONTEXT_COMPONENT.getData(dataContext)
     if (contextComponent is EditorComponentImpl) {
       return false
     }
