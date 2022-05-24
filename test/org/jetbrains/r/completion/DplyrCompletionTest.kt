@@ -165,11 +165,17 @@ class DplyrCompletionTest : RColumnCompletionTest() {
   }
 
   fun testStarwarsColumnsFirst() {
-    myFixture.configureByText("a.R", "starwars %>% filter(<caret>)")
+    myFixture.configureByText("a.R", "starwars %>% filter(ski<caret>)")
     addRuntimeInfo()
-    val columns = arrayOf("birth_year", "eye_color", "films", "gender", "hair_color",
-                          "height", "homeworld", "mass", "name", "skin_color",
-                          "species", "starships", "vehicles")
+    val columns = arrayOf("skin_color")
+    val completeBasic = myFixture.completeBasic()
+    UsefulTestCase.assertContainsElements(completeBasic.take(columns.size + 1).map { it.toString() }, *columns)
+  }
+
+  fun testStarwarsColumnsByPrefix() {
+    myFixture.configureByText("a.R", "starwars %>% filter(veh<caret>)")
+    addRuntimeInfo()
+    val columns = arrayOf("vehicles")
     val completeBasic = myFixture.completeBasic()
     UsefulTestCase.assertContainsElements(completeBasic.take(columns.size + 1).map { it.toString() }, *columns)
   }
