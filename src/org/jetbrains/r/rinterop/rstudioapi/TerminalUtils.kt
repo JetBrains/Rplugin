@@ -52,9 +52,7 @@ object TerminalUtils {
 
   fun terminalExecute(rInterop: RInterop, args: RObject): RObject {
     val command = args.list.getRObjects(0).rString.getStrings(0)
-    val workingDir = args.list.getRObjects(1).let {
-      it.toStringOrNull()
-    }
+    val workingDir = args.list.getRObjects(1).toStringOrNull()
     val env = args.list.getRObjects(2).rString.stringsList.toList().map {
       val (f, s) = it.split("=")
       f to s
