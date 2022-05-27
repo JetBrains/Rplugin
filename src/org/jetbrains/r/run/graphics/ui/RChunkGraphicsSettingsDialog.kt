@@ -46,7 +46,7 @@ class RChunkGraphicsSettingsDialog(
     init()
   }
 
-  override fun createCenterPanel(): JComponent? {
+  override fun createCenterPanel(): JComponent {
     val self = this
     return panel {
       titledRow(LOCAL_SETTINGS_TITLE) {

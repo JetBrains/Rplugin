@@ -20,7 +20,7 @@ class RPackageProjectGenerator : RProjectGenerator() {
     return RBundle.message("project.generator.package.name")
   }
 
-  override fun getDescription(): String? {
+  override fun getDescription(): String {
     return RBundle.message("project.generator.package.description")
   }
 

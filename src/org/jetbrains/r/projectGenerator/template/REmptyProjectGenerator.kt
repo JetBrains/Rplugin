@@ -22,7 +22,7 @@ class REmptyProjectGenerator : RProjectGenerator() {
       return RBundle.message("project.generator.empty.name")
   }
 
-  override fun getDescription(): String? {
+  override fun getDescription(): String {
     return RBundle.message("project.generator.empty.description")
   }
 

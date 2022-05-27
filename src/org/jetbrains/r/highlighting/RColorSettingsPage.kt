@@ -19,7 +19,7 @@ import javax.swing.Icon
 
 class RColorSettingsPage : RainbowColorSettingsPage {
 
-  override fun getIcon(): Icon? = RIcons.R
+  override fun getIcon(): Icon = RIcons.R
 
   override fun isRainbowType(type: TextAttributesKey?): Boolean = type == LOCAL_VARIABLE || type == PARAMETER || type == CLOSURE
 
@@ -29,7 +29,7 @@ class RColorSettingsPage : RainbowColorSettingsPage {
 
   override fun getLanguage(): Language = RLanguage.INSTANCE
 
-  override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey>? = TAGS
+  override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey> = TAGS
 
   override fun getAttributeDescriptors(): Array<AttributesDescriptor> = DESCRIPTORS
 

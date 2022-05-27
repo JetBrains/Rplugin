@@ -30,7 +30,7 @@ class RChooseMirrorDialog(mirrors: List<RMirror>, selection: Int, private val on
     init()
   }
 
-  override fun createCenterPanel(): JComponent? {
+  override fun createCenterPanel(): JComponent {
     return JPanel().apply {
       layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
       add(scrollPane)

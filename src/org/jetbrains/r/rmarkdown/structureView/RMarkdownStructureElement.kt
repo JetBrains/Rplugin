@@ -57,7 +57,7 @@ class RMarkdownStructureElement internal constructor(element: PsiElement) : PsiT
 
           override fun getIcon(unused: Boolean): Icon? = itemPresent.getIcon(unused)
 
-          override fun getPresentableText(): String? = label
+          override fun getPresentableText(): String = label
         }
       }
       else {

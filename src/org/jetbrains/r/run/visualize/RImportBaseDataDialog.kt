@@ -35,7 +35,7 @@ class RImportBaseDataDialog private constructor(project: Project, interop: RInte
 
   override val importOptionComponent: JComponent = form.contentPane
 
-  override val importOptions: RImportOptions?
+  override val importOptions: RImportOptions
     get() = collectOptions(firstRowAsNames, stringsAsFactors, encoding, rowNames, delimiter, decimal, quotes, comment, na)
 
   override val supportedFormats = RImportDataUtil.supportedTextFormats

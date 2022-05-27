@@ -18,7 +18,7 @@ import org.jetbrains.r.psi.RGlobalVariablesFilter
 import org.jetbrains.r.rmarkdown.RMarkdownPsiUtil
 
 class RMarkdownStructureViewFactory : PsiStructureViewFactory {
-  override fun getStructureViewBuilder(psiFile: PsiFile): StructureViewBuilder? {
+  override fun getStructureViewBuilder(psiFile: PsiFile): StructureViewBuilder {
     return object : TreeBasedStructureViewBuilder() {
       override fun createStructureViewModel(editor: Editor?): StructureViewModel {
         return RMarkdownStructureViewModel(psiFile, editor)

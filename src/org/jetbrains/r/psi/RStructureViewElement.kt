@@ -79,7 +79,7 @@ class RStructureViewElement(private val element: PsiElement) : StructureViewTree
     return ArrayUtil.toObjectArray(childrenElements, StructureViewTreeElement::class.java)
   }
 
-  override fun getPresentableText(): String? {
+  override fun getPresentableText(): String {
     return when {
       element is RFile -> element.name
       element is RAssignmentStatement && element.assignedValue is RFunctionExpression ->

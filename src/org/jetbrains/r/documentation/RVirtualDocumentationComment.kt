@@ -16,15 +16,15 @@ class RVirtualDocumentationComment(private val parent: PsiElement, private val r
     return RParserDefinition.END_OF_LINE_COMMENT
   }
 
-  override fun getTextRange(): TextRange? {
+  override fun getTextRange(): TextRange {
     return range
   }
 
-  override fun getText(): String? {
+  override fun getText(): String {
     return range.substring(parent.containingFile.text)
   }
 
-  override fun getOwner(): PsiElement? {
+  override fun getOwner(): PsiElement {
     return parent
   }
 }

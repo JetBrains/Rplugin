@@ -47,7 +47,7 @@ class RInterpreterDetailsDialog(
     init()
   }
 
-  override fun createCenterPanel(): JComponent? {
+  override fun createCenterPanel(): JComponent {
     val decorator = ToolbarDecorator.createDecorator(interpreterList).apply {
       disableUpDownActions()
       setAddAction { button ->

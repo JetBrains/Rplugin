@@ -22,7 +22,7 @@ import javax.swing.Icon
 
 class RMarkdownColorSettingsPage : RainbowColorSettingsPage {
 
-  override fun getIcon(): Icon? = RIcons.RMarkdown
+  override fun getIcon(): Icon = RIcons.RMarkdown
 
   override fun isRainbowType(type: TextAttributesKey?): Boolean = type == LOCAL_VARIABLE || type == PARAMETER || type == CLOSURE
 
@@ -32,7 +32,7 @@ class RMarkdownColorSettingsPage : RainbowColorSettingsPage {
 
   override fun getLanguage(): Language = RMarkdownLanguage
 
-  override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey>? = tags
+  override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey> = tags
 
   override fun getAttributeDescriptors(): Array<AttributesDescriptor> = arrayOf(AttributesDescriptor(
     RBundle.message("attribute.descriptor.r.markdown.chunk"), RMARKDOWN_CHUNK))

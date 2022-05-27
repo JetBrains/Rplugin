@@ -26,7 +26,7 @@ class RFormatterBlock internal constructor(private val context: RFormattingConte
 
   override fun getSpacing(child1: Block?, child2: Block): Spacing? = context.computeSpacing(this, child1, child2)
 
-  override fun getChildIndent(): Indent? = context.computeNewChildIndent(node)
+  override fun getChildIndent(): Indent = context.computeNewChildIndent(node)
 
 //  override fun isIncomplete(): Boolean = context.isIncomplete(node)
 

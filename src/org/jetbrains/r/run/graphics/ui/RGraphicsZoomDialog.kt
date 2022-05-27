@@ -33,7 +33,7 @@ class RGraphicsZoomDialog(project: Project, viewerComponent: JComponent, private
     init()
   }
 
-  override fun createCenterPanel(): JComponent? {
+  override fun createCenterPanel(): JComponent {
     return rootPanel
   }
 

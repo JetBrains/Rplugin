@@ -16,7 +16,7 @@ import com.intellij.psi.PsiFile
 import org.jetbrains.r.psi.api.RAssignmentStatement
 
 class RScriptStructureViewFactory : PsiStructureViewFactory {
-  override fun getStructureViewBuilder(psiFile: PsiFile): StructureViewBuilder? {
+  override fun getStructureViewBuilder(psiFile: PsiFile): StructureViewBuilder {
     return object : TreeBasedStructureViewBuilder() {
 
       override fun createStructureViewModel(editor: Editor?): StructureViewModel {

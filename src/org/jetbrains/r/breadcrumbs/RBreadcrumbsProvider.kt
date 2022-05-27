@@ -49,7 +49,7 @@ class RBreadcrumbsProvider : BreadcrumbsProvider {
     }
   }
 
-  override fun getElementTooltip(element: PsiElement): String? {
+  override fun getElementTooltip(element: PsiElement): String {
     return RBundle.message("breadcrumbs.navigate.tooltip")
   }
 }

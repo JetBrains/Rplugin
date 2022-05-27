@@ -26,7 +26,7 @@ private class RSkeletonFileViewProvider(manager: PsiManager,
                                         eventSystemEnabled: Boolean
 ) : SingleRootFileViewProvider(manager, file, eventSystemEnabled) {
 
-  override fun createFile(project: Project, file: VirtualFile, fileType: FileType): PsiFile? {
+  override fun createFile(project: Project, file: VirtualFile, fileType: FileType): PsiFile {
     return RSkeletonFileImpl(this)
   }
 }

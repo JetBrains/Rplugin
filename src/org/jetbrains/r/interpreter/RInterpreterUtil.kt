@@ -38,7 +38,6 @@ import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RSettings
 import java.io.File
 import java.nio.file.Paths
-import java.util.*
 
 interface RMultiOutputProcessor {
   fun beforeStart()
@@ -76,7 +75,7 @@ object RInterpreterUtil {
       return result
     }
 
-  private fun removeQuotes(pathEntry: String): String? {
+  private fun removeQuotes(pathEntry: String): String {
     return if (pathEntry.first() == '"' && pathEntry.last() == '"') pathEntry.substring(1, pathEntry.length - 1) else pathEntry
   }
 

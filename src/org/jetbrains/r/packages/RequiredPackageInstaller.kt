@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentSkipListSet
 import java.util.concurrent.atomic.AtomicBoolean
 
 class RequiredPackageException(val missingPackages: List<RequiredPackage>) : RuntimeException() {
-  override val message: String?
+  override val message: String
     get() = RBundle.message("required.package.exception.message", StringUtil.join(missingPackages, ", "))
 }
 

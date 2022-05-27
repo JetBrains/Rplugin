@@ -91,7 +91,7 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
     override val rInterop: RInterop
       get() = childState.rInterop
 
-    override val isUpdating: Boolean?
+    override val isUpdating: Boolean
       get() = childState.isUpdating
 
     override val userLibraryPath: String
@@ -110,7 +110,7 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
   private class LocalRepoProvider(val repoUrl: String) : RepoProvider by MockRepoProvider() {
     val knownPackages = LOCAL_PACKAGES.toMutableList()
 
-    override val name2AvailablePackages: Map<String, RRepoPackage>?
+    override val name2AvailablePackages: Map<String, RRepoPackage>
       get() = knownPackages.map { Pair(it.name, it.toRepoPackage()) }.toMap()
 
     override val mappedEnabledRepositoryUrlsAsync: Promise<List<String>>

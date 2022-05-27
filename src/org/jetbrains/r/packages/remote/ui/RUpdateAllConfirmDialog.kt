@@ -36,7 +36,7 @@ class RUpdateAllConfirmDialog(outdated: List<RPackageUpdateInfo>, private val on
     init()
   }
 
-  override fun createCenterPanel(): JComponent? {
+  override fun createCenterPanel(): JComponent {
     return JPanel().apply {
       layout = BoxLayout(this, BoxLayout.Y_AXIS)
       add(JLabel(DESCRIPTION))

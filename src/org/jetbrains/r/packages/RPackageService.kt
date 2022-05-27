@@ -22,7 +22,7 @@ class RPackageService : PersistentStateComponent<RPackageService> {
   var enabledRepositoryUrls = mutableListOf<String>()
   var userRepositoryUrls = mutableListOf<String>()
 
-  override fun getState(): RPackageService? {
+  override fun getState(): RPackageService {
     return this
   }
 

@@ -95,7 +95,7 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
   }
 
   @Throws(IncorrectOperationException::class)
-  override fun handleElementRename(newElementName: String): PsiElement? {
+  override fun handleElementRename(newElementName: String): PsiElement {
     return element.setName(newElementName)
   }
 }

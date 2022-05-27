@@ -26,7 +26,7 @@ class MockRepoProvider : RepoProvider {
   override val repositorySelectionsAsync: Promise<List<Pair<RRepository, Boolean>>>
     get() = throw NotImplementedError()
 
-  override val name2AvailablePackages: Map<String, RRepoPackage>?
+  override val name2AvailablePackages: Map<String, RRepoPackage>
     get() = throw NotImplementedError()
 
   override val allPackagesCachedAsync: Promise<List<RRepoPackage>>

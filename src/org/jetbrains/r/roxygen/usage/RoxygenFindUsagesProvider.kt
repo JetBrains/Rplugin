@@ -17,7 +17,7 @@ import org.jetbrains.r.roxygen.psi.api.RoxygenParameter
 
 class RoxygenFindUsagesProvider : FindUsagesProvider {
 
-  override fun getWordsScanner(): WordsScanner? {
+  override fun getWordsScanner(): WordsScanner {
     return DefaultWordsScanner(RoxygenLexer(),
                                TokenSet.create(ROXYGEN_IDENTIFIER),
                                TokenSet.EMPTY,

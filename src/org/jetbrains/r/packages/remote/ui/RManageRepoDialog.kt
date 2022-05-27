@@ -14,7 +14,10 @@ import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBCheckBox
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getListBlockingWithIndicator
-import org.jetbrains.r.packages.remote.*
+import org.jetbrains.r.packages.remote.RDefaultRepository
+import org.jetbrains.r.packages.remote.RRepository
+import org.jetbrains.r.packages.remote.RUserRepository
+import org.jetbrains.r.packages.remote.RepoProvider
 import org.jetbrains.r.packages.remote.RepoUtils.CRAN_URL_PLACEHOLDER
 import java.awt.Dimension
 import javax.swing.Box
@@ -179,7 +182,7 @@ class RManageRepoDialog(project: Project, private val onModified: (Boolean) -> U
     }
   }
 
-  override fun createCenterPanel(): JComponent? {
+  override fun createCenterPanel(): JComponent {
     return mainPanel
   }
 
