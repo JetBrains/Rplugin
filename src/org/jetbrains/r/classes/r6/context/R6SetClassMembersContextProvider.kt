@@ -59,7 +59,7 @@ class R6SetClassMembersContextProvider : R6ContextProvider<R6SetClassMembersCont
     val r6ClassIdentifier = memberExpression.firstChild
     val cachedClasses = R6ClassNameIndex.findClassInfos(r6ClassIdentifier.text, memberExpression.project,
                                                         RSearchScopeUtil.getScope(rCallExpression))
-    return (!cachedClasses.isNullOrEmpty())
+    return cachedClasses.isNotEmpty()
   }
 
   override fun equals(other: Any?): Boolean {
