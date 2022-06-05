@@ -206,11 +206,11 @@ class RPackageManagementService(private val project: Project,
     }
   }
 
-  override fun fetchPackageVersions(s: String, consumer: CatchingConsumer<List<String>, Exception>) {
+  override fun fetchPackageVersions(s: String, consumer: CatchingConsumer<in List<String>, in java.lang.Exception>) {
     consumer.consume(listOf())
   }
 
-  override fun fetchPackageDetails(packageName: String, consumer: CatchingConsumer<@Nls String, Exception>) {
+  override fun fetchPackageDetails(packageName: String, consumer: CatchingConsumer<in @Nls String, in Exception>) {
     runAsync {
       val repoPackage = provider.name2AvailablePackages?.get(packageName)
       consumer.consume(RepoUtils.formatDetails(repoPackage))
