@@ -7,11 +7,12 @@ package org.jetbrains.r.psi;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveVisitor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.r.psi.api.RVisitor;
 
 public class RRecursiveElementVisitor extends RVisitor implements PsiRecursiveVisitor {
     @Override
-    public void visitElement(PsiElement element) {
+    public void visitElement(@NotNull PsiElement element) {
         element.acceptChildren(this);
     }
 }
