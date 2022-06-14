@@ -195,6 +195,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
             })
             onText("\n", ProcessOutputType.STDERR)
           }
+          else -> {}
         }
       }
     }
