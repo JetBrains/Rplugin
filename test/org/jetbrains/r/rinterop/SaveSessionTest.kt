@@ -33,8 +33,15 @@ class SaveSessionTest : RUsefulTestCase() {
   }
 
   override fun tearDown() {
-    project.putUserData(RInteropUtil.WORKSPACE_FILE_FOR_TESTS, null)
-    super.tearDown()
+    try {
+      project.putUserData(RInteropUtil.WORKSPACE_FILE_FOR_TESTS, null)
+    }
+    catch (e: Throwable) {
+      addSuppressedException(e)
+    }
+    finally {
+      super.tearDown()
+    }
   }
 
   fun testSaveSession() {

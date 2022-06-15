@@ -52,19 +52,26 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
   }
 
   override fun tearDown() {
-    project.putUserData(RInterop.DEADLINE_TEST_KEY, null)
-    if (this::rInterop.isInitialized && !Disposer.isDisposed(rInterop)) {
-      runAsync {
-        Disposer.dispose(rInterop)
+    try {
+      project.putUserData(RInterop.DEADLINE_TEST_KEY, null)
+      if (this::rInterop.isInitialized && !Disposer.isDisposed(rInterop)) {
+        runAsync {
+          Disposer.dispose(rInterop)
+        }
+      }
+      runWriteAction {
+        XDebuggerManager.getInstance(project).breakpointManager.let { manager ->
+          val breakpointType = XDebuggerUtil.getInstance().findBreakpointType(RLineBreakpointType::class.java)
+          manager.getBreakpoints(breakpointType).forEach { manager.removeBreakpoint(it) }
+        }
       }
     }
-    runWriteAction {
-      XDebuggerManager.getInstance(project).breakpointManager.let { manager ->
-        val breakpointType = XDebuggerUtil.getInstance().findBreakpointType(RLineBreakpointType::class.java)
-        manager.getBreakpoints(breakpointType).forEach { manager.removeBreakpoint(it) }
-      }
+    catch (e: Throwable) {
+      addSuppressedException(e)
     }
-    super.tearDown()
+    finally {
+      super.tearDown()
+    }
   }
 
   protected fun addBreakpoint(file: VirtualFile, line: Int): XLineBreakpoint<*> {

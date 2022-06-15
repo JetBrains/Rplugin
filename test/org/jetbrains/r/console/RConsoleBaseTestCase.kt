@@ -29,9 +29,16 @@ abstract class RConsoleBaseTestCase : RProcessHandlerBaseTestCase() {
   }
 
   override fun tearDown() {
-    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
-    Disposer.dispose(console)
-    RConsoleManager.getInstance(project).setCurrentConsoleForTests(null)
-    super.tearDown()
+    try {
+      PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+      Disposer.dispose(console)
+      RConsoleManager.getInstance(project).setCurrentConsoleForTests(null)
+    }
+    catch (e: Throwable) {
+      addSuppressedException(e)
+    }
+    finally {
+      super.tearDown()
+    }
   }
 }

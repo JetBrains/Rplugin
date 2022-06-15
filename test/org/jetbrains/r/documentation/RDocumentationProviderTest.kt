@@ -30,10 +30,15 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
   }
 
   override fun tearDown() {
-    if (!File(pathToDocumentation).deleteRecursively()) {
-      throw IOException("Can't delete documentation dir")
+    try {
+      if (!File(pathToDocumentation).deleteRecursively()) throw IOException("Can't delete documentation dir")
     }
-    super.tearDown()
+    catch (e: Throwable) {
+      addSuppressedException(e)
+    }
+    finally {
+      super.tearDown()
+    }
   }
 
   fun testLogicalKeywords() {
