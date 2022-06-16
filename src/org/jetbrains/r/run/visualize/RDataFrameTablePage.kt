@@ -64,6 +64,8 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
   var autoRefresh = viewer.canRefresh
 
   class TableCopyProvider(private val table: JBTable) : CopyProvider {
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
+
     override fun performCopy(dataContext: DataContext) {
       val copySelectedToString: CharSequence = ClipboardUtils.copySelectedToString(table)
       CopyPasteManager.getInstance().setContents(TextTransferable(copySelectedToString))
