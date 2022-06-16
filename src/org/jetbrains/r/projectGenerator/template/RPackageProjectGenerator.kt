@@ -5,6 +5,7 @@
 package org.jetbrains.r.projectGenerator.template
 
 import com.intellij.facet.ui.ValidationResult
+import com.intellij.ide.projectWizard.NewProjectWizardConstants.Generators
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ValidationInfo
@@ -25,7 +26,7 @@ class RPackageProjectGenerator : RProjectGenerator() {
   }
 
   override fun getId():String  {
-    return "R_PACKAGE"
+    return Generators.R_PACKAGE
   }
 
   override val requiredPackageList = true

@@ -36,7 +36,7 @@ abstract class RProjectGenerator : DirectoryProjectGeneratorBase<RProjectSetting
   /**
    * Unique value
    */
-  abstract fun getId(): String
+  abstract override fun getId(): String
 
   interface SettingsListener {
     fun stateChanged()
