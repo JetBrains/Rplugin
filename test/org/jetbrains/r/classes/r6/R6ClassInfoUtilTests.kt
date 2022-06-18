@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.classes.r6
 
-import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.childrenOfType
 import org.jetbrains.r.classes.RClassesUtilTestsBase
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RCallExpression
@@ -134,6 +134,6 @@ class R6ClassInfoUtilTests : RClassesUtilTestsBase() {
 
   private fun doTestBase(text: String): RCallExpression {
     val rFile = myFixture.configureByText("foo.R", text)
-    return PsiTreeUtil.getChildrenOfType(rFile, RAssignmentStatement::class.java).last().assignedValue as RCallExpression
+    return rFile.childrenOfType<RAssignmentStatement>().last().assignedValue as RCallExpression
   }
 }
