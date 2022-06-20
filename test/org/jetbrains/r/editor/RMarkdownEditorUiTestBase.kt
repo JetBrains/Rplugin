@@ -8,12 +8,13 @@ import com.intellij.psi.PsiManager
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.testFramework.fixtures.impl.TempDirTestFixtureImpl
-import org.assertj.core.internal.bytebuddy.utility.RandomString
 import org.jetbrains.plugins.notebooks.visualization.extractTextAndCaretOffset
 import org.junit.After
 import org.junit.Before
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import java.math.BigInteger
+import kotlin.random.Random
 
 @RunWith(JUnit4::class)
 abstract class RMarkdownEditorUiTestBase {
@@ -40,7 +41,7 @@ internal fun CodeInsightTestFixture.openNotebookTextInEditor(text: String) {
   val (textWithoutCaret, caretOffset) = extractTextAndCaretOffset(text)
 
   val localFile = runWriteAction {
-    tempDirFixture.createFile("notebook_${RandomString.make()}.rmd")
+    tempDirFixture.createFile("notebook_${BigInteger(1, Random.nextBytes(8)).toString(36)}.rmd")
   }
 
   val psiFile = PsiManager.getInstance(project).findFile(localFile)!!
