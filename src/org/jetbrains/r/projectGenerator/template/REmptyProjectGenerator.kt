@@ -6,7 +6,6 @@ package org.jetbrains.r.projectGenerator.template
 
 import com.intellij.ide.fileTemplates.FileTemplateManager
 import com.intellij.ide.fileTemplates.FileTemplateUtil
-import com.intellij.ide.projectWizard.NewProjectWizardConstants.Generators
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.module.Module
@@ -28,7 +27,7 @@ class REmptyProjectGenerator : RProjectGenerator() {
   }
 
   override fun getId(): String {
-    return Generators.R_PROJECT
+    return "R_PROJECT"
   }
 
   override fun generateProject(project: Project, baseDir: VirtualFile, rProjectSettings: RProjectSettings, module: Module) {
