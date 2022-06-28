@@ -190,10 +190,10 @@ object RInteropUtil {
     try {
       val paths = getRPaths(interpreter)
       val version = interpreter.version
-      if (!RInterpreterUtil.isSupportedVersion(version)) return result.also {
-        result.setError("Unsupported interpreter version " + version)
-      }
       val wrapperPath = getWrapperPath(interpreter.hostOS)
+      if (!RInterpreterUtil.isSupportedVersion(version)) {
+        LOG.warn("Unsupported interpreter version " + version)
+      }
       LOG.info("R version is $version. RWrapper path: $wrapperPath")
       val rwrapper = File(wrapperPath)
       if (interpreter.isLocal()) {
