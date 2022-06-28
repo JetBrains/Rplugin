@@ -343,8 +343,6 @@ object RInteropUtil {
   private const val MAX_MINIDUMP_COUNT = 20
   private const val MINIDUMP_LIFETIME = 1000 * 60 * 60 * 24 * 7 // one week
 
-  private const val RWRAPPER_LAUNCH_TIMEOUT = 2500
-
   private const val MINIDUMP_DESCRIPTION: String = """The minidump contains OS and R process state.
 They are grabbed from the crashed process into
 an in-memory snapshot structure. Since the full
