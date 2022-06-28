@@ -4,17 +4,15 @@
 
 package org.jetbrains.r.intentions
 
-import com.intellij.codeInsight.hint.HintManager
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.codeInspection.*
 import com.intellij.codeInspection.ex.LocalInspectionToolWrapper
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
-import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.PsiFile
-import com.intellij.psi.util.PsiEditorUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RequiredPackage
 
@@ -42,6 +40,7 @@ abstract class DependencyManagementFix(protected val missingPackages: List<Requi
   companion object {
     private val UNKNOWN_ERROR_MESSAGE = RBundle.message("notification.unknown.error.message")
     private val NOTIFICATION_GROUP_ID = RBundle.message("install.all.library.fix.notification.group.id")
+    @NlsSafe
     private val NOTIFICATION_TITLE = RBundle.message("install.all.library.fix.notification.title")
 
     private val Throwable?.messageOrDefault: String
@@ -50,14 +49,6 @@ abstract class DependencyManagementFix(protected val missingPackages: List<Requi
     fun showErrorNotification(project: Project, e: Throwable?) {
       val notification = Notification(NOTIFICATION_GROUP_ID, NOTIFICATION_TITLE, e.messageOrDefault, NotificationType.ERROR)
       notification.notify(project)
-    }
-
-    fun showErrorHint(descriptor: ProblemDescriptor, e: Throwable?) {
-      runInEdt {
-        PsiEditorUtil.getInstance().findEditorByPsiElement(descriptor.psiElement)?.let { editor ->
-          HintManager.getInstance().showErrorHint(editor, e.messageOrDefault)
-        }
-      }
     }
   }
 }
