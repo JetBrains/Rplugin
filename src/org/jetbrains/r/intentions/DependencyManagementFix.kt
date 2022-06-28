@@ -5,6 +5,7 @@
 package org.jetbrains.r.intentions
 
 import com.intellij.codeInsight.hint.HintManager
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.codeInspection.*
 import com.intellij.codeInspection.ex.LocalInspectionToolWrapper
 import com.intellij.notification.Notification
@@ -35,6 +36,8 @@ abstract class DependencyManagementFix(protected val missingPackages: List<Requi
       }
       .distinct()
   }
+
+  override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo = IntentionPreviewInfo.EMPTY
 
   companion object {
     private val UNKNOWN_ERROR_MESSAGE = RBundle.message("notification.unknown.error.message")

@@ -4,6 +4,8 @@
 
 package org.jetbrains.r.intentions
 
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo.EMPTY
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
@@ -27,4 +29,6 @@ class LoadPackageFix(private val packageName: String,
       runtimeInfo.loadPackage(packageName)
     }
   }
+
+  override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo = EMPTY
 }
