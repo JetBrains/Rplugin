@@ -7,6 +7,7 @@ package org.jetbrains.r.configuration
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.ui.showYesNoDialog
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.vfs.VirtualFile
@@ -57,7 +58,9 @@ class RAddInterpreterDialog {
           val location = RLocalInterpreterLocation(path)
           if (checkDuplicate(existingInterpreters, location)) {
             val (version, e) = tryGetInterpreterVersion(path)
-            if (version != null && RInterpreterUtil.isSupportedVersion(version)) {
+            if (version != null && (RInterpreterUtil.isSupportedVersion(version) || showYesNoDialog(
+                RBundle.message("project.settings.not.supported.interpreter.title"),
+                RBundle.message("project.settings.not.supported.interpreter.warning", version.toString()), null))) {
               val interpreter = RBasicInterpreterInfo(ADDED_INTERPRETER_NAME, location, version)
               onAdded(interpreter)
             } else {
