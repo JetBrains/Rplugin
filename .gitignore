@@ -48,8 +48,8 @@ r-helpers/rwrapper-*
 rwrapper/Rkernel-proto
 
 /testData/skeletons/
-/rwrapper
-/protos
 /ide
 /plugin
 /ultimate
+/rwrapper
+/protos
