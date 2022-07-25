@@ -5,9 +5,11 @@
 package org.jetbrains.r.run.visualize.actions
 
 import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAware
+import com.intellij.openapi.util.NlsSafe
 import icons.RIcons
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
@@ -21,7 +23,7 @@ class RImportDataContextActionGroup : ActionGroup(TITLE, null, RIcons.R), DumbAw
 
   override fun getChildren(e: AnActionEvent?): Array<AnAction> {
     val applicable = if (e != null) actions.filter { it.isApplicableTo(e) } else null
-    return applicable?.toTypedArray<AnAction>() ?: emptyArray()
+    return applicable?.toTypedArray() ?: emptyArray()
   }
 
   override fun update(e: AnActionEvent) {
@@ -29,7 +31,10 @@ class RImportDataContextActionGroup : ActionGroup(TITLE, null, RIcons.R), DumbAw
     e.presentation.isEnabledAndVisible = hasConsole && actions.any { it.isApplicableTo(e) }
   }
 
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
+
   companion object {
+    @NlsSafe
     private val TITLE = RBundle.message("import.data.action.group.name.from")
   }
 }

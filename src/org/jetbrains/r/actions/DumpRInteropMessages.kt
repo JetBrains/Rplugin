@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.actions
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
@@ -26,4 +27,6 @@ class DumpRInteropMessages : AnAction() {
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabledAndVisible = ApplicationManager.getApplication().isInternal
   }
+
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

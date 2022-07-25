@@ -5,6 +5,7 @@
 package org.jetbrains.r.actions
 
 import com.intellij.execution.console.ConsoleHistoryController
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
@@ -34,6 +35,8 @@ abstract class RunSelectionBase : REditorActionBase() {
     e.presentation.isEnabled = e.presentation.isEnabled &&
                                RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.isAlive != false
   }
+
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return

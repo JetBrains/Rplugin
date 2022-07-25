@@ -1,5 +1,6 @@
 package org.jetbrains.r.actions
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
@@ -15,6 +16,8 @@ class RMarkdownInterruptAction: DumbAwareAction(), RPromotedAction {
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = e.editor?.chunkExecutionState != null
   }
+
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
   companion object {
     fun interruptChunkExecution(state: ChunkExecutionState) {

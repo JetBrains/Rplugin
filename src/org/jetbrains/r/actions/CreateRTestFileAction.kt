@@ -117,6 +117,8 @@ class CreateRTestFileAction : CreateFromTemplateAction(FileTemplateManager.getDe
     return false
   }
 
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
+
   private fun getFileName(file: PsiFile): String {
     return file.virtualFile.nameWithoutExtension
   }

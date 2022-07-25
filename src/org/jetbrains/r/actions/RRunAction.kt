@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.actions
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.AppUIUtil
@@ -40,6 +41,8 @@ abstract class RRunActionBase : REditorActionBase() {
     super.update(e)
     e.presentation.isEnabled = e.presentation.isEnabled && !REditorActionUtil.isRunningCommand(e.project)
   }
+
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
   abstract fun doExecute(console: RConsoleView, file: VirtualFile)
 }

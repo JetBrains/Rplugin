@@ -5,6 +5,7 @@
 
 package org.jetbrains.r.console
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -33,4 +34,6 @@ class RConsoleAction : AnAction(), DumbAware {
     val project = CommonDataKeys.PROJECT.getData(e.dataContext)
     e.presentation.isVisible = project != null
   }
+
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

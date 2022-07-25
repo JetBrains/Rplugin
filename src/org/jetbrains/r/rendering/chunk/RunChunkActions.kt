@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.rendering.chunk
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataKey
@@ -47,11 +48,15 @@ const val RUN_CHUNKS_ABOVE_ID = "org.jetbrains.r.rendering.chunk.RunChunksAboveA
 const val RUN_CHUNKS_BELOW_ID = "org.jetbrains.r.rendering.chunk.RunChunksBelowAction"
 const val CLEAR_CHUNK_OUTPUTS_ID = "org.jetbrains.r.rendering.chunk.ClearChunkOutputsAction"
 
-class RunChunksAboveAction: DumbAwareAction(), RPromotedAction {
+abstract class BaseChunkAction: DumbAwareAction(), RPromotedAction {
   override fun update(e: AnActionEvent) {
-    e.presentation.isEnabled = e.virtualFile?.fileType == RMarkdownFileType && canRunChunk(e.editor)
+    e.presentation.isEnabled = isEnabled(e)
   }
 
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
+}
+
+class RunChunksAboveAction: BaseChunkAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val editor = e.editor ?: return
     val file = e.psiFile ?: return
@@ -60,11 +65,7 @@ class RunChunksAboveAction: DumbAwareAction(), RPromotedAction {
   }
 }
 
-class RunChunksBelowAction: DumbAwareAction(), RPromotedAction {
-  override fun update(e: AnActionEvent) {
-    e.presentation.isEnabled = e.virtualFile?.fileType == RMarkdownFileType && canRunChunk(e.editor)
-  }
-
+class RunChunksBelowAction: BaseChunkAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val editor = e.editor ?: return
     val file = e.psiFile ?: return
@@ -73,33 +74,19 @@ class RunChunksBelowAction: DumbAwareAction(), RPromotedAction {
   }
 }
 
-class RunChunkAction : DumbAwareAction(), RPromotedAction {
-
-  override fun update(e: AnActionEvent) {
-    e.presentation.isEnabled = isEnabled(e)
-  }
-
+class RunChunkAction : BaseChunkAction() {
   override fun actionPerformed(e: AnActionEvent) {
     showConsoleAndRun(e) { executeChunk(e) }
   }
 }
 
-class DebugChunkAction : DumbAwareAction(), RPromotedAction {
-
-  override fun update(e: AnActionEvent) {
-    e.presentation.isEnabled = isEnabled(e)
-  }
-
+class DebugChunkAction : BaseChunkAction() {
   override fun actionPerformed(e: AnActionEvent) {
     showConsoleAndRun(e) { executeChunk(e, isDebug = true) }
   }
 }
 
-class ClearChunkOutputsAction: DumbAwareAction(), RPromotedAction {
-  override fun update(e: AnActionEvent) {
-    e.presentation.isEnabled = isEnabled(e)
-  }
-
+class ClearChunkOutputsAction: BaseChunkAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val psiElement = getCodeFenceByEvent(e) ?: return
     e.editor?.rMarkdownNotebook?.get(psiElement)?.clearOutputs(removeFiles = true)

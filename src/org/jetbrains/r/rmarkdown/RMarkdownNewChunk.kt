@@ -5,6 +5,7 @@
 package org.jetbrains.r.rmarkdown
 
 import com.intellij.lang.ASTNode
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.runWriteAction
@@ -76,4 +77,6 @@ class RMarkdownNewChunk : DumbAwareAction(), RPromotedAction {
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = e.getData(CommonDataKeys.VIRTUAL_FILE)?.fileType == RMarkdownFileType
   }
+
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

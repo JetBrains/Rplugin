@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.console
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.editor.ex.EditorEx
@@ -26,4 +27,6 @@ class RConsoleNextLineAction : AnAction(), RPromotedAction {
     val presentation = e.presentation
     presentation.isEnabled = psiFile?.getUserData(RConsoleView.IS_R_CONSOLE_KEY) == true
   }
+
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

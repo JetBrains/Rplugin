@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.console
 
-import com.intellij.codeInsight.daemon.impl.AnnotationHolderImpl
 import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInsight.daemon.impl.HighlightInfoType
 import com.intellij.codeInsight.daemon.impl.SeverityRegistrar
@@ -12,10 +11,7 @@ import com.intellij.execution.console.LanguageConsoleImpl
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.lang.annotation.AnnotationSession
 import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.CustomShortcutSet
-import com.intellij.openapi.actionSystem.DataKey
-import com.intellij.openapi.actionSystem.EmptyAction
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runWriteAction
@@ -235,6 +231,8 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
                     console.executeActionHandler.state != RConsoleExecuteActionHandler.State.TERMINATED
       e.presentation.isEnabled = enabled
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
   }
 
   fun annotateForHistory() {
@@ -345,6 +343,8 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
     override fun update(e: AnActionEvent) {
       e.presentation.isVisible = false
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
   }
 
   class RSetCurrentDirectoryFromEditor : DumbAwareAction() {
@@ -367,6 +367,8 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
       e.presentation.isEnabled = true
     }
 
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
+
     private fun getVirtualFile(e: AnActionEvent): VirtualFile? {
       return FileEditorManager.getInstance(e.project ?: return null).selectedEditor?.file
     }
@@ -377,6 +379,8 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
       val console = getConsole(e) ?: return
       RConsoleToolWindowFactory.restartConsole(console)
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
   }
 
   class TerminateRWithReportAction : DumbAwareAction() {
@@ -396,6 +400,8 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
       e.presentation.isEnabled = console?.rInterop?.isAlive == true &&
                                  console.rInterop.getUserData(RInteropUtil.TERMINATE_WITH_REPORT_HANDLER) != null
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
   }
 }
 

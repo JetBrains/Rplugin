@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.actions
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.editor.Caret
@@ -22,6 +23,8 @@ abstract class REditorActionBase : DumbAwareAction(), RPromotedAction {
     e.presentation.isVisible = e.isFromActionToolbar || e.psiFile is RFile || e.virtualFile?.fileType == RMarkdownFileType
     e.presentation.isEnabled = e.psiFile is RFile || e.virtualFile?.fileType == RMarkdownFileType
   }
+
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }
 
 class REditorHelpAction : REditorActionBase() {

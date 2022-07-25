@@ -5,6 +5,7 @@
 package org.jetbrains.r.editor
 
 import com.intellij.application.options.CodeStyle
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.CommandProcessor
@@ -48,6 +49,8 @@ abstract class RInsertActionBase(private val symbol: String) : DumbAwareAction()
     val language = psiFile?.language
     presentation.isEnabled = language == RLanguage.INSTANCE || language == RMarkdownLanguage
   }
+
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }
 
 class RInsertAssignmentAction : RInsertActionBase("<-")
