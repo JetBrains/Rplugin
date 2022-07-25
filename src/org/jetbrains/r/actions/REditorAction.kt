@@ -17,22 +17,14 @@ import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import javax.swing.Icon
 
-abstract class REditorActionBase : DumbAwareAction, RPromotedAction {
-  constructor() : super()
-
-  constructor(text: String, description: String, icon: Icon?) : super(text, description, icon)
-
+abstract class REditorActionBase : DumbAwareAction(), RPromotedAction {
   override fun update(e: AnActionEvent) {
     e.presentation.isVisible = e.isFromActionToolbar || e.psiFile is RFile || e.virtualFile?.fileType == RMarkdownFileType
     e.presentation.isEnabled = e.psiFile is RFile || e.virtualFile?.fileType == RMarkdownFileType
   }
 }
 
-class REditorHelpAction : REditorActionBase {
-  constructor() : super()
-
-  constructor(text: String, description: String, icon: Icon?) : super(text, description, icon)
-
+class REditorHelpAction : REditorActionBase() {
   override fun actionPerformed(e: AnActionEvent) {
     val editor = e.editor ?: return
     val elementAtCaret = PsiUtilBase.getElementAtCaret(editor) ?: return
