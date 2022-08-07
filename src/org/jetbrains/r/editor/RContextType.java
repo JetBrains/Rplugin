@@ -11,19 +11,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.r.RFileType;
 import org.jetbrains.r.RLanguage;
 
-
 public class RContextType extends FileTypeBasedContextType {
-
     public RContextType() {
-        super("R", "&R", RFileType.INSTANCE); //NON-NLS
+        super("&R", RFileType.INSTANCE); //NON-NLS
     }
-
 
     @Override
     public boolean isInContext(@NotNull PsiFile file, int offset) {
         return isMyLanguage(file.getLanguage());
     }
-
 
     private static boolean isMyLanguage(Language language) {
       return language.isKindOf(RLanguage.INSTANCE);

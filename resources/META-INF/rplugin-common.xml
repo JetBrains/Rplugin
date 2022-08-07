@@ -603,7 +603,7 @@ You can find the source code in the following repositories:
         <inlineActionHandler implementation="org.jetbrains.r.refactoring.inline.RInlineAssignmentHandler"/>
 
         <!-- coding assistance-->
-        <liveTemplateContext implementation="org.jetbrains.r.editor.RContextType"/>
+        <liveTemplateContext contextId="R" implementation="org.jetbrains.r.editor.RContextType"/>
         <defaultLiveTemplates file="liveTemplates/rtemplates.xml"/>
         <internalFileTemplate name="R Script"/>
         <internalFileTemplate name="RMarkdown"/>
