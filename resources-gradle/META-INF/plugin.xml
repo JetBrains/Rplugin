@@ -1,4 +1,4 @@
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" allow-bundled-update="false">
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
   <name>R Language for IntelliJ</name>
   <vendor>JetBrains</vendor>
   <version>2020.3-SNAPSHOT</version>
