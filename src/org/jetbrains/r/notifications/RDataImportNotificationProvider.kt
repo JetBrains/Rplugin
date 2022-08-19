@@ -51,7 +51,7 @@ class RDataImportNotificationProvider : EditorNotifications.Provider<EditorNotif
   }
 
   private fun createPanel(project: Project, file: VirtualFile, fileEditor: FileEditor, actions: List<RImportDataContextAction>): EditorNotificationPanel {
-    return EditorNotificationPanel(fileEditor).apply {
+    return EditorNotificationPanel(fileEditor, EditorNotificationPanel.Status.Info).apply {
       text = createNotificationText(file)
       createActionLabel { label ->
         if (actions.size != 1) {
