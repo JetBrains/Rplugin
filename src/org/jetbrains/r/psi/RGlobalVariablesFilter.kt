@@ -10,7 +10,7 @@ import com.intellij.ide.util.treeView.smartTree.ActionPresentationData
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.openapi.actionSystem.Shortcut
 import com.intellij.openapi.keymap.KeymapUtil
-import com.intellij.util.PlatformIcons
+import com.intellij.ui.IconManager
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RFunctionExpression
@@ -28,7 +28,7 @@ class RGlobalVariablesFilter : FileStructureFilter {
     return ActionPresentationData(
       RBundle.message("structure.view.global.variable.filter"),
       null,
-      PlatformIcons.VARIABLE_ICON)
+      IconManager.getInstance().getPlatformIcon(com.intellij.ui.PlatformIcons.Variable))
   }
 
   override fun getName(): String = RGlobalVariablesFilterId

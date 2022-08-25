@@ -16,6 +16,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.templateLanguages.OuterLanguageElement
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
+import com.intellij.ui.IconManager
 import com.intellij.util.ArrayUtil
 import com.intellij.util.PlatformIcons
 import org.jetbrains.r.psi.api.RAssignmentStatement
@@ -93,8 +94,9 @@ class RStructureViewElement(private val element: PsiElement) : StructureViewTree
 
   override fun getIcon(open: Boolean): Icon? {
     return when {
-      element is RAssignmentStatement && element.assignedValue is RFunctionExpression -> PlatformIcons.FUNCTION_ICON
-      element is RAssignmentStatement -> PlatformIcons.VARIABLE_ICON
+      element is RAssignmentStatement && element.assignedValue is RFunctionExpression -> IconManager.getInstance().getPlatformIcon(
+        com.intellij.ui.PlatformIcons.Function)
+      element is RAssignmentStatement -> IconManager.getInstance().getPlatformIcon(com.intellij.ui.PlatformIcons.Variable)
       open -> IconLoader.getIcon("nodes/folderOpen.png", RStructureViewElement::class.java.classLoader)
       else -> PlatformIcons.FOLDER_ICON
     }
