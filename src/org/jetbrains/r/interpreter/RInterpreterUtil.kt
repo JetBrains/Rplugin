@@ -214,9 +214,8 @@ object RInterpreterUtil {
       }
 
   fun updateIndexableSet(project: Project) {
-    val dumbService = DumbServiceImpl.getInstance(project)
     if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
-      dumbService.queueTask(UnindexedFilesUpdater(project))
+      UnindexedFilesUpdater(project).queue(project)
     }
   }
 

@@ -75,9 +75,8 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     prepareTestSkeletons(project)
     VfsUtil.markDirtyAndRefresh(false, true, true, File(SKELETON_LIBRARY_PATH))
     setupMockInterpreterStateManager()
-    val dumbService = DumbServiceImpl.getInstance(project)
     if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
-      dumbService.queueTask(UnindexedFilesUpdater(project))
+      UnindexedFilesUpdater(project).queue(project)
     }
     setupMockRepoProvider()
   }
