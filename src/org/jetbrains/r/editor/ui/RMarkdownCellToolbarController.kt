@@ -57,8 +57,10 @@ internal class RMarkdownCellToolbarController private constructor(
       )
     )!!
 
-  override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, intervalIterator: ListIterator<NotebookCellLines.Interval>) {
-    val interval = intervalIterator.next()
+  override fun paintGutter(editor: EditorImpl,
+                           g: Graphics,
+                           r: Rectangle,
+                           interval: NotebookCellLines.Interval) {
     val inlayBounds = inlay.bounds ?: return
     paintNotebookCellBackgroundGutter(editor, g, r, interval, inlayBounds.y, inlayBounds.height)
   }
