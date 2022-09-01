@@ -5,6 +5,7 @@
 
 package org.jetbrains.r.run.graphics.ui
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
@@ -24,6 +25,7 @@ import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.CHANGE_
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.GraphicsPanel
 import org.jetbrains.plugins.notebooks.visualization.r.ui.ToolbarUtil
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.run.graphics.*
 import org.jetbrains.r.settings.RGraphicsSettings
@@ -306,8 +308,10 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
       return DefaultActionGroup(ideAction, rAction)
     }
 
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
+
     private fun createAction(text: String, description: String, newStandalone: Boolean): AnAction {
-      return object : DumbAwareAction(text, description, null) {
+      return object : RDumbAwareBgtAction(text, description, null) {
         override fun actionPerformed(e: AnActionEvent) {
           setStandalone(newStandalone)
         }
@@ -341,6 +345,8 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     override fun setSelected(e: AnActionEvent, state: Boolean) {
       RGraphicsSettings.setDarkMode(project, state)
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
   }
 
   companion object {

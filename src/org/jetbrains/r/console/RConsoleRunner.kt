@@ -253,7 +253,6 @@ class RConsoleRunner(private val interpreter: RInterpreter,
                                            SimpleDataContext.getSimpleContext(RConsoleView.R_CONSOLE_DATA_KEY, console, e.dataContext))
     }
 
-
   private fun createConsoleExecAction(): AnAction {
     val emptyAction = consoleView.executeActionHandler.emptyExecuteAction
 
@@ -264,11 +263,6 @@ class RConsoleRunner(private val interpreter: RInterpreter,
                                                               consoleView.executeActionHandler)
 
     return RConsoleExecuteActionHandler()
-  }
-
-
-  private fun getExecutor(): Executor {
-    return DefaultRunExecutor.getRunExecutorInstance()
   }
 
   private fun finishConsole() {

@@ -36,6 +36,7 @@ import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.filters.gui.TableFilterHeader
 import org.jetbrains.plugins.notebooks.visualization.r.ui.MaterialTableUtils
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
 import java.awt.BorderLayout
 import java.awt.Event
 import java.awt.FlowLayout
@@ -211,7 +212,9 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
       }
     }
 
-    val filterTable = object : DumbAwareToggleAction(FILTER_TOOLTIP_ESCAPED, RBundle.message("action.dataframe.viewer.filter.description"), AllIcons.Actions.Find) {
+    val filterTable = object : RDumbAwareBgtToggleAction(FILTER_TOOLTIP_ESCAPED,
+                                                         RBundle.message("action.dataframe.viewer.filter.description"),
+                                                         AllIcons.Actions.Find) {
       override fun isSelected(e: AnActionEvent) = filterHeader != null
 
       override fun setSelected(e: AnActionEvent, state: Boolean) {
@@ -224,9 +227,9 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
     }
     filterTableButton = createButton(filterTable)
 
-    val paginateTable = object : DumbAwareToggleAction(RBundle.message("action.dataframe.viewer.pagination.name"),
-                                                       RBundle.message("action.dataframe.viewer.pagination.description"),
-                                                       VisualisationIcons.Table.Pagination) {
+    val paginateTable = object : RDumbAwareBgtToggleAction(RBundle.message("action.dataframe.viewer.pagination.name"),
+                                                           RBundle.message("action.dataframe.viewer.pagination.description"),
+                                                           VisualisationIcons.Table.Pagination) {
       override fun isSelected(e: AnActionEvent): Boolean {
         return paginator != null
       }
@@ -244,9 +247,9 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
     }
     createButton(paginateTable)
 
-    val autoRefreshAction = object : DumbAwareToggleAction(RBundle.message("action.dataframe.viewer.auto.refresh.name"),
-                                                           RBundle.message("action.dataframe.viewer.auto.refresh.description"),
-                                                           AllIcons.Actions.Refresh) {
+    val autoRefreshAction = object : RDumbAwareBgtToggleAction(RBundle.message("action.dataframe.viewer.auto.refresh.name"),
+                                                               RBundle.message("action.dataframe.viewer.auto.refresh.description"),
+                                                               AllIcons.Actions.Refresh) {
       override fun isSelected(e: AnActionEvent): Boolean {
         return autoRefresh
       }

@@ -21,6 +21,7 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.ui.*
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
+import org.jetbrains.r.actions.RDumbAwareBgtAction
 import java.awt.*
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
@@ -76,6 +77,8 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
       override fun update(e: AnActionEvent) {
         anAction.update(e)
       }
+
+      override fun getActionUpdateThread() = ActionUpdateThread.BGT
     }
     return ActionWrapper()
   }
@@ -117,7 +120,7 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
     })
   }
 
-  private fun createNextOccurrenceAction() = object : DumbAwareAction() {
+  private fun createNextOccurrenceAction() = object : RDumbAwareBgtAction() {
     init { ActionUtil.copyFrom(this, IdeActions.ACTION_NEXT_OCCURENCE) }
     override fun actionPerformed(e: AnActionEvent) = searchModel.next()
     override fun update(e: AnActionEvent) {
@@ -125,7 +128,7 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
     }
   }
 
-  private fun createPrevOccurrenceAction() = object : DumbAwareAction() {
+  private fun createPrevOccurrenceAction() = object : RDumbAwareBgtAction() {
     init { ActionUtil.copyFrom(this, IdeActions.ACTION_PREVIOUS_OCCURENCE) }
     override fun actionPerformed(e: AnActionEvent) = searchModel.prev()
     override fun update(e: AnActionEvent) {
@@ -155,6 +158,8 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
     override fun isDumbAware(): Boolean = true
     override fun actionPerformed(e: AnActionEvent) {}
     override fun createCustomComponent(presentation: Presentation, place: String): JComponent = statusLabel
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
   }
 
   private class SearchModel(private val editorPane: JEditorPane, private val matchLabel: JLabel) {

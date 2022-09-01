@@ -11,8 +11,6 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.DumbAwareAction
-import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.EmptyRunnable
@@ -39,6 +37,8 @@ import com.intellij.xdebugger.impl.ui.tree.XDebuggerTree
 import com.intellij.xdebugger.impl.ui.tree.nodes.*
 import org.jetbrains.plugins.notebooks.visualization.r.ui.ToolbarUtil
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.actions.RDumbAwareBgtAction
+import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.RDebuggerPanel
 import org.jetbrains.r.packages.RequiredPackage
@@ -248,7 +248,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
       ActionManager.getInstance().getAction("XDebugger.CopyWatch")
     )
     actions.addSeparator()
-    actions.addAction(object : AnAction(RBundle.message("variable.view.clear.environment.action.text"), null, AllIcons.Actions.GC) {
+    actions.addAction(object : RDumbAwareBgtAction(RBundle.message("variable.view.clear.environment.action.text"), null, AllIcons.Actions.GC) {
       override fun actionPerformed(e: AnActionEvent) {
         val environment = stackFrame?.environment ?: return
         val yesNo = Messages.showYesNoDialog(e.project, RBundle.message("variable.view.clear.environment.message"),
@@ -266,7 +266,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
       }
     })
     actions.addAction(createSettingsActionGroup())
-    actions.addAction(object : DumbAwareAction(ActionsBundle.message("action.EvaluateExpression.text"), null,
+    actions.addAction(object : RDumbAwareBgtAction(ActionsBundle.message("action.EvaluateExpression.text"), null,
                                                AllIcons.Debugger.EvaluateExpression) {
       override fun actionPerformed(e: AnActionEvent) {
         RDebuggerEvaluateHandler.perform(console.project, RXDebuggerEvaluator(stackFrame ?: return), e.dataContext)
@@ -331,7 +331,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
 
   private fun createSettingsActionGroup(): ActionGroup {
     return DefaultActionGroup(RBundle.message("variable.view.settings.text"), listOf(
-      object : DumbAwareToggleAction(RBundle.message("variable.view.show.hidden.variables.action.text")) {
+      object : RDumbAwareBgtToggleAction(RBundle.message("variable.view.show.hidden.variables.action.text")) {
         override fun isSelected(e: AnActionEvent) = settings.showHiddenVariables
 
         override fun setSelected(e: AnActionEvent, state: Boolean) {
@@ -341,7 +341,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
           }
         }
       },
-      object : DumbAwareToggleAction(RBundle.message("variable.view.show.classes.action.text")) {
+      object : RDumbAwareBgtToggleAction(RBundle.message("variable.view.show.classes.action.text")) {
         override fun isSelected(e: AnActionEvent) = settings.showClasses
 
         override fun setSelected(e: AnActionEvent, state: Boolean) {
@@ -351,7 +351,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
           }
         }
       },
-      object : DumbAwareToggleAction(RBundle.message("variable.view.show.size.action.text")) {
+      object : RDumbAwareBgtToggleAction(RBundle.message("variable.view.show.size.action.text")) {
         override fun isSelected(e: AnActionEvent) = settings.showSize
 
         override fun setSelected(e: AnActionEvent, state: Boolean) {

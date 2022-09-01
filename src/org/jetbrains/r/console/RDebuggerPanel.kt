@@ -36,6 +36,7 @@ import com.intellij.xdebugger.impl.frame.XDebuggerFramesList
 import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
 import icons.RIcons
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame
 import org.jetbrains.r.debugger.RXVariablesView
@@ -387,7 +388,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     shortcutsActionId: String? = null,
     private val isActive: (() -> Boolean)? = null,
     private val callback: (AnActionEvent) -> Unit
-  ): DumbAwareAction(text, null, icon) {
+  ): RDumbAwareBgtAction(text, null, icon) {
     init {
       if (shortcutsActionId != null) {
         registerCustomShortcutSet(ShortcutSet { KeymapManager.getInstance().activeKeymap.getShortcuts(shortcutsActionId) },

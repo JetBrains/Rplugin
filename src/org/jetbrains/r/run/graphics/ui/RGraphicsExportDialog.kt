@@ -23,6 +23,8 @@ import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.DialogU
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.GraphicsPanel
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutputUtil
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.actions.RDumbAwareBgtAction
+import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RSnapshot
@@ -71,7 +73,7 @@ class RGraphicsExportDialog(
     updateAspectRatio()
   }
 
-  private val refreshAction = object : DumbAwareAction(RBundle.message("graphics.panel.export.dialog.refresh.preview.title"), RBundle.message("graphics.panel.export.dialog.refresh.preview.description"), AllIcons.Actions.Refresh) {
+  private val refreshAction = object : RDumbAwareBgtAction(RBundle.message("graphics.panel.export.dialog.refresh.preview.title"), RBundle.message("graphics.panel.export.dialog.refresh.preview.description"), AllIcons.Actions.Refresh) {
     override fun actionPerformed(e: AnActionEvent) {
       rescaleIfNecessary()
     }
@@ -356,7 +358,7 @@ class RGraphicsExportDialog(
     private val presentation: ToggleActionPresentation,
     private val canClick: (() -> Boolean)? = null,
     onClick: (Boolean) -> Unit
-  ) : DumbAwareToggleAction()
+  ) : RDumbAwareBgtToggleAction()
   {
     private val machine = BiStateMachine(presentation.initialState, onClick)
 

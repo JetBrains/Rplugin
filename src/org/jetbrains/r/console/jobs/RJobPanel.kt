@@ -37,6 +37,7 @@ import net.miginfocom.swing.MigLayout
 import org.apache.commons.lang.time.DurationFormatUtils
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.interpreter.RInterpreterManager
 import java.awt.*
 import java.awt.event.MouseAdapter
@@ -153,9 +154,9 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
     background = backgroundColor()
   }
 
-  private inner class RemoveCompletedJobs : DumbAwareAction(RBundle.message("jobs.panel.action.remove.completed.jobs.text"),
-                                                            RBundle.message("jobs.panel.action.remove.completed.jobs.description"),
-                                                            AllIcons.Actions.GC) {
+  private inner class RemoveCompletedJobs : RDumbAwareBgtAction(RBundle.message("jobs.panel.action.remove.completed.jobs.text"),
+                                                                RBundle.message("jobs.panel.action.remove.completed.jobs.description"),
+                                                                AllIcons.Actions.GC) {
     override fun actionPerformed(e: AnActionEvent) {
       jobList.jobEntities.filter { it.jobDescriptor.processTerminated }.forEach {
         jobList.removeJobEntity(it)
@@ -167,7 +168,7 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
     }
   }
 
-  private inner class RerunJob : DumbAwareAction(RBundle.message("jobs.panel.action.rerun.job.text"),
+  private inner class RerunJob : RDumbAwareBgtAction(RBundle.message("jobs.panel.action.rerun.job.text"),
                                                  RBundle.message("jobs.panel.action.rerun.job.description"),
                                                  RIcons.Run.RestartJob) {
     override fun actionPerformed(e: AnActionEvent) {
@@ -184,7 +185,7 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
     }
   }
 
-  private inner class ShowFileInToolwindow : DumbAwareAction(RBundle.message("jobs.panel.action.show.file.in.toolwindow.text"),
+  private inner class ShowFileInToolwindow : RDumbAwareBgtAction(RBundle.message("jobs.panel.action.show.file.in.toolwindow.text"),
                                                  RBundle.message("jobs.panel.action.show.file.in.toolwindow.description"),
                                                  AllIcons.General.Locate) {
     override fun actionPerformed(e: AnActionEvent) {

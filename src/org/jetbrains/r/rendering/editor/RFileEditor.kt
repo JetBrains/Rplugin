@@ -14,6 +14,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RActionUtil
+import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.isVirtualFileForTest
 import java.awt.BorderLayout
 
@@ -53,7 +54,7 @@ class RFileEditor(project: Project, textEditor: TextEditor, virtualFile: Virtual
     }
   }
 
-  private inner class ToolbarAction(actionId: String) : DumbAwareAction() {
+  private inner class ToolbarAction(actionId: String) : RDumbAwareBgtAction() {
     private val action = ActionManager.getInstance().getAction(actionId).also { copyFrom(it) }
 
     override fun actionPerformed(e: AnActionEvent) {

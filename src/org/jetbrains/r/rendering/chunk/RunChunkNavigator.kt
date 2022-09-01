@@ -13,6 +13,7 @@ import com.intellij.openapi.ui.JBPopupMenu
 import com.intellij.psi.PsiElement
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.r.actions.RActionUtil
+import org.jetbrains.r.actions.RDumbAwareBgtAction
 
 import java.awt.event.MouseEvent
 
@@ -52,7 +53,7 @@ object RunChunkNavigator : GutterIconNavigationHandler<PsiElement> {
 }
 
 
-internal class ChunkAction(private val action: AnAction, private val contextVariablesOverride: Map<String, Any>) : DumbAwareAction() {
+internal class ChunkAction(private val action: AnAction, private val contextVariablesOverride: Map<String, Any>) : RDumbAwareBgtAction() {
   init {
     copyFrom(action)
   }

@@ -26,6 +26,7 @@ import com.intellij.psi.PsiElement
 import icons.RIcons
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RMarkdownInterruptAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.actions.editor
@@ -285,6 +286,8 @@ private fun createOutputDirectoryAction(project: Project, report: VirtualFile): 
       e.presentation.text = outputDirectoryName
     }
 
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
+
     override fun createPopupActionGroup(button: JComponent?): DefaultActionGroup =
       DefaultActionGroup(
         object : AnAction(RBundle.message("rmarkdown.editor.toolbar.documentDirectory")) {
@@ -319,7 +322,7 @@ private fun createOutputDirectoryAction(project: Project, report: VirtualFile): 
       get() = RMarkdownSettings.getInstance(project).state.getOutputDirectory(report)?.name.orEmpty()
   }
 
-private abstract class SameTextAction(text: String, icon: Icon? = null) : DumbAwareAction(text, text, icon)
+private abstract class SameTextAction(text: String, icon: Icon? = null) : RDumbAwareBgtAction(text, text, icon)
 
 private val Editor.isShiny
   get() = getUserData(RMarkdownUtil.IS_SHINY) == true

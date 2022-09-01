@@ -5,6 +5,7 @@
 package org.jetbrains.r.run.visualize.actions
 
 import com.intellij.ide.scratch.ScratchUtil
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.DumbAwareAction
@@ -32,6 +33,8 @@ abstract class RImportDataContextAction(text: String, description: String) : Dum
   final override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = e.project?.let { isEnabled(it) } ?: false
   }
+
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
   fun isApplicableTo(e: AnActionEvent): Boolean {
     return e.selectedFiles?.let { it.size == 1 && isApplicableTo(it.first()) } ?: false
