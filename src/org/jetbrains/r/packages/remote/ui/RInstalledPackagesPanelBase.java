@@ -736,6 +736,11 @@ public class RInstalledPackagesPanelBase extends JPanel {
     public JComponent createCustomComponent(@NotNull Presentation presentation, @NotNull String place) {
       return myField;
     }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+      return ActionUpdateThread.BGT;
+    }
   }
 
   private static class MyFilteringTableModel extends AbstractTableModel {

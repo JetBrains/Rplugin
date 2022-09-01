@@ -134,7 +134,7 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
     addToLeft(toolbar.component)
   }
 
-  private inner class AddJob : DumbAwareAction() {
+  private inner class AddJob : RDumbAwareBgtAction() {
     init {
       copyFrom(runJob)
       templatePresentation.icon =  AllIcons.General.Add

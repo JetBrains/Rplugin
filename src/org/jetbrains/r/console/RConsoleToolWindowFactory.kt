@@ -36,6 +36,7 @@ import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.components.BorderLayoutPanel
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RActionUtil
+import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.configuration.RSettingsProjectConfigurable
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterManagerImpl
@@ -81,7 +82,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
 
   private fun addCreateConsoleTabAction(toolWindow: ToolWindow) {
     (toolWindow as? ToolWindowEx)?.setTabActions(
-      object : AnAction(), DumbAware {
+      object : RDumbAwareBgtAction() {
         private val addConsoleAction = ActionManager.getInstance().getAction("org.jetbrains.r.console.RConsoleAction")
 
         init {

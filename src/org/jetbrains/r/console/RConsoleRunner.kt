@@ -37,6 +37,7 @@ import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.actions.RActionUtil
+import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.help.RWebHelpProvider
@@ -220,7 +221,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
 
 
   private fun createInterruptAction(console: RConsoleView): AnAction =
-    object : AnAction(), RPromotedAction {
+    object : RDumbAwareBgtAction(), RPromotedAction {
       private val action = ActionManager.getInstance().getAction(RConsoleView.INTERRUPT_ACTION_ID).also { copyFrom(it) }
 
       override fun actionPerformed(e: AnActionEvent) {
@@ -237,7 +238,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
     }
 
   private fun createEofAction(console: RConsoleView): AnAction =
-    object : AnAction(), RPromotedAction {
+    object : RDumbAwareBgtAction(), RPromotedAction {
       private val action = ActionManager.getInstance().getAction(RConsoleView.EOF_ACTION_ID).also { copyFrom(it) }
 
       override fun actionPerformed(e: AnActionEvent) {
@@ -260,7 +261,9 @@ class RConsoleRunner(private val interpreter: RInterpreter,
     class RConsoleExecuteActionHandler : ConsoleExecuteAction(consoleView,
                                                               consoleView.executeActionHandler,
                                                               emptyAction,
-                                                              consoleView.executeActionHandler)
+                                                              consoleView.executeActionHandler) {
+      override fun getActionUpdateThread() = ActionUpdateThread.BGT
+    }
 
     return RConsoleExecuteActionHandler()
   }

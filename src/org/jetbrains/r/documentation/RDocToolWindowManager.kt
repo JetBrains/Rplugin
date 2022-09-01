@@ -14,6 +14,7 @@ import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.psi.PsiElement
 import com.intellij.ui.content.Content
 import org.jetbrains.r.RLanguage
+import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import java.util.function.Supplier
 
@@ -37,9 +38,9 @@ class RDocToolWindowManager : AbstractDocToolWindowManager() {
 
   override fun installToolWindowActions(toolWindow: ToolWindow, documentationManager: DocumentationManager) {
     val documentationComponent = getDocumentationComponent(toolWindow, documentationManager)
-    val restorePopupAction = object : DumbAwareAction(CodeInsightBundle.messagePointer("action.AnActionButton.text.open.as.popup"),
-                                                      Supplier { documentationManager.restorePopupDescription },
-                                                      null) {
+    val restorePopupAction = object : RDumbAwareBgtAction(CodeInsightBundle.messagePointer("action.AnActionButton.text.open.as.popup"),
+                                                          Supplier { documentationManager.restorePopupDescription },
+                                                          null) {
       override fun actionPerformed(event: AnActionEvent) {
         documentationManager.restorePopupBehavior()
       }

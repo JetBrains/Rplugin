@@ -13,8 +13,6 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.keymap.KeymapManager
-import com.intellij.openapi.project.DumbAwareAction
-import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
@@ -37,6 +35,7 @@ import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
 import icons.RIcons
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtAction
+import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame
 import org.jetbrains.r.debugger.RXVariablesView
@@ -272,8 +271,8 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   }
 
   private fun createMuteBreakpointsAction(): ToggleAction {
-    return object : DumbAwareToggleAction(ActionsBundle.message("action.XDebugger.MuteBreakpoints.text"), null,
-                                          AllIcons.Debugger.MuteBreakpoints) {
+    return object : RDumbAwareBgtToggleAction(ActionsBundle.message("action.XDebugger.MuteBreakpoints.text"), null,
+                                              AllIcons.Debugger.MuteBreakpoints) {
       override fun isSelected(e: AnActionEvent) = breakpointsMuted
 
       override fun setSelected(e: AnActionEvent, state: Boolean) {
