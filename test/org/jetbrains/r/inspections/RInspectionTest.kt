@@ -98,7 +98,7 @@ abstract class RInspectionTest : RUsefulTestCase() {
       if (expected == null) {
         fail("Inspection highlighted the code: \${highlighting.text}")
       }
-      val action = highlighting.quickFixActionMarkers!![0].first.action
+      val action = highlighting.findRegisteredQuickFix { desc, _ -> desc.action}
 
       ApplicationManager.getApplication().runWriteAction {
         CommandProcessor.getInstance().executeCommand(project, { action.invoke(project, myFixture.editor, myFixture.file) },
