@@ -6,6 +6,7 @@ package org.jetbrains.r.console
 
 import com.intellij.codeInsight.lookup.LookupManager
 import com.intellij.execution.console.ConsoleHistoryController
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.editor.Editor
@@ -31,4 +32,6 @@ class RConsoleHistoryOlderCommandAction(private val console: RConsoleView) : AnA
     // First line or last character
     return document.getLineNumber(caretModel.getOffset()) == 0 || document.textLength == caretModel.offset
   }
+
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

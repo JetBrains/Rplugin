@@ -332,6 +332,8 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
     }
   }
 
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
+
   class REofAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
       val console = getConsole(e) ?: return
