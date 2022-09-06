@@ -14,7 +14,6 @@ import com.intellij.openapi.application.ApplicationBundle
 import com.intellij.openapi.editor.colors.EditorColors.*
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.DumbAware
-import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.text.StringUtil
@@ -133,6 +132,10 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
     override fun actionPerformed(e: AnActionEvent) = searchModel.prev()
     override fun update(e: AnActionEvent) {
       e.presentation.isEnabled = searchModel.hasPrev
+    }
+
+    override fun getActionUpdateThread(): ActionUpdateThread {
+      return ActionUpdateThread.BGT
     }
   }
 
