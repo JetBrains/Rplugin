@@ -33,18 +33,15 @@ import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import org.jetbrains.r.settings.RSettings
 
-private const val rInterpreterWidgetId: String = "rInterpreterWidget"
+private const val ID: String = "rInterpreterWidget"
 
 class RInterpreterBarWidgetFactory : StatusBarWidgetFactory {
-
-  override fun getId(): String = rInterpreterWidgetId
+  override fun getId(): String = ID
 
   override fun getDisplayName(): String = RBundle.message("interpreter.status.bar.display.name")
 
-  override fun isAvailable(project: Project): Boolean {
-    val consoleContent = RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.contentManager?.contents ?: return false
-    return consoleContent.isNotEmpty()
-  }
+  override fun isAvailable(project: Project): Boolean =
+    RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.contentManager?.contents?.isNotEmpty() ?: false
 
   override fun createWidget(project: Project): StatusBarWidget = RInterpreterStatusBarWidget(project)
 
@@ -118,7 +115,7 @@ private class RInterpreterStatusBarWidget(project: Project) : EditorBasedStatusB
 
   override fun createPopup(context: DataContext): ListPopup = RInterpreterPopupFactory(project).createPopup(context)
 
-  override fun ID(): String = rInterpreterWidgetId
+  override fun ID(): String = ID
 
   override fun createInstance(project: Project): StatusBarWidget = RInterpreterStatusBarWidget(project)
 }
