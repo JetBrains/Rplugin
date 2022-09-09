@@ -23,8 +23,8 @@ class RMarkdownEditorFactoryListener : EditorFactoryListener {
     fun onRMarkdownFileEditorCreated(editor: EditorImpl) {
       NotebookCellLinesProvider.install(editor)
       NotebookEditorAppearanceProvider.install(editor)
-      NotebookGutterLineMarkerManager.install(editor)
       NotebookCellInlayManager.install(editor)
+      NotebookGutterLineMarkerManager.install(editor)
     }
 
     fun isRMarkdown(editor: Editor): Boolean {
