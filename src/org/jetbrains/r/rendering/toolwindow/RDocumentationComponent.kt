@@ -144,6 +144,8 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
     override fun isDumbAware(): Boolean = true
     override fun actionPerformed(e: AnActionEvent) {}
     override fun createCustomComponent(presentation: Presentation, place: String): JComponent = myField
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
   }
 
   private class StatusLabelAction : AnActionButton("", "", null), CustomComponentAction, DumbAware {
