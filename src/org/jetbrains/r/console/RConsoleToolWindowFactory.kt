@@ -11,7 +11,6 @@ import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.invokeLater
@@ -32,6 +31,7 @@ import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
+import com.intellij.util.ui.NamedColorUtil
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.components.BorderLayoutPanel
 import org.jetbrains.r.RBundle
@@ -210,7 +210,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       val panel = BorderLayoutPanel()
       panel.addToCenter(JBLabel(RBundle.message("console.starting.label.text")).apply {
         horizontalAlignment = SwingConstants.CENTER
-        foreground = UIUtil.getInactiveTextColor()
+        foreground = NamedColorUtil.getInactiveTextColor()
       })
       val content = contentFactory.createContent(panel, RBundle.message("console.starting.title"), false)
       content.isCloseable = false

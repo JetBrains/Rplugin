@@ -19,6 +19,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.ui.*
 import com.intellij.util.ui.JBUI
+import com.intellij.util.ui.NamedColorUtil
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import java.awt.*
@@ -259,7 +260,7 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
         if (indices.size > 0) {
           matchLabel.text = ApplicationBundle.message("editorsearch.current.cursor.position", cursorIndex, matches)
         } else {
-          matchLabel.foreground = UIUtil.getErrorForeground()
+          matchLabel.foreground = NamedColorUtil.getErrorForeground()
           matchLabel.text = ApplicationBundle.message("editorsearch.matches", matches)
         }
       }

@@ -13,7 +13,6 @@ import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.colors.EditorColorsUtil
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -30,6 +29,7 @@ import com.intellij.util.PathUtil
 import com.intellij.util.text.DateFormatUtil
 import com.intellij.util.ui.GridBag
 import com.intellij.util.ui.JBEmptyBorder
+import com.intellij.util.ui.NamedColorUtil
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.components.BorderLayoutPanel
 import icons.RIcons
@@ -532,7 +532,7 @@ internal class JobEntity(val jobDescriptor: RJobDescriptor,
 
 private fun backgroundColor() = UIUtil.getEditorPaneBackground()
 private fun selectionColor() = EditorColorsUtil.getGlobalOrDefaultColor(RECENT_LOCATIONS_SELECTION_KEY)!!
-private fun infoColor() = UIUtil.getInactiveTextColor()
+private fun infoColor() = NamedColorUtil.getInactiveTextColor()
 
 private val PROGRESS_BAR_WIDTH = JBUIScale.scale(150)
 private val START_TIME_RIGHT_INSET = JBUIScale.scale(6)
