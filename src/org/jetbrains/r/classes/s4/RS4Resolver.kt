@@ -99,7 +99,7 @@ object RS4Resolver {
         methodWithDistance.second.maxOfOrNull { if (it is RS4OrdDistance) it.distance else 0 } ?: 0
       } ?: 0 + 1
       methodsWithDistance.map { methodWithDistance ->
-        methodWithDistance.first to methodWithDistance.second.sumBy {
+        methodWithDistance.first to methodWithDistance.second.sumOf {
           when (it) {
             RS4DistanceToANY -> anyDistance
             RS4InfDistance -> 100_000
