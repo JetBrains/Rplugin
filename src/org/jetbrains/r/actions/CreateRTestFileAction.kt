@@ -57,7 +57,7 @@ class CreateRTestFileAction : CreateFromTemplateAction(FileTemplateManager.getDe
     return RPackageBuildUtil.findTestFile(e.project!!, fileName)
   }
 
-  fun getOrCreateTestsDirectory(dataContext: DataContext?, childDir: String? = null): PsiDirectory? {
+  private fun getOrCreateTestsDirectory(dataContext: DataContext?, childDir: String? = null): PsiDirectory? {
     dataContext ?: return null
     val project = LangDataKeys.PROJECT.getData(dataContext) ?: return null
     val sourceRoots = project.guessProjectDir() ?: return null
@@ -102,7 +102,7 @@ class CreateRTestFileAction : CreateFromTemplateAction(FileTemplateManager.getDe
       (file as Navigatable).navigate(true)
   }
 
-  fun createTestThatFile(dir: PsiDirectory?): Boolean? {
+  private fun createTestThatFile(dir: PsiDirectory?): Boolean? {
     dir ?: return null
     val selectedTemplate = FileTemplateManager.getDefaultInstance().getInternalTemplate(TESTTHAT_FILE_TEMPLATE)
     FileTemplateManager.getInstance(dir.project).addRecentName(selectedTemplate.name)

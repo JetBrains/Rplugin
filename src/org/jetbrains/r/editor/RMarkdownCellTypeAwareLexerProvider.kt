@@ -61,7 +61,7 @@ private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLine
 }
 
 
-internal enum class RMarkdownCellType(val debugName: String) {
+internal enum class RMarkdownCellType(private val debugName: String) {
   MARKDOWN_CELL("MARKDOWN_CELL"),
   CODE_CELL("CODE_CELL");
 

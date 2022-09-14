@@ -236,7 +236,7 @@ object RPlotUtil {
     }
   }
 
-  fun replay(plot: RPlot, provider: RPlotterProvider, darkMode: Boolean, isPreview: Boolean) {
+  private fun replay(plot: RPlot, provider: RPlotterProvider, darkMode: Boolean, isPreview: Boolean) {
     val helper = ReplayHelper(plot, provider, darkMode, isPreview)
     helper.replay()
   }

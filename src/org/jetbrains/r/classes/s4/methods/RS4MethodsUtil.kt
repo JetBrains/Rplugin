@@ -51,7 +51,7 @@ object RS4MethodsUtil {
     }
   }
 
-  val RS4GenericOrMethodHolder.associatedS4GenericOrMethodInfo: RS4GenericOrMethodInfo?
+  private val RS4GenericOrMethodHolder.associatedS4GenericOrMethodInfo: RS4GenericOrMethodInfo?
     get() = when (this) {
       is RCallExpressionImpl -> {
         val stub = greenStub

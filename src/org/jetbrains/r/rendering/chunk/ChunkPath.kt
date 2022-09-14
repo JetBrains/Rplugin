@@ -27,7 +27,7 @@ data class ChunkPath(val path: String, val chunkText: String) {
   fun getHtmlDirectory(): String =
     getCacheDirectory()
 
-  fun getHtmlLibrariesDirectory(): String =
+  private fun getHtmlLibrariesDirectory(): String =
     findInCache("lib")
 
   fun getDataDirectory(): String =

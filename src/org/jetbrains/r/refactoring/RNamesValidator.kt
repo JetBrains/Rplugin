@@ -11,7 +11,7 @@ object RNamesValidator : NamesValidator {
   override fun isKeyword(name: String, project: Project?) = isKeyword(name)
   override fun isIdentifier(name: String, project: Project?) = isIdentifier(name)
 
-  fun isKeyword(name: String) = name in RESERVED_WORDS
+  private fun isKeyword(name: String) = name in RESERVED_WORDS
 
   fun isIdentifier(name: String) = !isKeyword(name) && name matches IDENTIFIER_REGEX
 

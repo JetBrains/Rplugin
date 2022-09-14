@@ -38,7 +38,7 @@ data class DependencyPackage(
     return compareResult > 0 || !lowerBound.strict && compareResult == 0
   }
 
-  fun upperBoundSatisfies(version: String): Boolean {
+  private fun upperBoundSatisfies(version: String): Boolean {
     if (upperBound == null) return true
     val compareResult = RPackageVersion.compare(version, upperBound.version) ?: return true
     return compareResult < 0 || !upperBound.strict && compareResult == 0

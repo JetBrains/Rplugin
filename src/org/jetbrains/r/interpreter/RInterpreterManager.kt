@@ -46,7 +46,7 @@ interface RInterpreterManager {
 
   companion object {
     fun getInstance(project: Project): RInterpreterManager = project.getService(RInterpreterManager::class.java)
-    fun getInstanceIfCreated(project: Project): RInterpreterManager? = project.getServiceIfCreated(RInterpreterManager::class.java)
+    private fun getInstanceIfCreated(project: Project): RInterpreterManager? = project.getServiceIfCreated(RInterpreterManager::class.java)
 
     @JvmOverloads
     fun getInterpreterAsync(project: Project, force: Boolean = false): Promise<RInterpreter> = getInstance(project).getInterpreterAsync(force)

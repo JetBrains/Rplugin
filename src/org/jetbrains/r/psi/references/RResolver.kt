@@ -171,9 +171,9 @@ object RResolver {
     return resolveResults
   }
 
-  fun sortResolveResults(psiElement: PsiElement,
-                         runtimeInfo: RConsoleRuntimeInfo?,
-                         resolveResults: Array<ResolveResult>): Array<ResolveResult> {
+  private fun sortResolveResults(psiElement: PsiElement,
+                                 runtimeInfo: RConsoleRuntimeInfo?,
+                                 resolveResults: Array<ResolveResult>): Array<ResolveResult> {
     resolveResults.firstOrNull { it.element?.containingFile == psiElement.containingFile }?.let { return arrayOf(it) }
     val fileUnderProject = psiElement.containingFile.virtualFile?.let {
       GlobalSearchScope.projectScope(psiElement.project).contains(it)
@@ -193,7 +193,7 @@ object RResolver {
     return resolveResults
   }
 
-  fun addSortedResultsInFilesOrLibrary(element: RPsiElement, name: String, result: MutableList<ResolveResult>) {
+  private fun addSortedResultsInFilesOrLibrary(element: RPsiElement, name: String, result: MutableList<ResolveResult>) {
     val libraryOrFileResult = mutableListOf<ResolveResult>()
     resolveInFilesOrLibrary(element, name, libraryOrFileResult)
     result.addAll(sortResolveResults(element, element.containingFile.runtimeInfo, libraryOrFileResult.toTypedArray()))

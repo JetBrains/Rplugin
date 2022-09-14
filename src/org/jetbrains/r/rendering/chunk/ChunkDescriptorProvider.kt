@@ -88,7 +88,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
     private fun getInlayOutputs(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutput> =
       getImages(chunkPath, isDarkModeEnabled) + getUrls(chunkPath) + getTables(chunkPath) + getOutputs(chunkPath)
 
-    fun getImages(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutput> {
+    private fun getImages(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutput> {
       return getImageFilesOrdered(chunkPath).map { imageFile ->
         val text = imageFile.absolutePath
         val preview = ImageIO.read(imageFile)?.let { image ->
@@ -132,7 +132,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
     private val preferredWidth
       get() = (InlayDimensions.lineHeight * 8.0f).toInt()
 
-    fun getUrls(chunkPath: ChunkPath): List<InlayOutput> {
+    private fun getUrls(chunkPath: ChunkPath): List<InlayOutput> {
       val imagesDirectory = chunkPath.getHtmlDirectory()
       return getFilesByExtension(imagesDirectory, ".html")?.map { html ->
         InlayOutput("file://" + html.absolutePath.toString(),
@@ -141,7 +141,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       } ?: emptyList()
     }
 
-    fun getTables(chunkPath: ChunkPath): List<InlayOutput> {
+    private fun getTables(chunkPath: ChunkPath): List<InlayOutput> {
       val dataDirectory = chunkPath.getDataDirectory()
       return getFilesByExtension(dataDirectory, ".csv")?.map { csv ->
         InlayOutput(csv.readText(),

@@ -235,7 +235,7 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
   }
 
-  fun annotateForHistory() {
+  private fun annotateForHistory() {
     val holder:MutableList<HighlightInfo> = ArrayList()
 
     val annotator = RAnnotatorVisitor(holder, AnnotationSession(file))

@@ -29,13 +29,13 @@ class RProjectIconProvider : IconProvider() {
     return null
   }
 
-  fun isInTestDirectory(e: PsiFile): Boolean {
+  private fun isInTestDirectory(e: PsiFile): Boolean {
     val parent = e.parent ?: return false
     return (parent.name == "testthat" && parent.parent != null && parent.parent!!.name == "tests")
            || parent.name == "tests"
   }
 
-  fun isInProjectBasePath(e: PsiFileSystemItem): Boolean {
+  private fun isInProjectBasePath(e: PsiFileSystemItem): Boolean {
     return (e.parent ?: return false).virtualFile.path == e.project.basePath
   }
 }

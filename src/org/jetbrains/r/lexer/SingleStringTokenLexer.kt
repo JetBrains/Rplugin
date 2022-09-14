@@ -4,7 +4,7 @@ package org.jetbrains.r.lexer
  * @property tokenString the string to be match
  * @property outputBuffer the buffer to be transmitted symbols then matching [tokenString] fails
  */
-class SingleStringTokenLexer(val tokenString: String, val outputBuffer: StringBuffer) {
+class SingleStringTokenLexer(private val tokenString: String, private val outputBuffer: StringBuffer) {
   private var pos: Int = 0
   private val commandBuffer = StringBuffer()
 

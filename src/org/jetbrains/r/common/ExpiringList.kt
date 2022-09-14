@@ -5,7 +5,7 @@
 package org.jetbrains.r.common
 
 class ExpiringList<out T>(values: List<T>, private val expiryCondition: () -> Boolean) : List<T> by values {
-  val hasExpired: Boolean
+  private val hasExpired: Boolean
     get() = expiryCondition()
 
   val hasNotExpired: Boolean

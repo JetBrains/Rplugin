@@ -59,7 +59,7 @@ class RJobsToolWindowFactory : ToolWindowFactory, DumbAware {
       getRJobsToolWindows(project)?.show(null)
     }
 
-    fun getRJobsToolWindows(project: Project): ToolWindow? {
+    private fun getRJobsToolWindows(project: Project): ToolWindow? {
       return ToolWindowManager.getInstance(project).getToolWindow(ID)
     }
 

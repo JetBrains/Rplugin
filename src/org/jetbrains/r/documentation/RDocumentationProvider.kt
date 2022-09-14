@@ -400,7 +400,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
       documentation.insert(documentation.length, "</div>")
     }
 
-    fun getHexFromColor(color: Color): String {
+    private fun getHexFromColor(color: Color): String {
       return String.format("#%02x%02x%02x", color.red, color.green, color.blue)
     }
 

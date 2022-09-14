@@ -120,7 +120,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
     addWatchExpression(expression, index, navigateToWatchNode, false)
   }
 
-  fun addWatchExpression(expression: XExpression, index: Int, navigateToWatchNode: Boolean, noDuplicates: Boolean) {
+  private fun addWatchExpression(expression: XExpression, index: Int, navigateToWatchNode: Boolean, noDuplicates: Boolean) {
     ApplicationManager.getApplication().assertIsDispatchThread()
     val rootNode = rootNode ?: return
     if (noDuplicates) {

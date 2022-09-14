@@ -30,7 +30,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 class RLocalInterpreterImpl(location: RLocalInterpreterLocation, project: Project) : RInterpreterBase(location, project) {
-  val interpreterPath = location.path
+  private val interpreterPath = location.path
   override val basePath = project.basePath!!
   override val hostOS get() = OperatingSystem.current()
   override val hostArch get() = CpuArch.CURRENT

@@ -93,7 +93,7 @@ object R6ClassPsiUtil {
    * @param rIdentifierExpression `someMember` of expression like `classObject$someMember` or `self$someMember`
    * @return `R6Class` function call, which defines class containing `someMember`
    */
-  fun getClassDefinitionCallFromMemberUsage(rIdentifierExpression: RIdentifierExpression?) : RCallExpression? {
+  private fun getClassDefinitionCallFromMemberUsage(rIdentifierExpression: RIdentifierExpression?) : RCallExpression? {
     if (rIdentifierExpression == null) return null
     val usedClassVariable = getClassIdentifierFromChainedUsages(rIdentifierExpression.parent as? RMemberExpression)
     return getClassDefinitionFromClassVariableUsage(usedClassVariable)
@@ -148,7 +148,7 @@ object R6ClassPsiUtil {
    * @param classDefinitionCall class definition expression `R6Class("MyClass", list( someField = 0))`
    * @return argument info containing all internal members of class
    */
-  fun getClassDefinitionArgumentInfo(classDefinitionCall: RCallExpression?) : RArgumentInfo? {
+  private fun getClassDefinitionArgumentInfo(classDefinitionCall: RCallExpression?) : RArgumentInfo? {
     if (classDefinitionCall == null) return null
     return RArgumentInfo.getArgumentInfo(classDefinitionCall)
   }

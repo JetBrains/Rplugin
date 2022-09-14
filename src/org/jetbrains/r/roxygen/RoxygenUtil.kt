@@ -26,7 +26,7 @@ object RoxygenUtil {
     return host as? PsiComment
   }
 
-  fun findAssociatedExpression(roxygenPsiElement: PsiElement): RExpression? {
+  private fun findAssociatedExpression(roxygenPsiElement: PsiElement): RExpression? {
     val psiComment = findHostComment(roxygenPsiElement)
     if (psiComment is PsiDocCommentBase) {
       val owner = psiComment.owner

@@ -30,7 +30,7 @@ import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.getKind
 import org.jetbrains.r.psi.isFunctionFromLibrary
 
-class RAnnotatorVisitor(private val holder: MutableList<HighlightInfo>, val annotationSession: AnnotationSession) : RVisitor() {
+class RAnnotatorVisitor(private val holder: MutableList<HighlightInfo>, private val annotationSession: AnnotationSession) : RVisitor() {
 
   override fun visitCallExpression(callExpression: RCallExpression) {
     val expression = callExpression.expression

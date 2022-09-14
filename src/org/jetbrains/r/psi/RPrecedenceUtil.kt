@@ -9,26 +9,26 @@ import com.intellij.psi.PsiElement
 import org.jetbrains.r.psi.api.*
 
 object RPrecedenceUtil {
-  const val LITERAL_PRECEDENCE = 0
-  const val NAMESPACE_ACCESS_PRECEDENCE = 1
-  const val NAMESPACE_MEMBER_PRECEDENCE = 2
-  const val INDEXING_PRECEDENCE = 3
+  private const val LITERAL_PRECEDENCE = 0
+  private const val NAMESPACE_ACCESS_PRECEDENCE = 1
+  private const val NAMESPACE_MEMBER_PRECEDENCE = 2
+  private const val INDEXING_PRECEDENCE = 3
   // ^                4
   // unary - +        5
   // :                6
-  const val SPECIAL_OPERATOR_PRECEDENCE = 7
+  private const val SPECIAL_OPERATOR_PRECEDENCE = 7
   // * /              8
   // + -              9
   // < > <= >= == !=  10
   // !                11
   // & &&             12
   // | ||             13
-  const val TILDE_PRECEDENCE = 14
-  const val RIGHT_ASSIGNMENT_PRECEDENCE = 15
-  const val LEFT_ASSIGNMENT_PRECEDENCE = 16
-  const val EQUAL_ASSIGNMENT_PRECEDENCE = 17
+  private const val TILDE_PRECEDENCE = 14
+  private const val RIGHT_ASSIGNMENT_PRECEDENCE = 15
+  private const val LEFT_ASSIGNMENT_PRECEDENCE = 16
+  private const val EQUAL_ASSIGNMENT_PRECEDENCE = 17
 
-  val BINARY_OPERATOR_PRECEDENCE = mapOf(
+  private val BINARY_OPERATOR_PRECEDENCE = mapOf(
     Pair("@", NAMESPACE_MEMBER_PRECEDENCE),
     Pair("^", 4),
     Pair(":", 6),
@@ -38,12 +38,12 @@ object RPrecedenceUtil {
     Pair("&", 12), Pair("&&", 12),
     Pair("|", 13), Pair("||", 13)
   )
-  val UNARY_OPERATOR_PRECEDENCE = mapOf(
+  private val UNARY_OPERATOR_PRECEDENCE = mapOf(
     Pair("+", 5), Pair("-", 5),
     Pair("!", 11)
   )
 
-  fun getPrecedence(expr: PsiElement): Int {
+  private fun getPrecedence(expr: PsiElement): Int {
     return when (expr) {
       is RNamespaceAccessExpression -> NAMESPACE_ACCESS_PRECEDENCE
       is RMemberExpression -> NAMESPACE_MEMBER_PRECEDENCE

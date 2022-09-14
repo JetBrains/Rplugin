@@ -28,7 +28,7 @@ object RMarkdownPsiUtil {
   val PRESENTABLE_TYPES = HEADERS
   val TRANSPARENT_CONTAINERS = TokenSet.create(MARKDOWN_FILE, UNORDERED_LIST, ORDERED_LIST, LIST_ITEM, BLOCK_QUOTE)
 
-  val executableFenceLabelPattern: Pattern = Pattern.compile("\\{(\\w+)([^,]*)(,.*)?}", Pattern.DOTALL)
+  private val executableFenceLabelPattern: Pattern = Pattern.compile("\\{(\\w+)([^,]*)(,.*)?}", Pattern.DOTALL)
 
   private val HEADER_ORDER = listOf(
     TokenSet.create(MARKDOWN_FILE_ELEMENT_TYPE),

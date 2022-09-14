@@ -25,7 +25,7 @@ interface RInterpreterStateManager {
 
   companion object {
     fun getInstance(project: Project): RInterpreterStateManager = project.getService(RInterpreterStateManager::class.java)
-    fun getInstanceIfCreated(project: Project): RInterpreterStateManager? = project.getServiceIfCreated(RInterpreterStateManager::class.java)
+    private fun getInstanceIfCreated(project: Project): RInterpreterStateManager? = project.getServiceIfCreated(RInterpreterStateManager::class.java)
 
     fun getCurrentStateAsync(project: Project): Promise<RInterpreterState> = getInstance(project).getCurrentStateAsync()
 

@@ -37,11 +37,11 @@ abstract class RS4ContextProvider<T : RS4Context> {
   private val contextKey: Key<CachedValue<T>> = Key.create("S4_CONTEXT_PROVIDER_CACHE")
 
   companion object {
-    val newObjectProvider = RS4NewObjectContextProvider()
-    val setClassTypeProvider = RS4SetClassTypeContextProvider()
-    val slotDeclarationProvider = RS4SlotDeclarationContextProvider()
-    val setGenericProvider = RS4SetGenericProvider()
-    val setMethodProvider = RS4SetMethodProvider()
+    private val newObjectProvider = RS4NewObjectContextProvider()
+    private val setClassTypeProvider = RS4SetClassTypeContextProvider()
+    private val slotDeclarationProvider = RS4SlotDeclarationContextProvider()
+    private val setGenericProvider = RS4SetGenericProvider()
+    private val setMethodProvider = RS4SetMethodProvider()
 
     private val allProviders = listOf(
       newObjectProvider,
