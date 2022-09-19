@@ -6,8 +6,12 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
+import com.intellij.openapi.editor.ex.EditorEx
+import com.intellij.openapi.editor.ex.RangeMarkerEx
 import com.intellij.openapi.editor.impl.EditorEmbeddedComponentManager
 import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.openapi.editor.markup.HighlighterLayer
+import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.editor.markup.TextAttributes
 import org.jetbrains.plugins.notebooks.visualization.*
 import org.jetbrains.plugins.notebooks.visualization.ui.SteadyUIPanel
@@ -57,12 +61,14 @@ internal class RMarkdownCellToolbarController private constructor(
       )
     )!!
 
-  override fun paintGutter(editor: EditorImpl,
-                           g: Graphics,
-                           r: Rectangle,
-                           interval: NotebookCellLines.Interval) {
-    val inlayBounds = inlay.bounds ?: return
-    paintNotebookCellBackgroundGutter(editor, g, r, interval, inlayBounds.y, inlayBounds.height)
+  override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, interval: NotebookCellLines.Interval) {}
+
+  override fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval) {
+    val startOffset = editor.document.getLineStartOffset(interval.lines.first)
+    val endOffset = editor.document.getLineEndOffset(interval.lines.last)
+
+    val rangeHighlighter = editor.markupModel.addRangeHighlighter(null, startOffset, endOffset, HighlighterLayer.FIRST - 100, HighlighterTargetArea.LINES_IN_RANGE)
+    rangeHighlighter.lineMarkerRenderer = RMarkdownCellToolbarGutterLineMarkerRenderer(interval, (inlay as RangeMarkerEx).id)
   }
 
   class Factory : NotebookCellInlayController.Factory {
@@ -98,6 +104,14 @@ internal class RMarkdownCellToolbarController private constructor(
 
   companion object {
     private const val isRelatedToPrecedingText: Boolean = true
+  }
+}
+
+class RMarkdownCellToolbarGutterLineMarkerRenderer(private val interval: NotebookCellLines.Interval, private val inlayId: Long) : NotebookLineMarkerRenderer() {
+  override fun paint(editor: Editor, g: Graphics, r: Rectangle) {
+    editor as EditorImpl
+    val inlayBounds = getInlayBounds(editor, interval.lines, inlayId) ?: return
+    paintNotebookCellBackgroundGutter(editor, g, r, interval, inlayBounds.y, inlayBounds.height)
   }
 }
 

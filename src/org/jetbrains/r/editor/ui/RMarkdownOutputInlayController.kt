@@ -7,8 +7,11 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
+import com.intellij.openapi.editor.ex.RangeMarkerEx
 import com.intellij.openapi.editor.ex.util.EditorScrollingPositionKeeper
 import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.openapi.editor.markup.HighlighterLayer
+import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
@@ -50,6 +53,14 @@ class RMarkdownOutputInlayController private constructor(
                            interval: NotebookCellLines.Interval) {
     val inlayBounds = inlay.bounds ?: return
     paintNotebookCellBackgroundGutter(editor, g, r, interval, inlayBounds.y, inlayBounds.height)
+  }
+
+  override fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval) {
+    val startOffset = editor.document.getLineStartOffset(interval.lines.first)
+    val endOffset = editor.document.getLineEndOffset(interval.lines.last)
+
+    val rangeHighlighter = editor.markupModel.addRangeHighlighter(null, startOffset, endOffset, HighlighterLayer.FIRST - 100, HighlighterTargetArea.LINES_IN_RANGE)
+    rangeHighlighter.lineMarkerRenderer = RMarkdownOutputCellGutterLineMarkerRenderer(interval, (inlay as RangeMarkerEx).id)
   }
 
   override fun addText(text: String, outputType: Key<*>) {
@@ -186,6 +197,13 @@ class RMarkdownOutputInlayController private constructor(
   }
 }
 
+class RMarkdownOutputCellGutterLineMarkerRenderer(private val interval: NotebookCellLines.Interval, private val inlayId: Long) : NotebookLineMarkerRenderer() {
+  override fun paint(editor: Editor, g: Graphics, r: Rectangle) {
+    editor as EditorImpl
+    val inlayBounds = getInlayBounds(editor, interval.lines, inlayId) ?: return
+    paintNotebookCellBackgroundGutter(editor, g, r, interval, inlayBounds.y, inlayBounds.height)
+  }
+}
 
 private fun addBlockElement(editor: Editor, offset: Int, inlayComponent: NotebookInlayComponent): Inlay<NotebookInlayComponent> =
   editor.inlayModel.addBlockElement(offset, true, false, EditorInlaysManager.INLAY_PRIORITY, inlayComponent)!!
