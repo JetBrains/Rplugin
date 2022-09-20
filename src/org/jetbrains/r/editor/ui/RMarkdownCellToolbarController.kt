@@ -111,7 +111,7 @@ class RMarkdownCellToolbarGutterLineMarkerRenderer(private val interval: Noteboo
   override fun paint(editor: Editor, g: Graphics, r: Rectangle) {
     editor as EditorImpl
     val inlayBounds = getInlayBounds(editor, interval.lines, inlayId) ?: return
-    paintNotebookCellBackgroundGutter(editor, g, r, interval, inlayBounds.y, inlayBounds.height)
+    paintNotebookCellBackgroundGutter(editor, g, r, interval.lines, inlayBounds.y, inlayBounds.height)
   }
 }
 
