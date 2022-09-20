@@ -13,7 +13,6 @@ import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.TransactionGuard
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.components.service
-import com.intellij.openapi.project.DumbServiceImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VfsUtil
@@ -76,7 +75,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     VfsUtil.markDirtyAndRefresh(false, true, true, File(SKELETON_LIBRARY_PATH))
     setupMockInterpreterStateManager()
     if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
-      UnindexedFilesUpdater(project).queue(project)
+      UnindexedFilesUpdater(project).queue()
     }
     setupMockRepoProvider()
   }

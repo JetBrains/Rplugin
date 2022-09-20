@@ -12,7 +12,6 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.options.ShowSettingsUtil
-import com.intellij.openapi.project.DumbServiceImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
@@ -215,7 +214,7 @@ object RInterpreterUtil {
 
   fun updateIndexableSet(project: Project) {
     if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
-      UnindexedFilesUpdater(project).queue(project)
+      UnindexedFilesUpdater(project).queue()
     }
   }
 
