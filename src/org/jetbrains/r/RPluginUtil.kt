@@ -13,7 +13,7 @@ import java.nio.file.Path
 
 object RPluginUtil {
   const val PLUGIN_ID = "R4Intellij"
-  private const val PLUGIN_NAME = "rplugin"
+  private const val PLUGIN_NAME = "r-plugin"
 
   fun getPlugin(): PluginDescriptor =
     (RPluginUtil::class.java.classLoader as? PluginAwareClassLoader)?.pluginDescriptor
