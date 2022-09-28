@@ -101,7 +101,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     if (isUnitTestMode) it.withDeadline(Deadline.after(deadlineTest, TimeUnit.SECONDS)) else it
   }
   val executor = ConcurrencyUtil.newSingleThreadExecutor(RINTEROP_THREAD_NAME)
-  private val heartbeatTimer: Timer
+  private val heartbeatTimer: ScheduledFuture<*>
   private val asyncEventsListeners = Collections.newSetFromMap<AsyncEventsListener>(ConcurrentHashMap())
   private var asyncProcessingStarted = false
   private val asyncEventsBeforeStarted = mutableListOf<AsyncEvent>()
@@ -213,13 +213,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
 
   init {
     processAsyncEvents()
-    heartbeatTimer = Timer().also {
-      it.schedule(object : TimerTask() {
-        override fun run() {
-          executeAsync(asyncStub::isBusy, Empty.getDefaultInstance())
-        }
-      }, 0L, HEARTBEAT_PERIOD.toLong())
-    }
+    heartbeatTimer = AppExecutorUtil.getAppScheduledExecutorService().scheduleWithFixedDelay(
+      { executeAsync(asyncStub::isBusy, Empty.getDefaultInstance()) }, 0, HEARTBEAT_PERIOD, TimeUnit.SECONDS)
   }
 
   fun init(rScriptsPath: String, baseDir: String, workspaceFile: String? = null) {
@@ -1198,7 +1193,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
           }
           if (event.hasTermination()) {
             call.cancel("Termination event received", null)
-            heartbeatTimer.cancel()
+            heartbeatTimer.cancel(true)
             terminationPromise.setResult(Unit)
             executeAsync(asyncStub::quitProceed, Empty.getDefaultInstance())
           }
@@ -1240,7 +1235,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   }
 
   override fun dispose() {
-    heartbeatTimer.cancel()
+    heartbeatTimer.cancel(true)
     executeAsync(asyncStub::quit, Empty.getDefaultInstance())
     if (isUnitTestMode) {
       try {
@@ -1398,7 +1393,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   }
 
   companion object {
-    private const val HEARTBEAT_PERIOD = 20000
+    private const val HEARTBEAT_PERIOD = 20L
     private const val EXECUTE_CODE_TEST_TIMEOUT = 20000
     private const val GRPC_LOGGER_MAX_MESSAGES = 30
     private const val MAX_MESSAGE_SIZE = 16 * 1024 * 1024  // 16 MiB (default is 4)

@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.Project
 import com.intellij.reference.SoftReference
+import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.ui.ImageUtil
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.graphics.RPlot
@@ -14,10 +15,10 @@ import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.image.BufferedImage
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.swing.JComponent
 
 class RPlotViewer(project: Project, parent: Disposable) : JComponent() {
-  private val timer = Timer()
   private var timerTask: TimerTask? = null
 
   @Volatile
@@ -124,7 +125,8 @@ class RPlotViewer(project: Project, parent: Disposable) : JComponent() {
         task()
       }
     }
-    timer.schedule(timerTask, TIMER_DELAY)
+
+    AppExecutorUtil.getAppScheduledExecutorService().schedule(task, TIMER_DELAY, TimeUnit.MILLISECONDS)
   }
 
   private fun SoftReference<BufferedImage>.getIfSameSize(): BufferedImage? {
