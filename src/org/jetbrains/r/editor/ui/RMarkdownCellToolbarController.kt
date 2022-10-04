@@ -107,10 +107,10 @@ internal class RMarkdownCellToolbarController private constructor(
   }
 }
 
-class RMarkdownCellToolbarGutterLineMarkerRenderer(private val lines: IntRange, private val inlayId: Long) : NotebookLineMarkerRenderer() {
+class RMarkdownCellToolbarGutterLineMarkerRenderer(private val lines: IntRange, inlayId: Long) : NotebookLineMarkerRenderer(inlayId) {
   override fun paint(editor: Editor, g: Graphics, r: Rectangle) {
     editor as EditorImpl
-    val inlayBounds = getInlayBounds(editor, lines, inlayId) ?: return
+    val inlayBounds = getInlayBounds(editor, lines) ?: return
     paintNotebookCellBackgroundGutter(editor, g, r, lines, inlayBounds.y, inlayBounds.height)
   }
 }
