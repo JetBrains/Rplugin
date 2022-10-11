@@ -5,17 +5,13 @@
 
 package org.jetbrains.r.run.graphics.ui
 
-import com.intellij.openapi.actionSystem.ActionUpdateThread
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.CheckboxAction
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.DumbAware
-import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.util.ui.update.MergingUpdateQueue
@@ -302,7 +298,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
       e.presentation.isEnabled = canRenderPlot
     }
 
-    override fun createPopupActionGroup(button: JComponent): DefaultActionGroup {
+    override fun createPopupActionGroup(button: JComponent, context: DataContext): DefaultActionGroup {
       val ideAction = createAction(ENGINE_IDE_TEXT, ENGINE_IDE_DESCRIPTION, newStandalone = true)
       val rAction = createAction(ENGINE_R_TEXT, ENGINE_R_DESCRIPTION, newStandalone = false)
       return DefaultActionGroup(ideAction, rAction)

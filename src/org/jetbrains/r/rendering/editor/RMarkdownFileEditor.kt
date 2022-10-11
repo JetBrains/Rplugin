@@ -17,7 +17,6 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.DumbAware
-import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -288,7 +287,7 @@ private fun createOutputDirectoryAction(project: Project, report: VirtualFile): 
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
-    override fun createPopupActionGroup(button: JComponent?): DefaultActionGroup =
+    override fun createPopupActionGroup(button: JComponent, context: DataContext): DefaultActionGroup =
       DefaultActionGroup(
         object : AnAction(RBundle.message("rmarkdown.editor.toolbar.documentDirectory")) {
           override fun actionPerformed(e: AnActionEvent) {
