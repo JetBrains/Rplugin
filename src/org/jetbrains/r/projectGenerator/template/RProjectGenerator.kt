@@ -23,6 +23,10 @@ import javax.swing.JPanel
 
 abstract class RProjectGenerator : DirectoryProjectGeneratorBase<RProjectSettings>(), CustomStepProjectGenerator<RProjectSettings>, ProjectTemplate {
 
+  override fun getDescription(): String? {
+    return super.getDescription()
+  }
+
   override fun getIcon(): Icon? = RIcons.R
 
   override fun createModuleBuilder(): ModuleBuilder = RModuleBuilder(this)
