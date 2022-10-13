@@ -20,6 +20,8 @@ import com.intellij.psi.util.elementType
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
+import org.jetbrains.plugins.notebooks.ui.visualization.NotebookLineMarkerRenderer
+import org.jetbrains.plugins.notebooks.ui.visualization.paintNotebookCellBackgroundGutter
 import org.jetbrains.plugins.notebooks.visualization.*
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.*
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayProgressStatus

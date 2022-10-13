@@ -13,6 +13,9 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.editor.markup.TextAttributes
+import org.jetbrains.plugins.notebooks.ui.visualization.NotebookLineMarkerRenderer
+import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
+import org.jetbrains.plugins.notebooks.ui.visualization.paintNotebookCellBackgroundGutter
 import org.jetbrains.plugins.notebooks.visualization.*
 import org.jetbrains.plugins.notebooks.visualization.ui.SteadyUIPanel
 import org.jetbrains.r.rendering.chunk.RunChunkNavigator
