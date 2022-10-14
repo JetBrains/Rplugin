@@ -8,9 +8,9 @@ import com.intellij.openapi.options.DslConfigurableBase
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.util.Disposer
+import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
-import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
@@ -31,7 +31,7 @@ class RSettingsConfigurable(private val project: Project) : DslConfigurableBase(
   override fun createPanel(): DialogPanel {
     return panel {
       row {
-        cell(interpreterPanel.component).horizontalAlign(HorizontalAlign.FILL)
+        cell(interpreterPanel.component).align(AlignX.FILL)
       }
       row {
         checkBox(RBundle.message("project.settings.load.workspace.checkbox"))
@@ -52,7 +52,7 @@ class RSettingsConfigurable(private val project: Project) : DslConfigurableBase(
       extensionConfigurables
         .mapNotNull { it.createComponent() }
         .forEach { newComponent ->
-          row { cell(newComponent).horizontalAlign(HorizontalAlign.FILL) }
+          row { cell(newComponent).align(AlignX.FILL) }
         }
     }
   }
