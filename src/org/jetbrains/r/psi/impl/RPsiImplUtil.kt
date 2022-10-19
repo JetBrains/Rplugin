@@ -79,7 +79,7 @@ internal object RPsiImplUtil {
 
   @JvmStatic
   fun setName(assignment: RAssignmentStatement, name: String): PsiElement {
-    val nameIdentifier = assignment.nameIdentifier ?: throw IncorrectOperationException("Empty name: " + this)
+    val nameIdentifier = assignment.nameIdentifier ?: throw IncorrectOperationException("Empty name: $this")
     nameIdentifier.setName(name)
     return assignment
   }
@@ -187,14 +187,14 @@ internal object RPsiImplUtil {
 
   @JvmStatic
   fun setName(parameter: RParameter, name: String): PsiElement {
-    val nameIdentifier = parameter.nameIdentifier ?: throw IncorrectOperationException("Empty name: " + this)
+    val nameIdentifier = parameter.nameIdentifier ?: throw IncorrectOperationException("Empty name: $this")
     nameIdentifier.name = name
     return parameter
   }
 
   @JvmStatic
   fun setName(namedArgument: RNamedArgument, name: String): PsiElement {
-    val nameIdentifier = namedArgument.nameIdentifier ?: throw IncorrectOperationException("Empty name: " + this)
+    val nameIdentifier = namedArgument.nameIdentifier ?: throw IncorrectOperationException("Empty name: $this")
     nameIdentifier.setName(name)
     return namedArgument
   }
