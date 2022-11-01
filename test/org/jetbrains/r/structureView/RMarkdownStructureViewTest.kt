@@ -6,7 +6,6 @@ package org.jetbrains.r.structureView
 
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.UsefulTestCase
-import com.intellij.util.ui.tree.TreeUtil
 import org.intellij.lang.annotations.Language
 import org.jetbrains.r.RUsefulTestCase
 
@@ -204,7 +203,7 @@ class RMarkdownStructureViewTest : RUsefulTestCase() {
                      @Language("RMarkdown") structure: String) {
     myFixture.configureByText("test.rmd", source.trimIndent())
     myFixture.testStructureView { svc ->
-      TreeUtil.expandAll(svc.tree)
+      PlatformTestUtil.expandAll(svc.tree)
       PlatformTestUtil.waitForPromise(svc.select(svc.treeModel.currentEditorElement, false))
       UsefulTestCase.assertSameLines(structure.trimIndent(), PlatformTestUtil.print(svc.tree, true))
     }

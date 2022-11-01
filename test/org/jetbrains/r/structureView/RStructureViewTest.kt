@@ -9,7 +9,6 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.psi.PsiElement
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.UsefulTestCase
-import com.intellij.util.ui.tree.TreeUtil
 import org.intellij.lang.annotations.Language
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.psi.RGlobalVariablesFilterId
@@ -142,7 +141,7 @@ class RStructureViewTest : RUsefulTestCase() {
     myFixture.configureByText("test.R", source.trimIndent())
     myFixture.testStructureView { svc ->
       svc.setActionActive(RGlobalVariablesFilterId, !showGlobalVariables)
-      TreeUtil.expandAll(svc.tree)
+      PlatformTestUtil.expandAll(svc.tree)
       PlatformTestUtil.waitForPromise(svc.select(svc.treeModel.currentEditorElement, false))
       UsefulTestCase.assertSameLines(structure.trimIndent(), PlatformTestUtil.print(svc.tree, true))
     }
