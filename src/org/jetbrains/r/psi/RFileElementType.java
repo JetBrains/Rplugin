@@ -10,7 +10,7 @@ import org.jetbrains.r.RLanguage;
 
 public class RFileElementType extends IStubFileElementType {
     public RFileElementType() {
-      super("r.file", RLanguage.INSTANCE);
+      super("R", RLanguage.INSTANCE);
     }
 
     @Override
