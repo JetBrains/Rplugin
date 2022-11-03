@@ -3,7 +3,7 @@ package org.jetbrains.r.editor
 import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.testFramework.ThreadTracker
+import com.intellij.testFramework.common.ThreadLeakTracker
 import org.jetbrains.plugins.notebooks.visualization.CodeCellLinesChecker
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines.CellType.CODE
@@ -620,7 +620,7 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
   @Before
   fun before() {
-    ThreadTracker.longRunningThreadCreated(ApplicationManager.getApplication(), "Timer-", "BaseDataReader", "rwrapper")
+    ThreadLeakTracker.longRunningThreadCreated(ApplicationManager.getApplication(), "Timer-", "BaseDataReader", "rwrapper")
   }
 }
 
