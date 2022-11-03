@@ -75,7 +75,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     }
   private var currentRXStackFrames = listOf<RXStackFrame>()
 
-  private val positionHighlighter = ExecutionPointHighlighter(console.project)
+  private val positionHighlighter = ExecutionPointHighlighter(console.project, this)
   private var shouldUpdateHighlighter = true
   private var wasCommandExecuted = false
   private var highlightedPosition: RSourcePosition? = null
