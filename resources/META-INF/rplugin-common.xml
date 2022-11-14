@@ -400,7 +400,7 @@ You can find the source code in the following repositories:
 
         <statusBarWidgetFactory id="rInterpreterWidget"
                                 implementation="org.jetbrains.r.configuration.RInterpreterBarWidgetFactory"
-                                order="after codeStyleWidget, before pythonInterpreterWidget, before gitWidget, before hgWidget, before notificationsWidget"/>
+                                order="after CodeStyleStatusBarWidget, before pythonInterpreterWidget, before gitWidget, before hgWidget, before Notifications"/>
 
         <!-- Code style and formatting -->
         <codeStyleSettingsProvider implementation="org.jetbrains.r.editor.formatting.RCodeStyleSettingsProvider"/>
