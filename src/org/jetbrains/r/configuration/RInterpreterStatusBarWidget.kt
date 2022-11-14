@@ -12,7 +12,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.ListPopup
 import com.intellij.openapi.util.Condition
-import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
@@ -35,7 +34,7 @@ import org.jetbrains.r.settings.RSettings
 
 private const val ID: String = "rInterpreterWidget"
 
-class RInterpreterBarWidgetFactory : StatusBarWidgetFactory {
+internal class RInterpreterBarWidgetFactory : StatusBarWidgetFactory {
   override fun getId(): String = ID
 
   override fun getDisplayName(): String = RBundle.message("interpreter.status.bar.display.name")
@@ -44,8 +43,6 @@ class RInterpreterBarWidgetFactory : StatusBarWidgetFactory {
     RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.contentManager?.contents?.isNotEmpty() ?: false
 
   override fun createWidget(project: Project): StatusBarWidget = RInterpreterStatusBarWidget(project)
-
-  override fun disposeWidget(widget: StatusBarWidget) = Disposer.dispose(widget)
 
   override fun canBeEnabledOn(statusBar: StatusBar): Boolean = true
 
