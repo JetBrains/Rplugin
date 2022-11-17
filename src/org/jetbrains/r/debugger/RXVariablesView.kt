@@ -104,7 +104,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
   override fun processSessionEvent(event: SessionEvent, session: XDebugSession) {
   }
 
-  override fun removeWatches(nodes: MutableList<out XDebuggerTreeNode>?) {
+  override fun removeWatches(nodes: List<XDebuggerTreeNode>?) {
     ApplicationManager.getApplication().assertIsDispatchThread()
     val rootNode = rootNode ?: return
     rootNode.removeChildren(nodes)

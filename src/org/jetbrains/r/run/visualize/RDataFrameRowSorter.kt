@@ -76,7 +76,7 @@ class RDataFrameRowSorter(private var model: RDataFrameTableModel, private val j
   override fun convertRowIndexToView(index: Int) =
     shownRange?.let { if (index in it.first until it.second) index - it.first else -1 } ?: index
 
-  override fun setSortKeys(newSortKeys: MutableList<out SortKey>?) {
+  override fun setSortKeys(newSortKeys: List<SortKey>?) {
     if (newSortKeys != sortKeys) {
       sortKeys = newSortKeys.orEmpty()
       fireSortOrderChanged()
