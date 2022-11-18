@@ -5,6 +5,7 @@
 package org.jetbrains.r.console.jobs
 
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.Messages
@@ -12,17 +13,16 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.DocumentAdapter
-import com.intellij.ui.layout.*
+import com.intellij.ui.dsl.builder.*
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.isLocal
-import javax.swing.DefaultComboBoxModel
 import javax.swing.JComponent
 import javax.swing.event.DocumentEvent
 import kotlin.reflect.KMutableProperty0
 
-class RRunJobDialog(private val interpreter: RInterpreter, private val defaultScript: VirtualFile?,
+class RRunJobDialog(private val interpreter: RInterpreter, defaultScript: VirtualFile?,
                     private val defaultWorkingDirectory: String) :
   DialogWrapper(interpreter.project, null, true, IdeModalityType.IDE) {
   private val project = interpreter.project
@@ -65,19 +65,32 @@ class RRunJobDialog(private val interpreter: RInterpreter, private val defaultSc
   private fun createDialogPanel(): DialogPanel =
     panel {
       row { label(RBundle.message("jobs.dialog.label.script.path")) }
-      row {
-        cell {
-          if (interpreter.isLocal()) {
-            label(RBundle.message("jobs.dialog.label.r.script")).withLargeLeftGap()
-            textFieldWithBrowseButton().addTextChangedListener(::scriptPathLocal)
-          } else {
-            val comboBox = comboBox(DefaultComboBoxModel(arrayOf(PathType.LOCAL, PathType.REMOTE)), ::scriptPathType).component
-            val localField = textFieldWithBrowseButton().addTextChangedListener(::scriptPathLocal).component
-            val remoteField = component(interpreter.createFileChooserForHost()).addTextChangedListener(::scriptPathRemote)
-              .withLeftGap(0).component
+      indent {
+        if (interpreter.isLocal()) {
+          row(RBundle.message("jobs.dialog.label.r.script")) {
+            textFieldWithBrowseButton()
+              .align(AlignX.FILL)
+              .applyToComponent { addTextChangedListener(::scriptPathLocal) }
+          }
+        }
+        else {
+          row {
+            val comboBox = comboBox(listOf(PathType.LOCAL, PathType.REMOTE))
+              .bindItem(::scriptPathType.toNullableProperty())
+              .gap(RightGap.SMALL)
+              .component
+            val placeholder = placeholder().align(AlignX.FILL)
+            val localField = com.intellij.ui.components.textFieldWithBrowseButton(null, null,
+                                                                                  fileChooserDescriptor = FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor())
+            localField.addTextChangedListener(::scriptPathLocal)
+            val remoteField = interpreter.createFileChooserForHost()
+            remoteField.addTextChangedListener(::scriptPathRemote)
             val listener = {
-              localField.isVisible = comboBox.item == PathType.LOCAL
-              remoteField.isVisible = comboBox.item == PathType.REMOTE
+              placeholder.component = when (comboBox.item) {
+                PathType.LOCAL -> localField
+                PathType.REMOTE -> remoteField
+                else -> null
+              }
             }
             comboBox.addActionListener {
               listener()
@@ -86,40 +99,33 @@ class RRunJobDialog(private val interpreter: RInterpreter, private val defaultSc
             listener()
           }
         }
-      }
-      row {
-        cell {
-          label(RBundle.message("jobs.dialog.label.working.directory")).withLargeLeftGap()
-          component(interpreter.createFileChooserForHost(defaultWorkingDirectory, true)).addTextChangedListener(::workingDirectory)
-        }
+        row(RBundle.message("jobs.dialog.label.working.directory")) {
+          cell(interpreter.createFileChooserForHost(defaultWorkingDirectory, true))
+            .align(AlignX.FILL)
+            .applyToComponent { addTextChangedListener(::workingDirectory) }
+        }.layout(RowLayout.INDEPENDENT)
       }
       row { label(RBundle.message("jobs.dialog.label.environments")) }
-      row {
-        checkBox(RBundle.message("jobs.dialog.checkbox.copy.global.env"), ::runWithGlobalEnvironment).withLargeLeftGap()
-      }
-      row {
-        cell {
-          label(RBundle.message("jobs.dialog.label.upon.completion")).withLargeLeftGap()
-          comboBox(DefaultComboBoxModel<ExportGlobalEnvPolicy>(
-            arrayOf(ExportGlobalEnvPolicy.DO_NO_EXPORT, ExportGlobalEnvPolicy.EXPORT_TO_GLOBAL_ENV,
-                    ExportGlobalEnvPolicy.EXPORT_TO_VARIABLE)),
-                   ::exportGlobalEnvPolicy)
+      indent {
+        row {
+          checkBox(RBundle.message("jobs.dialog.checkbox.copy.global.env")).bindSelected(::runWithGlobalEnvironment)
         }
+        row(RBundle.message("jobs.dialog.label.upon.completion")) {
+          comboBox(listOf(ExportGlobalEnvPolicy.DO_NO_EXPORT, ExportGlobalEnvPolicy.EXPORT_TO_GLOBAL_ENV,
+                          ExportGlobalEnvPolicy.EXPORT_TO_VARIABLE))
+            .bindItem(::exportGlobalEnvPolicy.toNullableProperty())
+        }.layout(RowLayout.INDEPENDENT)
       }
     }
 
-  private fun CellBuilder<TextFieldWithBrowseButton>.addTextChangedListener(prop: KMutableProperty0<String>? = null):
-    CellBuilder<TextFieldWithBrowseButton> {
-    if (prop != null) {
-      component.text = prop.get()
-    }
-    component.textField.document.addDocumentListener(object : DocumentAdapter() {
+  private fun TextFieldWithBrowseButton.addTextChangedListener(prop: KMutableProperty0<String>) {
+    text = prop.get()
+    textField.document.addDocumentListener(object : DocumentAdapter() {
       override fun textChanged(e: DocumentEvent) {
-        prop?.set(component.text)
+        prop.set(text)
         updateOkAction()
       }
     })
-    return this
   }
 
   override fun doOKAction() {
