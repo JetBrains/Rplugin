@@ -9,6 +9,7 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.codeInspection.util.InspectionMessage
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -31,7 +32,7 @@ class MissingPackageInspection : RInspection() {
     return RBundle.message("inspection.missingPackage.name")
   }
 
-  override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {
+  override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor> {
     val problemsHolder = ProblemsHolder(manager, file, isOnTheFly)
     checkFile(file, problemsHolder)
     return problemsHolder.resultsArray
@@ -146,6 +147,7 @@ class MissingPackageInspection : RInspection() {
       "gganimate" to animateDependencies
     )
 
+    @InspectionMessage
     private fun createImplicitDependenciesDescription(packageName: String, dependencies: List<RequiredPackage>): String {
       val dependencyString = dependencies.joinToString(", ") { it.toFormat(true) }
       return RBundle.message("inspection.missingImplicitDependencies.description", packageName, dependencyString)
