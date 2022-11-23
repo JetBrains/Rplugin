@@ -16,7 +16,6 @@ import com.intellij.psi.util.PsiUtilBase
 import org.jetbrains.r.psi.api.RFile
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
-import javax.swing.Icon
 
 abstract class REditorActionBase : DumbAwareAction(), RPromotedAction {
   override fun update(e: AnActionEvent) {
