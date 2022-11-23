@@ -34,7 +34,7 @@ import java.util.*;
  * @see CommonPsiFileBreadcrumbsCollector#createCrumb(PsiElement, BreadcrumbsProvider, CrumbPresentation)
  */
 public class CommonPsiFileBreadcrumbsCollector extends FileBreadcrumbsCollector {
-  private final static Logger LOG = Logger.getInstance(PsiFileBreadcrumbsCollector.class);
+  private final static Logger LOG = Logger.getInstance(CommonPsiFileBreadcrumbsCollector.class);
 
   private final Project myProject;
 
@@ -258,16 +258,6 @@ public class CommonPsiFileBreadcrumbsCollector extends FileBreadcrumbsCollector 
     }
     return elements;
   }
-
-  public static PsiElement @Nullable [] getLinePsiElements(Document document,
-                                                           int offset,
-                                                           VirtualFile file,
-                                                           Project project,
-                                                           BreadcrumbsProvider infoProvider) {
-    Collection<Pair<PsiElement, BreadcrumbsProvider>> pairs = getLineElements(document, offset, file, project, infoProvider, false);
-    return pairs == null ? null : toPsiElementArray(pairs);
-  }
-
 
   @Nullable
   static FileViewProvider findViewProvider(final VirtualFile file, final Project project) {

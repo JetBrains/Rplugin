@@ -38,7 +38,7 @@ public class CommonPsiCrumb extends Crumb.Impl implements NavigatableCrumb, Lazy
       PsiElement element = getElement(this);
       tooltip = element == null ? null
                                 : provider.getElementTooltip(element);
-      provider = null; // do not try recalculate tooltip
+      provider = null; // do not try to recalculate tooltip
     }
     return tooltip;
   }
@@ -88,10 +88,5 @@ public class CommonPsiCrumb extends Crumb.Impl implements NavigatableCrumb, Lazy
   @Contract("null -> null")
   static PsiElement getElement(Crumb crumb) {
     return crumb instanceof CommonPsiCrumb ? ((CommonPsiCrumb)crumb).anchor.retrieve() : null;
-  }
-
-  @Contract(value = "null -> null", pure = true)
-  static CrumbPresentation getPresentation(Crumb crumb) {
-    return crumb instanceof CommonPsiCrumb ? ((CommonPsiCrumb)crumb).presentation : null;
   }
 }

@@ -43,14 +43,6 @@ internal object REditorActionUtil {
     return result
   }
 
-  fun getSelectedCode(caretOffset: Int,
-                      content: CharSequence,
-                      file: PsiFile): Pair<SelectedCode, PsiElement?>? {
-    val virtualFile = file.virtualFile ?: return null
-    val startElement = findFirstElementToEvaluate(caretOffset, content, file) ?: return null
-    return select(startElement, content, virtualFile)
-  }
-
   private fun select(startElement: RExpression,
                      charsSequence: CharSequence,
                      virtualFile: VirtualFile): Pair<SelectedCode, PsiElement?>? {
