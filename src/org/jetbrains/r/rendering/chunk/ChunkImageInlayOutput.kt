@@ -168,7 +168,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
       wrapper.targetResolution = if (overridesGlobal) newSettings.localResolution else newSettings.globalResolution
       val newStandalone = if (overridesGlobal) newSettings.localStandalone else newSettings.globalStandalone
       wrapper.isStandalone = newStandalone
-      if (newStandalone && wrapper.isStandalone != newStandalone) {
+      if (newStandalone && !wrapper.isStandalone) {
         Messages.showErrorDialog(project, SWITCH_ERROR_DESCRIPTION, SWITCH_ERROR_TITLE)
       }
       manager.isStandalone = newSettings.globalStandalone
