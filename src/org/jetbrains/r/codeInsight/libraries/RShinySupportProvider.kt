@@ -108,10 +108,10 @@ class RShinySupportProvider : RLibrarySupportProvider {
       return
     }
 
-    addCompletionForTag(tagName, lookupElementFactory, completionConsumer)
+    addCompletionForTag(tagName, completionConsumer)
   }
 
-  private fun addCompletionForTag(tagName: String, lookupElementFactory: RLookupElementFactory, completionConsumer: CompletionResultSet) {
+  private fun addCompletionForTag(tagName: String, completionConsumer: CompletionResultSet) {
     completionConsumer.consume(RLookupElementFactory.createNamedArgumentLookupElement("style"))
     completionConsumer.consume(RLookupElementFactory.createNamedArgumentLookupElement("id"))
     completionConsumer.consume(RLookupElementFactory.createNamedArgumentLookupElement("class"))
@@ -318,11 +318,5 @@ class RShinySupportProvider : RLibrarySupportProvider {
     @NonNls
     val SHINY_TAG_METHODS = listOf("p", "h1", "h2", "h3", "h4", "h5", "h6", "a", "br", "div", "span", "pre", "code", "img", "strong", "em",
                                    "hr")
-
-    @NonNls
-    val SHINY_TAG_CONTAINERS = listOf("absolutePanel", "fixedPanel", "bootstrapPage", "column", "conditionalPanel", "fillPage", "fillRow",
-                                      "fixedPage", "fluidPage", "helpText", "navbarPage", "navlistPanel", "sidebarLayout", "tabPanel",
-                                      "tabsetPanel", "titlePanel", "inputPanel", "flowLayout", "splitLayout", "verticalLayout", "wellPanel",
-                                      "withMathJax")
   }
 }
