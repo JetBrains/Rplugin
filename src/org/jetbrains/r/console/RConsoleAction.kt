@@ -20,7 +20,7 @@ class RConsoleAction : AnAction(), DumbAware {
   }
 
   override fun actionPerformed(event: AnActionEvent) {
-    val project = CommonDataKeys.PROJECT.getData(event.dataContext)
+    val project = event.getData(CommonDataKeys.PROJECT)
     if (project != null) {
       RConsoleManager.runConsole(project, requestFocus = true).onError { e ->
         if (e !is RProfileErrorException) {
@@ -31,7 +31,7 @@ class RConsoleAction : AnAction(), DumbAware {
   }
 
   override fun update(e: AnActionEvent) {
-    val project = CommonDataKeys.PROJECT.getData(e.dataContext)
+    val project = e.getData(CommonDataKeys.PROJECT)
     e.presentation.isVisible = project != null
   }
 

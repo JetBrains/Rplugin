@@ -192,7 +192,6 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
   }
 
   companion object {
-    private val EXECUTION_SERVICE = ConcurrencyUtil.newSingleThreadExecutor("RConsole variable view")
     private const val DEFAULT_WIDTH = 160
     val IS_R_CONSOLE_KEY = Key.create<Boolean>("IS_R_CONSOLE")
     val R_CONSOLE_DATA_KEY = DataKey.create<RConsoleView>("R_CONSOLE")

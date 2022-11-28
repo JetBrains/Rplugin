@@ -97,11 +97,4 @@ object RConsoleEnterHandler {
     }
     return null
   }
-
-  private fun getLineAtOffset(doc: Document, offset: Int): String {
-    val line = doc.getLineNumber(offset)
-    val start = doc.getLineStartOffset(line)
-    val end = doc.getLineEndOffset(line)
-    return doc.getText(TextRange(start, end))
-  }
 }

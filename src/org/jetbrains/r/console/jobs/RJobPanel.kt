@@ -539,4 +539,3 @@ private val START_TIME_RIGHT_INSET = JBUIScale.scale(6)
 private val LOGO_OFFSET = JBUIScale.scale(6)
 
 private const val JOBS_POPUP_PLACE = "JOBS_POPUP"
-private const val JOBS_TOOLBAR_PLACE = "JOBS_TOOLBAR"

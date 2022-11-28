@@ -83,7 +83,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       field = newState
     }
   // should be accessed only from RInterop Thread Pool
-  private val executeLaterQueue: Queue<() -> Unit> = ArrayDeque<() -> Unit>()
+  private val executeLaterQueue: Queue<() -> Unit> = ArrayDeque()
   val isRunningCommand: Boolean
     get() = state.let { it != State.PROMPT && it != State.DEBUG_PROMPT }
 

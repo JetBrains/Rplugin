@@ -6,17 +6,14 @@
 package org.jetbrains.r.console
 
 import com.google.common.annotations.VisibleForTesting
-import com.intellij.execution.Executor
 import com.intellij.execution.console.ConsoleExecuteAction
 import com.intellij.execution.console.ConsoleHistoryController
-import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
-import com.intellij.execution.ui.RunContentManager
 import com.intellij.ide.CommonActionsManager
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
@@ -63,8 +60,6 @@ class RConsoleRunner(private val interpreter: RInterpreter,
   private val project = interpreter.project
   private val consoleTitle = interpreter.suggestConsoleName(workingDir)
   private lateinit var consoleView: RConsoleView
-
-  internal var hasPendingPrompt = false
 
   fun initAndRun(): Promise<RConsoleView> {
     val promise = AsyncPromise<RConsoleView>()
@@ -276,10 +271,6 @@ class RConsoleRunner(private val interpreter: RInterpreter,
     for (action in actions) {
       action.registerCustomShortcutSet(action.shortcutSet, component)
     }
-  }
-
-  private fun showConsole(defaultExecutor: Executor, contentDescriptor: RunContentDescriptor) {
-    RunContentManager.getInstance(project).showRunContent(defaultExecutor, contentDescriptor)
   }
 
   // R-509: Newline is required in the end of .Rprofile
