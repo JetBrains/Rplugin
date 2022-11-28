@@ -34,6 +34,7 @@ import com.intellij.ui.content.ContentFactory
 import com.intellij.util.ui.NamedColorUtil
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.components.BorderLayoutPanel
+import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.actions.RDumbAwareBgtAction
@@ -277,4 +278,5 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
   }
 }
 
+@Nls
 private val NO_INTERPRETER_FOUND_DISPLAY_NAME = RBundle.message("console.no.interpreter.error")

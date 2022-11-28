@@ -33,6 +33,7 @@ import com.intellij.xdebugger.impl.actions.DebuggerToggleActionHandler
 import com.intellij.xdebugger.impl.frame.XDebuggerFramesList
 import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
 import icons.RIcons
+import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
@@ -382,7 +383,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   }
 
   abstract inner class RBaseDebuggerAction(
-    text: String,
+    @Nls text: String,
     icon: Icon,
     shortcutsActionId: String? = null,
     private val isActive: (() -> Boolean)? = null,
