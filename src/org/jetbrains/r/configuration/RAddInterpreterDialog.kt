@@ -12,6 +12,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PathUtil
+import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.interpreter.*
@@ -19,10 +20,15 @@ import org.jetbrains.r.interpreter.*
 class RAddInterpreterDialog {
   companion object {
     private val CHECK_INTERPRETER_TITLE = RBundle.message("project.settings.check.interpreter")
+    @Nls
     private val INVALID_INTERPRETER_TITLE = RBundle.message("project.settings.invalid.interpreter")
+    @Nls
     private val INVALID_INTERPRETER_DESCRIPTION = RBundle.message("project.settings.invalid.interpreter.description")
+    @Nls
     private val INTERPRETER_DUPLICATE_TITLE = RBundle.message("project.settings.interpreter.duplicate.title")
+    @Nls
     private val INTERPRETER_DUPLICATE_DESCRIPTION = RBundle.message("project.settings.interpreter.duplicate.description")
+    @Nls
     private val ADDED_INTERPRETER_NAME = RBundle.message("project.settings.added.interpreter")
 
     private val homeChooserDescriptor = object : FileChooserDescriptor(true, false, false, false, false, false) {
@@ -64,6 +70,7 @@ class RAddInterpreterDialog {
               val interpreter = RBasicInterpreterInfo(ADDED_INTERPRETER_NAME, location, version)
               onAdded(interpreter)
             } else {
+              @Suppress("HardCodedStringLiteral")
               val details = e?.message?.let { m -> ":\n$m" } ?: ""
               Messages.showErrorDialog("$INVALID_INTERPRETER_DESCRIPTION$details", INVALID_INTERPRETER_TITLE)
             }

@@ -5,6 +5,7 @@
 package org.jetbrains.r.projectGenerator.panel.interpreter
 
 import com.intellij.openapi.ui.ValidationInfo
+import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.configuration.RManageInterpreterPanel
@@ -70,6 +71,7 @@ class RAddNewInterpreterPanel(existingInterpreters: List<RInterpreterInfo>, loca
 
   companion object {
     private val PANEL_NAME = RBundle.message("project.settings.new.interpreter")
+    @Nls
     private val PANEL_HINT = RBundle.message("project.settings.base.interpreter")
     private val CHECK_INTERPRETER_TITLE = RBundle.message("project.settings.check.interpreter")
     private val MISSING_INTERPRETER_TEXT = RBundle.message("project.settings.missing.interpreter")

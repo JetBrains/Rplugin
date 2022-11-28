@@ -8,6 +8,7 @@ import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.CollectionListModel
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
+import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.DialogUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterInfo
@@ -57,7 +58,7 @@ class RInterpreterDetailsDialog(
           currentSelection = info
         }
         if (RInterpreterSettingsProvider.getProviders().size > 1) {
-          val popupPoint = button.preferredPopupPoint?.screenPoint ?: button.contextComponent.locationOnScreen
+          val popupPoint = button.preferredPopupPoint.screenPoint
           RInterpreterDetailsStep.show(currentInterpreters, null, component, popupPoint, onAdded)
         } else {
           addInterpreter(onAdded)
@@ -128,6 +129,7 @@ class RInterpreterDetailsDialog(
   }
 
   companion object {
+    @Nls
     private val TITLE = RBundle.message("project.settings.details.dialog.title")
   }
 }

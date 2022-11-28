@@ -9,6 +9,7 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.TitledSeparator
 import com.intellij.util.ui.JBUI
 import icons.RIcons
+import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RLocalInterpreterLocation
@@ -60,6 +61,7 @@ class RInterpreterListCellRenderer : ColoredListCellRenderer<Any>() {
   }
 
   companion object {
+    @Nls
     private val NO_INTERPRETER = RBundle.message("project.settings.cell.renderer.no.interpreter")
 
     val SEPARATOR = object : RInterpreterInfo {

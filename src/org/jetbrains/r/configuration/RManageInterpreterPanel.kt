@@ -9,6 +9,7 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.FixedSizeButton
 import com.intellij.ui.CollectionComboBoxModel
 import com.intellij.util.ui.JBUI
+import org.jetbrains.annotations.Nls
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import org.jetbrains.r.settings.RLocalInterpreterSettingsProvider
@@ -20,7 +21,7 @@ import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-class RManageInterpreterPanel(text: String, private val localOnly: Boolean, private val onSelected: (() -> Unit)?) {
+class RManageInterpreterPanel(@Nls text: String, private val localOnly: Boolean, private val onSelected: (() -> Unit)?) {
   private val panel = JPanel(GridBagLayout())
 
   private val comboBox = ComboBox<Any>().apply {
