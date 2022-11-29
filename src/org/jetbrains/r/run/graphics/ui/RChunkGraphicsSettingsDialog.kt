@@ -5,12 +5,16 @@
 package org.jetbrains.r.run.graphics.ui
 
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.ui.CollectionComboBoxModel
 import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.layout.*
+import com.intellij.ui.dsl.builder.*
+import com.intellij.ui.layout.selected
 import org.jetbrains.r.RBundle
 import java.awt.Component
 import javax.swing.*
+
+private const val DEFAULT_RESOLUTION = 75  // It's never required in practice and for backward compatibility purposes only
+private const val INPUT_COLUMN_COUNT = 7
+private val INPUT_RANGE = IntRange(1, 9999)
 
 class RChunkGraphicsSettingsDialog(
   private val initialSettings: Settings,
@@ -37,46 +41,56 @@ class RChunkGraphicsSettingsDialog(
   private var localStandalone = initialSettings.localStandalone
   private var globalStandalone = initialSettings.globalStandalone
 
-  private val localComboBoxModel = CollectionComboBoxModel(listOf(true, false), localStandalone)
-  private val globalComboBoxModel = CollectionComboBoxModel(listOf(true, false), globalStandalone)
-
   init {
-    setResizable(false)
-    title = TITLE
+    isResizable = false
+    title = RBundle.message("chunk.graphics.settings.dialog.title")
     init()
   }
 
   override fun createCenterPanel(): JComponent {
-    val self = this
     return panel {
-      titledRow(LOCAL_SETTINGS_TITLE) {
+      group(RBundle.message("chunk.graphics.settings.dialog.for.current.plot")) {
         row {
-          checkBox(AUTO_RESIZE_TEXT, self::isAutoResizeEnabled)
+          checkBox(RBundle.message("graphics.panel.settings.dialog.auto.resize"))
+            .bindSelected(::isAutoResizeEnabled)
         }
-        val overrideCheckBox = JBCheckBox(OVERRIDE_GLOBAL_TEXT, overridesGlobal)
+        lateinit var overrideCheckBox: JBCheckBox
         row {
-          overrideCheckBox().withSelectedBinding(self::overridesGlobal.toBinding())
+          overrideCheckBox = checkBox(RBundle.message("chunk.graphics.settings.dialog.override.global.text"))
+            .bindSelected(::overridesGlobal)
+            .component
         }
-        row(RESOLUTION_TEXT) {
-          intTextField(self::localResolution, INPUT_COLUMN_COUNT, INPUT_RANGE).enableIf(overrideCheckBox.selected)
-          label(DPI_TEXT)
+        row(RBundle.message("graphics.panel.settings.dialog.resolution")) {
+          intTextField(INPUT_RANGE)
+            .columns(INPUT_COLUMN_COUNT)
+            .bindIntText(::localResolution)
+            .gap(RightGap.SMALL)
+            .enabledIf(overrideCheckBox.selected)
+          label(RBundle.message("graphics.panel.settings.dialog.dpi"))
         }
-        row(ENGINE_TEXT) {
-          comboBox(localComboBoxModel, self::localStandalone, EngineCellRenderer()).enableIf(overrideCheckBox.selected)
+        row(RBundle.message("graphics.panel.engine.text")) {
+          comboBox(listOf(true, false), EngineCellRenderer())
+            .bindItem(::localStandalone.toNullableProperty())
+            .enabledIf(overrideCheckBox.selected)
         }
       }
-      titledRow(GLOBAL_SETTINGS_TITLE) {
-        row(RESOLUTION_TEXT) {
-          intTextField(self::globalResolution, INPUT_COLUMN_COUNT, INPUT_RANGE)
-          label(DPI_TEXT)
+      group(RBundle.message("chunk.graphics.settings.dialog.for.all.plots")) {
+        row(RBundle.message("graphics.panel.settings.dialog.resolution")) {
+          intTextField(INPUT_RANGE)
+            .columns(INPUT_COLUMN_COUNT)
+            .gap(RightGap.SMALL)
+            .bindIntText(::globalResolution)
+          label(RBundle.message("graphics.panel.settings.dialog.dpi"))
         }
         if (isDarkModeVisible) {
           row {
-            checkBox(DARK_MODE_TEXT, self::isDarkModeEnabled)
+            checkBox(RBundle.message("chunk.graphics.settings.dialog.adapt.to.dark.theme"))
+              .bindSelected(::isDarkModeEnabled)
           }
         }
-        row(ENGINE_TEXT) {
-          comboBox(globalComboBoxModel, self::globalStandalone, EngineCellRenderer())
+        row(RBundle.message("graphics.panel.engine.text")) {
+          comboBox(listOf(true, false), EngineCellRenderer())
+            .bindItem(::globalStandalone.toNullableProperty())
         }
       }
     }
@@ -111,12 +125,12 @@ class RChunkGraphicsSettingsDialog(
         }
         when (value) {
           true -> {
-            text = ENGINE_IDE_TEXT
-            toolTipText = ENGINE_IDE_TOOLTIP
+            text = RBundle.message("graphics.panel.engine.ide.text")
+            toolTipText = RBundle.message("graphics.panel.engine.ide.tooltip")
           }
           false -> {
-            text = ENGINE_R_TEXT
-            toolTipText = ENGINE_R_TOOLTIP
+            text = RBundle.message("graphics.panel.engine.r.text")
+            toolTipText = RBundle.message("graphics.panel.engine.r.tooltip")
           }
           else -> {
             text = ""
@@ -125,27 +139,5 @@ class RChunkGraphicsSettingsDialog(
         }
       }
     }
-  }
-
-  companion object {
-    private const val DEFAULT_RESOLUTION = 75  // It's never required in practice and for backward compatibility purposes only
-    private const val INPUT_COLUMN_COUNT = 7
-    private val INPUT_RANGE = IntRange(1, 9999)
-
-    private val TITLE = RBundle.message("chunk.graphics.settings.dialog.title")
-    private val OVERRIDE_GLOBAL_TEXT = RBundle.message("chunk.graphics.settings.dialog.override.global.text")
-    private val LOCAL_SETTINGS_TITLE = RBundle.message("chunk.graphics.settings.dialog.for.current.plot")
-    private val AUTO_RESIZE_TEXT = RBundle.message("graphics.panel.settings.dialog.auto.resize")
-    private val RESOLUTION_TEXT = RBundle.message("graphics.panel.settings.dialog.resolution")
-    private val DPI_TEXT = RBundle.message("graphics.panel.settings.dialog.dpi")
-
-    private val GLOBAL_SETTINGS_TITLE = RBundle.message("chunk.graphics.settings.dialog.for.all.plots")
-    private val DARK_MODE_TEXT = RBundle.message("chunk.graphics.settings.dialog.adapt.to.dark.theme")
-
-    private val ENGINE_TEXT = RBundle.message("graphics.panel.engine.text")
-    private val ENGINE_IDE_TEXT = RBundle.message("graphics.panel.engine.ide.text")
-    private val ENGINE_IDE_TOOLTIP = RBundle.message("graphics.panel.engine.ide.tooltip")
-    private val ENGINE_R_TEXT = RBundle.message("graphics.panel.engine.r.text")
-    private val ENGINE_R_TOOLTIP = RBundle.message("graphics.panel.engine.r.tooltip")
   }
 }
