@@ -66,9 +66,6 @@ private class TableFileEditor(private val tableFile: RTableVirtualFile) : UserDa
   override fun dispose() {}
   override fun isValid(): Boolean = true
 
-  override fun selectNotify() {}
-  override fun deselectNotify() {}
-
   override fun addPropertyChangeListener(listener: PropertyChangeListener) {
     propertyChangeSupport.addPropertyChangeListener(listener)
   }

@@ -48,9 +48,6 @@ abstract class AdvancedTextEditor(val project: Project,
   override fun canNavigateTo(navigatable: Navigatable): Boolean = textEditor.canNavigateTo(navigatable)
   override fun getFile(): VirtualFile = virtualFile
 
-  override fun selectNotify() {}
-  override fun deselectNotify() {}
-
   override fun addPropertyChangeListener(listener: PropertyChangeListener) {
     textEditor.addPropertyChangeListener(listener)
   }
