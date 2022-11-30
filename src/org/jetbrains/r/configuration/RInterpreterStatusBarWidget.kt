@@ -19,6 +19,7 @@ import com.intellij.openapi.wm.StatusBarWidgetFactory
 import com.intellij.openapi.wm.impl.status.EditorBasedStatusBarPopup
 import com.intellij.openapi.wm.impl.status.widget.StatusBarWidgetsManager
 import icons.RIcons
+import kotlinx.coroutines.CoroutineScope
 import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.concurrency.isPending
@@ -39,10 +40,11 @@ internal class RInterpreterBarWidgetFactory : StatusBarWidgetFactory {
 
   override fun getDisplayName(): String = RBundle.message("interpreter.status.bar.display.name")
 
-  override fun isAvailable(project: Project): Boolean =
-    RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.contentManager?.contents?.isNotEmpty() ?: false
+  override fun isAvailable(project: Project): Boolean {
+    return RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.contentManager?.contents?.isNotEmpty() ?: false
+  }
 
-  override fun createWidget(project: Project): StatusBarWidget = RInterpreterStatusBarWidget(project)
+  override fun createWidget(project: Project, scope: CoroutineScope): StatusBarWidget = RInterpreterStatusBarWidget(project, scope)
 
   override fun canBeEnabledOn(statusBar: StatusBar): Boolean = true
 
@@ -53,9 +55,12 @@ internal class RInterpreterBarWidgetFactory : StatusBarWidgetFactory {
   }
 }
 
-private class RInterpreterStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(project, false) {
-
+private class RInterpreterStatusBarWidget(project: Project,
+                                          scope: CoroutineScope) : EditorBasedStatusBarPopup(project = project,
+                                                                                             isWriteableFileRequired = false,
+                                                                                             scope = scope) {
   private val settings = RSettings.getInstance(project)
+
   @Volatile
   private var fetchInterpreterPromise: CancellablePromise<RInterpreterInfo?>? = null
 
@@ -114,7 +119,7 @@ private class RInterpreterStatusBarWidget(project: Project) : EditorBasedStatusB
 
   override fun ID(): String = ID
 
-  override fun createInstance(project: Project): StatusBarWidget = RInterpreterStatusBarWidget(project)
+  override fun createInstance(project: Project): StatusBarWidget = RInterpreterStatusBarWidget(project, scope)
 }
 
 class RInterpreterPopupFactory(private val project: Project) {
