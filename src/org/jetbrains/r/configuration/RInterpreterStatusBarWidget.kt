@@ -18,6 +18,7 @@ import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidgetFactory
 import com.intellij.openapi.wm.impl.status.EditorBasedStatusBarPopup
 import com.intellij.openapi.wm.impl.status.widget.StatusBarWidgetsManager
+import com.intellij.util.messages.MessageBusConnection
 import icons.RIcons
 import kotlinx.coroutines.CoroutineScope
 import org.jetbrains.annotations.Nls
@@ -109,7 +110,7 @@ private class RInterpreterStatusBarWidget(project: Project,
 
   override fun isEnabledForFile(file: VirtualFile?): Boolean = true
 
-  override fun registerCustomListeners() {
+  override fun registerCustomListeners(connection: MessageBusConnection) {
     RSettings.getInstance(project).addInterpreterLocationListener(object : RSettings.RInterpreterLocationListener {
       override fun projectInterpreterLocationChanged(actualInterpreterLocation: RInterpreterLocation?) = update()
     }, this)
