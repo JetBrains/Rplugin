@@ -13,7 +13,6 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.ListPopup
 import com.intellij.openapi.util.Condition
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidgetFactory
 import com.intellij.openapi.wm.impl.status.EditorBasedStatusBarPopup
@@ -46,8 +45,6 @@ internal class RInterpreterBarWidgetFactory : StatusBarWidgetFactory {
   }
 
   override fun createWidget(project: Project, scope: CoroutineScope): StatusBarWidget = RInterpreterStatusBarWidget(project, scope)
-
-  override fun canBeEnabledOn(statusBar: StatusBar): Boolean = true
 
   companion object {
     fun updateWidget(project: Project) {
