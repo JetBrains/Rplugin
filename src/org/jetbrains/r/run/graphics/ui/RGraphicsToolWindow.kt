@@ -274,7 +274,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
         repository.configuration?.let { oldConfiguration ->
           val parameters = oldConfiguration.screenParameters
           val newParameters = parameters.copy(dimension = newDimension, resolution = resolution)
-          repository.configuration = oldConfiguration.copy(screenParameters = newParameters, isRescalingEnabled = isRescalingEnabled)
+          repository.configuration = oldConfiguration.copy(screenParameters = newParameters, isRescalingEnabled = true)
         }
       }
     }
