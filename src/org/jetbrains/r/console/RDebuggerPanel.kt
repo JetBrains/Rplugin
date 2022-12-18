@@ -21,6 +21,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.ui.EditorNotificationPanel
+import com.intellij.ui.EditorNotificationProvider
 import com.intellij.ui.EditorNotifications
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.components.JBLabel
@@ -45,6 +46,7 @@ import org.jetbrains.r.rinterop.RVar
 import org.jetbrains.r.run.debug.stack.RXStackFrame
 import org.jetbrains.r.util.tryRegisterDisposable
 import java.awt.BorderLayout
+import java.util.function.Function
 import javax.swing.Icon
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -429,12 +431,12 @@ class RDebuggerSupport : DebuggerSupport() {
   }
 }
 
-class RSourceChangedEditorNotificationProvider : EditorNotifications.Provider<EditorNotificationPanel>() {
-  private val KEY: Key<EditorNotificationPanel> = Key.create("org.jetbrains.r.console.RSourceChangedEditorNotificationProvider")
+class RSourceChangedEditorNotificationProvider : EditorNotificationProvider {
+  override fun collectNotificationData(project: Project, file: VirtualFile): Function<in FileEditor, out JComponent?> {
+    return Function { createNotificationPanel(file, it) }
+  }
 
-  override fun getKey() = KEY
-
-  override fun createNotificationPanel(file: VirtualFile, fileEditor: FileEditor, project: Project): EditorNotificationPanel? {
+  private fun createNotificationPanel(file: VirtualFile, fileEditor: FileEditor): EditorNotificationPanel? {
     if (file.getUserData(FILE_KEY) != true) return null
     return EditorNotificationPanel(fileEditor, EditorNotificationPanel.Status.Warning).text(
       RBundle.message("debugger.file.has.changed.notification"))

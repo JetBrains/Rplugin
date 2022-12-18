@@ -11,11 +11,10 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.ListPopup
 import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
-import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.Ref
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
-import com.intellij.ui.EditorNotifications
+import com.intellij.ui.EditorNotificationProvider
 import com.intellij.ui.HyperlinkLabel
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
@@ -23,18 +22,20 @@ import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.run.visualize.actions.RImportBaseDataContextAction
 import org.jetbrains.r.run.visualize.actions.RImportCsvDataContextAction
 import org.jetbrains.r.run.visualize.actions.RImportDataContextAction
+import java.util.function.Function
+import javax.swing.JComponent
 
-class RDataImportNotificationProvider : EditorNotifications.Provider<EditorNotificationPanel>(), DumbAware {
+class RDataImportNotificationProvider : EditorNotificationProvider, DumbAware {
   private val availableActions = listOf(
     RImportBaseDataContextAction(),
     RImportCsvDataContextAction()
   )
 
-  override fun getKey(): Key<EditorNotificationPanel> {
-    return KEY
+  override fun collectNotificationData(project: Project, file: VirtualFile): Function<in FileEditor, out JComponent?> {
+    return Function { createNotificationPanel(file, it, project) }
   }
 
-  override fun createNotificationPanel(file: VirtualFile, fileEditor: FileEditor, project: Project): EditorNotificationPanel? {
+  private fun createNotificationPanel(file: VirtualFile, fileEditor: FileEditor, project: Project): EditorNotificationPanel? {
     RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.let { interop ->
       if (interop.hasVariable(file.nameWithoutExtension)) {
         return null
@@ -95,7 +96,6 @@ class RDataImportNotificationProvider : EditorNotifications.Provider<EditorNotif
 
   companion object {
     private const val NAME = "RDataImportNotificationProvider"
-    private val KEY = Key.create<EditorNotificationPanel>(RDataImportNotificationProvider::class.qualifiedName ?: NAME)
     private val ACTION_LABEL = RBundle.message("import.data.action.group.name")
 
     private fun RInterop.hasVariable(name: String): Boolean {
