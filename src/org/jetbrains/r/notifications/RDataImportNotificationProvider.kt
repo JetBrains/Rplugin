@@ -31,7 +31,7 @@ class RDataImportNotificationProvider : EditorNotificationProvider, DumbAware {
     RImportCsvDataContextAction()
   )
 
-  override fun collectNotificationData(project: Project, file: VirtualFile): Function<in FileEditor, out JComponent?> {
+  override fun collectNotificationData(project: Project, file: VirtualFile): Function<in FileEditor, out JComponent?>? {
     return Function { createNotificationPanel(file, it, project) }
   }
 
