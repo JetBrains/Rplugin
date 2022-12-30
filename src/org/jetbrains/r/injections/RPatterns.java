@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo;
 import org.jetbrains.r.psi.api.*;
 
-public class RPatterns {
+public final class RPatterns {
   private final static Logger LOG = Logger.getInstance(RPatterns.class);
 
   /**

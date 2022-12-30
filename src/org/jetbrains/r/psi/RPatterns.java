@@ -18,7 +18,7 @@ import static com.intellij.patterns.PlatformPatterns.psiElement;
 /**
  * @author Holger Brandl
  */
-public class RPatterns {
+public final class RPatterns {
 
     public static final PsiElementPattern.Capture<PsiElement> MEMBER_ASSIGNMENT_PATTERN = psiElement()
             .withParent(psiElement(RAssignmentStatement.class).with(new PatternCondition<>("isMemberAssignee") {

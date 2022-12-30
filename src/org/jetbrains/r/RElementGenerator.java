@@ -11,7 +11,7 @@ import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.impl.PsiFileFactoryImpl;
 import com.intellij.testFramework.LightVirtualFile;
 
-public class RElementGenerator {
+public final class RElementGenerator {
 
     public static PsiFile createDummyFile(String contents, boolean physical, Project project) {
         final PsiFileFactory factory = PsiFileFactory.getInstance(project);
