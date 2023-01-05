@@ -27,7 +27,6 @@ import com.intellij.testFramework.registerServiceInstance
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesUpdater
-import com.intellij.util.io.exists
 import junit.framework.TestCase
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.isPending
@@ -49,6 +48,7 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.io.path.exists
 
 abstract class RUsefulTestCase : BasePlatformTestCase() {
   private var mockInterpreterStateManagerSet = false

@@ -7,9 +7,9 @@ import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.ide.plugins.cl.PluginAwareClassLoader
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.extensions.PluginDescriptor
-import com.intellij.util.io.exists
 import java.io.File
 import java.nio.file.Path
+import kotlin.io.path.exists
 
 object RPluginUtil {
   const val PLUGIN_ID = "R4Intellij"
