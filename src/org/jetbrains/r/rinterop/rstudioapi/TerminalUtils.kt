@@ -27,7 +27,7 @@ object TerminalUtils {
     //TODO stripAnsi
     val id = args.list.getRObjects(0).rString.getStrings(0)
     val terminal = terminalFromId(rInterop, id) ?: return rError("Unknown terminal identifier '$id'")
-    val widget: ShellTerminalWidget = TerminalView.getWidgetByContent(terminal)!! as ShellTerminalWidget
+    val widget: ShellTerminalWidget = TerminalToolWindowManager.getWidgetByContent(terminal)!! as ShellTerminalWidget
     val lst = RObject.RString.newBuilder()
     val lines = widget.terminalTextBuffer.screenLines
     lst.addAllStrings(lines.trim().split("\n").map { it.trim() })
@@ -37,14 +37,14 @@ object TerminalUtils {
   fun terminalBusy(rInterop: RInterop, args: RObject): RObject {
     val id = args.list.getRObjects(0).rString.getStrings(0)
     val terminal = terminalFromId(rInterop, id) ?: return false.toRBoolean()
-    val widget: ShellTerminalWidget = TerminalView.getWidgetByContent(terminal)!! as ShellTerminalWidget
+    val widget: ShellTerminalWidget = TerminalToolWindowManager.getWidgetByContent(terminal)!! as ShellTerminalWidget
     return widget.hasRunningCommands().toRBoolean()
   }
 
   fun terminalClear(rInterop: RInterop, args: RObject): RObject {
     val id = args.list.getRObjects(0).rString.getStrings(0)
     val terminal = terminalFromId(rInterop, id) ?: return rError("Unknown terminal identifier '$id'")
-    val widget: ShellTerminalWidget = TerminalView.getWidgetByContent(terminal)!! as ShellTerminalWidget
+    val widget: ShellTerminalWidget = TerminalToolWindowManager.getWidgetByContent(terminal)!! as ShellTerminalWidget
     clearTypedCommand(widget)
     widget.executeCommand("clear")
     return getRNull()
@@ -59,7 +59,7 @@ object TerminalUtils {
     }.associate { it }
     val show = args.list.getRObjects(3).rBoolean.getBooleans(0)
 
-    val terminalWidget = TerminalView.getInstance(rInterop.project).createLocalShellWidget(workingDir, null)
+    val terminalWidget = TerminalToolWindowManager.getInstance(rInterop.project).createLocalShellWidget(workingDir, null)
     TerminalProjectOptionsProvider.getInstance(rInterop.project).setEnvData(EnvironmentVariablesData.create(env, true))
     terminalWidget.executeCommand(command)
     return idFromTerminal(rInterop, terminalWidget)?.toRString() ?: getRNull()
@@ -72,14 +72,14 @@ object TerminalUtils {
   fun terminalKill(rInterop: RInterop, args: RObject) {
     val id = args.list.getRObjects(0).rString.getStrings(0)
     val terminal = terminalFromId(rInterop, id) ?: return
-    val widget: ShellTerminalWidget = TerminalView.getWidgetByContent(terminal)!! as ShellTerminalWidget
+    val widget: ShellTerminalWidget = TerminalToolWindowManager.getWidgetByContent(terminal)!! as ShellTerminalWidget
     widget.close()
   }
 
   fun terminalRunning(rInterop: RInterop, args: RObject): RObject {
     val id = args.list.getRObjects(0).rString.getStrings(0)
     val terminal = terminalFromId(rInterop, id) ?: return false.toRBoolean()
-    val widget: ShellTerminalWidget = TerminalView.getWidgetByContent(terminal)!! as ShellTerminalWidget
+    val widget: ShellTerminalWidget = TerminalToolWindowManager.getWidgetByContent(terminal)!! as ShellTerminalWidget
     return widget.isSessionRunning.toRBoolean()
   }
 
@@ -87,7 +87,7 @@ object TerminalUtils {
     val id = args.list.getRObjects(0).rString.getStrings(0)
     val text = args.list.getRObjects(1).rString.getStrings(0)
     val terminal = terminalFromId(rInterop, id) ?: return rError("Unknown terminal identifier '$id'")
-    val widget: ShellTerminalWidget = TerminalView.getWidgetByContent(terminal)!! as ShellTerminalWidget
+    val widget: ShellTerminalWidget = TerminalToolWindowManager.getWidgetByContent(terminal)!! as ShellTerminalWidget
     if (!widget.isSessionRunning) return rError("Terminal is not running and cannot accept input")
     widget.terminal.insertBlankCharacters(1)
     widget.terminalStarter.sendString(text)
@@ -106,7 +106,7 @@ object TerminalUtils {
     val caption = args.list.getRObjects(0).toStringOrNull()
     val show = args.list.getRObjects(1).rBoolean.getBooleans(0)
     val shellType = args.list.getRObjects(2).toStringOrNull()
-    val shellWidget = TerminalView.getInstance(rInterop.project).createLocalShellWidget(rInterop.project.basePath, caption)
+    val shellWidget = TerminalToolWindowManager.getInstance(rInterop.project).createLocalShellWidget(rInterop.project.basePath, caption)
     return idFromTerminal(rInterop, shellWidget)?.toRString() ?: getRNull()
   }
 
@@ -132,7 +132,7 @@ object TerminalUtils {
     val toolWindowManager =
       ToolWindowManager.getInstance(rInterop.project).getToolWindow(TerminalToolWindowFactory.TOOL_WINDOW_ID)
     val contents = toolWindowManager?.contentManager?.contents ?: return null
-    val content = contents.find { TerminalView.getWidgetByContent(it) == shellWidget }
+    val content = contents.find { TerminalToolWindowManager.getWidgetByContent(it) == shellWidget }
     return content.hashCode().toString()
   }
 
@@ -167,7 +167,7 @@ object TerminalUtils {
     val caption = terminal.tabName
     val handle = terminal.hashCode().toString()
     FUCounterUsageLogger.getInstance()
-    val widget: ShellTerminalWidget = TerminalView.getWidgetByContent(terminal)!! as ShellTerminalWidget
+    val widget: ShellTerminalWidget = TerminalToolWindowManager.getWidgetByContent(terminal)!! as ShellTerminalWidget
     val busy = widget.hasRunningCommands()
     val active = widget.isSessionRunning
     val lines = widget.terminalTextBuffer.screenLinesCount
