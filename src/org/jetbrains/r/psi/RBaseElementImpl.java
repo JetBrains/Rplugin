@@ -41,6 +41,6 @@ public class RBaseElementImpl<T extends StubElement> extends StubBasedPsiElement
 
     @Override
     public void accept(@NotNull PsiElementVisitor visitor) {
-        visitor.visitElement(this);
+      super.accept(visitor);
     }
 }
