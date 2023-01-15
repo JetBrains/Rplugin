@@ -17,7 +17,8 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.psi.PsiManager
 import com.intellij.ui.components.dialog
-import com.intellij.ui.layout.*
+import com.intellij.ui.dsl.builder.columns
+import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.PathUtilRt
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -170,8 +171,8 @@ object DocumentUtils {
     val execute = args.list.getRObjects(3).rBoolean.getBooleans(0)
     val fileChooser = rInterop.interpreter.createFileChooserForHost(rInterop.interpreter.basePath, false)
     val panel = panel {
-      noteRow(RBundle.message("rstudioapi.new.document.select.file.message"))
-      row { component(fileChooser).focused() }
+      row { label(RBundle.message("rstudioapi.new.document.select.file.message")) }
+      row { cell(fileChooser).columns(40).focused() }
     }
     val dialogPromise = AsyncPromise<String?>()
     runInEdt {
