@@ -28,7 +28,8 @@
     <orderEntry type="module" module-name="intellij.platform.debugger" />
     <orderEntry type="module" module-name="intellij.platform.debugger.impl" />
     <orderEntry type="module" module-name="intellij.remoteRun" />
-    <orderEntry type="library" name="jediterm-pty" level="project" />
+    <orderEntry type="library" name="jediterm-core" level="project" />
+    <orderEntry type="library" name="jediterm-ui" level="project" />
     <orderEntry type="module" module-name="intellij.terminal" />
     <orderEntry type="module" module-name="intellij.platform.execution.impl" />
     <orderEntry type="module" module-name="intellij.webDeployment" />
