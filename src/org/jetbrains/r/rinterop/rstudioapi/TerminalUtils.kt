@@ -90,7 +90,7 @@ object TerminalUtils {
     val widget: ShellTerminalWidget = TerminalToolWindowManager.getWidgetByContent(terminal)!! as ShellTerminalWidget
     if (!widget.isSessionRunning) return rError("Terminal is not running and cannot accept input")
     widget.terminal.insertBlankCharacters(1)
-    widget.terminalStarter.sendString(text)
+    widget.ttyConnector.write(text)
     return getRNull()
   }
 
@@ -157,8 +157,8 @@ object TerminalUtils {
       bytes[i + 1] = 91
       bytes[i + 2] = 67
     }
-    widget.terminalStarter.sendBytes(bytes)
-    widget.terminalStarter.sendString(127.toChar().toString().repeat(commandLength))
+    widget.ttyConnector.write(bytes)
+    widget.ttyConnector.write(127.toChar().toString().repeat(commandLength))
     textBuffer.deleteCharacters(x, y, commandLength)
     textBuffer.unlock()
   }
