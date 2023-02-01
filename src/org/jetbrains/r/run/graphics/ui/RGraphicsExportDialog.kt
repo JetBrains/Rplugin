@@ -8,8 +8,6 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
-import com.intellij.openapi.project.DumbAwareAction
-import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.MessageDialogBuilder
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
@@ -261,7 +259,7 @@ class RGraphicsExportDialog(
   }
 
   private fun createToolbar(actionGroup: ActionGroup): ActionToolbar {
-    return ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, actionGroup, true).also { toolbar ->
+    return ActionManager.getInstance().createActionToolbar("RGraphicsExportDialog", actionGroup, true).also { toolbar ->
       toolbar.setReservePlaceAutoPopupIcon(false)
       if (toolbar is ActionToolbarImpl) {
         toolbar.setForceMinimumSize(true)
