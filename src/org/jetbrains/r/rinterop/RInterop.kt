@@ -966,8 +966,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     methodDescriptor: MethodDescriptor<TRequest, CommandOutput>,
     request: TRequest
   ) : RIExecutionResult {
-    val isEdt = !ApplicationManager.getApplication().isUnitTestMode && ApplicationManager.getApplication().isDispatchThread
-    check(!isEdt) { "Waiting on dispatch thread is not allowed" }
+    ApplicationManager.getApplication().assertIsNonDispatchThread();
     val withCheckCancelled = ApplicationManager.getApplication().isReadAccessAllowed
     val stdoutBuffer = StringBuilder()
     val stderrBuffer = StringBuilder()
