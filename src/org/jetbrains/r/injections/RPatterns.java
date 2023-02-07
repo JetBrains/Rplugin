@@ -70,10 +70,9 @@ public final class RPatterns {
         if (parent instanceof RNamedArgument) {
           parent = parent.getParent();
         }
-        if (!(parent instanceof RArgumentList)) {
+        if (!(parent instanceof RArgumentList argumentList)) {
           return false;
         }
-        RArgumentList argumentList = (RArgumentList) parent;
 
         RCallExpression call = (RCallExpression)argumentList.getParent();
         RExpression receiver = call.getExpression();
