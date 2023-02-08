@@ -27,6 +27,7 @@ object RMarkdownNotebookEditorAppearance: NotebookEditorAppearance, NotebookEdit
   override fun getCodeCellBackground(scheme: EditorColorsScheme): Color? = scheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor
   override fun getInlayBackgroundColor(scheme: EditorColorsScheme): Color? = getCodeCellBackground(scheme)
   override fun shouldShowCellLineNumbers(): Boolean = false
+  override fun shouldShowExecutionCounts(): Boolean = true
 
   /**
    * Takes lines of the cell and returns a color for the stripe that will be drawn behind the folding markers.
