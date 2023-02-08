@@ -1202,7 +1202,9 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       override fun onError(t: Throwable?) {
         val e = t?.let { processError(it, "getAsyncEvents") }
         if (e is RInteropTerminated) return
-        LOG.error(e)
+        if (e != null) {
+          LOG.error(e)
+        }
         processAsyncEvents()
       }
 
