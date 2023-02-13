@@ -22,11 +22,10 @@ private val FenceEndType = MarkdownElementType.platformType(MarkdownTokenTypes.C
 /** IMPORTANT: this element type is used only on lexical level. PSI has standard TokenType.WHITE_SPACE */
 private val WhiteSpaceType = MarkdownElementType.platformType(MarkdownTokenTypes.WHITE_SPACE)
 
-
-class RMarkdownPatchingLexer : PatchingLexerWithQueue(MarkdownToplevelLexer(RMarkdownFlavourDescriptor)) {
+class PatchingLexer(private val provideFence: (CharSequence) -> IElementType?) : PatchingLexerWithQueue(MarkdownToplevelLexer(RMarkdownFlavourDescriptor)) {
   override fun processToken() {
     if (delegate.tokenType === FenceLangType) {
-      val fenceType: IElementType = RmdFenceProvider.matchHeader(tokenSequence)?.fenceElementType ?: return
+      val fenceType: IElementType = provideFence(tokenSequence) ?: return
       queue.add(getTokenData())
 
       delegate.advance()

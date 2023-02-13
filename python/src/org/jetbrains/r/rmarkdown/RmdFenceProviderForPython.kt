@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.rmarkdown
 
+import QmdFenceProvider
 import com.intellij.formatting.*
 import com.intellij.lang.Language
 import com.intellij.openapi.util.TextRange
@@ -15,7 +16,7 @@ import com.jetbrains.python.formatter.PyBlockContext
 import com.jetbrains.python.formatter.PythonFormattingModelBuilder
 import org.jetbrains.r.editor.formatting.TemplateContext
 
-class RmdFenceProviderForPython : RmdFenceProvider {
+class RmdFenceProviderForPython : RmdFenceProvider, QmdFenceProvider {
   override val fenceLanguage: Language = PythonLanguage.INSTANCE
   override val fenceElementType: IElementType = IElementType("Python Fence", RMarkdownLanguage)
 

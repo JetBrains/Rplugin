@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.rmarkdown
 
+import QmdFenceProvider
 import com.intellij.formatting.Block
 import com.intellij.formatting.ChildAttributes
 import com.intellij.formatting.Indent
@@ -15,7 +16,7 @@ import org.jetbrains.r.editor.formatting.RFormatterBlock
 import org.jetbrains.r.editor.formatting.RFormattingContext
 import org.jetbrains.r.editor.formatting.TemplateContext
 
-class RmdFenceProviderForR : RmdFenceProvider {
+class RmdFenceProviderForR : RmdFenceProvider, QmdFenceProvider {
   override val fenceLanguage: Language = RLanguage.INSTANCE
   override val fenceElementType: IElementType = R_FENCE_ELEMENT_TYPE
 
