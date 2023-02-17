@@ -364,7 +364,11 @@ You can find the source code in the following repositories:
     <extensions defaultExtensionNs="org.jetbrains.plugins.notebooks">
       <notebookCellLinesProvider language="RMarkdown"
                                  implementationClass="org.jetbrains.r.editor.RMarkdownCellLinesProvider"/>
+      <notebookCellLinesProvider language="Quarto"
+                                 implementationClass="org.jetbrains.r.editor.RMarkdownCellLinesProvider"/>
       <notebookCellSelectionModelProvider language="RMarkdown"
+                                          implementationClass="org.jetbrains.r.editor.RMarkdownCellSelectionModelProvider"/>
+      <notebookCellSelectionModelProvider language="Quarto"
                                           implementationClass="org.jetbrains.r.editor.RMarkdownCellSelectionModelProvider"/>
       <editor.notebookEditorAppearanceProvider implementation="org.jetbrains.r.editor.RMarkdownNotebookEditorAppearanceProvider"/>
       <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownCellToolbarController$Factory"/>
@@ -389,7 +393,7 @@ You can find the source code in the following repositories:
         <fileType name="R" implementationClass="org.jetbrains.r.RFileType" fieldName="INSTANCE" language="R" extensions="R;Rprofile"/>
         <fileType name="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownFileType" fieldName="INSTANCE"
                   language="RMarkdown" extensions="Rmd"/>
-        <fileType name="Quarto" implementationClass="QuartoFileType" fieldName="INSTANCE"
+        <fileType name="Quarto" implementationClass="org.jetbrains.quarto.QuartoFileType" fieldName="INSTANCE"
                 language="Quarto" extensions="Qmd"/>
         <fileType name="Roxygen" implementationClass="org.jetbrains.r.roxygen.RoxygenFileType" fieldName="INSTANCE" language="Roxygen"/>
 
