@@ -178,5 +178,6 @@ private fun toInterval(document: Document, marker: NotebookCellLines.Marker): No
     type = marker.type,
     lines = startLine..endLine,
     markers = markersAtLines,
+    language = null
   )
 }
