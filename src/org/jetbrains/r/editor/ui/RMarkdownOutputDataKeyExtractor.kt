@@ -14,7 +14,6 @@ data class RMarkdownInlayOutputDataKey(val inlayOutput: InlayOutput): NotebookOu
 }
 
 class RMarkdownOutputDataKeyExtractor: NotebookOutputDataKeyExtractor {
-  override val isTargetedForSpecificData = false
   override fun extract(editor: EditorImpl, interval: NotebookCellLines.Interval): List<NotebookOutputDataKey>? {
     if (!isRMarkdown(editor)) return null
     if (interval.type != NotebookCellLines.CellType.CODE) return null
