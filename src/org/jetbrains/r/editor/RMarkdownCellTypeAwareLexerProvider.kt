@@ -22,9 +22,9 @@ private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLine
     return markers.map { toInterval(document, it) }
   }
 
-  override fun markerSequence(chars: CharSequence, ordinalIncrement: Int, offsetIncrement: Int): Sequence<NotebookCellLines.Marker> =
+  override fun markerSequence(chars: CharSequence, ordinalIncrement: Int, offsetIncrement: Int): Sequence<NotebookCellLinesLexer.Marker> =
     sequence {
-      var lastMarker: NotebookCellLines.Marker? = null
+      var lastMarker: NotebookCellLinesLexer.Marker? = null
       val seq = NotebookCellLinesLexer.defaultMarkerSequence({ RMarkdownMergingLangLexer() }, ::getCellType,
                                                              chars, ordinalIncrement, offsetIncrement)
 
@@ -34,7 +34,7 @@ private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLine
       }
 
       if (lastMarker?.type == NotebookCellLines.CellType.CODE && chars.endsWith('\n')) {
-        yield(NotebookCellLines.Marker(
+        yield(NotebookCellLinesLexer.Marker(
           ordinal = lastMarker.ordinal + 1,
           type = NotebookCellLines.CellType.MARKDOWN,
           offset = chars.length + offsetIncrement,
@@ -43,7 +43,7 @@ private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLine
       }
 
       if (lastMarker == null) {
-        yield(NotebookCellLines.Marker(
+        yield(NotebookCellLinesLexer.Marker(
           ordinal = 0,
           type = NotebookCellLines.CellType.MARKDOWN,
           offset = 0,
@@ -161,7 +161,7 @@ private fun consumeToEndOfLine(lexer: Lexer) {
   consumeEndOfLine(lexer)
 }
 
-private fun toInterval(document: Document, marker: NotebookCellLines.Marker): NotebookCellLines.Interval {
+private fun toInterval(document: Document, marker: NotebookCellLinesLexer.Marker): NotebookCellLines.Interval {
   // for RMarkdown markers offset + length == nextMarker.offset, actually markers are intervals
   val startLine = document.getLineNumber(marker.offset)
 
