@@ -4,13 +4,13 @@
 
 package org.jetbrains.r.rmarkdown
 
-import QmdFenceProvider
 import com.intellij.formatting.Block
 import com.intellij.formatting.ChildAttributes
 import com.intellij.formatting.Indent
 import com.intellij.lang.Language
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.tree.IElementType
+import com.intellij.quarto.QmdFenceProvider
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.editor.formatting.RFormatterBlock
 import org.jetbrains.r.editor.formatting.RFormattingContext

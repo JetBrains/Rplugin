@@ -1,3 +1,5 @@
+package com.intellij.quarto
+
 import com.intellij.formatting.ChildAttributes
 import com.intellij.lang.Language
 import com.intellij.openapi.extensions.ExtensionPointName

@@ -1,3 +1,5 @@
+package com.intellij.quarto
+
 import java.util.regex.Pattern
 
 object QuartoPsiUtil {

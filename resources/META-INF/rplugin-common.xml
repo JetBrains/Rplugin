@@ -78,7 +78,7 @@ You can find the source code in the following repositories:
                       interface="org.jetbrains.r.rmarkdown.RmdFenceProvider" dynamic="true"/>
 
       <extensionPoint qualifiedName="com.intellij.qmdFenceProvider"
-                      interface="QmdFenceProvider" dynamic="true"/>
+                      interface="com.intellij.quarto.QmdFenceProvider" dynamic="true"/>
 
       <extensionPoint qualifiedName="com.intellij.rInterpreterSettingsProvider"
                       interface="org.jetbrains.r.settings.RInterpreterSettingsProvider" dynamic="true"/>
@@ -395,14 +395,14 @@ You can find the source code in the following repositories:
         <fileType name="R" implementationClass="org.jetbrains.r.RFileType" fieldName="INSTANCE" language="R" extensions="R;Rprofile"/>
         <fileType name="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownFileType" fieldName="INSTANCE"
                   language="RMarkdown" extensions="Rmd"/>
-        <fileType name="Quarto" implementationClass="org.jetbrains.quarto.QuartoFileType" fieldName="INSTANCE"
+        <fileType name="Quarto" implementationClass="com.intellij.quarto.QuartoFileType" fieldName="INSTANCE"
                 language="Quarto" extensions="Qmd"/>
         <fileType name="Roxygen" implementationClass="org.jetbrains.r.roxygen.RoxygenFileType" fieldName="INSTANCE" language="Roxygen"/>
 
         <lang.fileViewProviderFactory language="RMarkdown"
                                       implementationClass="org.jetbrains.r.rmarkdown.RMarkdownFileViewProviderFactory"/>
         <lang.fileViewProviderFactory language="Quarto"
-                                      implementationClass="QuartoFileViewProviderFactory"/>
+                                      implementationClass="org.jetbrains.r.quarto.QuartoFileViewProviderFactory"/>
 
         <lang.syntaxHighlighterFactory language="R"
                                        implementationClass="org.jetbrains.r.highlighting.RSyntaxHighlighterFactory"/>
@@ -438,7 +438,7 @@ You can find the source code in the following repositories:
 
         <lang.parserDefinition language="R" implementationClass="org.jetbrains.r.parsing.RParserDefinition"/>
         <lang.parserDefinition language="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownParserDefinition"/>
-        <lang.parserDefinition language="Quarto" implementationClass="QuartoParserDefinition"/>
+        <lang.parserDefinition language="Quarto" implementationClass="org.jetbrains.r.quarto.QuartoParserDefinition"/>
         <lang.parserDefinition language="Roxygen" implementationClass="org.jetbrains.r.roxygen.parsing.RoxygenParserDefinition"/>
 
         <languageInjector implementation="org.jetbrains.r.roxygen.RoxygenLanguageInjector"/>

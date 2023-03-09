@@ -1,6 +1,5 @@
-package org.jetbrains.quarto
+package com.intellij.quarto
 
-import QuartoLanguage
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.openapi.vfs.CharsetToolkit

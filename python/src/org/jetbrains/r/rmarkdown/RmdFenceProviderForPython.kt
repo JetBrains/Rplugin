@@ -4,12 +4,12 @@
 
 package org.jetbrains.r.rmarkdown
 
-import QmdFenceProvider
 import com.intellij.formatting.*
 import com.intellij.lang.Language
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.tree.IElementType
+import com.intellij.quarto.QmdFenceProvider
 import com.jetbrains.python.PythonLanguage
 import com.jetbrains.python.formatter.PyBlock
 import com.jetbrains.python.formatter.PyBlockContext
