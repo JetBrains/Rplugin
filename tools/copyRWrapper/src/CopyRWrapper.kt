@@ -1,3 +1,5 @@
+@file:JvmName("CopyRWrapper")
+package com.intellij.r.build.copyRwrapper
 
 import org.apache.commons.io.FileUtils
 import java.io.File
