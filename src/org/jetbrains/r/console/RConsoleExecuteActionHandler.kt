@@ -592,7 +592,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   }
 
   private fun refreshLocalFileSystem() {
-    VirtualFileManager.getInstance().asyncRefresh(null)
+    VirtualFileManager.getInstance().asyncRefresh()
   }
 }
 
