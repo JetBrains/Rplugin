@@ -10,6 +10,7 @@ import org.jetbrains.r.parsing.RElementTypes;
 import org.jetbrains.r.parsing.RParserDefinition;
 
 import static org.jetbrains.r.parsing.RElementTypes.*;
+import static org.jetbrains.r.parsing.RTokenTypes.*;
 import static org.jetbrains.r.parsing.RParserDefinition.*;
 
 %%

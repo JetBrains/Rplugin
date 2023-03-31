@@ -18,6 +18,7 @@ import com.intellij.util.containers.FactoryMap
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.parsing.RParserDefinition
+import org.jetbrains.r.parsing.RTokenTypes
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 
@@ -35,7 +36,7 @@ private val NON_INDENT_PARTS = TokenSet.create(
 
 val R_SPACE_TOKENS = TokenSet.create(
   TokenType.WHITE_SPACE,
-  RParserDefinition.END_OF_LINE_COMMENT
+  RTokenTypes.END_OF_LINE_COMMENT
 )
 
 class RFormattingContext(private val settings: CodeStyleSettings) {
@@ -73,7 +74,7 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
     }
 
     if (custom.ALIGN_COMMENTS &&
-        node.elementType == RParserDefinition.END_OF_LINE_COMMENT &&
+        node.elementType == RTokenTypes.END_OF_LINE_COMMENT &&
         nodeParent.elementType == RElementTypes.R_ARGUMENT_LIST &&
         (findPrevNonSpaceNode(node)?.elementType == RElementTypes.R_COMMA ||
          findNextMeaningSibling(node)?.elementType == RElementTypes.R_RPAR)
@@ -103,7 +104,7 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
     SharedImplUtil.getChildrenOfType(node, RElementTypes.R_BLOCK_EXPRESSION).any { it.textContains('\n') }
 
   private fun isCommentAtEmptyLine(node: ASTNode) =
-    node.elementType == RParserDefinition.END_OF_LINE_COMMENT &&
+    node.elementType == RTokenTypes.END_OF_LINE_COMMENT &&
     node.treePrev?.let { RPsiUtil.isWhitespaceWithNL(it) } ?: false
 
   private fun findFirstCommentAfterComma(start: ASTNode?): ASTNode? {
@@ -113,7 +114,7 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
         current = current.treeNext
         while (current?.elementType == TokenType.WHITE_SPACE)
           current = current?.treeNext
-        if (current?.elementType == RParserDefinition.END_OF_LINE_COMMENT) {
+        if (current?.elementType == RTokenTypes.END_OF_LINE_COMMENT) {
           return current
         }
       } else {
@@ -168,8 +169,8 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
     val node1 = (child1 as? RFormatterBlock)?.node ?: return null
     val node2 = (child2 as? RFormatterBlock)?.node ?: return null
     if (isBigFunctionDeclaration(node1) || (isBigFunctionDeclaration(node2) &&
-                                            node1.elementType != RParserDefinition.END_OF_LINE_COMMENT &&
-                                            node1.elementType != RParserDefinition.ROXYGEN_COMMENT)) {
+                                            node1.elementType != RTokenTypes.END_OF_LINE_COMMENT &&
+                                            node1.elementType != RTokenTypes.ROXYGEN_COMMENT)) {
       val common = settings.getCommonSettings(RLanguage.INSTANCE)
       return Spacing.createSpacing(0, 0, 2, false, common.KEEP_BLANK_LINES_IN_CODE)
     }
@@ -254,7 +255,7 @@ private fun createSpacingBuilder(settings: CodeStyleSettings): SpacingBuilder {
 
   return SpacingBuilder(settings, RLanguage.INSTANCE)
     // Comments
-    .before(RParserDefinition.END_OF_LINE_COMMENT).spacing(1, Int.MAX_VALUE, 0, true, common.KEEP_BLANK_LINES_IN_CODE)
+    .before(RTokenTypes.END_OF_LINE_COMMENT).spacing(1, Int.MAX_VALUE, 0, true, common.KEEP_BLANK_LINES_IN_CODE)
 
     // Unary operators
     .afterInside(RElementTypes.R_TILDE_OPERATOR, RElementTypes.R_UNARY_TILDE_EXPRESSION).spaceIf(common.SPACE_AROUND_UNARY_OPERATOR)

@@ -41,7 +41,7 @@ class RAstFactory : DefaultASTFactoryImpl() {
   }
 
   override fun createComment(type: IElementType, text: CharSequence): LeafElement {
-    if (type === RParserDefinition.ROXYGEN_COMMENT) {
+    if (type === RTokenTypes.ROXYGEN_COMMENT) {
         return PsiCommentPlaceholder(type, text)
     }
     return super.createComment(type, text)

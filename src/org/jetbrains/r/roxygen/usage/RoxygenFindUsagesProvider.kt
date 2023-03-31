@@ -13,6 +13,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.roxygen.lexer.RoxygenLexer
 import org.jetbrains.r.roxygen.parsing.RoxygenElementTypes.ROXYGEN_IDENTIFIER
 import org.jetbrains.r.roxygen.parsing.RoxygenParserDefinition
+import org.jetbrains.r.roxygen.parsing.RoxygenTokenSets
 import org.jetbrains.r.roxygen.psi.api.RoxygenParameter
 
 class RoxygenFindUsagesProvider : FindUsagesProvider {
@@ -21,7 +22,7 @@ class RoxygenFindUsagesProvider : FindUsagesProvider {
     return DefaultWordsScanner(RoxygenLexer(),
                                TokenSet.create(ROXYGEN_IDENTIFIER),
                                TokenSet.EMPTY,
-                               RoxygenParserDefinition.STRINGS)
+                               RoxygenTokenSets.STRINGS)
   }
 
   override fun canFindUsagesFor(psiElement: PsiElement): Boolean = psiElement is PsiNamedElement

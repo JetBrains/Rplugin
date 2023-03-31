@@ -4,7 +4,6 @@
 package org.jetbrains.r.roxygen.parsing
 
 import com.intellij.lang.ASTNode
-import com.intellij.lang.Language
 import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiParser
 import com.intellij.lexer.Lexer
@@ -20,13 +19,14 @@ import org.jetbrains.r.roxygen.lexer.RoxygenLexer
 import org.jetbrains.r.roxygen.psi.RoxygenFile
 
 class RoxygenParserDefinition : ParserDefinition {
+
   override fun createLexer(project: Project): Lexer = RoxygenLexer()
 
   override fun getWhitespaceTokens(): TokenSet = TokenSet.EMPTY
 
   override fun getCommentTokens(): TokenSet = TokenSet.EMPTY
 
-  override fun getStringLiteralElements(): TokenSet = STRINGS
+  override fun getStringLiteralElements(): TokenSet = RoxygenTokenSets.STRINGS
 
   override fun createParser(project: Project): PsiParser = RoxygenParser()
 
@@ -37,11 +37,13 @@ class RoxygenParserDefinition : ParserDefinition {
   override fun createElement(node: ASTNode): PsiElement = RoxygenElementTypes.Factory.createElement(node)
 
   companion object {
-
-    // RoxygenElementTypes.ROXYGEN_TEXT cannot be a comment, because of Parser specific and
-    // special events processing procedure for comment-in-comment. To support find usages in
-    // comments and strings it becomes a string.
-    val STRINGS = TokenSet.create(RoxygenElementTypes.ROXYGEN_TEXT)
-    val FILE = IFileElementType(Language.findInstance(RoxygenLanguage::class.java))
+    val FILE: IFileElementType = IFileElementType(RoxygenLanguage.INSTANCE)
   }
+}
+
+object RoxygenTokenSets {
+  // RoxygenElementTypes.ROXYGEN_TEXT cannot be a comment, because of Parser specific and
+  // special events processing procedure for comment-in-comment. To support find usages in
+  // comments and strings it becomes a string.
+  val STRINGS = TokenSet.create(RoxygenElementTypes.ROXYGEN_TEXT)
 }

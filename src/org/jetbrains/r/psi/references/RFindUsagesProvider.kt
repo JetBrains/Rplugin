@@ -18,7 +18,7 @@ import org.jetbrains.r.classes.s4.context.setClass.RS4SlotDeclarationContext
 import org.jetbrains.r.lexer.RLexer
 import org.jetbrains.r.packages.LibrarySummary
 import org.jetbrains.r.parsing.RElementTypes
-import org.jetbrains.r.parsing.RParserDefinition
+import org.jetbrains.r.parsing.RTokenTypes
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
@@ -26,7 +26,7 @@ import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 class RFindUsagesProvider : FindUsagesProvider {
   override fun getWordsScanner(): WordsScanner {
     return DefaultWordsScanner(RLexer(), TokenSet.create(RElementTypes.R_IDENTIFIER),
-                               TokenSet.create(RParserDefinition.END_OF_LINE_COMMENT),
+                               TokenSet.create(RTokenTypes.END_OF_LINE_COMMENT),
                                TokenSet.create(RElementTypes.R_STRING_LITERAL_EXPRESSION))
   }
 

@@ -11,7 +11,7 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.psi.tree.IElementType
 import org.jetbrains.r.lexer.RLexer
 import org.jetbrains.r.parsing.RElementTypes
-import org.jetbrains.r.parsing.RParserDefinition
+import org.jetbrains.r.parsing.RTokenTypes
 import org.jetbrains.r.psi.RPsiUtil
 import java.util.*
 
@@ -52,10 +52,10 @@ class RHighlighter : SyntaxHighlighterBase() {
       ATTRIBUTES[RElementTypes.R_COMMA] = COMMA
       ATTRIBUTES[RElementTypes.R_SEMI] = SEMICOLON
 
-      ATTRIBUTES[RParserDefinition.END_OF_LINE_COMMENT] = LINE_COMMENT
-      ATTRIBUTES[RParserDefinition.ROXYGEN_COMMENT] = DOC_COMMENT
+      ATTRIBUTES[RTokenTypes.END_OF_LINE_COMMENT] = LINE_COMMENT
+      ATTRIBUTES[RTokenTypes.ROXYGEN_COMMENT] = DOC_COMMENT
 
-      ATTRIBUTES[RParserDefinition.BAD_CHARACTER] = BAD_CHARACTER
+      ATTRIBUTES[RTokenTypes.BAD_CHARACTER] = BAD_CHARACTER
     }
   }
 }

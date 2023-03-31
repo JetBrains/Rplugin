@@ -10,7 +10,7 @@ import com.intellij.lang.CodeDocumentationAwareCommenter
 import com.intellij.psi.PsiComment
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.elementType
-import org.jetbrains.r.parsing.RParserDefinition
+import org.jetbrains.r.parsing.RTokenTypes
 
 class RCommenter : CodeDocumentationAwareCommenter, IndentedCommenter {
   override fun getLineCommentPrefix(): String = "# "
@@ -23,11 +23,11 @@ class RCommenter : CodeDocumentationAwareCommenter, IndentedCommenter {
 
   override fun getCommentedBlockCommentSuffix(): String? = null
 
-  override fun getLineCommentTokenType(): IElementType? = RParserDefinition.END_OF_LINE_COMMENT
+  override fun getLineCommentTokenType(): IElementType = RTokenTypes.END_OF_LINE_COMMENT
 
   override fun getBlockCommentTokenType(): IElementType? = null
 
-  override fun getDocumentationCommentTokenType(): IElementType? = RParserDefinition.ROXYGEN_COMMENT
+  override fun getDocumentationCommentTokenType(): IElementType = RTokenTypes.ROXYGEN_COMMENT
 
   override fun getDocumentationCommentPrefix(): String = "#'"
 
