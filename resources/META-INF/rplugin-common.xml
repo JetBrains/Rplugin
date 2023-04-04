@@ -77,6 +77,9 @@ You can find the source code in the following repositories:
       <extensionPoint qualifiedName="com.intellij.rmdFenceProvider"
                       interface="org.jetbrains.r.rmarkdown.RmdFenceProvider" dynamic="true"/>
 
+      <extensionPoint qualifiedName="com.intellij.rmdCellLanguageProvider"
+                      interface="org.jetbrains.r.rmarkdown.RmdCellLanguageProvider" dynamic="true"/>
+
       <extensionPoint qualifiedName="com.intellij.qmdFenceProvider"
                       interface="com.intellij.quarto.QmdFenceProvider" dynamic="true"/>
 
@@ -378,6 +381,7 @@ You can find the source code in the following repositories:
       <notebookIntervalPointerFactoryProvider language="Quarto"
                                               implementationClass="org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointerFactoryImplProvider"/>
       <editor.outputs.notebookOutputDataKeyExtractor implementation="org.jetbrains.r.editor.ui.RMarkdownOutputDataKeyExtractor"/>
+
     </extensions>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -447,6 +451,9 @@ You can find the source code in the following repositories:
 
         <rmdFenceProvider implementation="org.jetbrains.r.rmarkdown.RmdFenceProviderForR"/>
         <qmdFenceProvider implementation="org.jetbrains.r.rmarkdown.RmdFenceProviderForR"/>
+
+        <rmdCellLanguageProvider implementation="org.jetbrains.r.rmarkdown.RmdCellLanguageProviderForR"/>
+        <rmdCellLanguageProvider implementation="org.jetbrains.r.rmarkdown.RmdCellLanguageProviderForPython"/>
 
        <lang.tokenSeparatorGenerator language="R" implementationClass="org.jetbrains.r.RTokenSeparatorGenerator"/>
 

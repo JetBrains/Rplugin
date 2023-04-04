@@ -1,14 +1,19 @@
 package org.jetbrains.r.editor
 
+import com.intellij.lang.Language
 import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.testFramework.common.ThreadLeakTracker
+import com.jetbrains.python.PythonLanguage
+import org.intellij.plugins.markdown.lang.MarkdownLanguage
 import org.jetbrains.plugins.notebooks.visualization.CodeCellLinesChecker
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines.CellType.CODE
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines.CellType.MARKDOWN
 import org.jetbrains.plugins.notebooks.visualization.edt
+import org.jetbrains.r.RLanguage
 import org.junit.Before
 import org.junit.Test
 
@@ -25,7 +30,7 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..2)
+        interval(MARKDOWN, 0..2, MarkdownLanguage.INSTANCE)
       }
     }
   }
@@ -40,11 +45,11 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(CODE, 0, 7)
-        marker(CODE, 17, 3)
+        marker(CODE, 0, 7, RLanguage.INSTANCE)
+        marker(CODE, 17, 3, RLanguage.INSTANCE)
       }
       intervals {
-        interval(CODE, 0..2)
+        interval(CODE, 0..2, RLanguage.INSTANCE)
       }
     }
   }
@@ -62,17 +67,17 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(CODE, 0, 13)
-        marker(CODE, 13, 4)
-        marker(CODE, 17, 12)
-        marker(CODE, 29, 4)
-        marker(CODE, 33, 17)
-        marker(CODE, 50, 3)
+        marker(CODE, 0, 13, RLanguage.INSTANCE)
+        marker(CODE, 13, 4, RLanguage.INSTANCE)
+        marker(CODE, 17, 12, PythonLanguage.INSTANCE)
+        marker(CODE, 29, 4, PythonLanguage.INSTANCE)
+        marker(CODE, 33, 17, RLanguage.INSTANCE)
+        marker(CODE, 50, 3, RLanguage.INSTANCE)
       }
       intervals {
-        interval(CODE, 0..1)
-        interval(CODE, 2..3)
-        interval(CODE, 4..5)
+        interval(CODE, 0..1, RLanguage.INSTANCE)
+        interval(CODE, 2..3, PythonLanguage.INSTANCE)
+        interval(CODE, 4..5, RLanguage.INSTANCE)
       }
     }
   }
@@ -89,7 +94,7 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..2)
+        interval(MARKDOWN, 0..2, MarkdownLanguage.INSTANCE)
       }
     }
   }
@@ -108,8 +113,8 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..0)
-        interval(MARKDOWN, 1..4)
+        interval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
+        interval(MARKDOWN, 1..4, MarkdownLanguage.INSTANCE)
       }
     }
   }
@@ -121,7 +126,7 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..0)
+        interval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
       }
     }
 
@@ -129,20 +134,20 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       fixture.performEditorAction("RMarkdownNewChunk")
 
       markers {
-        marker(CODE, 5, 7)
-        marker(CODE, 13, 4)
+        marker(CODE, 5, 7, RLanguage.INSTANCE)
+        marker(CODE, 13, 4, RLanguage.INSTANCE)
       }
       intervals {
-        interval(MARKDOWN, 0..0)
-        interval(CODE, 1..3)
-        interval(MARKDOWN, 4..4)
+        interval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
+        interval(CODE, 1..3, RLanguage.INSTANCE)
+        interval(MARKDOWN, 4..4, MarkdownLanguage.INSTANCE)
       }
       intervalListenerCall(1) {
         before {
         }
         after {
-          interval(CODE, 1..3)
-          interval(MARKDOWN, 4..4)
+          interval(CODE, 1..3, RLanguage.INSTANCE)
+          interval(MARKDOWN, 4..4, MarkdownLanguage.INSTANCE)
         }
       }
     }
@@ -161,14 +166,14 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(CODE, 0, 7)
-        marker(CODE, 19, 4)
-        marker(CODE, 23, 7)
-        marker(CODE, 42, 3)
+        marker(CODE, 0, 7, RLanguage.INSTANCE)
+        marker(CODE, 19, 4, RLanguage.INSTANCE)
+        marker(CODE, 23, 7, RLanguage.INSTANCE)
+        marker(CODE, 42, 3, RLanguage.INSTANCE)
       }
       intervals {
-        interval(CODE, 0..2)
-        interval(CODE, 3..5)
+        interval(CODE, 0..2, RLanguage.INSTANCE)
+        interval(CODE, 3..5, RLanguage.INSTANCE)
       }
     }
   }
@@ -184,13 +189,13 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(CODE, 0, 7)
-        marker(CODE, 12, 4)
+        marker(CODE, 0, 7, RLanguage.INSTANCE)
+        marker(CODE, 12, 4, RLanguage.INSTANCE)
         // last line has zero symbols
       }
       intervals {
-        interval(CODE, 0..2)
-        interval(MARKDOWN, 3..3)
+        interval(CODE, 0..2, RLanguage.INSTANCE)
+        interval(MARKDOWN, 3..3, MarkdownLanguage.INSTANCE)
       }
     }
   }
@@ -214,7 +219,7 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..9)
+        interval(MARKDOWN, 0..9, MarkdownLanguage.INSTANCE)
       }
     }
   }
@@ -230,8 +235,8 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..0)
-        interval(MARKDOWN, 1..1)
+        interval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
+        interval(MARKDOWN, 1..1, MarkdownLanguage.INSTANCE)
       }
     }
   }
@@ -249,7 +254,7 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..3)
+        interval(MARKDOWN, 0..3, MarkdownLanguage.INSTANCE)
       }
     }
   }
@@ -268,7 +273,7 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..4)
+        interval(MARKDOWN, 0..4, MarkdownLanguage.INSTANCE)
       }
     }
   }
@@ -287,7 +292,7 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..4)
+        interval(MARKDOWN, 0..4, MarkdownLanguage.INSTANCE)
       }
     }
   }
@@ -305,8 +310,8 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..1)
-        interval(MARKDOWN, 2..3)
+        interval(MARKDOWN, 0..1, MarkdownLanguage.INSTANCE)
+        interval(MARKDOWN, 2..3, MarkdownLanguage.INSTANCE)
       }
     }
   }
@@ -320,14 +325,14 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..1)
+        interval(MARKDOWN, 0..1, MarkdownLanguage.INSTANCE)
       }
       intervalListenerCall(0) {
         before {
-          interval(MARKDOWN, 0..0)
+          interval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
         }
         after {
-          interval(MARKDOWN, 0..1)
+          interval(MARKDOWN, 0..1, MarkdownLanguage.INSTANCE)
         }
       }
     }
@@ -338,14 +343,14 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..0)
+        interval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
       }
       intervalListenerCall(0) {
         before {
-          interval(MARKDOWN, 0..1)
+          interval(MARKDOWN, 0..1, MarkdownLanguage.INSTANCE)
         }
         after {
-          interval(MARKDOWN, 0..0)
+          interval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
         }
       }
     }
@@ -363,34 +368,34 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
         ``
       """.trimIndent())
       markers {
-        marker(CODE, 0, 7)
-        marker(CODE, 12, 3)
+        marker(CODE, 0, 7, RLanguage.INSTANCE)
+        marker(CODE, 12, 3, RLanguage.INSTANCE)
       }
       intervals {
-        interval(CODE, 0..2)
+        interval(CODE, 0..2, RLanguage.INSTANCE)
       }
       intervalListenerCall(0) {
         before {
-          interval(MARKDOWN, 0..0)
+          interval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
         }
         after {
-          interval(MARKDOWN, 0..1)
-        }
-      }
-      intervalListenerCall(0) {
-        before {
-          interval(MARKDOWN, 0..1)
-        }
-        after {
-          interval(MARKDOWN, 0..2)
+          interval(MARKDOWN, 0..1, MarkdownLanguage.INSTANCE)
         }
       }
       intervalListenerCall(0) {
         before {
-          interval(MARKDOWN, 0..2)
+          interval(MARKDOWN, 0..1, MarkdownLanguage.INSTANCE)
         }
         after {
-          interval(CODE, 0..2)
+          interval(MARKDOWN, 0..2, MarkdownLanguage.INSTANCE)
+        }
+      }
+      intervalListenerCall(0) {
+        before {
+          interval(MARKDOWN, 0..2, MarkdownLanguage.INSTANCE)
+        }
+        after {
+          interval(CODE, 0..2, RLanguage.INSTANCE)
         }
       }
     }
@@ -401,14 +406,14 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..0)
+        interval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
       }
       intervalListenerCall(0) {
         before {
-          interval(CODE, 0..2)
+          interval(CODE, 0..2, RLanguage.INSTANCE)
         }
         after {
-          interval(MARKDOWN, 0..0)
+          interval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
         }
       }
     }
@@ -426,7 +431,7 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..2)
+        interval(MARKDOWN, 0..2, MarkdownLanguage.INSTANCE)
       }
     }
 
@@ -437,7 +442,7 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..2)
+        interval(MARKDOWN, 0..2, MarkdownLanguage.INSTANCE)
       }
     }
 
@@ -446,16 +451,16 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..0)
-        interval(MARKDOWN, 1..2)
+        interval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
+        interval(MARKDOWN, 1..2, MarkdownLanguage.INSTANCE)
       }
       intervalListenerCall(0) {
         before {
-          interval(MARKDOWN, 0..2)
+          interval(MARKDOWN, 0..2, MarkdownLanguage.INSTANCE)
         }
         after {
-          interval(MARKDOWN, 0..0)
-          interval(MARKDOWN, 1..2)
+          interval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
+          interval(MARKDOWN, 1..2, MarkdownLanguage.INSTANCE)
         }
       }
     }
@@ -467,8 +472,8 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..0)
-        interval(MARKDOWN, 1..2)
+        interval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
+        interval(MARKDOWN, 1..2, MarkdownLanguage.INSTANCE)
       }
     }
   }
@@ -484,21 +489,21 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     assertCodeCells("make valid code chunk") {
       fixture.type("\n")
       markers {
-        marker(CODE, 16, 7)
-        marker(CODE, 23, 4)
+        marker(CODE, 16, 7, RLanguage.INSTANCE)
+        marker(CODE, 23, 4, RLanguage.INSTANCE)
       }
       intervals {
-        interval(MARKDOWN, 0..0)
-        interval(CODE, 1..2)
-        interval(MARKDOWN, 3..3)
+        interval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
+        interval(CODE, 1..2, RLanguage.INSTANCE)
+        interval(MARKDOWN, 3..3, MarkdownLanguage.INSTANCE)
       }
       intervalListenerCall(1) {
         before {
-          interval(MARKDOWN, 1..2)
+          interval(MARKDOWN, 1..2, MarkdownLanguage.INSTANCE)
         }
         after {
-          interval(CODE, 1..2)
-          interval(MARKDOWN, 3..3)
+          interval(CODE, 1..2, RLanguage.INSTANCE)
+          interval(MARKDOWN, 3..3, MarkdownLanguage.INSTANCE)
         }
       }
     }
@@ -516,13 +521,13 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(CODE, 7, 7)
-        marker(CODE, 19, 4)
+        marker(CODE, 7, 7, RLanguage.INSTANCE)
+        marker(CODE, 19, 4, RLanguage.INSTANCE)
       }
       intervals {
-        interval(MARKDOWN, 0..0)
-        interval(CODE, 1..3)
-        interval(MARKDOWN, 4..4)
+        interval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
+        interval(CODE, 1..3, RLanguage.INSTANCE)
+        interval(MARKDOWN, 4..4, MarkdownLanguage.INSTANCE)
       }
     }
 
@@ -532,16 +537,16 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       markers {
       }
       intervals {
-        interval(MARKDOWN, 0..3)
+        interval(MARKDOWN, 0..3, MarkdownLanguage.INSTANCE)
       }
       intervalListenerCall(0) {
         before {
-          interval(MARKDOWN, 0..0)
-          interval(CODE, 1..3)
-          interval(MARKDOWN, 4..4)
+          interval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
+          interval(CODE, 1..3, RLanguage.INSTANCE)
+          interval(MARKDOWN, 4..4, MarkdownLanguage.INSTANCE)
         }
         after {
-          interval(MARKDOWN, 0..3)
+          interval(MARKDOWN, 0..3, MarkdownLanguage.INSTANCE)
         }
       }
     }
@@ -557,12 +562,12 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(CODE, 0, 7)
-        marker(CODE, 7, 4)
+        marker(CODE, 0, 7, RLanguage.INSTANCE)
+        marker(CODE, 7, 4, RLanguage.INSTANCE)
       }
       intervals {
-        interval(CODE, 0..1)
-        interval(MARKDOWN, 2..2)
+        interval(CODE, 0..1, RLanguage.INSTANCE)
+        interval(MARKDOWN, 2..2, MarkdownLanguage.INSTANCE)
       }
     }
 
@@ -572,20 +577,20 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
         fixture.type("\n")
 
         markers {
-          marker(CODE, 0, 7)
-          marker(CODE, 8, 4)
+          marker(CODE, 0, 7, RLanguage.INSTANCE)
+          marker(CODE, 8, 4, RLanguage.INSTANCE)
         }
         intervals {
-          interval(CODE, 0..2)
-          interval(MARKDOWN, 3..3)
+          interval(CODE, 0..2, RLanguage.INSTANCE)
+          interval(MARKDOWN, 3..3, MarkdownLanguage.INSTANCE)
         }
 
         intervalListenerCall(0) {
           before {
-            interval(CODE, 0..1)
+            interval(CODE, 0..1, RLanguage.INSTANCE)
           }
           after {
-            interval(CODE, 0..2)
+            interval(CODE, 0..2, RLanguage.INSTANCE)
           }
         }
       }
@@ -594,22 +599,41 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
         fixture.type("\b")
 
         markers {
-          marker(CODE, 0, 7)
-          marker(CODE, 7, 4)
+          marker(CODE, 0, 7, RLanguage.INSTANCE)
+          marker(CODE, 7, 4, RLanguage.INSTANCE)
         }
         intervals {
-          interval(CODE, 0..1)
-          interval(MARKDOWN, 2..2)
+          interval(CODE, 0..1, RLanguage.INSTANCE)
+          interval(MARKDOWN, 2..2, MarkdownLanguage.INSTANCE)
         }
 
         intervalListenerCall(0) {
           before {
-            interval(CODE, 0..2)
+            interval(CODE, 0..2, RLanguage.INSTANCE)
           }
           after {
-            interval(CODE, 0..1)
+            interval(CODE, 0..1, RLanguage.INSTANCE)
           }
         }
+      }
+    }
+  }
+
+  @Test
+  fun `test incorrect language`(): Unit = edt {
+    fixture.openNotebookTextInEditor("""
+      ```{rrr}
+      not r cell
+      ```
+    """.trimIndent())
+
+    assertCodeCells {
+      markers {
+        marker(CODE, 0, 9, PlainTextLanguage.INSTANCE)
+        marker(CODE, 20, 3, PlainTextLanguage.INSTANCE)
+      }
+      intervals {
+        interval(CODE, 0..2, PlainTextLanguage.INSTANCE)
       }
     }
   }
@@ -624,11 +648,13 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
   }
 }
 
-private fun CodeCellLinesChecker.IntervalsSetter.interval(cellType: NotebookCellLines.CellType, lines: IntRange) {
+private fun CodeCellLinesChecker.IntervalsSetter.interval(cellType: NotebookCellLines.CellType,
+                                                          lines: IntRange,
+                                                          language: Language? = null) {
   val markersAtLines = when (cellType) {
     CODE -> NotebookCellLines.MarkersAtLines.TOP_AND_BOTTOM
     else -> NotebookCellLines.MarkersAtLines.NO
   }
 
-  interval(cellType, lines, markersAtLines)
+  interval(cellType, lines, markersAtLines, language)
 }
