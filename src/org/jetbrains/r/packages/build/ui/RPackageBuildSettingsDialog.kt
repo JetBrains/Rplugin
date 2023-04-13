@@ -8,7 +8,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.components.JBTextField
-import com.intellij.ui.layout.*
+import com.intellij.ui.dsl.builder.AlignX
+import com.intellij.ui.dsl.builder.bindSelected
+import com.intellij.ui.dsl.builder.panel
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.settings.RPackageBuildSettings
 import javax.swing.JComponent
@@ -32,39 +34,45 @@ class RPackageBuildSettingsDialog(project: Project) : DialogWrapper(null, true) 
   init {
     installArgs = settings.installArgs
     checkArgs = settings.checkArgs
-    setResizable(false)
-    title = TITLE
+    isResizable = false
+    title = RBundle.message("packages.build.settings.title")
     init()
   }
 
   override fun createCenterPanel(): JComponent {
-    val self = this
     return panel {
-      titledRow(GENERAL_OPTIONS_TITLE) {
+      group(RBundle.message("packages.build.settings.general")) {
         row {
-          checkBox(USE_DEVTOOLS_TEXT, self::useDevTools)
+          checkBox(RBundle.message("packages.build.settings.use.dev.tools"))
+            .bindSelected(::useDevTools)
         }
       }
-      titledRow(INSTALLATION_OPTIONS_TITLE) {
+      group(RBundle.message("packages.build.settings.install.options")) {
         row {
-          checkBox(MAIN_ARCHITECTURE_ONLY_TEXT, self::mainArchitectureOnly)
+          checkBox(RBundle.message("packages.build.settings.main.architecture.only"))
+            .bindSelected(::mainArchitectureOnly)
         }
         row {
-          checkBox(KEEP_SOURCES_TEXT, self::keepSources)
+          checkBox(RBundle.message("packages.build.settings.keep.sources"))
+            .bindSelected(::keepSources)
         }
         row {
-          checkBox(CLEAN_BUILD_TEXT, self::cleanBuild)
+          checkBox(RBundle.message("packages.build.settings.clean.build"))
+            .bindSelected(::cleanBuild)
         }
         row {
-          installArgsTextField()
+          cell(installArgsTextField)
+            .align(AlignX.FILL)
         }
       }
-      titledRow(CHECKING_OPTIONS_TITLE) {
+      group(RBundle.message("packages.build.settings.check.options")) {
         row {
-          checkBox(AS_CRAN_TEXT, self::asCran)
+          checkBox(RBundle.message("packages.build.settings.as.cran"))
+            .bindSelected(::asCran)
         }
         row {
-          checkArgsTextField()
+          cell(checkArgsTextField)
+            .align(AlignX.FILL)
         }
       }
     }
@@ -149,18 +157,6 @@ class RPackageBuildSettingsDialog(project: Project) : DialogWrapper(null, true) 
 
     private val INSTALL_ARGS_HINT = RBundle.message("packages.build.settings.install.args.hint")
     private val CHECK_ARGS_HINT = RBundle.message("packages.build.settings.check.args.hint")
-    private val TITLE = RBundle.message("packages.build.settings.title")
-
-    private val GENERAL_OPTIONS_TITLE = RBundle.message("packages.build.settings.general")
-    private val USE_DEVTOOLS_TEXT = RBundle.message("packages.build.settings.use.dev.tools")
-
-    private val INSTALLATION_OPTIONS_TITLE = RBundle.message("packages.build.settings.install.options")
-    private val MAIN_ARCHITECTURE_ONLY_TEXT = RBundle.message("packages.build.settings.main.architecture.only")
-    private val KEEP_SOURCES_TEXT = RBundle.message("packages.build.settings.keep.sources")
-    private val CLEAN_BUILD_TEXT = RBundle.message("packages.build.settings.clean.build")
-
-    private val CHECKING_OPTIONS_TITLE = RBundle.message("packages.build.settings.check.options")
-    private val AS_CRAN_TEXT = RBundle.message("packages.build.settings.as.cran")
 
     private fun createTooManyLettersForShortArgumentMessage(argument: String): String {
       return RBundle.message("packages.build.settings.incorrect.short.argument", argument)
