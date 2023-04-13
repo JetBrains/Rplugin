@@ -8,12 +8,14 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.components.JBTextField
-import com.intellij.ui.layout.*
+import com.intellij.ui.dsl.builder.AlignX
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.selected
+import com.intellij.ui.layout.selected
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
 import java.awt.BorderLayout
 import javax.swing.JCheckBox
-import javax.swing.JLabel
 
 
 /**
@@ -25,24 +27,30 @@ class RRcppPanel(rProjectSettings: RProjectSettings) : RRcppPackageManagerPanel(
   private val maintainerTextField = JBTextField(RBundle.message("project.setting.rcpp.maintainer"))
   private val emailTextField = JBTextField(RBundle.message("project.setting.rcpp.email"))
   private val licenseTextField = JBTextField(RBundle.message("project.setting.rcpp.license"))
-  private val exampleCheckBox = JCheckBox(RBundle.message("project.setting.rcpp.checkbox", packageManagerName), true)
-  private val attributesCheckBox = JCheckBox(RBundle.message("project.setting.rcpp.attributes"), true)
-  private val moduleCheckBox = JCheckBox(RBundle.message("project.setting.rcpp.module"), false)
+  private lateinit var exampleCheckBox: JCheckBox
+  private lateinit var attributesCheckBox: JCheckBox
+  private lateinit var moduleCheckBox: JCheckBox
 
   private val panel = panel {
-    row(RBundle.message("project.setting.rcpp.author.label")) { authorTextField() }
-    row(RBundle.message("project.setting.rcpp.maintainer.label")) { maintainerTextField() }
-    row(RBundle.message("project.setting.rcpp.email.label")) { emailTextField() }
-    row(RBundle.message("project.setting.rcpp.license.label")) { licenseTextField() }
-    row { exampleCheckBox() }
-    row { attributesCheckBox().enableIf(exampleCheckBox.selected) }
-    row { moduleCheckBox() }
+    row(RBundle.message("project.setting.rcpp.author.label")) { cell(authorTextField).align(AlignX.FILL) }
+    row(RBundle.message("project.setting.rcpp.maintainer.label")) { cell(maintainerTextField).align(AlignX.FILL) }
+    row(RBundle.message("project.setting.rcpp.email.label")) { cell(emailTextField).align(AlignX.FILL) }
+    row(RBundle.message("project.setting.rcpp.license.label")) { cell(licenseTextField).align(AlignX.FILL) }
+    row {
+      exampleCheckBox = checkBox(RBundle.message("project.setting.rcpp.checkbox", packageManagerName))
+        .selected(true)
+        .component
+    }
+    row {
+      attributesCheckBox = checkBox(RBundle.message("project.setting.rcpp.attributes"))
+        .selected(true)
+        .enabledIf(exampleCheckBox.selected)
+        .component
+    }
+    row {
+      moduleCheckBox = checkBox(RBundle.message("project.setting.rcpp.module")).component
+    }
   }
-
-  private val authorLabel: JLabel? = null
-  private val maintainerLabel: JLabel? = null
-  private val licenseLabel: JLabel? = null
-  private val emailLabel: JLabel? = null
 
   override val panelName: String
     get() = "R package using Rcpp panel"
