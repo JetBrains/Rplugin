@@ -4,7 +4,6 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.Project
-import com.intellij.reference.SoftReference
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.ui.ImageUtil
 import org.jetbrains.r.run.graphics.RGraphicsUtils
@@ -14,6 +13,7 @@ import org.jetbrains.r.settings.RGraphicsSettings
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.image.BufferedImage
+import java.lang.ref.SoftReference
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.swing.JComponent

@@ -17,12 +17,12 @@ import com.intellij.psi.impl.source.PsiFileWithStubSupport
 import com.intellij.psi.stubs.PsiFileStubImpl
 import com.intellij.psi.stubs.StubTree
 import com.intellij.psi.stubs.StubTreeLoader
-import com.intellij.reference.SoftReference
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.skeleton.RSkeletonFileType
 import java.lang.ref.Reference
+import java.lang.ref.SoftReference
 
 
 class RSkeletonFileImpl(viewProvider: FileViewProvider)
@@ -54,7 +54,7 @@ class RSkeletonFileImpl(viewProvider: FileViewProvider)
 
   override fun getStubTree(): StubTree {
     ApplicationManager.getApplication().assertReadAccessAllowed()
-    SoftReference.dereference(stub)?.let { return it }
+    stub?.get()?.let { return it }
 
     // build newStub out of lock to avoid deadlock
     var newStubTree = StubTreeLoader.getInstance().readOrBuild(project, virtualFile, this) as StubTree?
@@ -62,7 +62,7 @@ class RSkeletonFileImpl(viewProvider: FileViewProvider)
       newStubTree = StubTree(RSkeletonFileStub())
     }
     synchronized(stubLock) {
-      SoftReference.dereference(stub)?.let { return it }
+      stub?.get()?.let { return it }
       val fileStub = newStubTree.root as PsiFileStubImpl<PsiFile>
       fileStub.setPsi(this)
       stub = SoftReference(newStubTree)
