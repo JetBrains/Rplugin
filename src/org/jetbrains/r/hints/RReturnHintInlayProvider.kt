@@ -13,7 +13,7 @@ import com.intellij.openapi.progress.EmptyProgressIndicator
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.ui.JBIntSpinner
-import com.intellij.ui.layout.*
+import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.ui.JBUI
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
@@ -87,9 +87,8 @@ class RReturnHintInlayProvider : InlayHintsProvider<RReturnHintInlayProvider.Set
         handleChange(listener)
       }
       val panel = panel {
-        row {
-          label(RBundle.message("inlay.hints.function.return.expression.count.spinner.text"))
-          uniqueTypeCount(pushX)
+        row(RBundle.message("inlay.hints.function.return.expression.count.spinner.text")) {
+          cell(uniqueTypeCount)
         }
       }
       panel.border = JBUI.Borders.empty(5)
