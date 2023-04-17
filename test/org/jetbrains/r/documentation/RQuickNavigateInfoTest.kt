@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.documentation
 
-import com.intellij.codeInsight.navigation.actions.GotoDeclarationAction
+import com.intellij.codeInsight.navigation.CtrlMouseHandler
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorColorsScheme
 import com.intellij.util.ui.UIUtil
@@ -84,9 +84,7 @@ class RQuickNavigateInfoTest : RProcessHandlerBaseTestCase() {
   }
 
   private fun getQuickNavigateText(): String {
-    val info = GotoDeclarationAction().getCtrlMouseInfo(myFixture.editor, myFixture.file, myFixture.caretOffset)
-    assertNotNull(info)
-    val text = info!!.docInfo.text
+    val text = CtrlMouseHandler.getGoToDeclarationOrUsagesText(myFixture.editor)
     assertNotNull(text)
     return UIUtil.getHtmlBody(text!!)
   }
