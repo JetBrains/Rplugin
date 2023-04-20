@@ -1,5 +1,6 @@
 package org.jetbrains.r.editor
 
+import com.intellij.lang.Language
 import com.intellij.lexer.Lexer
 import com.intellij.lexer.MergeFunction
 import com.intellij.lexer.MergingLexerAdapterBase
@@ -20,11 +21,14 @@ class RMarkdownCellLinesProvider : NonIncrementalCellLinesProvider(RMarkdownInte
 
 private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLinesLexer {
   override fun makeIntervals(document: Document): List<NotebookCellLines.Interval> {
-    val markers = markerSequence(document.charsSequence, 0, 0).toList()
+    val markers = markerSequence(document.charsSequence, 0, 0, PlainTextLanguage.INSTANCE).toList()
     return markers.map { toInterval(document, it) }
   }
 
-  override fun markerSequence(chars: CharSequence, ordinalIncrement: Int, offsetIncrement: Int): Sequence<NotebookCellLinesLexer.Marker> =
+  override fun markerSequence(chars: CharSequence,
+                              ordinalIncrement: Int,
+                              offsetIncrement: Int,
+                              defaultLanguage: Language): Sequence<NotebookCellLinesLexer.Marker> =
     sequence {
       var lastMarker: NotebookCellLinesLexer.Marker? = null
       val seq = NotebookCellLinesLexer.defaultMarkerSequence({ RMarkdownMergingLangLexer() }, ::getCellType,
@@ -38,7 +42,7 @@ private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLine
           NotebookCellLines.CellType.CODE -> {
             val cellText = chars.subSequence(marker.offset, marker.offset + marker.length)
             val possibleLanguageString = RmdCellLanguageProvider.parseStringToLanguage(cellText, longestLanguageLength + 1)
-            langMap.getOrDefault(possibleLanguageString as? CharSequence, PlainTextLanguage.INSTANCE)
+            langMap.getOrDefault(possibleLanguageString, defaultLanguage)
           }
           else -> {
             MarkdownLanguage.INSTANCE
