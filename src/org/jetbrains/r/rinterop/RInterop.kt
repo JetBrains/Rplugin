@@ -8,6 +8,7 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.google.protobuf.*
 import com.intellij.codeInsight.CodeInsightBundle
+import com.intellij.concurrency.ConcurrentCollectionFactory
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
@@ -102,7 +103,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   }
   val executor = ConcurrencyUtil.newSingleThreadExecutor(RINTEROP_THREAD_NAME)
   private val heartbeatTimer: ScheduledFuture<*>
-  private val asyncEventsListeners = Collections.newSetFromMap<AsyncEventsListener>(ConcurrentHashMap())
+  private val asyncEventsListeners = ConcurrentCollectionFactory.createConcurrentSet<AsyncEventsListener>()
   private var asyncProcessingStarted = false
   private val asyncEventsBeforeStarted = mutableListOf<AsyncEvent>()
   private val cacheIndex = AtomicInteger(0)
