@@ -201,6 +201,6 @@ private fun toInterval(document: Document, marker: NotebookCellLinesLexer.Marker
     type = marker.type,
     lines = startLine..endLine,
     markers = markersAtLines,
-    language = marker.language
+    language = marker.language!! // marker.language is provided in makeIntervals
   )
 }

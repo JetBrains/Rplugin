@@ -650,7 +650,7 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
 private fun CodeCellLinesChecker.IntervalsSetter.rmdInterval(cellType: NotebookCellLines.CellType,
                                                              lines: IntRange,
-                                                             language: Language? = null) {
+                                                             language: Language) {
   val markersAtLines = when (cellType) {
     CODE -> NotebookCellLines.MarkersAtLines.TOP_AND_BOTTOM
     else -> NotebookCellLines.MarkersAtLines.NO
