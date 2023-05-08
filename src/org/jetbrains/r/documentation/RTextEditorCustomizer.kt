@@ -6,10 +6,9 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileEditor.impl.text.TextEditorCustomizer
 import org.jetbrains.r.rinterop.RSourceFileManager
 
-class RTextEditorCustomizer : TextEditorCustomizer {
+private class RTextEditorCustomizer : TextEditorCustomizer {
   override fun customize(textEditor: TextEditor) {
-    val manager = FileDocumentManager.getInstance()
-    val file = manager.getFile(textEditor.editor.document)
+    val file = textEditor.editor.virtualFile ?: FileDocumentManager.getInstance().getFile(textEditor.editor.document)
     if (file != null && RSourceFileManager.isTemporary(file)) {
       DocRenderManager.setDocRenderingEnabled(textEditor.editor, true)
     }
