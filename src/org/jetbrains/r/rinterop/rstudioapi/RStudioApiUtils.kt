@@ -26,7 +26,6 @@ import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
 import org.jetbrains.r.rinterop.rstudioapi.RStudioAPISourceMarkerInspection.Companion.SOURCE_MARKERS_KEY
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.streams.toList
 
 enum class RStudioApiFunctionId {
   GET_SOURCE_EDITOR_CONTEXT_ID,
@@ -174,7 +173,7 @@ object RStudioApiUtils {
             val offset = getLineOffset(document, line - 1, column - 1)
             e.caretModel.primaryCaret.moveToOffset(offset)
           }
-          ProblemsView.toggleCurrentFileProblems(rInterop.project, virtualFile)
+          ProblemsView.toggleCurrentFileProblems(rInterop.project, virtualFile, document)
         }
         autoSelect = null
       }
