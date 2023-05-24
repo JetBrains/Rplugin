@@ -24,6 +24,7 @@ import org.intellij.markdown.parser.sequentialparsers.SequentialParser
 import org.intellij.markdown.parser.sequentialparsers.SequentialParserManager
 import org.intellij.plugins.markdown.lang.parser.blocks.CommentAwareLinkReferenceDefinitionProvider
 import java.net.URI
+import kotlin.math.min
 
 object RMarkdownFlavourDescriptor : CommonMarkFlavourDescriptor() {
   private val myGfmFlavourDescriptor: GFMFlavourDescriptor = GFMFlavourDescriptor()
@@ -94,7 +95,7 @@ private class RMarkdownMarkerProcessor(productionHolder: ProductionHolder,
         MarkdownTokenTypes.LIST_BULLET
     }
     val middleOffset = pos.offset - pos.offsetInCurrentLine + offset
-    val endOffset = Math.min(pos.offset - pos.offsetInCurrentLine + constraints.getCharsEaten(pos.currentLine),
+    val endOffset = min(pos.offset - pos.offsetInCurrentLine + constraints.getCharsEaten(pos.currentLine),
                              pos.nextLineOrEofOffset)
 
     productionHolder.addProduction(listOf(
