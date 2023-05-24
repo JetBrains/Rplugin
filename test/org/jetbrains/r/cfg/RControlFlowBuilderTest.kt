@@ -22,7 +22,7 @@ class RControlFlowTest: RLightCodeInsightFixtureTestCase() {
   private fun doTest() {
     val filename = getTestName(false)
     val fullPath = File(testDataPath, filename).path
-    val file = myFixture.configureByFile(filename + ".r") as RFile
+    val file = myFixture.configureByFile("$filename.r") as RFile
     val functionExpressions = PsiTreeUtil.collectElementsOfType(file, org.jetbrains.r.psi.api.RFunctionExpression::class.java).sortedBy { it.textOffset }
 
     val builder = StringBuilder()
@@ -31,18 +31,18 @@ class RControlFlowTest: RLightCodeInsightFixtureTestCase() {
     builder.appendln("[${counter++}]File:")
 
     if (GENERATE_SVG) {
-      ShowControlFlowHandler.toSvgFile(fullPath + ".$counter.svg", file)
+      ShowControlFlowHandler.toSvgFile("$fullPath.$counter.svg", file)
     }
     file.controlFlow.instructions.forEach { instruction -> builder.appendln(instruction) }
     for (functionExpression in functionExpressions) {
       builder.appendln("[${counter++}]Function ${(functionExpression.parent as? org.jetbrains.r.psi.api.RAssignmentStatement)?.name ?: "anon"}")
       functionExpression.controlFlow.instructions.forEach { instruction -> builder.appendln(instruction) }
       if (GENERATE_SVG) {
-        ShowControlFlowHandler.toSvgFile(fullPath + ".$counter.svg", functionExpression)
+        ShowControlFlowHandler.toSvgFile("$fullPath.$counter.svg", functionExpression)
       }
     }
 
-    assertSameLinesWithFile(fullPath + ".cfg.txt", builder.toString())
+    assertSameLinesWithFile("$fullPath.cfg.txt", builder.toString())
   }
 
   fun testTrue() {

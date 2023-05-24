@@ -177,7 +177,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     val missingTestSkeletons = missingTestSkeletons(interpreterVersion)
     if (missingTestSkeletons.isEmpty()) return
 
-    System.err.println("Generate binary summary for: " + missingTestSkeletons)
+    System.err.println("Generate binary summary for: $missingTestSkeletons")
 
     val rInterop = RInteropUtil.runRWrapperAndInterop(rInterpreter).blockingGet(DEFAULT_TIMEOUT)!!.apply {
       updateState().blockingGet(DEFAULT_TIMEOUT)

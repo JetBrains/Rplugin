@@ -215,7 +215,7 @@ object RSkeletonUtil {
       val parts = line.split('\u0001')
 
       if (parts.size < 3) {
-        throw IOException("Too short line $lineNum: " + line)
+        throw IOException("Too short line $lineNum: $line")
       }
 
       val methodName = parts[0]
@@ -275,7 +275,7 @@ object RSkeletonUtil {
           val signature = parts[functionSignatureStartIndex]
           val prefix = "function ("
           if (!signature.startsWith(prefix) || !signature.endsWith(") ")) {
-            throw IOException("Invalid function description at $lineNum: " + signature)
+            throw IOException("Invalid function description at $lineNum: $signature")
           }
 
           val parameters = signature.substring(prefix.length, signature.length - 2)

@@ -100,7 +100,7 @@ class UnusedVariableInspection : org.jetbrains.r.inspections.RInspection() {
 
       // check if it can be resolved it into an accessor function
       val name = assignee.expression.let { (it as? PsiNamedElement)?.name ?: it.text } ?: return false
-      val accessorMethodName = "`" + name + "<-`()"
+      val accessorMethodName = "`$name<-`()"
 
       val accessorResolvant = org.jetbrains.r.psi.RElementFactory
         .createFuncallFromText(assignee.getProject(), accessorMethodName)

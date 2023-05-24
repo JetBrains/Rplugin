@@ -28,7 +28,7 @@ class RMarkdownParsingPythonTest : RUsefulTestCase() {
 
   private fun doTest() {
     val testName = getTestName(true)
-    myFixture.configureByFile(testName + ".rmd")
+    myFixture.configureByFile("$testName.rmd")
 
     ParsingTestCase.doCheckResult(
       testDataPath,

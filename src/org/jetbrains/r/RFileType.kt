@@ -22,5 +22,5 @@ object RFileType : LanguageFileType(RLanguage.INSTANCE) {
 
   var INPUT_FILTER: FileBasedIndex.InputFilter = DefaultFileTypeSpecificInputFilter(this)
 
-  val DOT_R_EXTENSION = "." + defaultExtension
+  val DOT_R_EXTENSION = ".$defaultExtension"
 }

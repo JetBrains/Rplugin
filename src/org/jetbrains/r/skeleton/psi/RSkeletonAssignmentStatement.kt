@@ -66,7 +66,7 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
 
   private val parameterNameListValue: List<String> by lazy l@{
     if (!isFunctionDeclaration()) return@l emptyList<String>()
-    return@l (RElementFactory.createRPsiElementFromText(project, "function " + functionParameters) as? RFunctionExpression)
+    return@l (RElementFactory.createRPsiElementFromText(project, "function $functionParameters") as? RFunctionExpression)
       ?.parameterList?.parameterList?.map{ it.name } ?: emptyList<String>()
   }
 

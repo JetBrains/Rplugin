@@ -165,7 +165,7 @@ internal object RPsiImplUtil {
   fun setName(stringLiteral: RStringLiteralExpressionImpl, name: String): PsiElement {
     val text = stringLiteral.text
     if (text.length < 2) {
-      throw IncorrectOperationException("incorrect string literal: " + text)
+      throw IncorrectOperationException("incorrect string literal: $text")
     }
     val result = rowStringMinusNumber(text)?.let {
       text.replaceRange(3 + it, text.length - (2 + it), name)

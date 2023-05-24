@@ -189,7 +189,7 @@ class RParsingTest : RUsefulTestCase() {
   //---------------------------------------
   private fun doTest() {
     val testName = getTestName(false)
-    myFixture.configureByFile(testName + ".r")
+    myFixture.configureByFile("$testName.r")
 
     ParsingTestCase.doCheckResult(
       testDataPath,

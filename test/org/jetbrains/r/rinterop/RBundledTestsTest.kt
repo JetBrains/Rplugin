@@ -172,7 +172,7 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
           assign('interactive', function(...) FALSE, envir = baseenv())
         """.trimIndent(), newInterop)
         val output = executeFile(script.absolutePath, newInterop)
-        val expectedFile = File(execute("cat(R.home('tests/Examples'))", newInterop), pkg + "-Ex.Rout.save")
+        val expectedFile = File(execute("cat(R.home('tests/Examples'))", newInterop), "$pkg-Ex.Rout.save")
         if (expectedFile.exists()) {
           println("  comparing output to ${expectedFile.name}")
           val expected = expectedFile.readText()

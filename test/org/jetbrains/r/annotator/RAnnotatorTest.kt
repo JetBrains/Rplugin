@@ -73,7 +73,7 @@ class RAnnotatorTest : RLightCodeInsightFixtureTestCase() {
 
   private fun doTest() {
     val testName = getTestName(true)
-    myFixture.testHighlighting(true, true, false, testName + ".R")
+    myFixture.testHighlighting(true, true, false, "$testName.R")
   }
 
 }

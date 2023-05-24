@@ -181,7 +181,7 @@ class RAnnotatorVisitor(private val holder: MutableList<HighlightInfo>, private 
           }
         }
 
-        return if (shortcutText.isNotEmpty()) messagePrefix + " ($shortcutText)"
+        return if (shortcutText.isNotEmpty()) "$messagePrefix ($shortcutText)"
         else messagePrefix
       }
   }

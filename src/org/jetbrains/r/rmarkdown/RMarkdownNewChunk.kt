@@ -50,9 +50,9 @@ class RMarkdownNewChunk : DumbAwareAction(), RPromotedAction {
     val startOfInsertString = if (whereToInsert >= 1 && !isMarkdownEol(atOffset(whereToInsert - 1))) "\n" else ""
 
     runWriteAction {
-      val startStr = startOfInsertString + "```{r}\n"
+      val startStr = "$startOfInsertString```{r}\n"
       val runnable = Runnable {
-        document.insertString(whereToInsert, startStr + "\n```" + endOfInsertString)
+        document.insertString(whereToInsert, "$startStr\n```$endOfInsertString")
       }
       CommandProcessor.getInstance().executeCommand(file.project, runnable, templateText, null)
       editor.caretModel.moveToOffset(whereToInsert + startStr.length)
