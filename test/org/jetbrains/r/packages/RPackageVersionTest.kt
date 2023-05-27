@@ -10,7 +10,7 @@ import org.jetbrains.r.RUsefulTestCase
 class RPackageVersionTest : RUsefulTestCase() {
   fun testParseValidVersionString() {
     val string2numbers = mapOf(
-      "" to emptyList<Int>(),
+      "" to emptyList(),
       "1" to listOf(1),
       "123" to listOf(123),
       "1.2" to listOf(1, 2),

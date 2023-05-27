@@ -76,7 +76,7 @@ abstract class RProjectGenerator : DirectoryProjectGeneratorBase<RProjectSetting
   fun getSettings() = rProjectSettings
 
   override fun createPeer(): ProjectGeneratorPeer<RProjectSettings> {
-    return GeneratorPeerImpl<RProjectSettings>(rProjectSettings, JPanel())
+    return GeneratorPeerImpl(rProjectSettings, JPanel())
   }
 
   /**

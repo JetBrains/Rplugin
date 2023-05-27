@@ -11,7 +11,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.util.containers.Stack
 
 object RParserUtil : GeneratedParserUtilBase() {
-  private val R_PARSING_DATA: Key<ParsingData> = Key.create<ParsingData>("hello")
+  private val R_PARSING_DATA: Key<ParsingData> = Key.create("hello")
 
   private fun getRelatedData(builder: PsiBuilder): ParsingData =
     builder.getUserData(R_PARSING_DATA) ?: ParsingData().also { builder.putUserData(R_PARSING_DATA, it) }

@@ -39,7 +39,7 @@ object ExecuteExpressionUtils {
   }
 
   fun <R> getSynchronously(title: String, task: () -> R): R {
-    return ProgressManager.getInstance().runProcessWithProgressSynchronously(ThrowableComputable<R, Exception> {
+    return ProgressManager.getInstance().runProcessWithProgressSynchronously(ThrowableComputable {
       task()
     }, title, false, null)
   }

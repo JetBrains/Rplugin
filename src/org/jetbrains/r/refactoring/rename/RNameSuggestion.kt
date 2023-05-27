@@ -7,13 +7,13 @@ package org.jetbrains.r.refactoring.rename
 import org.jetbrains.r.refactoring.RRefactoringUtil
 
 object RNameSuggestion {
-  fun getVariableSuggestedNames(curName: String?, unavailableNames: MutableSet<String> = mutableSetOf<String>()): Set<String> {
+  fun getVariableSuggestedNames(curName: String?, unavailableNames: MutableSet<String> = mutableSetOf()): Set<String> {
     if (curName == null) return emptySet()
     val name = transformName(curName, false)
-    return setOf<String>(getUniqueName(name, unavailableNames))
+    return setOf(getUniqueName(name, unavailableNames))
   }
 
-  fun getFunctionSuggestedNames(curName: String?, unavailableNames: MutableSet<String> = mutableSetOf<String>()): Set<String> {
+  fun getFunctionSuggestedNames(curName: String?, unavailableNames: MutableSet<String> = mutableSetOf()): Set<String> {
     if (curName == null) return emptySet()
     val name = transformName(curName, true)
     val result = mutableSetOf(getUniqueName(name, unavailableNames, true))
@@ -24,7 +24,7 @@ object RNameSuggestion {
     return result
   }
 
-  fun getTargetForLoopSuggestedNames(curName: String?, unavailableNames: MutableSet<String> = mutableSetOf<String>()): Set<String> {
+  fun getTargetForLoopSuggestedNames(curName: String?, unavailableNames: MutableSet<String> = mutableSetOf()): Set<String> {
     val result = getVariableSuggestedNames(curName, unavailableNames)
     for (i in listOf("i", "j", "k")) {
       if (!unavailableNames.contains(i)) {

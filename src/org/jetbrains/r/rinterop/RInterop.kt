@@ -1152,7 +1152,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         f(listener)
       } catch (t: Throwable) {
         LOG.error(t)
-        resolvedPromise<Unit>()
+        resolvedPromise()
       }
       promise.onProcessed {
         if (remaining.decrementAndGet() == 0) end()

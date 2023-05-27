@@ -37,7 +37,7 @@ class RPackageDescriptionCache : SimplePersistentStateComponent<RPackageDescript
   }
 
   class State : BaseState() {
-    var descriptions: MutableMap<String, String> by map<String, String>()
+    var descriptions: MutableMap<String, String> by map()
     var lastUpdate: Long by property(0L)
   }
 

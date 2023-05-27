@@ -23,7 +23,7 @@ interface RmdFenceProvider {
   fun getNewChildAttributes(newChildIndex: Int): ChildAttributes
 
   companion object {
-    val EP_NAME: ExtensionPointName<RmdFenceProvider> = ExtensionPointName.create<RmdFenceProvider>("com.intellij.rmdFenceProvider")
+    val EP_NAME: ExtensionPointName<RmdFenceProvider> = ExtensionPointName.create("com.intellij.rmdFenceProvider")
 
     fun find(predicate: (RmdFenceProvider) -> Boolean): RmdFenceProvider? {
       return EP_NAME.extensionList.firstOrNull(predicate)

@@ -15,7 +15,7 @@ interface QmdFenceProvider {
   fun getNewChildAttributes(newChildIndex: Int): ChildAttributes
 
   companion object {
-    val EP_NAME: ExtensionPointName<QmdFenceProvider> = ExtensionPointName.create<QmdFenceProvider>("com.intellij.qmdFenceProvider")
+    val EP_NAME: ExtensionPointName<QmdFenceProvider> = ExtensionPointName.create("com.intellij.qmdFenceProvider")
 
     fun find(predicate: (QmdFenceProvider) -> Boolean): QmdFenceProvider? {
       return EP_NAME.extensionList.firstOrNull(predicate)

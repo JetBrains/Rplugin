@@ -85,7 +85,7 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
       if (service.isPackageLoaded(packageName)) {
         service.unloadPackage(packageName, true)
       } else {
-        resolvedPromise<Unit>()
+        resolvedPromise()
       }
         .thenAsync { installPackageAsync(hasDevTools) }
         .thenAsync { service.loadPackage(packageName) }

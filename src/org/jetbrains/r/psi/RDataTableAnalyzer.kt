@@ -33,8 +33,8 @@ object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
 
   // TODO(DS-226): Put more functions here
   @Suppress("SpellCheckingInspection")
-  override val safeFunctions = super.safeFunctions + mapOf<String, Set<String>>(
-    "data.table" to setOf<String>(
+  override val safeFunctions: Map<String, Set<String>> = super.safeFunctions + mapOf(
+    "data.table" to setOf(
       ".", "%between%", "%chin%", "%inrange%", "IDateTime", "J", "CJ", "SJ", "address", "as.Date", "as.IDate", "as.ITime", "chgroup",
       "chmatch", "chorder", "copy", "first", "fsort", "getDTthreads", "getNumericRounding", "haskey", "hour", "isoweek", "key", "last",
       "mday", "minute", "month", "patterns", "quarter", "rleid", "rowid", "second", "shouldPrint", "tables", "timetaken", "truelength",

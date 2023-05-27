@@ -197,9 +197,9 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
         else {
           it
         }
-      }.map { arrayOf<Any>(it.name, it.value as Any) }.toTypedArray()
+      }.map { arrayOf(it.name, it.value as Any) }.toTypedArray()
 
-      isBadValue = Array<Boolean>(data.size) { false }
+      isBadValue = Array(data.size) { false }
       fireTableDataChanged()
     }
 
@@ -264,12 +264,12 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
     override fun getTableCellEditorComponent(table: JTable?, value: Any?, isSelected: Boolean, row: Int, column: Int): Component {
       val defaultBackgroundColor = background
       component = when (value) {
-        is PackartLogicalConstants -> ComboBox<PackartLogicalConstants>(
+        is PackartLogicalConstants -> ComboBox(
           PackartLogicalConstants.values()).apply {
           selectedItem = value
           background = defaultBackgroundColor
         }
-        is PackratExpandedLogicalConstants -> ComboBox<PackratExpandedLogicalConstants>(
+        is PackratExpandedLogicalConstants -> ComboBox(
           PackratExpandedLogicalConstants.values()).apply {
           selectedItem = value
           background = defaultBackgroundColor

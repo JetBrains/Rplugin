@@ -71,7 +71,7 @@ data class TableManipulationColumnLookup(val column: TableColumnInfo) {
 }
 
 interface RLookupElementInsertHandler {
-  fun getInsertHandlerForFunctionCall(functionParameters: String): InsertHandler<LookupElement> = BasicInsertHandler<LookupElement>()
+  fun getInsertHandlerForFunctionCall(functionParameters: String): InsertHandler<LookupElement> = BasicInsertHandler()
   fun getInsertHandlerForAssignment(assignment: RAssignmentStatement): InsertHandler<LookupElement>
   fun getInsertHandlerForLookupString(lookupString: String): InsertHandler<LookupElement>
 }

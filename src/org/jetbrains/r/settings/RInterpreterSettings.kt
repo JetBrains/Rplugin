@@ -125,8 +125,8 @@ class RInterpreterSettings : SimplePersistentStateComponent<RInterpreterSettings
 }
 
 class RInterpreterSettingsState : BaseState() {
-  var interpreters: MutableList<RSerializableInterpreter> by list<RSerializableInterpreter>()
-  var disabledLocations: MutableList<String> by list<String>()
+  var interpreters: MutableList<RSerializableInterpreter> by list()
+  var disabledLocations: MutableList<String> by list()
 }
 
 class RSerializableInterpreter {

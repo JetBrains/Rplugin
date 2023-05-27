@@ -24,7 +24,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, parentPanel: JPanel) : JPanel(BorderLayout()) {
-  private val pageSizeComponent = ComboBox<Int>(arrayOf(10, 15, 30, 100))
+  private val pageSizeComponent = ComboBox(arrayOf(10, 15, 30, 100))
   private var currentPageComponent = JTextField()
   private val totalPagesComponent = JLabel()
   val label = JLabel()

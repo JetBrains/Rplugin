@@ -96,7 +96,7 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
 
   private inline fun checkForError(validationInfos: List<ValidationInfo>, doIfNotEmpty: (() -> Unit)) {
     if (validationInfos.isNotEmpty()) {
-      setErrorText(StringUtil.join<ValidationInfo>(validationInfos, { info -> info.message }, "; "))
+      setErrorText(StringUtil.join(validationInfos, { info -> info.message }, "; "))
       doIfNotEmpty()
     }
   }

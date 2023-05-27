@@ -20,8 +20,8 @@ class RVariableLoader internal constructor(val obj: RReference) {
     }
   }
 
-  private val variablesAsync = rInterop.AsyncCached<List<RVar>>(emptyList()) {
-    loadVariablesPartially(0, BLOCK_SIZE).thenAsyncCancellable<VariablesPart, List<RVar>> {
+  private val variablesAsync: RInterop.AsyncCached<List<RVar>> = rInterop.AsyncCached(emptyList()) {
+    loadVariablesPartially(0, BLOCK_SIZE).thenAsyncCancellable {
       if (it.totalCount <= BLOCK_SIZE) {
         return@thenAsyncCancellable resolvedCancellablePromise(it.vars)
       }

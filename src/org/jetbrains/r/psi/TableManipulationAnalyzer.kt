@@ -373,7 +373,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
 
   // TODO(DS-226): Put more functions here
   @Suppress("SpellCheckingInspection")
-  protected open val safeFunctions = mapOf<String, Set<String>>(
+  protected open val safeFunctions: Map<String, Set<String>> = mapOf(
     "base" to setOf(
       "+", "-", "*", "/", "%%", "%/%", "^", "<", ">", "<=", ">=", "==", "!=", "&", "&&", "|", "||", "!", ":", "%in%", "%*%", "abs", "acos",
       "asin",

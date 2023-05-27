@@ -104,7 +104,7 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
   }
 
   override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-    return ResolveCache.getInstance(psiElement.project).resolveWithCaching(this, Resolver<T>(), false, incompleteCode)
+    return ResolveCache.getInstance(psiElement.project).resolveWithCaching(this, Resolver(), false, incompleteCode)
   }
 
   /**

@@ -232,7 +232,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
 
         override fun perform(e: AnActionEvent, tree: XDebuggerTree, watchesView: XWatchesView) {
           (watchesView as? RXVariablesView)?.moveWatchUp(
-            ContainerUtil.getFirstItem(XWatchesTreeActionBase.getSelectedNodes<WatchNodeImpl>(tree, WatchNodeImpl::class.java)))
+            ContainerUtil.getFirstItem(XWatchesTreeActionBase.getSelectedNodes(tree, WatchNodeImpl::class.java)))
         }
       },
       object : XMoveWatchDown() {
@@ -242,7 +242,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
 
         override fun perform(e: AnActionEvent, tree: XDebuggerTree, watchesView: XWatchesView) {
           (watchesView as? RXVariablesView)?.moveWatchDown(
-            ContainerUtil.getFirstItem(XWatchesTreeActionBase.getSelectedNodes<WatchNodeImpl>(tree, WatchNodeImpl::class.java)))
+            ContainerUtil.getFirstItem(XWatchesTreeActionBase.getSelectedNodes(tree, WatchNodeImpl::class.java)))
         }
       },
       ActionManager.getInstance().getAction("XDebugger.CopyWatch")

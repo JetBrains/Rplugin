@@ -254,7 +254,7 @@ class RequiredPackageInstaller(private val project: Project) {
   private class InstallationTask(val utilityName: String,
                                  val requiredPackages: List<RequiredPackage>,
                                  val notification: Notification?) {
-    private val unprocessedPackages = ConcurrentSkipListSet<String>(requiredPackages.map { it.name })
+    private val unprocessedPackages = ConcurrentSkipListSet(requiredPackages.map { it.name })
     private val errorNotified = AtomicBoolean(false)
     val promise = AsyncPromise<Unit>()
 

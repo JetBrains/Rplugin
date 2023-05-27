@@ -10,7 +10,7 @@ import com.intellij.psi.tree.IElementType
 import java.util.*
 
 abstract class PatchingLexerWithQueue(delegate: Lexer) : DelegateLexer(delegate) {
-  protected val queue: Queue<TokenData> = ArrayDeque<TokenData>()
+  protected val queue: Queue<TokenData> = ArrayDeque()
 
   override fun start(buffer: CharSequence, startOffset: Int, endOffset: Int, initialState: Int) {
     super.start(buffer, startOffset, endOffset, initialState)

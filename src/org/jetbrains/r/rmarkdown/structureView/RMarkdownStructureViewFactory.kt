@@ -33,7 +33,7 @@ class RMarkdownStructureViewFactory : PsiStructureViewFactory {
   private class RMarkdownStructureViewModel internal constructor(psiFile: PsiFile, editor: Editor?)
     : StructureViewModelBase(psiFile, editor, RMarkdownStructureElement(psiFile)) {
 
-    override fun getFilters(): Array<Filter> = arrayOf<Filter>(RGlobalVariablesFilter())
+    override fun getFilters(): Array<Filter> = arrayOf(RGlobalVariablesFilter())
 
     override fun findAcceptableElement(e: PsiElement?): Any? {
       var element = e

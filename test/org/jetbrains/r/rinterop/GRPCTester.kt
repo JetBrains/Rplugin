@@ -31,7 +31,7 @@ class GRPCTester(path: String,
     val text = XZCompressorInputStream(File(path).inputStream()).use { InputStreamReader(it).readText() }
     messages = GsonBuilder().registerTypeAdapter(RInteropGrpcLogger.Message::class.java, MessageDeserializer)
                             .create()
-                            .fromJson<Array<RInteropGrpcLogger.Message>>(text, Array<RInteropGrpcLogger.Message>::class.java)
+                            .fromJson(text, Array<RInteropGrpcLogger.Message>::class.java)
   }
 
   fun proceedMessage(message: RInteropGrpcLogger.Message): Pair<Any, Any?>? {

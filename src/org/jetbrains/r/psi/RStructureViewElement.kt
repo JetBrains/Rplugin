@@ -146,7 +146,7 @@ private fun firstGlobalVariableDefinition(assignment: RAssignmentStatement): Boo
 
 private fun getOrCalculateVariableMap(file: PsiFile): List<NamespaceSegment> {
   return CachedValuesManager.getCachedValue(file) l@ {
-    val result: MutableList<NamespaceSegment> = ArrayList<NamespaceSegment>()
+    val result: MutableList<NamespaceSegment> = ArrayList()
     var nameMap = HashMap<String, PsiElement>()
     result.add(NamespaceSegment(0, nameMap))
     object: RRecursiveElementVisitor() {
@@ -163,7 +163,7 @@ private fun getOrCalculateVariableMap(file: PsiFile): List<NamespaceSegment> {
 
       override fun visitElement(element: PsiElement) {
         if (element is OuterLanguageElement && nameMap.isNotEmpty()) {
-          nameMap = HashMap<String, PsiElement>()
+          nameMap = HashMap()
           result.add(NamespaceSegment(element.textRange.endOffset, nameMap))
         }
         super.visitElement(element)

@@ -37,14 +37,14 @@ private class RStructureViewModel(private val file: PsiFile) : TextEditorBasedSt
     return RStructureViewElement(file)
   }
 
-  override fun getGroupers(): Array<Grouper> = arrayOf<Grouper>()
+  override fun getGroupers(): Array<Grouper> = arrayOf()
 
   override fun getSorters(): Array<Sorter> {
     // TODO - Enable sorting based on defs, macs, fns, []s, etc...
     return arrayOf(Sorter.ALPHA_SORTER)
   }
 
-  override fun getFilters(): Array<Filter> = arrayOf<Filter>(RGlobalVariablesFilter())
+  override fun getFilters(): Array<Filter> = arrayOf(RGlobalVariablesFilter())
 
   override fun getPsiFile(): PsiFile {
     return file

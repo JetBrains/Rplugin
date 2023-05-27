@@ -23,7 +23,7 @@ class RDebuggerTestHelper(rInterop: RInterop) {
 
       override fun onText(text: String, type: ProcessOutputType) {
         if (READY_STR in text) {
-          promise = AsyncPromise<Boolean>()
+          promise = AsyncPromise()
           textPromise.setResult(Unit)
         }
       }

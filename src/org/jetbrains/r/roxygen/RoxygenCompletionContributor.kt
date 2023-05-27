@@ -144,12 +144,12 @@ class RoxygenCompletionContributor : CompletionContributor() {
       }
     }
 
-    private val TAG_NAMES =
-      listOf<String>("aliases", "author", "backref", "concept", "describeIn", "description", "details", "docType", "encoding", "eval",
-                     "evalNamespace", "evalRd", "example", "examples", "export", "exportClass", "exportMethod", "exportPattern",
-                     "exportS3Method", "family", "field", "format", "import", "importClassesFrom", "importFrom", "importMethodsFrom",
-                     "include", "includeRmd", "inherit", "inheritDotParams", "inheritParams", "inheritSection", "keywords", "md", "method",
-                     "name", "noMd", "noRd", "note", "order", "param", "rawNamespace", "rawRd", "rdname", "references", "return", "returns",
-                     "section", "seealso", "slot", "source", "template", "templateVar", "title", "usage", "useDynLib")
+    private val TAG_NAMES: List<String> =
+      listOf("aliases", "author", "backref", "concept", "describeIn", "description", "details", "docType", "encoding", "eval",
+             "evalNamespace", "evalRd", "example", "examples", "export", "exportClass", "exportMethod", "exportPattern",
+             "exportS3Method", "family", "field", "format", "import", "importClassesFrom", "importFrom", "importMethodsFrom",
+             "include", "includeRmd", "inherit", "inheritDotParams", "inheritParams", "inheritSection", "keywords", "md", "method",
+             "name", "noMd", "noRd", "note", "order", "param", "rawNamespace", "rawRd", "rdname", "references", "return", "returns",
+             "section", "seealso", "slot", "source", "template", "templateVar", "title", "usage", "useDynLib")
   }
 }

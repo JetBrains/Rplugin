@@ -11,7 +11,7 @@ import org.jetbrains.r.psi.api.*
 
 class VariableDescription(val firstDefinition: RPsiElement) {
   val name = firstDefinition.name!!
-  val reads: MutableSet<RPsiElement> = HashSet<RPsiElement>()
+  val reads: MutableSet<RPsiElement> = HashSet()
   val writes = HashSet<RPsiElement>()
   init {
     writes.add(firstDefinition)
