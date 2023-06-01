@@ -86,10 +86,9 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
 
   override fun generateProject(project: Project, baseDir: VirtualFile, module: Module) {
     val packratSettings = tableModel.getData().map {
-      val value = it.value
-      when {
-        value is PackartLogicalConstants -> "${it.name} = $value"
-        value is PackratExpandedLogicalConstants -> {
+      when (val value = it.value) {
+        is PackartLogicalConstants -> "${it.name} = $value"
+        is PackratExpandedLogicalConstants -> {
           if (value == PackratExpandedLogicalConstants.AUTO) {
             "${it.name} = 'auto'"
           }

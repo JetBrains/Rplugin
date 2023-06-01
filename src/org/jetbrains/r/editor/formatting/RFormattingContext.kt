@@ -180,15 +180,14 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
   private fun isBigFunctionDeclaration(node1: ASTNode?) =
     (node1?.psi as? RAssignmentStatement)?.isFunctionDeclaration == true && node1.textContains('\n')
 
-  fun computeNewChildIndent(node: ASTNode): Indent {
-    return when {
-      node.psi is RFile -> Indent.getNoneIndent()
-      node.psi is RBlockExpression -> Indent.getNormalIndent()
-      node.psi is RExpression -> Indent.getContinuationIndent()
-      node.psi is RArgumentList -> Indent.getContinuationIndent()
+  fun computeNewChildIndent(node: ASTNode): Indent =
+    when (node.psi) {
+      is RFile -> Indent.getNoneIndent()
+      is RBlockExpression -> Indent.getNormalIndent()
+      is RExpression -> Indent.getContinuationIndent()
+      is RArgumentList -> Indent.getContinuationIndent()
       else -> Indent.getNoneIndent()
     }
-  }
 
   fun computeWrap(node: ASTNode): Wrap {
     val wrapType: WrapType = if (isRightExprInOpChain(node.psi)) WrapType.ALWAYS else WrapType.NONE
