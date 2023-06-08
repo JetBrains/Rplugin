@@ -151,7 +151,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
     }
 
     fun getOutputs(chunkPath: ChunkPath): List<InlayOutput> {
-      return chunkPath.getOutputFile().let { File(it) }.takeIf { it.exists() }?.let {
+      return File(chunkPath.getOutputFile()).takeIf { it.exists() }?.let {
         listOf(InlayOutput(it.absolutePath,
                            "Output",
                            preview = createIconWithText(RBundle.message("rmarkdown.output.console.title"))))
