@@ -129,10 +129,8 @@ class RExtractMethodHandler : RefactoringActionHandler {
           return null
         }
 
-        override fun isValidName(name: String?): Boolean {
-          if (name == null || !RNamesValidator.isIdentifier(name)) return false
-          return true
-        }
+        override fun isValidName(name: String?): Boolean =
+          name != null && RNamesValidator.isIdentifier(name)
       }
       val decorator = ExtractMethodDecorator<Any> { settings ->
         val name = settings.methodName

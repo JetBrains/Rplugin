@@ -149,8 +149,7 @@ class RInlineAssignmentHandler : InlineActionHandler() {
     if (checkLastStatement(elsePart, cache)) return true
 
     val parentIfStatement = PsiTreeUtil.getParentOfType(ifStatement, RIfStatement::class.java, true, RFunctionExpression::class.java)
-    if (parentIfStatement != null && checkInterruptsControlFlow(parentIfStatement, cache)) return true
-    return false
+    return parentIfStatement != null && checkInterruptsControlFlow(parentIfStatement, cache)
   }
 
   private fun checkLastStatement(statement: RExpression, cache: MutableSet<RIfStatement>): Boolean {

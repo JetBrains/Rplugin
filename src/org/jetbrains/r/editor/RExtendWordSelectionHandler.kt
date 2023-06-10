@@ -17,11 +17,7 @@ class RExtendWordSelectionHandler : ExtendWordSelectionHandlerBase() {
 
   /** Disable basic selection handler for R psi elements */
   class RBasicFilter : Condition<PsiElement> {
-    override fun value(element: PsiElement): Boolean {
-      if (element is RIdentifierExpression || element.parent is RIdentifierExpression) {
-        return false
-      }
-      return true
-    }
+    override fun value(element: PsiElement): Boolean =
+      element !is RIdentifierExpression && element.parent !is RIdentifierExpression
   }
 }

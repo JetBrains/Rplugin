@@ -233,12 +233,8 @@ fun RCallExpression.isFunctionFromLibrary(functionName: String, packageName: Str
     if (expr is RIdentifierExpression) expr.reference
     else (expr as RNamespaceAccessExpression).identifier?.reference
   val targets = reference?.multiResolve(false)?.mapNotNull { it.element }
-  if (targets != null &&
-      targets.any {
-        RPsiUtil.isLibraryElement(it) &&
-        RSkeletonUtil.skeletonFileToRPackage(it.containingFile)?.name == packageName
-      }) {
-    return true
+  return targets != null && targets.any {
+    RPsiUtil.isLibraryElement(it) &&
+    RSkeletonUtil.skeletonFileToRPackage(it.containingFile)?.name == packageName
   }
-  return false
 }

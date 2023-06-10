@@ -38,9 +38,6 @@ class RGlobalVariablesFilter : FileStructureFilter {
   override fun isVisible(treeNode: TreeElement?): Boolean {
     if (treeNode !is RStructureViewElement) return true
     val value = treeNode.value
-    if (value is RAssignmentStatement && value.assignedValue !is RFunctionExpression) {
-      return false
-    }
-    return true
+    return !(value is RAssignmentStatement && value.assignedValue !is RFunctionExpression)
   }
 }
