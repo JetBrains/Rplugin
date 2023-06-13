@@ -68,7 +68,7 @@ public class CommonPsiCrumb extends Crumb.Impl implements NavigatableCrumb, Lazy
       moveEditorCaretTo(editor, offset);
     }
 
-    FeatureUsageData data = new FeatureUsageData();
+    FeatureUsageData data = new FeatureUsageData("FUS");
     if (withSelection) {
       data.addData("with_selection", true);
       final TextRange range = getHighlightRange();
