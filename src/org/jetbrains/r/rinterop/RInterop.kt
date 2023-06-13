@@ -967,7 +967,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     methodDescriptor: MethodDescriptor<TRequest, CommandOutput>,
     request: TRequest
   ) : RIExecutionResult {
-    ApplicationManager.getApplication().assertIsNonDispatchThread();
+    ApplicationManager.getApplication().assertIsNonDispatchThread()
     val withCheckCancelled = ApplicationManager.getApplication().isReadAccessAllowed
     val stdoutBuffer = StringBuilder()
     val stderrBuffer = StringBuilder()
