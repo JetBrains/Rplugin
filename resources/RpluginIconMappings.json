@@ -2,6 +2,7 @@
   "icons": {
     "expui": {
       "debugSelection.svg": "icons/run/debugCurrent.svg",
+      "rEngineToolWindow.svg": "icons/toolWindow/RConsole.svg",
       "rMarkdownFile.svg": "icons/rMarkdown.svg",
       "runCursor.svg": "icons/run/runCurrent.svg",
       "runRJob.svg": "icons/run/runJob.svg"
