@@ -3,9 +3,15 @@
     "expui": {
       "debugSelection.svg": "icons/run/debugCurrent.svg",
       "rEngineToolWindow.svg": "icons/toolWindow/RConsole.svg",
+      "restartJob.svg": "icons/run/restartJob.svg",
       "rMarkdownFile.svg": "icons/rMarkdown.svg",
       "runCursor.svg": "icons/run/runCurrent.svg",
-      "runRJob.svg": "icons/run/runJob.svg"
+      "runRJob.svg": "icons/run/runJob.svg",
+      "setCurrentDirectory.svg": "icons/changeWorkingDirectory.svg",
+      "toolWindowRGraph.svg": "icons/toolWindow/RGraph.svg",
+      "toolWindowRHtml.svg": "icons/toolWindow/RHtml.svg",
+      "toolWindowRPackages.svg": "icons/toolWindow/RPackages.svg",
+      "upgradeAll.svg": "icons/packages/upgradeAll.svg"
     }
   }
 }
