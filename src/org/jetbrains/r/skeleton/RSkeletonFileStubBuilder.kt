@@ -5,6 +5,7 @@
 package org.jetbrains.r.skeleton
 
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileFilter
 import com.intellij.psi.stubs.BinaryFileStubBuilder
 import com.intellij.psi.stubs.Stub
 import com.intellij.util.indexing.FileContent
@@ -81,6 +82,8 @@ class RSkeletonFileStubBuilder : BinaryFileStubBuilder {
     }
     return skeletonFileStub
   }
+
+  override fun getFileFilter(): VirtualFileFilter = VirtualFileFilter.ALL
 
   override fun acceptsFile(file: VirtualFile): Boolean = true
 }
