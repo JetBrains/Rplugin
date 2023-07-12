@@ -4,10 +4,11 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsScheme
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.editor.impl.EditorImpl
+import org.jetbrains.plugins.notebooks.ui.editor.DefaultNotebookEditorAppearance
 import org.jetbrains.plugins.notebooks.ui.visualization.DefaultNotebookEditorAppearanceSizes
 import org.jetbrains.plugins.notebooks.ui.visualization.NotebookEditorAppearance
 import org.jetbrains.plugins.notebooks.ui.visualization.NotebookEditorAppearanceSizes
-import org.jetbrains.plugins.notebooks.visualization.*
+import org.jetbrains.plugins.notebooks.visualization.NotebookEditorAppearanceProvider
 import org.jetbrains.r.rendering.editor.RMarkdownEditorFactoryListener
 import java.awt.Color
 
@@ -24,6 +25,8 @@ object RMarkdownNotebookEditorAppearance: NotebookEditorAppearance, NotebookEdit
   // TODO Sort everything lexicographically.
 
   private val RMARKDOWN_CHUNK = TextAttributesKey.createTextAttributesKey("RMARKDOWN_CHUNK")
+  override fun getCaretRowColor(scheme: EditorColorsScheme): Color? = DefaultNotebookEditorAppearance.getCaretRowColor(scheme)
+
   override fun getCodeCellBackground(scheme: EditorColorsScheme): Color? = scheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor
   override fun getInlayBackgroundColor(scheme: EditorColorsScheme): Color? = getCodeCellBackground(scheme)
   override fun shouldShowCellLineNumbers(): Boolean = false
