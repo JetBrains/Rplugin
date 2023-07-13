@@ -12,7 +12,6 @@ import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.DocumentMarkupModel
 import com.intellij.openapi.editor.markup.RangeHighlighter
 import com.intellij.openapi.editor.markup.TextAttributes
-import com.intellij.psi.impl.source.tree.injected.changesHandler.range
 import com.intellij.testFramework.UsefulTestCase
 import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.highlighting.*
@@ -51,9 +50,9 @@ class RConsoleHighlightingTest : RConsoleBaseTestCase() {
     val highlighting = markup.allHighlighters.toList().sortedWith(comparator)
 
     for (it in highlighting) {
-      result.append(it.range)
+      result.append(it.textRange)
       result.append(": '")
-      result.append(it.range.subSequence(content))
+      result.append(it.textRange.subSequence(content))
       result.append("' : ")
       result.append(it.textAttributes)
       result.append('\n')

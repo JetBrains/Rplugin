@@ -8,8 +8,8 @@ import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.lang.annotation.AnnotationBuilder
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.injected.changesHandler.range
 
 class RAnnotator : Annotator {
   override fun annotate(psiElement: PsiElement, holder: AnnotationHolder) {
@@ -24,7 +24,7 @@ class RAnnotator : Annotator {
       else {
         builder = holder.newAnnotation(info.severity, info.description)
       }
-      builder.range(info.range)
+      builder.range(TextRange.create(info))
       if (info.forcedTextAttributesKey != null) {
         builder.textAttributes(info.forcedTextAttributesKey)
       }
