@@ -6,7 +6,6 @@ package org.jetbrains.r.annotator
 
 import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInsight.daemon.impl.HighlightInfoType
-import com.intellij.lang.annotation.AnnotationSession
 import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.colors.CodeInsightColors
@@ -16,6 +15,7 @@ import com.intellij.openapi.keymap.KeymapUtil
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.util.UserDataHolder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReference
 import com.intellij.psi.util.PsiTreeUtil
@@ -30,7 +30,7 @@ import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.getKind
 import org.jetbrains.r.psi.isFunctionFromLibrary
 
-class RAnnotatorVisitor(private val holder: MutableList<HighlightInfo>, private val annotationSession: AnnotationSession) : RVisitor() {
+class RAnnotatorVisitor(private val holder: MutableList<HighlightInfo>, private val annotationSession: UserDataHolder) : RVisitor() {
 
   override fun visitCallExpression(callExpression: RCallExpression) {
     val expression = callExpression.expression

@@ -9,7 +9,6 @@ import com.intellij.codeInsight.daemon.impl.HighlightInfoType
 import com.intellij.codeInsight.daemon.impl.SeverityRegistrar
 import com.intellij.execution.console.LanguageConsoleImpl
 import com.intellij.execution.ui.ConsoleViewContentType
-import com.intellij.lang.annotation.AnnotationSession
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager
@@ -32,12 +31,12 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.ui.AppUIUtil
 import com.intellij.ui.JBSplitter
-import com.intellij.util.ConcurrencyUtil
 import com.intellij.util.IJSwingUtilities
 import com.intellij.util.PathUtil
 import com.intellij.util.ui.FontInfo
@@ -237,7 +236,7 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
   private fun annotateForHistory() {
     val holder:MutableList<HighlightInfo> = ArrayList()
 
-    val annotator = RAnnotatorVisitor(holder, AnnotationSession(file))
+    val annotator = RAnnotatorVisitor(holder, UserDataHolderBase())
 
     file.accept(object : RRecursiveElementVisitor() {
       override fun visitElement(element: PsiElement) {
