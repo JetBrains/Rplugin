@@ -12,16 +12,17 @@ import org.jetbrains.plugins.notebooks.visualization.NotebookEditorAppearancePro
 import org.jetbrains.r.rendering.editor.RMarkdownEditorFactoryListener
 import java.awt.Color
 
-class RMarkdownNotebookEditorAppearanceProvider: NotebookEditorAppearanceProvider{
+class RMarkdownNotebookEditorAppearanceProvider : NotebookEditorAppearanceProvider {
   override fun create(editor: Editor): NotebookEditorAppearance? {
-    if (RMarkdownEditorFactoryListener.isRMarkdown(editor)) {
+    val virtualFile = RMarkdownEditorFactoryListener.getVirtualFile(editor)
+    if (virtualFile != null && RMarkdownEditorFactoryListener.isRMarkdownOrQuarto(virtualFile)) {
       return RMarkdownNotebookEditorAppearance
     }
     return null
   }
 }
 
-object RMarkdownNotebookEditorAppearance: NotebookEditorAppearance, NotebookEditorAppearanceSizes by DefaultNotebookEditorAppearanceSizes {
+object RMarkdownNotebookEditorAppearance : NotebookEditorAppearance, NotebookEditorAppearanceSizes by DefaultNotebookEditorAppearanceSizes {
   // TODO Sort everything lexicographically.
 
   private val RMARKDOWN_CHUNK = TextAttributesKey.createTextAttributesKey("RMARKDOWN_CHUNK")
