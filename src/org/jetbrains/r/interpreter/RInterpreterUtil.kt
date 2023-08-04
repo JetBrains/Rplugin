@@ -23,7 +23,6 @@ import com.intellij.util.EnvironmentUtil
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesUpdater
-import com.intellij.util.io.isDirectory
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
@@ -37,6 +36,7 @@ import org.jetbrains.r.settings.RSettings
 import java.io.File
 import java.nio.file.Paths
 import kotlin.io.path.exists
+import kotlin.io.path.isDirectory
 
 interface RMultiOutputProcessor {
   fun beforeStart()
