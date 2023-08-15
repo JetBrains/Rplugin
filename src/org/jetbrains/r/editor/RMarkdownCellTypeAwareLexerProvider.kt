@@ -30,26 +30,30 @@ private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLine
                               offsetIncrement: Int,
                               defaultLanguage: Language): Sequence<NotebookCellLinesLexer.Marker> =
     sequence {
-      var lastMarker: NotebookCellLinesLexer.Marker? = null
-      val seq = NotebookCellLinesLexer.defaultMarkerSequence({ RMarkdownMergingLangLexer() }, ::getCellType,
-                                                             chars, ordinalIncrement, offsetIncrement)
-
       val langMap = RmdCellLanguageProvider.getAllLanguages()
       val maxLangSize: Int = langMap.keys.maxOfOrNull { it.length } ?: 0
 
-      for (marker in seq) {
-        val language = when (marker.type) {
-          NotebookCellLines.CellType.CODE -> {
-            val cellText = chars.subSequence(marker.offset, marker.offset + marker.length)
-            val cellLanguageText = parseLanguage(cellText, maxLangSize)
-            langMap.getOrDefault(cellLanguageText, defaultLanguage)
+      val seq = NotebookCellLinesLexer.defaultMarkerSequence(
+        { RMarkdownMergingLangLexer() },
+        getCellLanguageAndType = { token, lexer ->
+          when (token) {
+            RMarkdownCellType.MARKDOWN_CELL.elementType -> {
+              Pair(MarkdownLanguage.INSTANCE, NotebookCellLines.CellType.MARKDOWN)
+            }
+            RMarkdownCellType.CODE_CELL.elementType -> {
+              val cellText = lexer.tokenText
+              val cellLanguageText = parseLanguage(cellText, maxLangSize)
+              val language = langMap.getOrDefault(cellLanguageText, defaultLanguage)
+              Pair(language, NotebookCellLines.CellType.CODE)
+            }
+            else -> null
           }
-          else -> {
-            MarkdownLanguage.INSTANCE
-          }
-        }
+        },
+        chars, ordinalIncrement, offsetIncrement
+      )
 
-        marker.language = language
+      var lastMarker: NotebookCellLinesLexer.Marker? = null
+      for (marker in seq) {
         lastMarker = marker
         yield(marker)
       }
@@ -73,13 +77,6 @@ private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLine
           language = MarkdownLanguage.INSTANCE
         ))
       }
-    }
-
-  private fun getCellType(tokenType: IElementType): NotebookCellLines.CellType? =
-    when (tokenType) {
-      RMarkdownCellType.MARKDOWN_CELL.elementType -> NotebookCellLines.CellType.MARKDOWN
-      RMarkdownCellType.CODE_CELL.elementType -> NotebookCellLines.CellType.CODE
-      else -> null
     }
 
   private fun parseLanguage(cellText: CharSequence, maxLangSize: Int): String? {
@@ -207,6 +204,6 @@ private fun toInterval(document: Document, marker: NotebookCellLinesLexer.Marker
     type = marker.type,
     lines = startLine..endLine,
     markers = markersAtLines,
-    language = marker.language!! // marker.language is provided in makeIntervals
+    language = marker.language // marker.language is provided in makeIntervals
   )
 }
