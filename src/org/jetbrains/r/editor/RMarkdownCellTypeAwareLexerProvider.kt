@@ -35,14 +35,14 @@ private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLine
                                                              chars, ordinalIncrement, offsetIncrement)
 
       val langMap = RmdCellLanguageProvider.getAllLanguages()
-      val longestLanguageLength: Int = langMap.keys.maxOfOrNull { it.length } ?: 0
+      val maxLangSize: Int = langMap.keys.maxOfOrNull { it.length } ?: 0
 
       for (marker in seq) {
         val language = when (marker.type) {
           NotebookCellLines.CellType.CODE -> {
             val cellText = chars.subSequence(marker.offset, marker.offset + marker.length)
-            val possibleLanguageString = RmdCellLanguageProvider.parseStringToLanguage(cellText, longestLanguageLength + 1)
-            langMap.getOrDefault(possibleLanguageString, defaultLanguage)
+            val cellLanguageText = parseLanguage(cellText, maxLangSize)
+            langMap.getOrDefault(cellLanguageText, defaultLanguage)
           }
           else -> {
             MarkdownLanguage.INSTANCE
@@ -81,6 +81,12 @@ private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLine
       RMarkdownCellType.CODE_CELL.elementType -> NotebookCellLines.CellType.CODE
       else -> null
     }
+
+  private fun parseLanguage(cellText: CharSequence, maxLangSize: Int): String? {
+    val prefix = "```{"
+    if (!cellText.startsWith(prefix)) return null
+    return cellText.drop(prefix.length).take(maxLangSize + 1).takeWhile { it.isLetterOrDigit() }.toString()
+  }
 }
 
 

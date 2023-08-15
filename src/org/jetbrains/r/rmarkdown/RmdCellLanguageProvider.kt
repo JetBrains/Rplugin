@@ -14,13 +14,6 @@ interface RmdCellLanguageProvider {
       }
       return languageMap
     }
-
-    fun parseStringToLanguage(cellText: CharSequence, maxLangSizePlusOne: Int): String? {
-      val prefix = "```{"
-
-      if (!cellText.startsWith(prefix) || (maxLangSizePlusOne == 1)) return null
-      return cellText.drop(prefix.length).take(maxLangSizePlusOne).takeWhile { it.isLetterOrDigit() }.toString()
-    }
   }
 
   fun getLanguages(): Map<String, Language>
