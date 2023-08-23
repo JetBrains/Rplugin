@@ -46,7 +46,7 @@ class RPackageProjectGenerator : RProjectGenerator() {
     val defaultPanel = RDefaultPackagePanel(rProjectSettings)
     val panels = listOf(defaultPanel, RPackratPanel(rProjectSettings), RRcppPanel(rProjectSettings),
                         RRcppArmadilloPanel(rProjectSettings), RRcppEigenPanel(rProjectSettings), RDevtoolsPanel(rProjectSettings))
-    settingsPanel = RPackageManagerGroupPanel("Choose package manager", getLogo(), rProjectSettings, panels, defaultPanel).apply {
+    settingsPanel = RPackageManagerGroupPanel("Choose package manager", logo, rProjectSettings, panels, defaultPanel).apply {
       addChangeListener(Runnable { stateChanged() })
     }
     return settingsPanel

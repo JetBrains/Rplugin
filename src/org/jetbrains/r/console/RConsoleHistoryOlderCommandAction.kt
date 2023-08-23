@@ -23,14 +23,14 @@ class RConsoleHistoryOlderCommandAction(private val console: RConsoleView) : AnA
   }
 
   private fun isEnabled(): Boolean {
-    val consoleEditor: Editor = console.getCurrentEditor()
+    val consoleEditor: Editor = console.currentEditor
     val document = consoleEditor.document
     val caretModel = consoleEditor.caretModel
 
     if (LookupManager.getActiveLookup(consoleEditor) != null) return false
 
     // First line or last character
-    return document.getLineNumber(caretModel.getOffset()) == 0 || document.textLength == caretModel.offset
+    return document.getLineNumber(caretModel.offset) == 0 || document.textLength == caretModel.offset
   }
 
   override fun getActionUpdateThread() = ActionUpdateThread.BGT

@@ -137,7 +137,7 @@ object RInteropUtil {
     if (rInterop?.killedByUsed == true) return
     var attachments = updateCrashes.map { file ->
       try {
-        val path = file.getPath()
+        val path = file.path
         FileInputStream(file).use { content ->
           val tempFile = FileUtil.createTempFile("ij-attachment-" + PathUtilRt.getFileName(path) + ".", ".bin", true)
           FileOutputStream(tempFile).use { outputStream -> FileUtil.copy(content, file.length(), outputStream) }

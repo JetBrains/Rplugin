@@ -64,7 +64,7 @@ class RSkeletonFileImpl(viewProvider: FileViewProvider)
     synchronized(stubLock) {
       stub?.get()?.let { return it }
       val fileStub = newStubTree.root as PsiFileStubImpl<PsiFile>
-      fileStub.setPsi(this)
+      fileStub.psi = this
       stub = SoftReference(newStubTree)
     }
     return newStubTree

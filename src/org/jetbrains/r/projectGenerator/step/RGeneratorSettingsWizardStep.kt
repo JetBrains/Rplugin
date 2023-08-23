@@ -20,7 +20,7 @@ class RGeneratorSettingsWizardStep(private val generator: RProjectGenerator, con
   private val wizard = context.getUserData(AbstractWizard.KEY)!!
 
   init {
-    Disposer.register(context.getDisposable(), this)
+    Disposer.register(context.disposable, this)
   }
 
   override fun getComponent(): JComponent {

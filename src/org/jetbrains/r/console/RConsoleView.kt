@@ -208,8 +208,8 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
         console.executeActionHandler.interruptTextExecution()
         console.print("^C\n", ConsoleViewContentType.SYSTEM_OUTPUT)
       } else {
-        val document = console.getConsoleEditor().getDocument()
-        if (document.getTextLength() != 0) {
+        val document = console.consoleEditor.getDocument()
+        if (document.textLength != 0) {
           runWriteAction {
             CommandProcessor.getInstance().runUndoTransparentAction {
               document.deleteString(0, document.getLineEndOffset(document.getLineCount() - 1))
@@ -221,7 +221,7 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
 
     override fun update(e: AnActionEvent) {
       val console = getConsole(e)
-      val consoleEditor = console?.getConsoleEditor()
+      val consoleEditor = console?.consoleEditor
       val enabled = consoleEditor != null &&
                     (e.inputEvent !is KeyEvent ||
                     IJSwingUtilities.hasFocus(consoleEditor.getComponent()) &&

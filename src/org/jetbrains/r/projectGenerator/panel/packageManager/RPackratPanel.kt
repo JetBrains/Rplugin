@@ -78,7 +78,7 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
 
   init {
     layout = BorderLayout()
-    table.getColumnModel().getColumn(SETTINGS_VALUE_COLUMN).setCellEditor(tableCellEditor)
+    table.columnModel.getColumn(SETTINGS_VALUE_COLUMN).setCellEditor(tableCellEditor)
     table.setShowGrid(false)
     tablePanel = ToolbarDecorator.createDecorator(table).disableUpDownActions().disableAddAction().disableRemoveAction().createPanel()
     add(tablePanel)
@@ -275,7 +275,7 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
         }
         else -> JBTextField(value.toString()).apply {
           background = if (tableModel.isBadRowValue(row)) errorBackgroundColor else defaultBackgroundColor
-          getDocument().addDocumentListener(object : DocumentListener {
+          document.addDocumentListener(object : DocumentListener {
             override fun changedUpdate(event: DocumentEvent?) {
               validatePackratSettings(row, text)
               errorAction?.accept(validationInfos)
