@@ -23,19 +23,21 @@ class RControlFlowTest: RLightCodeInsightFixtureTestCase() {
     val filename = getTestName(false)
     val fullPath = File(testDataPath, filename).path
     val file = myFixture.configureByFile("$filename.r") as RFile
-    val functionExpressions = PsiTreeUtil.collectElementsOfType(file, org.jetbrains.r.psi.api.RFunctionExpression::class.java).sortedBy { it.textOffset }
+    val functionExpressions = PsiTreeUtil.collectElementsOfType(file,
+                                                                org.jetbrains.r.psi.api.RFunctionExpression::class.java).sortedBy { it.textOffset }
 
     val builder = StringBuilder()
 
     var counter = 0
-    builder.appendln("[${counter++}]File:")
+    builder.appendLine("[${counter++}]File:")
 
     if (GENERATE_SVG) {
       ShowControlFlowHandler.toSvgFile("$fullPath.$counter.svg", file)
     }
     file.controlFlow.instructions.forEach { instruction -> builder.appendln(instruction) }
     for (functionExpression in functionExpressions) {
-      builder.appendln("[${counter++}]Function ${(functionExpression.parent as? org.jetbrains.r.psi.api.RAssignmentStatement)?.name ?: "anon"}")
+      builder.appendLine(
+        "[${counter++}]Function ${(functionExpression.parent as? org.jetbrains.r.psi.api.RAssignmentStatement)?.name ?: "anon"}")
       functionExpression.controlFlow.instructions.forEach { instruction -> builder.appendln(instruction) }
       if (GENERATE_SVG) {
         ShowControlFlowHandler.toSvgFile("$fullPath.$counter.svg", functionExpression)

@@ -142,20 +142,20 @@ class RIncludedSourcesResolveTest : RResolveFromFilesTestCase("resolveInSource")
 
   fun testUIFreezes() {
     val mainText = buildString {
-      appendln("bar <- function() {}")
+      appendLine("bar <- function() {}")
       for (i in 0..1000) {
-        appendln("foo$i <- function {")
+        appendLine("foo$i <- function {")
         for (j in 0..100) {
-          appendln("  source('file${i * 100 + j}')")
+          appendLine("  source('file${i * 100 + j}')")
         }
-        appendln("}\n")
+        appendLine("}\n")
       }
 
-      appendln("source('B.R')")
+      appendLine("source('B.R')")
       for (i in 0..1000) {
-        appendln("foo$i()")
+        appendLine("foo$i()")
       }
-      appendln("ba<caret>r()")
+      appendLine("ba<caret>r()")
     }
     myFixture.configureByText("main.R", mainText).also { (it as RFile).includedSources }
 
