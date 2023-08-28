@@ -21,7 +21,6 @@ import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.DumbAwareAction
-import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.ui.JBPopupMenu
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -175,13 +174,13 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
   private fun addTableFilterHeader() {
     if (filterHeader != null) return
     filterHeader = TableFilterHeader(RDataFrameFiltersHandler().also { filtersHandler = it }).also {
-      it.isAdaptiveChoices = false
-      it.table = table
+      it.setAdaptiveChoices(false)
+      it.installTable(table)
     }
   }
 
   private fun removeTableFilterHeader() {
-    filterHeader?.table = null
+    filterHeader?.installTable(null)
     filterHeader = null
     filtersHandler = null
   }
