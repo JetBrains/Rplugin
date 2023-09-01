@@ -7,6 +7,7 @@ import com.intellij.lexer.MergingLexerAdapterBase
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.psi.tree.IElementType
+import com.intellij.util.keyFMap.KeyFMap
 import org.intellij.plugins.markdown.lang.MarkdownLanguage
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.lexer.MarkdownLexerAdapter
@@ -14,7 +15,8 @@ import org.jetbrains.plugins.notebooks.visualization.IntervalsGenerator
 import org.jetbrains.plugins.notebooks.visualization.NonIncrementalCellLinesProvider
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLinesLexer
-import org.jetbrains.r.rmarkdown.*
+import org.jetbrains.r.rmarkdown.RMarkdownLanguage
+import org.jetbrains.r.rmarkdown.RmdCellLanguageProvider
 
 class RMarkdownCellLinesProvider : NonIncrementalCellLinesProvider(RMarkdownIntervalsGenerator())
 
@@ -33,18 +35,22 @@ private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLine
       val langMap = RmdCellLanguageProvider.getAllLanguages()
       val maxLangSize: Int = langMap.keys.maxOfOrNull { it.length } ?: 0
 
+      val markdownDataPair = Pair(NotebookCellLines.CellType.MARKDOWN,
+                                  KeyFMap.EMPTY_MAP.plus(NotebookCellLines.INTERVAL_LANGUAGE_KEY, MarkdownLanguage.INSTANCE))
+      val codeDataCache = mutableMapOf<Language, Pair<NotebookCellLines.CellType, KeyFMap>>()
+
       val seq = NotebookCellLinesLexer.defaultMarkerSequence(
         { RMarkdownMergingLangLexer() },
-        getCellLanguageAndType = { token, lexer ->
+        getCellTypeAndData = { token, lexer ->
           when (token) {
-            RMarkdownCellType.MARKDOWN_CELL.elementType -> {
-              Pair(MarkdownLanguage.INSTANCE, NotebookCellLines.CellType.MARKDOWN)
-            }
+            RMarkdownCellType.MARKDOWN_CELL.elementType -> markdownDataPair
             RMarkdownCellType.CODE_CELL.elementType -> {
               val cellText = lexer.tokenText
               val cellLanguageText = parseLanguage(cellText, maxLangSize)
               val language = langMap.getOrDefault(cellLanguageText, defaultLanguage)
-              Pair(language, NotebookCellLines.CellType.CODE)
+              codeDataCache.getOrPut(language) {
+                Pair(NotebookCellLines.CellType.CODE, KeyFMap.EMPTY_MAP.plus(NotebookCellLines.INTERVAL_LANGUAGE_KEY, language))
+              }
             }
             else -> null
           }
@@ -64,7 +70,7 @@ private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLine
           type = NotebookCellLines.CellType.MARKDOWN,
           offset = chars.length + offsetIncrement,
           length = 0,
-          language = MarkdownLanguage.INSTANCE
+          data = markdownDataPair.second
         ))
       }
 
@@ -74,7 +80,7 @@ private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLine
           type = NotebookCellLines.CellType.MARKDOWN,
           offset = 0,
           length = 0,
-          language = MarkdownLanguage.INSTANCE
+          data = markdownDataPair.second,
         ))
       }
     }
@@ -204,6 +210,6 @@ private fun toInterval(document: Document, marker: NotebookCellLinesLexer.Marker
     type = marker.type,
     lines = startLine..endLine,
     markers = markersAtLines,
-    language = marker.language // marker.language is provided in makeIntervals
+    data = marker.data,
   )
 }
