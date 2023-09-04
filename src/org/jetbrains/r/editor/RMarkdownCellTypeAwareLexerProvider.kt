@@ -41,8 +41,8 @@ private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLine
 
       val seq = NotebookCellLinesLexer.defaultMarkerSequence(
         { RMarkdownMergingLangLexer() },
-        getCellTypeAndData = { token, lexer ->
-          when (token) {
+        getCellTypeAndData = { lexer ->
+          when (lexer.tokenType) {
             RMarkdownCellType.MARKDOWN_CELL.elementType -> markdownDataPair
             RMarkdownCellType.CODE_CELL.elementType -> {
               val cellText = lexer.tokenText
