@@ -5,7 +5,7 @@ import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.console.addRuntimeInfo
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
-open class RColumnCompletionTest: RProcessHandlerBaseTestCase() {
+abstract class RColumnCompletionTest : RProcessHandlerBaseTestCase() {
   protected fun checkStaticCompletion(text: String, expectedToBePresent: List<String>, expectedToBeMissed: List<String>) {
     myFixture.configureByText("a.R", text)
     addRuntimeInfo()
