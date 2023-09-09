@@ -7,11 +7,9 @@ package org.jetbrains.r.console
 import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.actionSystem.EditorActionManager
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -21,7 +19,7 @@ import com.intellij.psi.util.elementType
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.statistics.RWorkflowCollector.Companion.logConsoleMethodCall
+import org.jetbrains.r.statistics.RWorkflowCollector.logConsoleMethodCall
 
 object RConsoleEnterHandler {
 
