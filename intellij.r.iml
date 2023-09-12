@@ -51,11 +51,11 @@
     <orderEntry type="module" module-name="intellij.platform.ide.util.netty" />
     <orderEntry type="module" module-name="intellij.platform.vcs.impl" />
     <orderEntry type="library" name="maven-resolver-provider" level="project" />
-    <orderEntry type="library" name="commons-lang" level="project" />
     <orderEntry type="module" module-name="intellij.platform.util.jdom" />
     <orderEntry type="module" module-name="intellij.notebooks.ui" />
     <orderEntry type="library" name="kotlinx-coroutines-core" level="project" />
     <orderEntry type="module" module-name="intellij.quartoR" />
     <orderEntry type="module" module-name="intellij.python.psi" scope="TEST" />
+    <orderEntry type="library" name="commons-lang3" level="project" />
   </component>
 </module>

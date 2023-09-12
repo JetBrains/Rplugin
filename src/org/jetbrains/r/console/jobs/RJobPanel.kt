@@ -34,7 +34,7 @@ import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.components.BorderLayoutPanel
 import icons.RIcons
 import net.miginfocom.swing.MigLayout
-import org.apache.commons.lang.time.DurationFormatUtils
+import org.apache.commons.lang3.time.DurationFormatUtils
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtAction
