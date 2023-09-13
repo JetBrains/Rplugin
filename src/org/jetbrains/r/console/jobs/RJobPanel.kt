@@ -15,6 +15,7 @@ import com.intellij.openapi.editor.colors.EditorColorsUtil
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.util.text.Formats
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiManager
 import com.intellij.ui.DoubleClickListener
@@ -34,7 +35,6 @@ import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.components.BorderLayoutPanel
 import icons.RIcons
 import net.miginfocom.swing.MigLayout
-import org.apache.commons.lang3.time.DurationFormatUtils
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtAction
@@ -441,7 +441,7 @@ internal class JobEntity(val jobDescriptor: RJobDescriptor,
     panel.background = background
     val duration = JBLabel(
       if (jobDescriptor.processFailed) AllIcons.RunConfigurations.ToolbarError else AllIcons.RunConfigurations.ToolbarPassed)
-    duration.text = DurationFormatUtils.formatDuration(jobDescriptor.duration, "mm:ss", true)
+    duration.text = Formats.formatDuration(jobDescriptor.duration)
     duration.foreground = infoColor()
     panel.addToLeft(duration)
     val startTime = JBLabel(DateFormatUtil.formatTime(jobDescriptor.startedAt))
