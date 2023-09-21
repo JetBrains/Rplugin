@@ -10,7 +10,6 @@ import com.intellij.idea.ActionsBundle
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.EmptyRunnable
@@ -19,6 +18,7 @@ import com.intellij.ui.ClickListener
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.ListenerUtil
 import com.intellij.util.Alarm
+import com.intellij.util.concurrency.ThreadingAssertions
 import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.ui.UIUtil.getMultiClickInterval
 import com.intellij.util.ui.tree.TreeUtil
@@ -105,13 +105,13 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
   }
 
   override fun removeWatches(nodes: List<XDebuggerTreeNode>?) {
-    ApplicationManager.getApplication().assertIsDispatchThread()
+    ThreadingAssertions.assertEventDispatchThread()
     val rootNode = rootNode ?: return
     rootNode.removeChildren(nodes)
   }
 
   override fun removeAllWatches() {
-    ApplicationManager.getApplication().assertIsDispatchThread()
+    ThreadingAssertions.assertEventDispatchThread()
     val rootNode = rootNode ?: return
     rootNode.removeAllChildren()
   }
@@ -121,7 +121,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
   }
 
   private fun addWatchExpression(expression: XExpression, index: Int, navigateToWatchNode: Boolean, noDuplicates: Boolean) {
-    ApplicationManager.getApplication().assertIsDispatchThread()
+    ThreadingAssertions.assertEventDispatchThread()
     val rootNode = rootNode ?: return
     if (noDuplicates) {
       val child = rootNode.watchChildren.firstOrNull { it.expression == expression }

@@ -12,6 +12,7 @@ import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.roots.ModifiableRootModel
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider
+import com.intellij.util.concurrency.ThreadingAssertions
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.projectGenerator.step.RGeneratorSettingsWizardStep
@@ -40,7 +41,7 @@ class RModuleBuilder(private val generator: RProjectGenerator) : ModuleBuilder()
   override fun getBuilderId(): @NonNls String = generator.getId()
 
   override fun commitModule(project: Project, model: ModifiableModuleModel?): Module? {
-    ApplicationManager.getApplication().assertIsDispatchThread()
+    ThreadingAssertions.assertEventDispatchThread()
     val module = super.commitModule(project, model)
     if (module != null) {
       val moduleRootManager = ModuleRootManager.getInstance(module)
