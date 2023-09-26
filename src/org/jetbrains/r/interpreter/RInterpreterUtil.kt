@@ -22,7 +22,7 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.util.EnvironmentUtil
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
-import com.intellij.util.indexing.UnindexedFilesUpdater
+import com.intellij.util.indexing.UnindexedFilesScanner
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
@@ -214,7 +214,7 @@ object RInterpreterUtil {
 
   fun updateIndexableSet(project: Project) {
     if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
-      UnindexedFilesUpdater(project).queue()
+      UnindexedFilesScanner(project, "R interpreter state changed").queue()
     }
   }
 

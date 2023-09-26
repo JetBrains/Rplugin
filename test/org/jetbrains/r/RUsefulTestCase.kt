@@ -26,7 +26,7 @@ import com.intellij.testFramework.fixtures.impl.LightTempDirTestFixtureImpl
 import com.intellij.testFramework.registerServiceInstance
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
-import com.intellij.util.indexing.UnindexedFilesUpdater
+import com.intellij.util.indexing.UnindexedFilesScanner
 import junit.framework.TestCase
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.isPending
@@ -75,7 +75,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     VfsUtil.markDirtyAndRefresh(false, true, true, File(SKELETON_LIBRARY_PATH))
     setupMockInterpreterStateManager()
     if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
-      UnindexedFilesUpdater(project).queue()
+      UnindexedFilesScanner(project).queue()
     }
     setupMockRepoProvider()
   }
