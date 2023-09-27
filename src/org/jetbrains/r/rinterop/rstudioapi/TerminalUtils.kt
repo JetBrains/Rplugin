@@ -5,7 +5,10 @@ import com.intellij.internal.statistic.service.fus.collectors.FUCounterUsageLogg
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.content.Content
 import com.intellij.util.execution.ParametersListUtil
-import org.jetbrains.plugins.terminal.*
+import org.jetbrains.plugins.terminal.ShellTerminalWidget
+import org.jetbrains.plugins.terminal.TerminalProjectOptionsProvider
+import org.jetbrains.plugins.terminal.TerminalToolWindowFactory
+import org.jetbrains.plugins.terminal.TerminalToolWindowManager
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.getRNull
@@ -171,8 +174,8 @@ object TerminalUtils {
     val busy = widget.hasRunningCommands()
     val active = widget.isSessionRunning
     val lines = widget.terminalTextBuffer.screenLinesCount
-    val rows = widget.terminalDisplay.rowCount
-    val columns = widget.terminalDisplay.columnCount
+    val rows = widget.terminalTextBuffer.height
+    val columns = widget.terminalTextBuffer.width
     val shellPath = TerminalProjectOptionsProvider.getInstance(rInterop.project).shellPath
     val command = ParametersListUtil.parse(shellPath, false, true)
     val shellCommand = if (command.size > 0) command[0] else null
