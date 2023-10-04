@@ -46,7 +46,7 @@ object RDebuggerUtil {
     val listener = object : XBreakpointListener<XLineBreakpoint<XBreakpointProperties<*>>> {
       override fun breakpointAdded(breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
         if (RSourceFileManager.isInvalid(breakpoint.fileUrl)) {
-          runWriteAction { breakpointManager.removeBreakpoint(breakpoint) }
+          breakpointManager.removeBreakpoint(breakpoint)
           return
         }
         val position = breakpoint.sourcePosition ?: return
@@ -118,7 +118,7 @@ object RDebuggerUtil {
         invokeLater {
           val breakpoint = breakpointsById.remove(id) ?: return@invokeLater
           breakpointToId.remove(breakpoint)
-          runWriteAction { breakpointManager.removeBreakpoint(breakpoint) }
+          breakpointManager.removeBreakpoint(breakpoint)
         }
       }
     })

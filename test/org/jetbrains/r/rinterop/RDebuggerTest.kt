@@ -5,11 +5,10 @@
 package org.jetbrains.r.rinterop
 
 import com.intellij.execution.process.ProcessOutputType
-import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.xdebugger.XDebuggerManager
+import com.intellij.xdebugger.impl.XDebuggerUtilImpl
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.runAsync
@@ -23,10 +22,7 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
 
   override fun setUp() {
     super.setUp()
-    val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
-    runWriteAction {
-      breakpointManager.allBreakpoints.forEach { breakpointManager.removeBreakpoint(it) }
-    }
+    XDebuggerUtilImpl.removeAllBreakpoints(project)
     helper = RDebuggerTestHelper(rInterop)
     RDebuggerUtil.createBreakpointListener(rInterop)
     rInterop.asyncEventsStartProcessing()
@@ -620,10 +616,7 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
       } else {
         helper.invokeAndWait(false) { rInterop.replSourceFile(file, true) }
       }
-      val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
-      runWriteAction {
-        breakpointManager.allBreakpoints.forEach { breakpointManager.removeBreakpoint(it) }
-      }
+      XDebuggerUtilImpl.removeAllBreakpoints(project)
     }
 
     doTest(true, """

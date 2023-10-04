@@ -59,11 +59,9 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
           Disposer.dispose(rInterop)
         }
       }
-      runWriteAction {
-        XDebuggerManager.getInstance(project).breakpointManager.let { manager ->
-          val breakpointType = XDebuggerUtil.getInstance().findBreakpointType(RLineBreakpointType::class.java)
-          manager.getBreakpoints(breakpointType).forEach { manager.removeBreakpoint(it) }
-        }
+      XDebuggerManager.getInstance(project).breakpointManager.let { manager ->
+        val breakpointType = XDebuggerUtil.getInstance().findBreakpointType(RLineBreakpointType::class.java)
+        manager.getBreakpoints(breakpointType).forEach { manager.removeBreakpoint(it) }
       }
     }
     catch (e: Throwable) {
@@ -82,9 +80,7 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
   }
 
   protected fun removeBreakpoint(breakpoint: XLineBreakpoint<*>) {
-    runWriteAction {
-      XDebuggerManager.getInstance(project).breakpointManager.removeBreakpoint(breakpoint)
-    }
+    XDebuggerManager.getInstance(project).breakpointManager.removeBreakpoint(breakpoint)
   }
 
   protected fun loadFileWithBreakpoints(path: String): VirtualFile {
