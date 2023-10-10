@@ -31,7 +31,7 @@ import java.util.*
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
 
-@Service
+@Service(Service.Level.PROJECT)
 class RJobRunner(private val project: Project) {
   internal val eventDispatcher = EventDispatcher.create(Listener::class.java)
 
