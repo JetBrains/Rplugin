@@ -24,7 +24,8 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isAssignee
-import org.jetbrains.r.refactoring.RNamesValidator
+import org.jetbrains.r.refactoring.quoteIfNeeded
+import org.jetbrains.r.refactoring.rNamesValidator
 
 class RExtractMethodHandler : RefactoringActionHandler {
   override fun invoke(project: Project, elements: Array<out PsiElement>, dataContext: DataContext?) {
@@ -130,12 +131,12 @@ class RExtractMethodHandler : RefactoringActionHandler {
         }
 
         override fun isValidName(name: String?): Boolean =
-          name != null && RNamesValidator.isIdentifier(name)
+          name != null && rNamesValidator.isIdentifier(name, project)
       }
       val decorator = ExtractMethodDecorator<Any> { settings ->
         val name = settings.methodName
         val parameters = settings.abstractVariableData.filter { it.passAsParameter }.map { it.name }
-        "$name <- function(${parameters.joinToString(", ") { RNamesValidator.quoteIfNeeded(it) }})"
+        "$name <- function(${parameters.joinToString(", ") { rNamesValidator.quoteIfNeeded(it, project) }})"
       }
       return object : AbstractExtractMethodDialog<Any>(
         project, "foo",

@@ -16,7 +16,7 @@ import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processAllDotsCol
 import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processOperandColumns
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.references.RResolveUtil
-import org.jetbrains.r.refactoring.RNamesValidator
+import org.jetbrains.r.refactoring.rNamesValidator
 
 object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
   override val nameToFunction = DataTableFunction.values()
@@ -266,9 +266,8 @@ enum class DataTableFunction(
     return !allowWithoutQuotes.contains(parameterName)
   }
 
-  override fun isComplexColumnName(columnName: String): Boolean {
-    return !RNamesValidator.isIdentifier(columnName)
-  }
+  override fun isComplexColumnName(columnName: String): Boolean =
+    !rNamesValidator.isIdentifier(columnName, null)
 
   //Inner functions
   // %between%

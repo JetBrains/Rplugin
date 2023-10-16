@@ -32,7 +32,8 @@ import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.refactoring.RNamesValidator
+import org.jetbrains.r.refactoring.quoteIfNeeded
+import org.jetbrains.r.refactoring.rNamesValidator
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RSourceFileManager
@@ -319,9 +320,15 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     if (psiManager == null || item !is RLookupElement) return null
     val name = item.lookup
     val pkg = item.packageName
-    if (pkg == null) return RElementFactory.createRPsiElementFromText(psiManager.project, RNamesValidator.quoteIfNeeded(name))
-    return RElementFactory.createRPsiElementFromText(
-      psiManager.project, "${RNamesValidator.quoteIfNeeded(pkg)}::${RNamesValidator.quoteIfNeeded(name)}")
+    val project = psiManager.project
+    val quotedName = rNamesValidator.quoteIfNeeded(name, project)
+
+    val text = if (pkg == null)
+      quotedName
+    else
+      "${rNamesValidator.quoteIfNeeded(pkg, project)}::$quotedName"
+
+    return RElementFactory.createRPsiElementFromText(project, text)
   }
 
   override fun collectDocComments(file: PsiFile, sink: Consumer<in PsiDocCommentBase>) {

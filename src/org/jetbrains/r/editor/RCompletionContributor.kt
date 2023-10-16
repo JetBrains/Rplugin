@@ -9,6 +9,7 @@ import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VfsUtil
@@ -47,7 +48,8 @@ import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.references.RSearchScopeUtil
 import org.jetbrains.r.psi.stubs.classes.R6ClassNameIndex
 import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
-import org.jetbrains.r.refactoring.RNamesValidator
+import org.jetbrains.r.refactoring.quoteIfNeeded
+import org.jetbrains.r.refactoring.rNamesValidator
 import org.jetbrains.r.rinterop.RValueFunction
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 import org.jetbrains.r.util.RPathUtil
@@ -130,7 +132,7 @@ class RCompletionContributor : CompletionContributor() {
         if (noCalls) {
           info.loadObjectNames(leftExpr.text).forEach {
             if (!shownNames.contains(it)) {
-              result.consume(rCompletionElementFactory.createNamespaceAccess(it))
+              result.consume(rCompletionElementFactory.createNamespaceAccess(file.project, it))
             }
           }
         }
@@ -155,7 +157,12 @@ class RCompletionContributor : CompletionContributor() {
 
         val text = obj.text
         runtimeInfo.loadR6ClassInfoByObjectName(text)?.let { classInfo ->
-          return addMembersCompletion(classInfo.fields + classInfo.methods + classInfo.activeBindings, shownNames, result)
+          return addMembersCompletion(
+            psiElement.project,
+            classInfo.fields + classInfo.methods + classInfo.activeBindings,
+            shownNames,
+            result,
+          )
         }
         return false
       }
@@ -165,18 +172,27 @@ class RCompletionContributor : CompletionContributor() {
                                            result: CompletionResultSet): Boolean {
         val className = R6ClassInfoUtil.getClassNameFromInternalClassMemberUsageExpression(psiElement)
         if (className != null) {
-          R6ClassNameIndex.findClassDefinitions(className, psiElement.project,
+          val project = psiElement.project
+          R6ClassNameIndex.findClassDefinitions(className, project,
                                                 RSearchScopeUtil.getScope(psiElement)).forEach {
-            return addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it) + R6ClassKeywordsProvider.predefinedClassMethods, shownNames, result)
+            return addMembersCompletion(
+              project,
+              R6ClassInfoUtil.getAllClassMembers(it) + R6ClassKeywordsProvider.predefinedClassMethods,
+              shownNames,
+              result,
+            )
           }
         }
 
         return false
       }
 
-      private fun addMembersCompletion(r6ClassMembers: List<IR6ClassMember>?,
-                                       shownNames: MutableSet<String>,
-                                       result: CompletionResultSet): Boolean {
+      private fun addMembersCompletion(
+        project: Project,
+        r6ClassMembers: List<IR6ClassMember>?,
+        shownNames: MutableSet<String>,
+        result: CompletionResultSet,
+      ): Boolean {
         var hasNewResults = false
         if (r6ClassMembers.isNullOrEmpty()) return hasNewResults
 
@@ -186,7 +202,7 @@ class RCompletionContributor : CompletionContributor() {
           when (r6Member){
             is R6ClassField,
             is R6ClassActiveBinding
-              -> result.consume(rCompletionElementFactory.createAtAccess(r6Member.name))
+              -> result.consume(rCompletionElementFactory.createAtAccess(project, r6Member.name))
             is R6ClassMethod
               -> result.consume(rCompletionElementFactory.createFunctionLookupElement(r6Member.name, r6Member.parametersList))
           }
@@ -222,7 +238,7 @@ class RCompletionContributor : CompletionContributor() {
         }
         val text = obj.text
         runtimeInfo.loadS4ClassInfoByObjectName(text)?.let { info ->
-          return addSlotsCompletion(info.slots, shownNames, result)
+          return addSlotsCompletion(psiElement.project, info.slots, shownNames, result)
         }
         return false
       }
@@ -233,16 +249,26 @@ class RCompletionContributor : CompletionContributor() {
         val owner = psiElement.leftExpr ?: return false
         var res = false
         RS4Resolver.findElementS4ClassDeclarations(owner).forEach {
-          res = res || addSlotsCompletion(RS4ClassInfoUtil.getAllAssociatedSlots(it), shownNames, result)
+          res = res || addSlotsCompletion(
+            psiElement.project,
+            RS4ClassInfoUtil.getAllAssociatedSlots(it),
+            shownNames,
+            result,
+          )
         }
         return res
       }
 
-      private fun addSlotsCompletion(slots: List<RS4ClassSlot>, shownNames: MutableSet<String>, result: CompletionResultSet): Boolean {
+      private fun addSlotsCompletion(
+        project: Project,
+        slots: List<RS4ClassSlot>,
+        shownNames: MutableSet<String>,
+        result: CompletionResultSet,
+      ): Boolean {
         var hasNewResults = false
         for (slot in slots) {
           if (slot.name in shownNames) continue
-          result.consume(rCompletionElementFactory.createAtAccess(slot.name, slot.type))
+          result.consume(rCompletionElementFactory.createAtAccess(project, slot.name, slot.type))
           shownNames.add(slot.name)
           hasNewResults = true
         }
@@ -328,9 +354,10 @@ class RCompletionContributor : CompletionContributor() {
       originFile.runtimeInfo?.variables?.let { variables ->
         variables.filterKeys { shownNames.add(it) }.forEach { (name, value) ->
           if (value is RValueFunction) {
-            val code = "${RNamesValidator.quoteIfNeeded(name)} <- ${value.header} NULL"
+            val project = originFile.project
+            val code = "${rNamesValidator.quoteIfNeeded(name, project)} <- ${value.header} NULL"
             val element =
-              RElementFactory.createRPsiElementFromTextOrNull(originFile.project, code) as? RAssignmentStatement ?: return@forEach
+              RElementFactory.createRPsiElementFromTextOrNull(project, code) as? RAssignmentStatement ?: return@forEach
             result.consume(elementFactory.createFunctionLookupElement(element, isLocal = true))
           } else {
             result.consume(elementFactory.createLocalVariableLookupElement(name, false))

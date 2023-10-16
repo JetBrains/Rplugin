@@ -21,7 +21,8 @@ import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RIdentifierExpression
 import org.jetbrains.r.psi.api.RParameter
 import org.jetbrains.r.psi.api.RPsiElement
-import org.jetbrains.r.refactoring.RNamesValidator
+import org.jetbrains.r.refactoring.quoteIfNeeded
+import org.jetbrains.r.refactoring.rNamesValidator
 import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.rinterop.RValueDataFrame
 
@@ -74,7 +75,8 @@ object RQuickNavigateBuilder {
   }
 
   private inline fun StringBuilder.addFunctionAssignmentInfo(element: RAssignmentStatement, onFail: () -> Unit) {
-    val prefix = "${RNamesValidator.quoteIfNeeded(element.name)} <- function"
+    val quotedName = rNamesValidator.quoteIfNeeded(element.name, element.project)
+    val prefix = "$quotedName <- function"
     val text = "$prefix${element.functionParameters.replace("\\s{2,}".toRegex(), "\n")}"
     val fakeFile = RElementFactory.buildRFileFromText(element.project, text)
     val html = getHtmlWithHighlighting(fakeFile, text)

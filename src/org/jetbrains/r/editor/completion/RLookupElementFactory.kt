@@ -9,17 +9,17 @@ import com.intellij.codeInsight.completion.BasicInsertHandler
 import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.completion.PrioritizedLookupElement
 import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.codeInsight.lookup.LookupElementDecorator
 import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.util.ClassConditionKey
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.associatedS4GenericInfo
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.psi.TableColumnInfo
 import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.refactoring.RNamesValidator
+import org.jetbrains.r.refactoring.quoteIfNeeded
+import org.jetbrains.r.refactoring.rNamesValidator
 import javax.swing.Icon
 import kotlin.math.min
 
@@ -135,20 +135,27 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
   }
 
 
-  fun createNamespaceAccess(lookupString: String): LookupElement {
+  fun createNamespaceAccess(
+    project: Project,
+    lookupString: String,
+  ): LookupElement {
     val insertHandler = InsertHandler<LookupElement> { context, _ ->
       val document = context.document
-      document.replaceString(context.startOffset, context.tailOffset, RNamesValidator.quoteIfNeeded(lookupString))
+      document.replaceString(context.startOffset, context.tailOffset, rNamesValidator.quoteIfNeeded(lookupString, project))
       context.editor.caretModel.moveToOffset(context.tailOffset)
     }
     return createLookupElementWithGrouping(RLookupElement(lookupString, false, AllIcons.Nodes.Package),
                                            insertHandler, NAMESPACE_NAME_GROUPING)
   }
 
-  fun createAtAccess(lookupString: String, type: String = ""): LookupElement {
+  fun createAtAccess(
+    project: Project,
+    lookupString: String,
+    type: String = "",
+  ): LookupElement {
     val insertHandler = InsertHandler<LookupElement> { context, _ ->
       val document = context.document
-      document.replaceString(context.startOffset, context.tailOffset, RNamesValidator.quoteIfNeeded(lookupString))
+      document.replaceString(context.startOffset, context.tailOffset, rNamesValidator.quoteIfNeeded(lookupString, project))
       context.editor.caretModel.moveToOffset(context.tailOffset)
     }
     return createLookupElementWithPriority(RLookupElement(lookupString, true, AllIcons.Nodes.Field, type),

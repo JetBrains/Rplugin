@@ -23,7 +23,8 @@ import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RExpression
 import org.jetbrains.r.psi.api.RFunctionExpression
 import org.jetbrains.r.psi.references.RReferenceBase
-import org.jetbrains.r.refactoring.RNamesValidator
+import org.jetbrains.r.refactoring.quoteIfNeeded
+import org.jetbrains.r.refactoring.rNamesValidator
 import org.jetbrains.r.rinterop.RInteropTerminated
 import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.rinterop.RValueError
@@ -97,7 +98,7 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
     val (packageName, _) = RSkeletonUtil.skeletonFileToRPackage(containingFile) ?: throw IllegalStateException("bad filename")
 
     val accessOperator = if (stub.exported) "::" else ":::"
-    val name = RNamesValidator.quoteIfNeeded(name)
+    val name = rNamesValidator.quoteIfNeeded(name, consoleView.project)
     val expressionRef = RReference.expressionRef(
       if (stub.type == Type.S4METHOD) {
         val types = (associatedS4MethodInfo as RS4RawMethodInfo).parameters.joinToString(", ") { "'${it.type}'" }

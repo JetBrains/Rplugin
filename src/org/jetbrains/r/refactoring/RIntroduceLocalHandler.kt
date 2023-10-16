@@ -171,10 +171,13 @@ abstract class RIntroduceLocalHandler : RefactoringActionHandler {
     val expr = operation.expression.withoutParenthesis()
     val names = mutableListOf<String>()
 
+    val namesValidator = rNamesValidator
+    val project = operation.project
+
     when (expr) {
       is RStringLiteralExpression -> {
         val s = expr.name
-        if (s != null && RNamesValidator.isIdentifier(s)) {
+        if (s != null && namesValidator.isIdentifier(s, project)) {
           names.add(s)
         }
         names.add("s")
@@ -204,7 +207,7 @@ abstract class RIntroduceLocalHandler : RefactoringActionHandler {
     for (name in names) {
       for (index in 1..9) {
         val newName = if (index == 1) name else "$name$index"
-        if (RNamesValidator.isIdentifier(newName) && !operation.occurrences.any { isNameUsed(newName, it) }) {
+        if (namesValidator.isIdentifier(newName, project) && !operation.occurrences.any { isNameUsed(newName, it) }) {
           newNames.add(newName)
           break
         }
