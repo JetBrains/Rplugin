@@ -69,9 +69,14 @@ class RQuickNavigateInfoTest : RProcessHandlerBaseTestCase() {
   private fun doTest(code: String) {
     val isDarcula = getTestName(true).endsWith("Darcula")
     val editorColorsManager = EditorColorsManager.getInstance()
-    editorColorsManager.globalScheme =
-      if (isDarcula) editorColorsManager.getScheme("Darcula")
-      else editorColorsManager.getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME)
+    editorColorsManager.setGlobalScheme(
+      if (isDarcula) {
+        editorColorsManager.getScheme("Darcula")
+      }
+      else {
+        editorColorsManager.getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME)
+      }
+    )
     myFixture.configureByText("a.R", code)
     resolve().forEach {
       it.element?.containingFile?.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
