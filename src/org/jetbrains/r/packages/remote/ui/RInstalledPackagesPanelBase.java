@@ -686,7 +686,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
     }
 
     @Nullable
-    private RInstalledPackage getInstalledPackageAt(final JTable table, final int row) {
+    private static RInstalledPackage getInstalledPackageAt(final JTable table, final int row) {
       final Object o = table.getValueAt(row, PACKAGE_NAME_COLUMN);
       if (o instanceof RInstalledPackage) {
         return (RInstalledPackage) o;
