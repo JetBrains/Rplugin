@@ -11,9 +11,7 @@ import com.intellij.psi.PsiFile
 import org.jetbrains.annotations.TestOnly
 import javax.swing.Icon
 
-abstract class TestableCreateFileFromTemplateAction(@NlsActions.ActionText text: String?,
-                                                    @NlsActions.ActionDescription description: String?,
-                                                    icon: Icon?) : CreateFileFromTemplateAction(text, description, icon) {
+abstract class TestableCreateFileFromTemplateAction : CreateFileFromTemplateAction() {
 
   @TestOnly
   fun createTestFile(name: String?, templateName: String, directory: PsiDirectory): PsiFile? {

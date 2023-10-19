@@ -20,9 +20,7 @@ import org.jetbrains.r.interpreter.RInterpreterManager
  * <br></br>
  * The template data is stored in resources/fileTemplates/internal/R Script.R.ft
  */
-class NewRScriptAction : TestableCreateFileFromTemplateAction(RBundle.message("create.r.script.template.name"),
-                                                              RBundle.message("create.r.script.template.description"),
-                                                              RFileType.icon), DumbAware {
+class NewRScriptAction : TestableCreateFileFromTemplateAction(), DumbAware {
 
   override fun buildDialog(project: Project, directory: PsiDirectory, builder: CreateFileFromTemplateDialog.Builder) {
     builder
