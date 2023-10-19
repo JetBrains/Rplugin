@@ -164,7 +164,7 @@ class RLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
     "campaign.id"
     ]
 
-    #' some roxygen style function documentaiton
+    #' some roxygen style function documentation
     #' @param a arggument one
     #' @param b arggument b
     testFunc <- function(a, b){
