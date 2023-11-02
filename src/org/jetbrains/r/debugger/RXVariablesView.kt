@@ -9,6 +9,7 @@ import com.intellij.ide.DataManager
 import com.intellij.idea.ActionsBundle
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
@@ -146,8 +147,8 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
     DebuggerUIUtil.registerActionOnComponent(XDebuggerActions.XREMOVE_WATCH, tree, this)
     DebuggerUIUtil.registerActionOnComponent(XDebuggerActions.XCOPY_WATCH, tree, this)
     DebuggerUIUtil.registerActionOnComponent(XDebuggerActions.XEDIT_WATCH, tree, this)
-    EmptyAction.registerWithShortcutSet(XDebuggerActions.XNEW_WATCH, CommonShortcuts.getNew(), tree)
-    EmptyAction.registerWithShortcutSet(XDebuggerActions.XREMOVE_WATCH, CommonShortcuts.getDelete(), tree)
+    ActionUtil.wrap(XDebuggerActions.XNEW_WATCH).registerCustomShortcutSet(CommonShortcuts.getNew(), tree)
+    ActionUtil.wrap(XDebuggerActions.XREMOVE_WATCH).registerCustomShortcutSet(CommonShortcuts.getDelete(), tree)
   }
 
   private fun installEditListeners() {

@@ -11,6 +11,7 @@ import com.intellij.execution.console.LanguageConsoleImpl
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runWriteAction
@@ -81,7 +82,7 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
     }
     file.putUserData(IS_R_CONSOLE_KEY, true)
     consoleEditor.putUserData(RConsoleAutopopupBlockingHandler.REPL_KEY, this)
-    EmptyAction.setupAction(olderCommandAction, "RConsole.History.Older", null)
+    ActionUtil.mergeFrom(olderCommandAction, "RConsole.History.Older")
     olderCommandAction.registerCustomShortcutSet(CustomShortcutSet(KeyEvent.VK_UP), consoleEditor.component)
 
     RDebuggerUtil.createBreakpointListener(rInterop, this)
