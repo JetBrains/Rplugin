@@ -3,6 +3,7 @@ package org.jetbrains.r.rinterop.rstudioapi
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.internal.statistic.service.fus.collectors.FUCounterUsageLogger
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.terminal.ui.TerminalWidget
 import com.intellij.ui.content.Content
 import com.intellij.util.execution.ParametersListUtil
 import org.jetbrains.plugins.terminal.ShellTerminalWidget
@@ -62,9 +63,9 @@ object TerminalUtils {
     }.associate { it }
     val show = args.list.getRObjects(3).rBoolean.getBooleans(0)
 
-    val terminalWidget = TerminalToolWindowManager.getInstance(rInterop.project).createLocalShellWidget(workingDir, null)
+    val terminalWidget = TerminalToolWindowManager.getInstance(rInterop.project).createShellWidget(workingDir, null, true, true)
     TerminalProjectOptionsProvider.getInstance(rInterop.project).setEnvData(EnvironmentVariablesData.create(env, true))
-    terminalWidget.executeCommand(command)
+    terminalWidget.sendCommandToExecute(command)
     return idFromTerminal(rInterop, terminalWidget)?.toRString() ?: getRNull()
   }
 
@@ -109,7 +110,7 @@ object TerminalUtils {
     val caption = args.list.getRObjects(0).toStringOrNull()
     val show = args.list.getRObjects(1).rBoolean.getBooleans(0)
     val shellType = args.list.getRObjects(2).toStringOrNull()
-    val shellWidget = TerminalToolWindowManager.getInstance(rInterop.project).createLocalShellWidget(rInterop.project.basePath, caption)
+    val shellWidget = TerminalToolWindowManager.getInstance(rInterop.project).createShellWidget(rInterop.project.basePath, caption, true, true)
     return idFromTerminal(rInterop, shellWidget)?.toRString() ?: getRNull()
   }
 
@@ -131,11 +132,11 @@ object TerminalUtils {
     return terminals?.find { it.hashCode() == numId }
   }
 
-  private fun idFromTerminal(rInterop: RInterop, shellWidget: ShellTerminalWidget): String? {
+  private fun idFromTerminal(rInterop: RInterop, shellWidget: TerminalWidget): String? {
     val toolWindowManager =
       ToolWindowManager.getInstance(rInterop.project).getToolWindow(TerminalToolWindowFactory.TOOL_WINDOW_ID)
     val contents = toolWindowManager?.contentManager?.contents ?: return null
-    val content = contents.find { TerminalToolWindowManager.getWidgetByContent(it) == shellWidget }
+    val content = contents.find { TerminalToolWindowManager.findWidgetByContent(it) == shellWidget }
     return content.hashCode().toString()
   }
 
