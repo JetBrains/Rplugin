@@ -9,12 +9,9 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAware
-import com.intellij.openapi.util.NlsSafe
-import icons.RIcons
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 
-class RImportDataContextActionGroup : ActionGroup(TITLE, null, RIcons.R), DumbAware {
+class RImportDataContextActionGroup : ActionGroup(), DumbAware {
   private val actions: Array<RImportDataContextAction> = arrayOf(
     RImportBaseDataContextAction(),
     RImportCsvDataContextAction(),
@@ -33,8 +30,4 @@ class RImportDataContextActionGroup : ActionGroup(TITLE, null, RIcons.R), DumbAw
 
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
-  companion object {
-    @NlsSafe
-    private val TITLE = RBundle.message("import.data.action.group.name.from")
-  }
 }

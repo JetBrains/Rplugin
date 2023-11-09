@@ -137,7 +137,8 @@ You can find the source code in the following repositories:
         </action>
 
         <group id="org.jetbrains.r.run.visualize.actions.RImportDataContextActionGroup"
-               class="org.jetbrains.r.run.visualize.actions.RImportDataContextActionGroup" popup="true">
+               class="org.jetbrains.r.run.visualize.actions.RImportDataContextActionGroup" popup="true"
+                icon="icons.RIcons.R">
             <add-to-group group-id="ProjectViewPopupMenu" relative-to-action="SynchronizeCurrentFile" anchor="after"/>
         </group>
 
