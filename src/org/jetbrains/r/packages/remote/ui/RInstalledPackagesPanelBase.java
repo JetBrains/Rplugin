@@ -21,10 +21,10 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.DumbAware;
+import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.ui.AnActionButton;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.SearchTextField;
 import com.intellij.ui.ToolbarDecorator;
@@ -44,7 +44,6 @@ import com.intellij.util.ui.UIUtil;
 import com.intellij.webcore.packaging.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.plugins.notebooks.visualization.r.ui.ToolbarUtil;
 import org.jetbrains.r.RBundle;
 import org.jetbrains.r.packages.RInstalledPackage;
 import org.jetbrains.r.packages.remote.RPackageManagementService;
@@ -82,8 +81,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
   public static final int UNINSTALL_COLUMN = 5;
   public static final String TITLE = "Title";
 
-  private final AnActionButton myUpgradeButton;
-  protected final AnActionButton myInstallButton;
+  private boolean myUpgradeEnabled;
+  private boolean myInstallEnabled;
 
   private final SettableLinkLabel<?> myPackageNameLinkLabel = new SettableLinkLabel<>();
   private final JBLabel myLabel = new JBLabel();
@@ -134,15 +133,48 @@ public class RInstalledPackagesPanelBase extends JPanel {
     });
 
     connect.subscribe(RInteropKt.getLOADED_LIBRARIES_UPDATED(), myPackagesTable::repaint);
+    AnAction upgradeAction = new DumbAwareAction() {
+      @Override
+      public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
+      }
 
-    myUpgradeButton = ToolbarUtil.INSTANCE.createAnActionButton(UPGRADE_ACTION_ID, this::upgradeAction);
-    myInstallButton = ToolbarUtil.INSTANCE.createAnActionButton(INSTALL_ACTION_ID, this::installAction);
+      @Override
+      public void update(@NotNull AnActionEvent e) {
+        e.getPresentation().setEnabled(myUpgradeEnabled);
+      }
+
+      @Override
+      public void actionPerformed(@NotNull AnActionEvent e) {
+        upgradeAction();
+      }
+    };
+    AnAction installAction = new DumbAwareAction() {
+      @Override
+      public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
+      }
+
+      @Override
+      public void update(@NotNull AnActionEvent e) {
+        e.getPresentation().setEnabled(myInstallEnabled);
+      }
+
+      @Override
+      public void actionPerformed(@NotNull AnActionEvent e) {
+        installAction();
+      }
+    };
+    ActionUtil.copyFrom(upgradeAction, UPGRADE_ACTION_ID);
+    ActionUtil.copyFrom(installAction, INSTALL_ACTION_ID);
+
     MyTextSearchField textSearchFieldAction = new MyTextSearchField();
-    myInstallButton.setShortcut(CommonShortcuts.getNew());
+    installAction.setShortcutSet(CommonShortcuts.getNew());
     ToolbarDecorator decorator =
       ToolbarDecorator.createDecorator(myPackagesTable).disableUpDownActions().disableAddAction().disableRemoveAction()
         .addExtraAction(textSearchFieldAction)
-        .addExtraAction(myInstallButton);
+        .addExtraAction(installAction)
+        .addExtraAction(upgradeAction);
     decorator.setToolbarPosition(ActionToolbarPosition.TOP);
 
     DocumentAdapter listener = new DocumentAdapter() {
@@ -162,8 +194,6 @@ public class RInstalledPackagesPanelBase extends JPanel {
 
     decorator.addExtraActions(getExtraActions());
     add(decorator.createPanel());
-    myInstallButton.setEnabled(false);
-    myUpgradeButton.setEnabled(false);
 
     myPackagesTable.getSelectionModel().addListSelectionListener(event -> updateUninstallUpgrade());
 
@@ -290,8 +320,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
     return new Point(columnAtPoint, rowAtPoint);
   }
 
-  protected AnActionButton[] getExtraActions() {
-    return new AnActionButton[0];
+  protected AnAction[] getExtraActions() {
+    return AnAction.EMPTY_ARRAY;
   }
 
   @NotNull
@@ -406,7 +436,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
           else {
             myPackageManagementService.installPackage(new RepoPackage(pkg.getName(), null /* TODO? */), null, true, null, listener, false);
           }
-          myUpgradeButton.setEnabled(false);
+          myUpgradeEnabled = false;
         }, ModalityState.any());
       }
 
@@ -453,8 +483,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
         }
       }
     }
-    myInstallButton.setEnabled(canInstall);
-    myUpgradeButton.setEnabled(upgradeAvailable && canUpgrade);
+    myInstallEnabled = canInstall;
+    myUpgradeEnabled = upgradeAvailable && canUpgrade;
   }
 
   protected boolean canUninstallPackage(RInstalledPackage pyPackage) {
@@ -712,21 +742,16 @@ public class RInstalledPackagesPanelBase extends JPanel {
     }
   }
 
-  private static final class MyTextSearchField extends AnActionButton implements CustomComponentAction, DumbAware {
+  private static final class MyTextSearchField extends DumbAwareAction implements CustomComponentAction, DumbAware {
     private final SearchTextField myField;
 
-    @Override
-    public boolean isDumbAware() {
-      return true;
+    MyTextSearchField() {
+      super("", "", null);
+      myField = new SearchTextField();
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-    }
-
-    private MyTextSearchField() {
-      super("", "", null);
-      myField = new SearchTextField();
     }
 
     @NotNull

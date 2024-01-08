@@ -6,10 +6,10 @@
 package org.jetbrains.r.packages.remote.ui
 
 import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages.showInfoMessage
-import com.intellij.ui.AnActionButton
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import com.intellij.webcore.packaging.ManagePackagesDialog
@@ -65,11 +65,11 @@ class RInstalledPackagesPanel(private val project: Project, area: PackagesNotifi
     isTaskRunning = false
   }
 
-  override fun getExtraActions(): Array<AnActionButton> {
+  override fun getExtraActions(): Array<AnAction> {
     return arrayOf(makeUpgradeAllButton(), makeRefreshButton())
   }
 
-  private fun makeUpgradeAllButton(): AnActionButton {
+  private fun makeUpgradeAllButton(): AnAction {
     ActionManager.getInstance().getAction(UPGRADE_ALL_ACTION_ID).templatePresentation.icon = RIcons.Packages.UpgradeAll
     return ToolbarUtil.createAnActionButton(UPGRADE_ALL_ACTION_ID, this::canUpgradeAllPackages, this::upgradeAllPackages)
   }
@@ -106,7 +106,7 @@ class RInstalledPackagesPanel(private val project: Project, area: PackagesNotifi
     }
   }
 
-  private fun makeRefreshButton(): AnActionButton {
+  private fun makeRefreshButton(): AnAction {
     return ToolbarUtil.createAnActionButton(REFRESH_ACTION_ID, { !isTaskRunning }) {
       immediatelyUpdatePackages(myPackageManagementService)
     }
