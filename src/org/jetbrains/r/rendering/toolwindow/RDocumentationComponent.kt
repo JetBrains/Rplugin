@@ -140,16 +140,13 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
     }
   }
 
-  private class TextSearchFieldAction : AnActionButton("", "", null), CustomComponentAction, DumbAware {
+  private class TextSearchFieldAction : AnAction("", "", null), CustomComponentAction, DumbAware {
     val myField: SearchTextField = SearchTextField()
-    override fun isDumbAware(): Boolean = true
     override fun actionPerformed(e: AnActionEvent) {}
     override fun createCustomComponent(presentation: Presentation, place: String): JComponent = myField
-
-    override fun getActionUpdateThread() = ActionUpdateThread.BGT
   }
 
-  private class StatusLabelAction : AnActionButton("", "", null), CustomComponentAction, DumbAware {
+  private class StatusLabelAction : AnAction("", "", null), CustomComponentAction, DumbAware {
     val statusLabel: JLabel = JLabel().also { label ->
       // copy-pasted from com.intellij.find.editorHeaderActions.StatusTextAction
       //noinspection HardCodedStringLiteral
@@ -161,11 +158,8 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
       label.text = null
       label.horizontalAlignment = SwingConstants.CENTER
     }
-    override fun isDumbAware(): Boolean = true
     override fun actionPerformed(e: AnActionEvent) {}
     override fun createCustomComponent(presentation: Presentation, place: String): JComponent = statusLabel
-
-    override fun getActionUpdateThread() = ActionUpdateThread.BGT
   }
 
   private class SearchModel(private val editorPane: JEditorPane, private val matchLabel: JLabel) {
