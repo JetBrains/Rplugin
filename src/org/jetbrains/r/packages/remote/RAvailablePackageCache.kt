@@ -7,6 +7,7 @@ package org.jetbrains.r.packages.remote
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 
+@Service(Service.Level.PROJECT)
 @State(name = "RAvailablePackageCache", storages = [Storage("rAvailablePackageCache.xml")])
 class RAvailablePackageCache : RCache<RRepoPackage>, SimplePersistentStateComponent<RAvailablePackageCache.State>(State()) {
   @Volatile

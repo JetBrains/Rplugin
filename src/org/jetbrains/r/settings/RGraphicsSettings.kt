@@ -13,6 +13,7 @@ import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.DarkMod
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import java.awt.Dimension
 
+@Service(Service.Level.PROJECT)
 @State(name = "RGraphicsSettings", storages = [Storage("rGraphicsSettings.xml")])
 class RGraphicsSettings : SimplePersistentStateComponent<RGraphicsSettingsState>(RGraphicsSettingsState()) {
   companion object {

@@ -7,6 +7,7 @@ package org.jetbrains.r.settings
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 
+@Service(Service.Level.PROJECT)
 class RPackageBuildSettings(project: Project) {
   private val state = loadState(project)
 

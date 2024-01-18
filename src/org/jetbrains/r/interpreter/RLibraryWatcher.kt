@@ -5,6 +5,7 @@
 package org.jetbrains.r.interpreter
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -18,6 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
+@Service(Service.Level.PROJECT)
 class RLibraryWatcher(private val project: Project) : Disposable {
   private val switch = RLibraryWatcherSwitch()
   private val changed = AtomicBoolean(false)

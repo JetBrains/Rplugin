@@ -548,31 +548,9 @@ You can find the source code in the following repositories:
         <projectService serviceInterface="org.jetbrains.r.interpreter.RInterpreterStateManager"
                         serviceImplementation="org.jetbrains.r.interpreter.RInterpreterStateManagerImpl"/>
 
-        <projectService serviceImplementation="org.jetbrains.r.settings.RGraphicsSettings"/>
-
         <projectService serviceImplementation="org.jetbrains.r.settings.REditorSettings"/>
 
-        <projectService serviceImplementation="org.jetbrains.r.settings.RSettings"/>
-
-        <projectService serviceImplementation="org.jetbrains.r.packages.RPackageService"/>
-
-        <projectService serviceImplementation="org.jetbrains.r.hints.RReturnHintsModel"/>
-
-        <projectService serviceImplementation="org.jetbrains.r.hints.RReturnHintPass$FactoryService"/>
-
-        <projectService serviceImplementation="org.jetbrains.r.settings.RPackageBuildSettings"/>
-
-        <projectService serviceImplementation="org.jetbrains.r.settings.RMarkdownGraphicsSettings"/>
-
-        <projectService serviceImplementation="org.jetbrains.r.packages.remote.RAvailablePackageCache"/>
-
-        <projectService serviceImplementation="org.jetbrains.r.run.graphics.RGraphicsRepository"/>
-
-        <projectService serviceImplementation="org.jetbrains.r.interpreter.RLibraryWatcher"/>
-
         <projectService serviceImplementation="org.jetbrains.r.console.RConsoleManager"/>
-
-        <projectService serviceImplementation="org.jetbrains.r.rendering.settings.RMarkdownSettings"/>
 
         <projectService serviceImplementation="org.jetbrains.r.packages.RequiredPackageInstaller"/>
 

@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 
+@Service(Service.Level.PROJECT)
 @State(name = "RMarkdownGraphicsSettings", storages = [Storage("rMarkdownGraphicsSettings.xml")])
 class RMarkdownGraphicsSettings(private val project: Project) : SimplePersistentStateComponent<RMarkdownGraphicsSettings.State>(State()) {
   var globalResolution: Int

@@ -3,6 +3,7 @@ package org.jetbrains.r.hints
 import com.intellij.codeInsight.hints.InlayHintsSettings
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.LineExtensionInfo
@@ -38,6 +39,7 @@ class RReturnHintEditorFactoryListener : EditorFactoryListener {
   }
 }
 
+@Service(Service.Level.PROJECT)
 class RReturnHintsModel(private val project: Project) {
 
   private val documentModels = ConcurrentHashMap<Document, DocumentReturnExtensionInfo>()

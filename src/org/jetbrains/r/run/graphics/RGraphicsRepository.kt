@@ -5,12 +5,14 @@
 package org.jetbrains.r.run.graphics
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import java.io.File
 
+@Service(Service.Level.PROJECT)
 class RGraphicsRepository(private val project: Project) {
   private val devices = mutableSetOf<RGraphicsDevice>()
   private val notNullDevicePromise = AsyncPromise<Unit>()

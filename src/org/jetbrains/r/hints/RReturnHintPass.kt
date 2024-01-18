@@ -7,6 +7,7 @@ package org.jetbrains.r.hints
 import com.intellij.codeHighlighting.*
 import com.intellij.codeInsight.hints.InlayHintsSettings
 import com.intellij.codeInsight.hints.InlayParameterHintsExtension
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorKind
@@ -99,6 +100,7 @@ class RReturnHintPass(private val file: PsiFile,
     }
   }
 
+  @Service(Service.Level.PROJECT)
   class FactoryService {
     val documentsToForceRepaint = mutableSetOf<Document>()
 

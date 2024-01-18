@@ -16,6 +16,7 @@ import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 import org.jetbrains.r.interpreter.toLocalPathOrNull
 
+@Service(Service.Level.PROJECT)
 @State(name = "RSettings", storages = [Storage("rSettings.xml")])
 class RSettings(private val project: Project) : SimplePersistentStateComponent<RSettings.State>(State()) {
   private val interpreterLocationListeners = mutableListOf<RInterpreterLocationListener>()
