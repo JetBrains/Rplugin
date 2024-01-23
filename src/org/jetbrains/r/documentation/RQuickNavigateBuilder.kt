@@ -1,8 +1,7 @@
 package org.jetbrains.r.documentation
 
+import com.intellij.lang.documentation.QuickDocCodeHighlightingHelper
 import com.intellij.openapi.editor.colors.CodeInsightColors
-import com.intellij.openapi.editor.colors.EditorColorsManager
-import com.intellij.openapi.editor.richcopy.HtmlSyntaxInfoUtil
 import com.intellij.pom.PomTargetPsiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -12,9 +11,9 @@ import com.intellij.psi.util.PsiModificationTracker
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.ui.ColorUtil
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.packages.RSkeletonUtil
-import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.RSkeletonParameterPomTarget
 import org.jetbrains.r.psi.api.RAssignmentStatement
@@ -57,7 +56,7 @@ object RQuickNavigateBuilder {
         }
       }
       is RAssignmentStatement -> {
-        htmlBuilder.addAssignmentInfo(element) { return null }
+        htmlBuilder.addAssignmentInfo(element)
       }
       is RParameter -> {
         htmlBuilder.addParameterInfo(element) { return null }
@@ -69,21 +68,16 @@ object RQuickNavigateBuilder {
     return htmlBuilder.toString().takeIf { it.isNotEmpty() }
   }
 
-  private inline fun StringBuilder.addAssignmentInfo(element: RAssignmentStatement, onFail: () -> Unit) {
-    if (element.isFunctionDeclaration) addFunctionAssignmentInfo(element, onFail)
+  private fun StringBuilder.addAssignmentInfo(element: RAssignmentStatement) {
+    if (element.isFunctionDeclaration) addFunctionAssignmentInfo(element)
     else addVariableAssignmentInfo(element)
   }
 
-  private inline fun StringBuilder.addFunctionAssignmentInfo(element: RAssignmentStatement, onFail: () -> Unit) {
+  private fun StringBuilder.addFunctionAssignmentInfo(element: RAssignmentStatement) {
     val quotedName = rNamesValidator.quoteIfNeeded(element.name, element.project)
     val prefix = "$quotedName <- function"
     val text = "$prefix${element.functionParameters.replace("\\s{2,}".toRegex(), "\n")}"
-    val fakeFile = RElementFactory.buildRFileFromText(element.project, text)
-    val html = getHtmlWithHighlighting(fakeFile, text)
-    if (html == null) {
-      onFail()
-      return
-    }
+    val html = QuickDocCodeHighlightingHelper.getStyledInlineCodeFragment(text, RLanguage.INSTANCE, element.project)
     addPatchedMultiLineFunctionDeclarationHtml(html)
   }
 
@@ -182,7 +176,7 @@ object RQuickNavigateBuilder {
       else {
         append("</td><td>")
         val textBeginInd = "<span.*?>".toRegex().find(line)!!.range.last + 1
-        append(line.substring (0, textBeginInd))
+        append(line.substring(0, textBeginInd))
         append(SPACE)
         append(line.substring(textBeginInd))
       }
@@ -201,12 +195,6 @@ object RQuickNavigateBuilder {
     append("<div style=\"color:#$NOT_USED_ELEMENT_COLOR\">")
     append(fixHtmlExtraSymbols(fileName))
     append("</div>")
-  }
-
-  private fun getHtmlWithHighlighting(fakeFile: PsiFile, text: String): String? {
-    val scheme = EditorColorsManager.getInstance().globalScheme
-    val html = HtmlSyntaxInfoUtil.getHtmlContent(fakeFile, text, null, scheme, 0, text.length) ?: return null
-    return html.toString()
   }
 
   private fun fixHtmlExtraSymbols(text: String): String {
