@@ -1,6 +1,6 @@
 package org.jetbrains.r.documentation
 
-import com.intellij.lang.documentation.QuickDocCodeHighlightingHelper
+import com.intellij.lang.documentation.QuickDocHighlightingHelper
 import com.intellij.openapi.editor.colors.CodeInsightColors
 import com.intellij.pom.PomTargetPsiElement
 import com.intellij.psi.PsiElement
@@ -77,7 +77,7 @@ object RQuickNavigateBuilder {
     val quotedName = rNamesValidator.quoteIfNeeded(element.name, element.project)
     val prefix = "$quotedName <- function"
     val text = "$prefix${element.functionParameters.replace("\\s{2,}".toRegex(), "\n")}"
-    val html = QuickDocCodeHighlightingHelper.getStyledInlineCodeFragment(text, RLanguage.INSTANCE, element.project)
+    val html = QuickDocHighlightingHelper.getStyledInlineCodeFragment(element.project, RLanguage.INSTANCE, text)
     addPatchedMultiLineFunctionDeclarationHtml(html)
   }
 
