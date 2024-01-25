@@ -77,7 +77,7 @@ object RQuickNavigateBuilder {
     val quotedName = rNamesValidator.quoteIfNeeded(element.name, element.project)
     val prefix = "$quotedName <- function"
     val text = "$prefix${element.functionParameters.replace("\\s{2,}".toRegex(), "\n")}"
-    val html = QuickDocHighlightingHelper.getStyledInlineCodeFragment(element.project, RLanguage.INSTANCE, text)
+    val html = QuickDocHighlightingHelper.getStyledCodeFragment(element.project, RLanguage.INSTANCE, text)
     addPatchedMultiLineFunctionDeclarationHtml(html)
   }
 
