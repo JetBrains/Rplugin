@@ -523,7 +523,6 @@ You can find the source code in the following repositories:
         <codeInsight.inlayProvider language="R" implementationClass="org.jetbrains.r.hints.RReturnHintInlayProvider"/>
         <highlightingPassFactory implementation="org.jetbrains.r.hints.parameterInfo.RMarkdownParameterHintsPassFactory"/>
         <editorFactoryListener implementation="org.jetbrains.r.console.RConsoleEditorFactoryListener"/>
-        <editorFactoryListener implementation="org.jetbrains.r.settings.RUpdateComponent"/>
         <editorFactoryListener implementation="org.jetbrains.r.hints.RReturnHintEditorFactoryListener"/>
         <editorFactoryListener implementation="org.jetbrains.r.rendering.editor.RMarkdownEditorFactoryListener"
                                order="before org.jetbrains.plugins.notebooks.visualization.r.inlays.InlaysManager"/>
