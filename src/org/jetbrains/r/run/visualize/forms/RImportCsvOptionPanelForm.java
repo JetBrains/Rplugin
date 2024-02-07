@@ -4,13 +4,13 @@
 
 package org.jetbrains.r.run.visualize.forms;
 
+import com.intellij.DynamicBundle;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ResourceBundle;
 
 public class RImportCsvOptionPanelForm extends JDialog {
   private JPanel contentPane;
@@ -83,7 +83,7 @@ public class RImportCsvOptionPanelForm extends JDialog {
     contentPane = new JPanel();
     contentPane.setLayout(new GridLayoutManager(9, 2, new Insets(0, 0, 0, 0), -1, -1));
     final JLabel label1 = new JLabel();
-    this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.skip"));
+    this.$$$loadLabelText$$$(label1, DynamicBundle.getResourceBundle(getClass().getClassLoader(), "messages/RPluginBundle").getString("import.data.dialog.form.skip"));
     contentPane.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
                                                 false));
@@ -98,7 +98,7 @@ public class RImportCsvOptionPanelForm extends JDialog {
     firstRowAsNamesCheckBox = new JCheckBox();
     firstRowAsNamesCheckBox.setSelected(true);
     this.$$$loadButtonText$$$(firstRowAsNamesCheckBox,
-                              ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.column.names"));
+                              DynamicBundle.getResourceBundle(getClass().getClassLoader(), "messages/RPluginBundle").getString("import.data.dialog.form.column.names"));
     contentPane.add(firstRowAsNamesCheckBox, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                                  GridConstraints.SIZEPOLICY_CAN_SHRINK |
                                                                  GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
@@ -106,27 +106,27 @@ public class RImportCsvOptionPanelForm extends JDialog {
     trimSpacesCheckBox = new JCheckBox();
     trimSpacesCheckBox.setSelected(true);
     this.$$$loadButtonText$$$(trimSpacesCheckBox,
-                              ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.trim.spaces"));
+                              DynamicBundle.getResourceBundle(getClass().getClassLoader(), "messages/RPluginBundle").getString("import.data.dialog.form.trim.spaces"));
     contentPane.add(trimSpacesCheckBox, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                                                             GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     final JLabel label2 = new JLabel();
-    this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.delimiter"));
+    this.$$$loadLabelText$$$(label2, DynamicBundle.getResourceBundle(getClass().getClassLoader(), "messages/RPluginBundle").getString("import.data.dialog.form.delimiter"));
     contentPane.add(label2, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
                                                 false));
     final JLabel label3 = new JLabel();
-    this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.quotes"));
+    this.$$$loadLabelText$$$(label3, DynamicBundle.getResourceBundle(getClass().getClassLoader(), "messages/RPluginBundle").getString("import.data.dialog.form.quotes"));
     contentPane.add(label3, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
                                                 false));
     final JLabel label4 = new JLabel();
-    this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.escape"));
+    this.$$$loadLabelText$$$(label4, DynamicBundle.getResourceBundle(getClass().getClassLoader(), "messages/RPluginBundle").getString("import.data.dialog.form.escape"));
     contentPane.add(label4, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
                                                 false));
     final JLabel label5 = new JLabel();
-    this.$$$loadLabelText$$$(label5, ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.comment"));
+    this.$$$loadLabelText$$$(label5, DynamicBundle.getResourceBundle(getClass().getClassLoader(), "messages/RPluginBundle").getString("import.data.dialog.form.comment"));
     contentPane.add(label5, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
                                                 false));
@@ -147,7 +147,7 @@ public class RImportCsvOptionPanelForm extends JDialog {
                                                          GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                                                          null, 0, false));
     final JLabel label6 = new JLabel();
-    this.$$$loadLabelText$$$(label6, ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.na"));
+    this.$$$loadLabelText$$$(label6, DynamicBundle.getResourceBundle(getClass().getClassLoader(), "messages/RPluginBundle").getString("import.data.dialog.form.na"));
     contentPane.add(label6, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
                                                 false));
