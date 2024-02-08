@@ -1,11 +1,11 @@
 package org.jetbrains.r.packages
 
-import com.intellij.util.io.systemIndependentPath
 import org.jetbrains.r.interpreter.RInterpreterBaseTestCase
 import org.jetbrains.r.interpreter.RInterpreterState
 import org.jetbrains.r.interpreter.RInterpreterStateManager
 import java.nio.file.Files
 import java.nio.file.Path
+import kotlin.io.path.invariantSeparatorsPathString
 
 class RIsolatedPackageEnvironment : RInterpreterBaseTestCase() {
 
@@ -34,7 +34,7 @@ class RIsolatedPackageEnvironment : RInterpreterBaseTestCase() {
       Files.createSymbolicLink(libPath.resolve(packageName), installedPackage.getValue(packageName))
     }
     // Rewrite .libPaths
-    rInterop.executeCode(".libPaths('${libPath.systemIndependentPath}')")
+    rInterop.executeCode(".libPaths('${libPath.invariantSeparatorsPathString}')")
     rInterop.updateState().blockingGet(DEFAULT_TIMEOUT)
     val newSkeletonPaths = getSkeletonPaths(state)
 
