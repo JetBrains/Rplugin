@@ -33,6 +33,8 @@ object RMarkdownNotebookEditorAppearance : NotebookEditorAppearance, NotebookEdi
   override fun shouldShowCellLineNumbers(): Boolean = false
   override fun shouldShowExecutionCounts(): Boolean = true
 
+  override fun shouldShowOutExecutionCounts(): Boolean = true
+
   /**
    * Takes lines of the cell and returns a color for the stripe that will be drawn behind the folding markers.
    * Currently only code cells are supported.
