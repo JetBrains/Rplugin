@@ -22,7 +22,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlaysManager
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.getEditorManager
 import org.jetbrains.r.actions.*
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
@@ -142,7 +142,7 @@ private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
   RunChunkHandler.execute(element, isDebug = isDebug).onProcessed {
     element.project.chunkExecutionState = null
     val inlayElement = runReadAction { findInlayElementByFenceElement(element) } ?: return@onProcessed
-    InlaysManager.getEditorManager(editor)?.updateCell(inlayElement)
+    getEditorManager(editor)?.updateCell(inlayElement)
   }
 }
 
