@@ -33,9 +33,9 @@ import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.GraphicsPanel
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayProgressStatus
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.ProcessOutput
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.ProgressStatus
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.ProgressStatus
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.getEditorManager
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
