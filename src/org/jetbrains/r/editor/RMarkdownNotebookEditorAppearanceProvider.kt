@@ -4,6 +4,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsScheme
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.ui.JBColor
 import org.jetbrains.plugins.notebooks.ui.editor.DefaultNotebookEditorAppearance
 import org.jetbrains.plugins.notebooks.ui.visualization.DefaultNotebookEditorAppearanceSizes
 import org.jetbrains.plugins.notebooks.ui.visualization.NotebookEditorAppearance
@@ -46,4 +47,7 @@ object RMarkdownNotebookEditorAppearance : NotebookEditorAppearance, NotebookEdi
     }
     return null
   }
+
+  override fun getCellStripeColor(editor: Editor): Color = JBColor.GRAY
+  override fun getCellStripeHoverColor(editor: Editor): Color = JBColor.BLUE
 }
