@@ -11,7 +11,6 @@ import com.intellij.quarto.QuartoFileType
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellInlayManager
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLinesProvider
 import org.jetbrains.plugins.notebooks.visualization.NotebookEditorAppearanceProvider
-import org.jetbrains.plugins.notebooks.visualization.NotebookGutterLineMarkerManager
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 class RMarkdownEditorFactoryListener : EditorFactoryListener {
@@ -28,7 +27,6 @@ class RMarkdownEditorFactoryListener : EditorFactoryListener {
       NotebookCellLinesProvider.install(editor)
       NotebookEditorAppearanceProvider.install(editor)
       NotebookCellInlayManager.install(editor)
-      NotebookGutterLineMarkerManager.install(editor)
     }
 
     fun isRMarkdownOrQuarto(virtualFile: VirtualFile): Boolean {
