@@ -19,7 +19,7 @@ import java.util.*
 
 /**
  * Defines how code folding should behave for R files
- * For details see http://www.jetbrains.org/intellij/sdk/docs/tutorials/custom_language_support/folding_builder.html
+ * For details see https://plugins.jetbrains.com/docs/intellij/folding-builder.html
  */
 class RFoldingBuilder : FoldingBuilder {
   override fun getPlaceholderText(node: ASTNode): String? {
