@@ -63,9 +63,6 @@ internal class RMarkdownCellToolbarController private constructor(
         inlayOffset
       )
     )!!
-
-  override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, interval: NotebookCellLines.Interval) {}
-
   override fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval) {
     val startOffset = editor.document.getLineStartOffset(interval.lines.first)
     val endOffset = editor.document.getLineEndOffset(interval.lines.last)
