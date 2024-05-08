@@ -2,6 +2,7 @@
     <dependencies>
         <module name="intellij.notebooks.visualization"/>
         <module name="intellij.notebooks.ui"/>
+        <module name="intellij.notebooks.tables"/>
         <plugin id="org.intellij.plugins.markdown"/>
         <plugin id="org.intellij.intelliLang"/>
     </dependencies>
