@@ -28,6 +28,7 @@ import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointerFactory
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.*
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
+import org.jetbrains.plugins.notebooks.visualization.ui.EditorCellView
 import org.jetbrains.r.rendering.chunk.ChunkDescriptorProvider
 import org.jetbrains.r.rendering.chunk.ChunkPath
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
@@ -60,12 +61,13 @@ class RMarkdownOutputInlayController private constructor(
     paintNotebookCellBackgroundGutter(editor, g, r, interval.lines, inlayBounds.y, inlayBounds.height)
   }
 
-  override fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval) {
+  override fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval, cellView: EditorCellView) {
     val startOffset = editor.document.getLineStartOffset(interval.lines.first)
     val endOffset = editor.document.getLineEndOffset(interval.lines.last)
 
     val rangeHighlighter = editor.markupModel.addRangeHighlighter(null, startOffset, endOffset, HighlighterLayer.FIRST - 100, HighlighterTargetArea.LINES_IN_RANGE)
     rangeHighlighter.lineMarkerRenderer = RMarkdownOutputCellGutterLineMarkerRenderer(interval.lines, (inlay as RangeMarkerEx).id)
+    cellView.registerCellHighlighter(rangeHighlighter)
   }
 
   override fun addText(text: String, outputType: Key<*>) {

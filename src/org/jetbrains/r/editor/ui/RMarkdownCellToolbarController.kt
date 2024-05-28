@@ -18,6 +18,7 @@ import org.jetbrains.plugins.notebooks.ui.visualization.NotebookLineMarkerRender
 import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
 import org.jetbrains.plugins.notebooks.ui.visualization.paintNotebookCellBackgroundGutter
 import org.jetbrains.plugins.notebooks.visualization.*
+import org.jetbrains.plugins.notebooks.visualization.ui.EditorCellView
 import org.jetbrains.r.rendering.chunk.RunChunkNavigator
 import java.awt.Cursor
 import java.awt.Dimension
@@ -63,12 +64,13 @@ internal class RMarkdownCellToolbarController private constructor(
         inlayOffset
       )
     )!!
-  override fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval) {
+  override fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval, cellView: EditorCellView) {
     val startOffset = editor.document.getLineStartOffset(interval.lines.first)
     val endOffset = editor.document.getLineEndOffset(interval.lines.last)
 
     val rangeHighlighter = editor.markupModel.addRangeHighlighter(null, startOffset, endOffset, HighlighterLayer.FIRST - 100, HighlighterTargetArea.LINES_IN_RANGE)
     rangeHighlighter.lineMarkerRenderer = RMarkdownCellToolbarGutterLineMarkerRenderer(interval.lines, (inlay as RangeMarkerEx).id)
+    cellView.registerCellHighlighter(rangeHighlighter)
   }
 
   class Factory : NotebookCellInlayController.Factory {
