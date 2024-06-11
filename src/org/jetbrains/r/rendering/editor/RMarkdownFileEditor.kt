@@ -21,7 +21,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.PsiElement
 import icons.RIcons
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
@@ -40,8 +39,6 @@ import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.settings.REditorSettings
 import java.awt.BorderLayout
 import java.io.File
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicReference
 import javax.swing.Icon
 import javax.swing.JComponent
 
@@ -221,24 +218,6 @@ private fun createBuildAndShowAction(project: Project, report: VirtualFile, mana
     }
   }
 }
-
-class ChunkExecutionState(private val editor: Editor,
-                          val terminationRequired: AtomicBoolean = AtomicBoolean(),
-                          val isDebug: Boolean = false,
-                          val currentPsiElement: AtomicReference<PsiElement> = AtomicReference(),
-                          val interrupt: AtomicReference<() -> Unit> = AtomicReference())
-
-var Editor.chunkExecutionState: ChunkExecutionState?
-  get() = project?.chunkExecutionState
-  set(value) {
-    project?.chunkExecutionState = value
-  }
-
-var Project.chunkExecutionState: ChunkExecutionState?
-  get() = RConsoleManager.getInstance(this).currentConsoleOrNull?.executeActionHandler?.chunkState
-  set(value) {
-    RConsoleManager.getInstance(this).currentConsoleOrNull?.executeActionHandler?.chunkState = value
-  }
 
 private fun createRunAllAction(project: Project): AnAction {
   val runText = RBundle.message("rmarkdown.editor.toolbar.runAllChunks")
