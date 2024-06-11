@@ -126,12 +126,7 @@ private fun isEnabled(e: AnActionEvent): Boolean {
 }
 
 private fun runInRange(editor: Editor, file: PsiFile, startOffset: Int, endOffset: Int) {
-  ChunkExecutionState(editor).apply {
-    editor.chunkExecutionState = this
-    RunChunkHandler.runAllChunks(file, editor, currentPsiElement, terminationRequired, startOffset - 1, endOffset).onProcessed {
-      editor.chunkExecutionState = null
-    }
-  }
+  RunChunkHandler.runAllChunks(file, editor, startOffset - 1, endOffset)
 }
 
 private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {

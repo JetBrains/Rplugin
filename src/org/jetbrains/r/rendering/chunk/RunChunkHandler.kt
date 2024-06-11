@@ -65,12 +65,25 @@ object RunChunkHandler {
 
   fun runAllChunks(psiFile: PsiFile,
                    editor: Editor,
-                   currentElement: AtomicReference<PsiElement>,
-                   terminationRequired: AtomicBoolean,
                    start: Int = 0,
                    end: Int = Int.MAX_VALUE,
                    runSelectedCode: Boolean = false,
-                   isDebug: Boolean = false): Promise<Unit> {
+                   isDebug: Boolean = false) {
+    val state = ChunkExecutionState(editor)
+    editor.chunkExecutionState = state
+    runAllChunks(psiFile, editor, state.currentPsiElement, state.terminationRequired, start, end, runSelectedCode, isDebug).onProcessed {
+      editor.chunkExecutionState = null
+    }
+  }
+
+  private fun runAllChunks(psiFile: PsiFile,
+                           editor: Editor,
+                           currentElement: AtomicReference<PsiElement>,
+                           terminationRequired: AtomicBoolean,
+                           start: Int,
+                           end: Int,
+                           runSelectedCode: Boolean,
+                           isDebug: Boolean): Promise<Unit> {
     val result = AsyncPromise<Unit>()
     RConsoleManager.getInstance(psiFile.project).currentConsoleAsync.onSuccess { console ->
       runAsync {
@@ -93,9 +106,8 @@ object RunChunkHandler {
               }
           }
           for ((index, element) in chunks.withIndex()) {
-            if (terminationRequired.get()) {
-              continue
-            }
+            if (terminationRequired.get()) break
+
             currentElement.set(element)
             val proceed = invokeAndWaitIfNeeded { execute(element, isDebug = isDebug, isBatchMode = true,
                                                           isFirstChunk = index == 0,
@@ -115,13 +127,7 @@ object RunChunkHandler {
   }
 
   fun runSelectedRange(file: PsiFile, editor: Editor, range: TextRange, isDebug: Boolean = false) {
-    ChunkExecutionState(editor).apply {
-      editor.chunkExecutionState = this
-      runAllChunks(file, editor, currentPsiElement, terminationRequired, range.startOffset, range.endOffset,
-                   runSelectedCode = true, isDebug = isDebug).onProcessed {
-        editor.chunkExecutionState = null
-      }
-    }
+    runAllChunks(file, editor, range.startOffset, range.endOffset, runSelectedCode = true, isDebug = isDebug)
   }
 
   fun execute(element: PsiElement, isDebug: Boolean = false, isBatchMode: Boolean = false, isFirstChunk: Boolean = true,

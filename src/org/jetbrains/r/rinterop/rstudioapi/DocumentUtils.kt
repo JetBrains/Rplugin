@@ -24,7 +24,6 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
-import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
@@ -36,7 +35,6 @@ import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRBoolean
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRList
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toStringOrNull
-import kotlin.streams.toList
 
 object DocumentUtils {
   fun getSourceEditorContext(rInterop: RInterop): RObject {
@@ -219,11 +217,7 @@ object DocumentUtils {
                       psiFile?.let {
                         val state = editor.chunkExecutionState
                         if (state == null) {
-                          ChunkExecutionState(editor).apply {
-                            editor.chunkExecutionState = this
-                            RunChunkHandler.runAllChunks(psiFile, editor, currentPsiElement,
-                                                         terminationRequired).onProcessed { editor.chunkExecutionState = null }
-                          }
+                          RunChunkHandler.runAllChunks(psiFile, editor)
                         }
                         else {
                           state.terminationRequired.set(true)

@@ -241,10 +241,7 @@ private fun createRunAllAction(project: Project): AnAction {
       val state = editor.chunkExecutionState
       if (state == null) {
         val psiFile = e.getData(CommonDataKeys.PSI_FILE) ?: return
-        ChunkExecutionState(editor).apply {
-          editor.chunkExecutionState = this
-          RunChunkHandler.runAllChunks(psiFile, editor, currentPsiElement, terminationRequired).onProcessed { editor.chunkExecutionState = null }
-        }
+        RunChunkHandler.runAllChunks(psiFile, editor)
       } else {
         RMarkdownInterruptAction.interruptChunkExecution(state)
       }
