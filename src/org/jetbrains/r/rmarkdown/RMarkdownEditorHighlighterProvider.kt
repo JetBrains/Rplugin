@@ -42,7 +42,7 @@ private class RMarkdownTemplateEditorHighlighter(project: Project?,
   private fun layerDescriptor(project: Project?,
                               virtualFile: VirtualFile?,
                               language: Language): LayerDescriptor {
-    val fenceFactory = SyntaxHighlighterFactory.LANGUAGE_FACTORY.forLanguage(language)
+    val fenceFactory = SyntaxHighlighterFactory.getLanguageFactory().forLanguage(language)
     val fenceHighlighter = fenceFactory.getSyntaxHighlighter(project, virtualFile)
     return LayerDescriptor(fenceHighlighter, "", null)
   }
