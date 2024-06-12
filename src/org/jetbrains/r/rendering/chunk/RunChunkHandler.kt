@@ -71,13 +71,12 @@ object RunChunkHandler {
                    isDebug: Boolean = false) {
     val state = ChunkExecutionState(editor)
     editor.chunkExecutionState = state
-    runAllChunks(psiFile, editor, state.currentPsiElement, state.terminationRequired, start, end, runSelectedCode, isDebug).onProcessed {
+    runAllChunks(psiFile, state.currentPsiElement, state.terminationRequired, start, end, runSelectedCode, isDebug).onProcessed {
       editor.chunkExecutionState = null
     }
   }
 
   private fun runAllChunks(psiFile: PsiFile,
-                           editor: Editor,
                            currentElement: AtomicReference<PsiElement>,
                            terminationRequired: AtomicBoolean,
                            start: Int,
@@ -88,8 +87,6 @@ object RunChunkHandler {
     RConsoleManager.getInstance(psiFile.project).currentConsoleAsync.onSuccess { console ->
       runAsync {
         try {
-          val document = editor.document
-          val ranges = ArrayList<IntRange>()
           val chunks = runReadAction {
             PsiTreeUtil.collectElements(psiFile) {
               isChunkFenceLang(it) && if (runSelectedCode) {
@@ -98,12 +95,6 @@ object RunChunkHandler {
                 (it.textRange.endOffset - 1) in start..end
               }
             }
-              .also { chunks ->
-                chunks.map { it.parent }.forEach { chunk ->
-                  ranges.add(
-                    IntRange(document.getLineNumber(chunk.textRange.startOffset), document.getLineNumber(chunk.textRange.endOffset)))
-                }
-              }
           }
           for ((index, element) in chunks.withIndex()) {
             if (terminationRequired.get()) break
