@@ -1,6 +1,7 @@
 package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
@@ -303,8 +304,13 @@ class RMarkdownNotebook(project: Project, editor: EditorImpl) {
     addViewportListener(editor)
   }
 
-  operator fun get(cell: NotebookCellLines.Interval?): RMarkdownNotebookOutput? =
-    cell?.let { pointerFactory.create(it) }?.let { outputs[it] }
+  operator fun get(cell: NotebookCellLines.Interval?): RMarkdownNotebookOutput? {
+    if (cell == null) return null
+    val intervalPointer = ReadAction.compute<NotebookIntervalPointer, Throwable> {
+      pointerFactory.create(cell)
+    }
+    return outputs[intervalPointer]
+  }
 
   operator fun get(cell: PsiElement): RMarkdownNotebookOutput? =
     correctCell(cell)?.let { psiToInterval[it] }?.let { this[it] }
