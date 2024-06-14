@@ -8,7 +8,6 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.BaseProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
@@ -79,7 +78,7 @@ interface RInterpreter : RInterpreterInfo {
 
   fun prepareForExecution(): Promise<Unit> {
     val promise = AsyncPromise<Unit>()
-    invokeLater(ModalityState.nonModal()) {
+    invokeLater {
       FileDocumentManager.getInstance().saveAllDocuments()
       promise.setResult(Unit)
     }
