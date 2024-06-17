@@ -120,7 +120,7 @@ You can find the source code in the following repositories:
 
         <action id="org.jetbrains.r.console.RConsoleView.RSetCurrentDirectoryFromEditor"
                 class="org.jetbrains.r.console.RConsoleView$RSetCurrentDirectoryFromEditor"
-                icon="/icons/changeWorkingDirectory.svg"/>
+                icon="icons.RIcons.ChangeWorkingDirectory"/>
 
         <action id="RConsoleRenameAction" class="org.jetbrains.r.console.RConsoleRenameAction">
           <add-to-group group-id="ToolWindowContextMenu" anchor="last"/>
@@ -146,7 +146,7 @@ You can find the source code in the following repositories:
         <action id="org.jetbrains.r.actions.DumpRInteropMessages" class="org.jetbrains.r.actions.DumpRInteropMessages"/>
 
         <action id="org.jetbrains.r.console.jobs.RunRJobAction" class="org.jetbrains.r.console.jobs.RunRJobAction"
-                icon="/icons/run/runJob.svg"/>
+                icon="icons.RIcons.Run.RunJob"/>
     </actions>
 
     <actions>
@@ -182,7 +182,7 @@ You can find the source code in the following repositories:
         </action>
         <action id="org.jetbrains.r.actions.RunSelection"
                 class="org.jetbrains.r.actions.RunSelection"
-                icon="/icons/run/runCurrent.svg">
+                icon="icons.RIcons.Run.RunCurrent">
             <keyboard-shortcut keymap="$default" first-keystroke="control ENTER"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta ENTER" replace-all="true"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta ENTER" replace-all="true"/>
@@ -190,7 +190,7 @@ You can find the source code in the following repositories:
         </action>
         <action id="org.jetbrains.r.actions.DebugSelection"
                 class="org.jetbrains.r.actions.DebugSelection"
-                icon="/icons/run/debugCurrent.svg">
+                icon="icons.RIcons.Run.DebugCurrent">
           <keyboard-shortcut keymap="$default" first-keystroke="control alt ENTER"/>
           <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt ENTER" replace-all="true"/>
           <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt ENTER" replace-all="true"/>
@@ -571,15 +571,15 @@ You can find the source code in the following repositories:
         <lang.psiStructureViewFactory language="R"
                                       implementationClass="org.jetbrains.r.psi.RScriptStructureViewFactory"/>
 
-        <toolWindow id="R_Jobs" anchor="bottom" canCloseContents="false" icon="/icons/toolWindow/RConsole.svg"
+        <toolWindow id="R_Jobs" anchor="bottom" canCloseContents="false" icon="icons.RIcons.ToolWindow.RConsole"
                     factoryClass="org.jetbrains.r.console.jobs.RJobsToolWindowFactory" secondary="false"
                     order="after R_Console"/>
 
-        <toolWindow id="R_Console" anchor="bottom" canCloseContents="true" icon="/icons/toolWindow/RConsole.svg"
+        <toolWindow id="R_Console" anchor="bottom" canCloseContents="true" icon="icons.RIcons.ToolWindow.RConsole"
                     factoryClass="org.jetbrains.r.console.RConsoleToolWindowFactory" secondary="false"/>
 
 
-        <toolWindow id="R_Tools" anchor="right" canCloseContents="false" icon="/icons/toolWindow/RConsole.svg"
+        <toolWindow id="R_Tools" anchor="right" canCloseContents="false" icon="icons.RIcons.ToolWindow.RConsole"
                     factoryClass="org.jetbrains.r.rendering.toolwindow.RToolWindowFactory" secondary="false"/>
 
 
