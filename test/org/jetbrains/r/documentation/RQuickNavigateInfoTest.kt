@@ -74,7 +74,7 @@ class RQuickNavigateInfoTest : RProcessHandlerBaseTestCase() {
         editorColorsManager.getScheme("Darcula")
       }
       else {
-        editorColorsManager.getScheme(EditorColorsScheme.DEFAULT_SCHEME_NAME)
+        editorColorsManager.getScheme(EditorColorsScheme.getDefaultSchemeName())
       }
     )
     myFixture.configureByText("a.R", code)

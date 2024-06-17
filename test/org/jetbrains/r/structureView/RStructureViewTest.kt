@@ -108,7 +108,7 @@ class RStructureViewTest : RUsefulTestCase() {
         foo()<caret>
       }
     """.trimIndent())
-    val builder = LanguageStructureViewBuilder.INSTANCE.getStructureViewBuilder(myFixture.file)
+    val builder = LanguageStructureViewBuilder.getInstance().getStructureViewBuilder(myFixture.file)
     val fileEditor = FileEditorManager.getInstance(project).getSelectedEditor(myFixture.file.virtualFile)
     val structureView = builder!!.createStructureView(fileEditor, myFixture.project)
 
