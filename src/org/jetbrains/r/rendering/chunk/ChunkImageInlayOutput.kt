@@ -1,12 +1,14 @@
 package org.jetbrains.r.rendering.chunk
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.Messages
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.CanCopyImageToClipboard
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.CopyImageToClipboardAction
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutput
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutputUtil
@@ -25,7 +27,7 @@ import java.io.File
 import javax.swing.SwingUtilities
 
 class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clearAction: () -> Unit) :
-  InlayOutput(parent, editor, clearAction)
+  InlayOutput(parent, editor, clearAction), CanCopyImageToClipboard
 {
   private val wrapper = RGraphicsPanelWrapper(project, parent).apply {
     isVisible = false
@@ -130,13 +132,13 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
   private fun createExtraActions(): List<AnAction> {
     return listOf(
       ToolbarUtil.createAnActionButton<ExportImageAction>(this::saveAs),
-      ToolbarUtil.createAnActionButton<CopyImageToClipboardAction>(this::copyImageToClipboard),
+      ActionManager.getInstance().getAction(CopyImageToClipboardAction.ID),
       ToolbarUtil.createAnActionButton<ZoomImageAction>(this::canZoomImage, this::zoomImage),
       ToolbarUtil.createAnActionButton<ImageSettingsAction>(this::openImageSettings)
     )
   }
 
-  private fun copyImageToClipboard() {
+  override fun copyImageToClipboard() {
     wrapper.image?.let { image ->
       ClipboardUtils.copyImageToClipboard(image)
     }
