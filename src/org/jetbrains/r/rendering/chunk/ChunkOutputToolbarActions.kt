@@ -3,7 +3,7 @@ package org.jetbrains.r.rendering.chunk
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutput
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutput.Companion.getInlayOutput
 
 
 sealed class ChunkImageInlayOutputAction() : DumbAwareAction() {
@@ -21,7 +21,7 @@ sealed class ChunkImageInlayOutputAction() : DumbAwareAction() {
   protected abstract fun actionPerformed(output: ChunkImageInlayOutput)
 
   private fun getOutput(e: AnActionEvent): ChunkImageInlayOutput? =
-    InlayOutput.getToolbarPaneOrNull(e)?.inlayOutput as? ChunkImageInlayOutput
+    getInlayOutput<ChunkImageInlayOutput>(e)
 
   override fun getActionUpdateThread(): ActionUpdateThread =
     ActionUpdateThread.EDT
