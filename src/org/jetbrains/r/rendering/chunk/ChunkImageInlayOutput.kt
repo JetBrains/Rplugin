@@ -13,7 +13,6 @@ import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.CopyIma
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutput
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutputUtil
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.runAsyncInlay
-import org.jetbrains.plugins.notebooks.visualization.r.ui.ToolbarUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RPlotUtil
@@ -130,11 +129,13 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
   }
 
   private fun createExtraActions(): List<AnAction> {
+    val actionManager = ActionManager.getInstance()
+
     return listOf(
-      ToolbarUtil.createAnActionButton<ExportImageAction>(this::saveAs),
-      ActionManager.getInstance().getAction(CopyImageToClipboardAction.ID),
-      ToolbarUtil.createAnActionButton<ZoomImageAction>(this::canZoomImage, this::zoomImage),
-      ToolbarUtil.createAnActionButton<ImageSettingsAction>(this::openImageSettings)
+      actionManager.getAction(ExportImageAction.ID),
+      actionManager.getAction(CopyImageToClipboardAction.ID),
+      actionManager.getAction(ZoomImageAction.ID),
+      actionManager.getAction(ImageSettingsAction.ID),
     )
   }
 
@@ -144,7 +145,8 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
     }
   }
 
-  private fun zoomImage() {
+  /** called by [ZoomImageAction] */
+  fun zoomImage() {
     if (wrapper.isStandalone) {
       wrapper.plot?.let { plot ->
         RGraphicsZoomDialog.show(project, parent, plot, wrapper.localResolution)
@@ -156,11 +158,13 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
     }
   }
 
-  private fun canZoomImage(): Boolean {
+  /** called by [ZoomImageAction] */
+  fun canZoomImage(): Boolean {
     return wrapper.hasGraphics
   }
 
-  private fun openImageSettings() {
+  /** called by [ImageSettingsAction] */
+  fun openImageSettings() {
     val isDarkEditor = EditorColorsManager.getInstance().isDarkEditor
     val isDarkModeEnabled = if (isDarkEditor) manager.isDarkModeEnabled else null
     val initialSettings = getInitialSettings(isDarkModeEnabled)
