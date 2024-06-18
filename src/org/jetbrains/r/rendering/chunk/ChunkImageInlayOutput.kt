@@ -8,7 +8,6 @@ import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.Messages
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.CanCopyImageToClipboard
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.CopyImageToClipboardAction
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutput
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutputUtil
@@ -26,8 +25,8 @@ import java.io.File
 import javax.swing.SwingUtilities
 
 class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clearAction: () -> Unit) :
-  InlayOutput(parent, editor, clearAction), CanCopyImageToClipboard
-{
+  InlayOutput(parent, editor, clearAction), InlayOutput.WithCopyImageToClipboard, InlayOutput.WithSaveAs {
+
   private val wrapper = RGraphicsPanelWrapper(project, parent).apply {
     isVisible = false
   }
