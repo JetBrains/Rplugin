@@ -1,13 +1,12 @@
 package org.jetbrains.r.rendering.chunk
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.Messages
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
+import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.ClearOutputAction
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.CopyImageToClipboardAction
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutput
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutputUtil
@@ -25,16 +24,13 @@ import java.io.File
 import javax.swing.SwingUtilities
 
 class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clearAction: () -> Unit) :
-  InlayOutput(parent, editor, clearAction), InlayOutput.WithCopyImageToClipboard, InlayOutput.WithSaveAs {
+  InlayOutput(parent, editor, clearAction, loadActions()), InlayOutput.WithCopyImageToClipboard, InlayOutput.WithSaveAs {
 
   private val wrapper = RGraphicsPanelWrapper(project, parent).apply {
     isVisible = false
   }
 
   private val manager = ChunkGraphicsManager(project)
-
-  override val useDefaultSaveAction = false
-  override val extraActions = createExtraActions()
 
   private var overridesGlobal = false
 
@@ -127,17 +123,6 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
     wrapper.isVisible = isInViewport
   }
 
-  private fun createExtraActions(): List<AnAction> {
-    val actionManager = ActionManager.getInstance()
-
-    return listOf(
-      actionManager.getAction(ExportImageAction.ID),
-      actionManager.getAction(CopyImageToClipboardAction.ID),
-      actionManager.getAction(ZoomImageAction.ID),
-      actionManager.getAction(ImageSettingsAction.ID),
-    )
-  }
-
   override fun copyImageToClipboard() {
     wrapper.image?.let { image ->
       ClipboardUtils.copyImageToClipboard(image)
@@ -200,5 +185,13 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
   companion object {
     private val SWITCH_ERROR_TITLE = RBundle.message("plot.viewer.cannot.switch.to.standalone.title")
     private val SWITCH_ERROR_DESCRIPTION = RBundle.message("plot.viewer.cannot.switch.to.standalone.description")
+
+    private fun loadActions() = loadActions(
+      ExportImageAction.ID,
+      CopyImageToClipboardAction.ID,
+      ZoomImageAction.ID,
+      ImageSettingsAction.ID,
+      ClearOutputAction.ID,
+    )
   }
 }
