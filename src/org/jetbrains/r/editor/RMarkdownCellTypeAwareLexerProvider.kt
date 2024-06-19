@@ -5,6 +5,7 @@ import com.intellij.lexer.Lexer
 import com.intellij.lexer.MergeFunction
 import com.intellij.lexer.MergingLexerAdapterBase
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.psi.tree.IElementType
 import com.intellij.util.keyFMap.KeyFMap
@@ -22,7 +23,7 @@ class RMarkdownCellLinesProvider : NonIncrementalCellLinesProvider(RMarkdownInte
 
 
 private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLinesLexer {
-  override fun makeIntervals(document: Document): List<NotebookCellLines.Interval> {
+  override fun makeIntervals(document: Document, event: DocumentEvent?): List<NotebookCellLines.Interval> {
     val markers = markerSequence(document.charsSequence, 0, 0, PlainTextLanguage.INSTANCE).toList()
     return markers.map { toInterval(document, it) }
   }
