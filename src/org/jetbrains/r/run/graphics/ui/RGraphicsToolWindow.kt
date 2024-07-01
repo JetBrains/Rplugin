@@ -154,7 +154,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun createToolbar(project: Project): JComponent {
-    return ToolbarUtil.createToolbar(RToolWindowFactory.PLOTS, createActionHolderGroups(), EngineComboBox(), DarkModeCheckBox(project))
+    return ToolbarUtil.createToolbar(RToolWindowFactory.PLOTS, createActionHolderGroups(), EngineComboBox(), DarkModeCheckBox(project)).component
   }
 
   private fun createActionHolderGroups(): List<List<ToolbarUtil.ActionHolder>> {

@@ -69,7 +69,7 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
     val secondaryHolders = listOf(
       ToolbarUtil.createActionHolder(SETTINGS_ACTION_ID, this::showSettingsDialog)
     )
-    return ToolbarUtil.createToolbar(RToolWindowFactory.BUILD, listOf(primaryHolders, secondaryHolders))
+    return ToolbarUtil.createToolbar(RToolWindowFactory.BUILD, listOf(primaryHolders, secondaryHolders)).component
   }
 
   private fun showSettingsDialog() {
