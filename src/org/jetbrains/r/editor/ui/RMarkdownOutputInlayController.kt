@@ -148,14 +148,18 @@ class RMarkdownOutputInlayController private constructor(
     val offset = extractOffset(editor.document, interval)
     val inlayComponent = NotebookInlayComponentInterval(intervalPointer, editor)
 
-    // On editor creation it has 0 width
-    val gutterWidth = (editor.gutter as EditorGutterComponentEx).width
-    var editorWideWidth = editor.component.width - inlayComponent.width - gutterWidth - InlayDimensions.rightBorder
-    if (editorWideWidth <= 0) {
-      editorWideWidth = InlayDimensions.width
-    }
+    if (!editor.inlayModel.isInBatchMode) {
+      // TODO may be no need in `setBounds(...)` at all. In batch mode `offsetToXY` is not available
 
-    inlayComponent.setBounds(0, editor.offsetToXY(offset).y + editor.lineHeight, editorWideWidth, InlayDimensions.smallHeight)
+      // On editor creation it has 0 width
+      val gutterWidth = (editor.gutter as EditorGutterComponentEx).width
+      var editorWideWidth = editor.component.width - inlayComponent.width - gutterWidth - InlayDimensions.rightBorder
+      if (editorWideWidth <= 0) {
+        editorWideWidth = InlayDimensions.width
+      }
+
+      inlayComponent.setBounds(0, editor.offsetToXY(offset).y + editor.lineHeight, editorWideWidth, InlayDimensions.smallHeight)
+    }
     editor.contentComponent.add(inlayComponent)
     val inlay = addBlockElement(editor, offset, inlayComponent)
 
