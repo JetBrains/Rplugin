@@ -21,6 +21,7 @@ import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.util.PsiTreeUtil
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
+import org.jetbrains.plugins.notebooks.visualization.NOTEBOOK_INTERVAL_POINTER_KEY
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.getEditorManager
 import org.jetbrains.r.actions.*
@@ -40,7 +41,6 @@ fun isChunkFenceLang(element: PsiElement) =
   element.node.elementType === MarkdownTokenTypes.FENCE_LANG && element.nextSibling?.nextSibling?.node?.elementType == R_FENCE_ELEMENT_TYPE
 
 val CODE_FENCE_DATA_KEY = DataKey.create<PsiElement>("org.jetbrains.r.rendering.chunk.actions.codeFence")
-val NOTEBOOK_INTERVAL_PTR = DataKey.create<NotebookIntervalPointer>("org.jetbrains.r.rendering.chunk.actions.notebookIntervalPointer")
 
 const val RUN_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.RunChunkAction"
 const val DEBUG_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.DebugChunkAction"
@@ -148,7 +148,7 @@ private val AnActionEvent.codeFence: PsiElement?
   get() = getData(CODE_FENCE_DATA_KEY)
 
 private val AnActionEvent.intervalPointer: NotebookIntervalPointer?
-  get() = getData(NOTEBOOK_INTERVAL_PTR)
+  get() = getData(NOTEBOOK_INTERVAL_POINTER_KEY)
 
 private fun getStartOffset(e: AnActionEvent, editor: Editor): Int =
   e.codeFence?.textRange?.startOffset

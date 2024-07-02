@@ -8,20 +8,20 @@ import com.intellij.codeInsight.daemon.GutterIconNavigationHandler
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.JBPopupMenu
 import com.intellij.psi.PsiElement
+import org.jetbrains.plugins.notebooks.visualization.NOTEBOOK_INTERVAL_POINTER_KEY
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.actions.RDumbAwareBgtAction
-
 import java.awt.event.MouseEvent
 
 object RunChunkNavigator : GutterIconNavigationHandler<PsiElement> {
   override fun navigate(e: MouseEvent, element: PsiElement) {
     if (isChunkRunning(element)) {
       RunChunkHandler.interruptChunkExecution(element.project)
-    } else if (canRunChunk(element.project)) {
+    }
+    else if (canRunChunk(element.project)) {
       val actions = createRunChunkActionGroup(element)
       JBPopupMenu.showByEvent(e, ActionPlaces.EDITOR_GUTTER_POPUP, actions as ActionGroup)
     }
@@ -61,7 +61,7 @@ internal class ChunkAction(private val action: AnAction, private val contextVari
   constructor(action: AnAction, element: PsiElement) : this(action, mapOf(CODE_FENCE_DATA_KEY.name to element))
 
   constructor(action: AnAction, intervalPointer: NotebookIntervalPointer, editor: Editor) : this(action, mapOf(
-    NOTEBOOK_INTERVAL_PTR.name to intervalPointer,
+    NOTEBOOK_INTERVAL_POINTER_KEY.name to intervalPointer,
     CommonDataKeys.EDITOR.name to editor,
   ))
 
