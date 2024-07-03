@@ -1,7 +1,6 @@
 package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
@@ -13,13 +12,10 @@ import com.intellij.openapi.editor.ex.util.EditorScrollingPositionKeeper
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
-import com.intellij.util.ui.update.MergingUpdateQueue
-import com.intellij.util.ui.update.Update
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.plugins.notebooks.ui.visualization.NotebookLineMarkerRenderer
 import org.jetbrains.plugins.notebooks.ui.visualization.paintNotebookCellBackgroundGutter
@@ -36,7 +32,6 @@ import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
 import java.awt.Graphics
 import java.awt.Point
 import java.awt.Rectangle
-import java.awt.event.ComponentEvent
 
 class RMarkdownOutputInlayController private constructor(
   val editor: EditorImpl,
@@ -253,7 +248,7 @@ private fun getPsiElement(editor: Editor, offset: Int): PsiElement? =
 private fun getCodeFenceEnd(psiElement: PsiElement): PsiElement? =
   psiElement.let { it.parent.children.find { it.elementType == MarkdownTokenTypes.CODE_FENCE_END } }
 
-private fun getCodeFenceEnd(editor: EditorImpl, interval: NotebookCellLines.Interval): PsiElement? {
+internal fun getCodeFenceEnd(editor: EditorImpl, interval: NotebookCellLines.Interval): PsiElement? {
   val offset = extractOffset(editor.document, interval)
   val psiElement = getPsiElement(editor, offset) ?: return null
   return getCodeFenceEnd(psiElement)
@@ -267,120 +262,3 @@ private fun disposeComponent(component: NotebookInlayComponent) {
 
 private fun extractOffset(document: Document, interval: NotebookCellLines.Interval) =
   Integer.max(document.getLineEndOffset(interval.lines.last) - 1, 0)
-
-private val key = Key.create<RMarkdownNotebook>(RMarkdownNotebook::class.java.name)
-
-
-/**
- * calls to clearOutputs, addText and updateOutputs are runned in edt, order of calls is preserved
- * dispose() and updates of RMarkdownNotebook done at call time
- */
-interface RMarkdownNotebookOutput {
-  val intervalPointer: NotebookIntervalPointer
-
-  /** clear outputs and text */
-  fun clearOutputs(removeFiles: Boolean)
-
-  /** add text as output */
-  fun addText(text: String, outputType: Key<*>)
-
-  /** do clearOutputs(), load outputs from filesystem */
-  fun updateOutputs()
-
-  fun updateProgressStatus(progressStatus: InlayProgressStatus)
-
-  fun dispose()
-
-  fun onUpdateViewport(viewportRange: IntRange, expansionRange: IntRange)
-
-  fun setWidth(width: Int)
-}
-
-class RMarkdownNotebook(project: Project, editor: EditorImpl) {
-  // pointerFactory reuses pointers
-  private val outputs: MutableMap<NotebookIntervalPointer, RMarkdownNotebookOutput> = LinkedHashMap()
-  private val viewportQueue = MergingUpdateQueue(VIEWPORT_TASK_NAME, VIEWPORT_TIME_SPAN, true, null, editor.disposable)
-  private val pointerFactory = NotebookIntervalPointerFactory.get(editor)
-  private val psiToInterval = PsiToInterval(project, editor) { interval -> getCodeFenceEnd(editor, interval) }
-
-  init {
-    addResizeListener(editor)
-    addViewportListener(editor)
-  }
-
-  operator fun get(cell: NotebookCellLines.Interval?): RMarkdownNotebookOutput? {
-    if (cell == null) return null
-    val intervalPointer = ReadAction.compute<NotebookIntervalPointer, Throwable> {
-      pointerFactory.create(cell)
-    }
-    return outputs[intervalPointer]
-  }
-
-  operator fun get(cell: PsiElement): RMarkdownNotebookOutput? =
-    correctCell(cell)?.let { psiToInterval[it] }?.let { this[it] }
-
-  private fun correctCell(cell: PsiElement): PsiElement? =
-    when (cell.elementType) {
-      MarkdownTokenTypes.FENCE_LANG -> cell.parent.children.find { it.elementType == MarkdownTokenTypes.CODE_FENCE_END }
-      else -> cell
-    }
-
-  fun update(output: RMarkdownNotebookOutput) {
-    require(output.intervalPointer !in outputs)
-    outputs[output.intervalPointer] = output
-  }
-
-  fun remove(output: RMarkdownNotebookOutput) {
-    outputs.remove(output.intervalPointer, output)
-  }
-
-  private fun addResizeListener(editor: EditorEx) {
-    editor.component.addComponentListener(object : java.awt.event.ComponentAdapter() {
-      override fun componentResized(e: ComponentEvent) {
-        val inlayWidth = InlayDimensions.calculateInlayWidth(editor)
-        if (inlayWidth > 0) {
-          outputs.values.forEach {
-            it.setWidth(inlayWidth)
-          }
-        }
-      }
-    })
-  }
-
-  private fun addViewportListener(editor: EditorImpl) {
-    editor.scrollPane.viewport.addChangeListener {
-      viewportQueue.queue(object : Update(VIEWPORT_TASK_IDENTITY) {
-        override fun run() =
-          updateInlaysForViewport(editor)
-      })
-    }
-  }
-
-  private fun updateInlaysForViewport(editor: EditorImpl) {
-    invokeLater {
-      if (editor.isDisposed) return@invokeLater
-      val viewportRange = calculateViewportRange(editor)
-      val expansionRange = calculateInlayExpansionRange(editor, viewportRange)
-      outputs.values.forEach {
-        it.onUpdateViewport(viewportRange, expansionRange)
-      }
-    }
-  }
-
-  companion object {
-    private const val VIEWPORT_TASK_NAME = "On viewport change"
-    private const val VIEWPORT_TASK_IDENTITY = "On viewport change task"
-    private const val VIEWPORT_TIME_SPAN = 50
-
-    private fun install(editor: EditorImpl): RMarkdownNotebook =
-      RMarkdownNotebook(editor.project!!, editor).also {
-        key.set(editor, it)
-      }
-
-    fun installIfNotExists(editor: EditorImpl): RMarkdownNotebook =
-      editor.rMarkdownNotebook ?: install(editor)
-  }
-}
-
-val Editor.rMarkdownNotebook: RMarkdownNotebook?
-  get() = key.get(this)
