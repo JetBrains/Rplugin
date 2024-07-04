@@ -121,8 +121,8 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
       }
 
       buffer.append("<br>")
-      DocumentationManagerUtil.createHyperlink(buffer, localFunction, INSTALL_REQUIRED_PACKAGES_LINK,
-                                               RBundle.message("documentation.local.function.missing.packages.install.link"), true, false)
+      DocumentationManagerUtil.createHyperlink(buffer, INSTALL_REQUIRED_PACKAGES_LINK,
+                                               RBundle.message("documentation.local.function.missing.packages.install.link"), true)
       throw RequiredPackageException(buffer.toString())
     }
 
