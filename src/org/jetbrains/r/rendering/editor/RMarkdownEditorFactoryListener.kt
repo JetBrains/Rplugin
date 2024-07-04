@@ -7,10 +7,10 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
-import com.intellij.quarto.QuartoFileType
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellInlayManager
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLinesProvider
 import org.jetbrains.plugins.notebooks.visualization.NotebookEditorAppearanceProvider
+import org.jetbrains.r.quarto.QuartoFileType
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 class RMarkdownEditorFactoryListener : EditorFactoryListener {

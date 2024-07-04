@@ -1,4 +1,4 @@
-package com.intellij.quarto
+package org.jetbrains.r.quarto
 
 import com.intellij.formatting.ChildAttributes
 import com.intellij.lang.Language

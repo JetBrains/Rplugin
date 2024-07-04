@@ -7,8 +7,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.stubs.PsiFileStub
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.IStubFileElementType
-import com.intellij.quarto.QmdFenceProvider
-import com.intellij.quarto.QuartoLanguage
 import org.intellij.plugins.markdown.lang.parser.MarkdownParserAdapter
 import org.intellij.plugins.markdown.lang.parser.MarkdownParserDefinition
 import org.jetbrains.r.rmarkdown.PatchingLexer
