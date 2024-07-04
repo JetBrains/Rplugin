@@ -1,4 +1,4 @@
-package com.intellij.quarto
+package org.jetbrains.r.quarto
 
 import java.util.regex.Pattern
 

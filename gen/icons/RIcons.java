@@ -25,6 +25,7 @@ public final class RIcons {
   public static final class FileTypes {
     /** 16x16 */ public static final @NotNull Icon HtmlNotebook = load("icons/fileTypes/htmlNotebook.svg", 1421443285, 0);
     /** 16x16 */ public static final @NotNull Icon Presentation = load("icons/fileTypes/presentation.svg", -262024095, 0);
+    /** 16x16 */ public static final @NotNull Icon Quarto = load("icons/fileTypes/quarto.svg", -1658626261, 0);
     /** 16x16 */ public static final @NotNull Icon RMarkdown = load("icons/fileTypes/rMarkdown.svg", 1137740664, 0);
     /** 16x16 */ public static final @NotNull Icon Shiny = load("icons/fileTypes/shiny.svg", -2101833744, 0);
   }

@@ -82,7 +82,7 @@ You can find the source code in the following repositories:
                       interface="org.jetbrains.r.rmarkdown.RmdCellLanguageProvider" dynamic="true"/>
 
       <extensionPoint qualifiedName="com.intellij.qmdFenceProvider"
-                      interface="com.intellij.quarto.QmdFenceProvider" dynamic="true"/>
+                      interface="org.jetbrains.r.quarto.QmdFenceProvider" dynamic="true"/>
 
       <extensionPoint qualifiedName="com.intellij.rInterpreterSettingsProvider"
                       interface="org.jetbrains.r.settings.RInterpreterSettingsProvider" dynamic="true"/>
@@ -403,7 +403,7 @@ You can find the source code in the following repositories:
         <fileType name="R" implementationClass="org.jetbrains.r.RFileType" fieldName="INSTANCE" language="R" extensions="R;Rprofile"/>
         <fileType name="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownFileType" fieldName="INSTANCE"
                   language="RMarkdown" extensions="Rmd"/>
-        <fileType name="Quarto" implementationClass="com.intellij.quarto.QuartoFileType" fieldName="INSTANCE"
+      <fileType name="Quarto" implementationClass="org.jetbrains.r.quarto.QuartoFileType" fieldName="INSTANCE"
                 language="Quarto" extensions="Qmd"/>
         <fileType name="Roxygen" implementationClass="org.jetbrains.r.roxygen.RoxygenFileType" fieldName="INSTANCE" language="Roxygen"/>
 

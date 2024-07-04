@@ -9,12 +9,12 @@ import com.intellij.lang.Language
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.tree.IElementType
-import com.intellij.quarto.QmdFenceProvider
 import com.jetbrains.python.PythonLanguage
 import com.jetbrains.python.formatter.PyBlock
 import com.jetbrains.python.formatter.PyBlockContext
 import com.jetbrains.python.formatter.PythonFormattingModelBuilder
 import org.jetbrains.r.editor.formatting.TemplateContext
+import org.jetbrains.r.quarto.QmdFenceProvider
 
 class RmdFenceProviderForPython : RmdFenceProvider, QmdFenceProvider {
   override val fenceLanguage: Language = PythonLanguage.INSTANCE
