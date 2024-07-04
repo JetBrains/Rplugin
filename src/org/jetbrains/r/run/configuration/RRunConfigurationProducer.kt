@@ -39,7 +39,7 @@ class RRunConfigurationProducer : LazyRunConfigurationProducer<RRunConfiguration
     configuration.name = psiFile.name
     configuration.filePath = psiFile.virtualFile.path
 
-    val moduleDirectory = context.module.guessModuleDir()
+    val moduleDirectory = context.module?.guessModuleDir()
     configuration.workingDirectory = moduleDirectory?.path ?: psiFile.virtualFile.parent.path
     if (configuration.interpreterArgs.isEmpty()) {
       configuration.interpreterArgs = getDefaultInterpreterOptions(context.project).joinToString(separator = " ")
