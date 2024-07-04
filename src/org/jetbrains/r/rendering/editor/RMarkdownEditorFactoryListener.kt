@@ -26,7 +26,7 @@ class RMarkdownEditorFactoryListener : EditorFactoryListener {
     fun onRMarkdownFileEditorCreated(editor: EditorImpl) {
       NotebookCellLinesProvider.install(editor)
       NotebookEditorAppearanceProvider.install(editor)
-      NotebookCellInlayManager.install(editor)
+      NotebookCellInlayManager.install(editor, shouldCheckInlayOffsets = false)
     }
 
     fun isRMarkdownOrQuarto(virtualFile: VirtualFile): Boolean {
