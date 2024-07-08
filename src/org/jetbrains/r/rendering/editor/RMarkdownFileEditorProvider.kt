@@ -12,13 +12,14 @@ import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
 
 class RMarkdownFileEditorProvider : FileEditorProvider, DumbAware {
 
-  override fun getEditorTypeId() = "rmarkdown-editor"
+  override fun getEditorTypeId(): String = "rmarkdown-editor"
 
-  override fun accept(project: Project, file: VirtualFile) =
-    RMarkdownEditorFactoryListener.isRMarkdownOrQuarto(file)
+  override fun accept(project: Project, file: VirtualFile): Boolean =
+    RMarkdownVirtualFile.isRMarkdownOrQuarto(file)
 
   override fun createEditor(project: Project, file: VirtualFile): FileEditor {
     val editor = TextEditorProvider.getInstance().createEditor(project, file) as TextEditorImpl

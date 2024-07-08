@@ -10,13 +10,12 @@ import org.jetbrains.plugins.notebooks.ui.visualization.DefaultNotebookEditorApp
 import org.jetbrains.plugins.notebooks.ui.visualization.NotebookEditorAppearance
 import org.jetbrains.plugins.notebooks.ui.visualization.NotebookEditorAppearanceSizes
 import org.jetbrains.plugins.notebooks.visualization.NotebookEditorAppearanceProvider
-import org.jetbrains.r.rendering.editor.RMarkdownEditorFactoryListener
+import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
 import java.awt.Color
 
 class RMarkdownNotebookEditorAppearanceProvider : NotebookEditorAppearanceProvider {
   override fun create(editor: Editor): NotebookEditorAppearance? {
-    val virtualFile = RMarkdownEditorFactoryListener.getVirtualFile(editor)
-    if (virtualFile != null && RMarkdownEditorFactoryListener.isRMarkdownOrQuarto(virtualFile)) {
+    if (RMarkdownVirtualFile.hasVirtualFile(editor)) {
       return RMarkdownNotebookEditorAppearance
     }
     return null
