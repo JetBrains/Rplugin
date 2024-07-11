@@ -102,7 +102,7 @@ object RInterpreterUtil {
   }
 
   fun isSupportedVersion(version: Version?): Boolean {
-    return version != null && version.isOrGreaterThan(3, 4) && version.lessThan(4, 4)
+    return version != null && version.isOrGreaterThan(3, 4) && version.lessThan(4, 5)
   }
 
   fun suggestAllInterpreters(enabledOnly: Boolean, localOnly: Boolean = false): List<RInterpreterInfo> {
