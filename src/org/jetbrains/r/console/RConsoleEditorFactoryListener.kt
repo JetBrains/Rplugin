@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.console
 
+import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
@@ -19,17 +20,29 @@ class RConsoleEditorFactoryListener : EditorFactoryListener {
     val project = event.editor.project ?: return
     val file = FileDocumentManager.getInstance().getFile(event.editor.document) ?: return
     if (FileTypeRegistry.getInstance().isFileOfType(file, RFileType) || FileTypeRegistry.getInstance().isFileOfType(file, RMarkdownFileType)) {
-    val toolWindowManager = ToolWindowManager.getInstance(project)
-    toolWindowManager.invokeLater(Runnable {
-      val toolWindow = toolWindowManager.getToolWindow(RConsoleToolWindowFactory.ID)
-      if (toolWindow != null && toolWindow.contentManager.contentCount == 0) {
-        RConsoleManager.getInstance(project).currentConsoleAsync.onSuccess {
-          invokeLater {
-            toolWindow.show { }
+      val toolWindowManager = ToolWindowManager.getInstance(project)
+
+      val outerModalityState = ModalityState.defaultModalityState()
+
+      toolWindowManager.invokeLater {
+        val toolWindow = toolWindowManager.getToolWindow(RConsoleToolWindowFactory.ID)
+        if (toolWindow != null && toolWindow.contentManager.contentCount == 0) {
+          /**
+           * see R-1549
+           * currentConsoleAsync triggers file saving in [org.jetbrains.r.interpreter.RInterpreter.prepareForExecution]
+           * but RConsoleManager expects that currentConsoleAsync will be called after creation of RConsoleToolWindowFactory
+           * see [org.jetbrains.r.console.RConsoleManager.runSingleConsole]
+           * Ideally RConsole and toolwindow should not be bound in a such way
+           */
+          invokeLater(outerModalityState) {
+            RConsoleManager.getInstance(project).currentConsoleAsync.onSuccess {
+              toolWindowManager.invokeLater {
+                toolWindow.show { }
+              }
+            }
           }
         }
       }
-    })
     }
   }
 }
