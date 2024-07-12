@@ -24,14 +24,15 @@ class RMarkdownEditorHighlighterProvider : EditorHighlighterProvider {
                                     fileType: FileType,
                                     virtualFile: VirtualFile?,
                                     colors: EditorColorsScheme): EditorHighlighter {
-    return RMarkdownTemplateEditorHighlighter(project, virtualFile, colors)
+    return RMarkdownOrQuartoTemplateEditorHighlighter(project, virtualFile, colors)
   }
 }
 
-private class RMarkdownTemplateEditorHighlighter(project: Project?,
-                                                 virtualFile: VirtualFile?,
-                                                 colors: EditorColorsScheme) :
-  LayeredLexerEditorHighlighter(RMarkdownSyntaxHighlighter(), colors) {
+internal class RMarkdownOrQuartoTemplateEditorHighlighter(
+  project: Project?,
+  virtualFile: VirtualFile?,
+  colors: EditorColorsScheme,
+) : LayeredLexerEditorHighlighter(RMarkdownSyntaxHighlighter(), colors) {
 
   init {
     for (extension in RmdFenceProvider.EP_NAME.extensionList) {
