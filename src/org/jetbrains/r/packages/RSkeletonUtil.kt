@@ -204,7 +204,10 @@ object RSkeletonUtil {
     }
     packageBuilder.setPriority(priority)
 
-    val symbols = lines.subList(1, lines.size)
+    // 'RPackage(name=Matrix, version=1.6-5)' has an empty last line, see R-1560
+    val symbols =
+      if (lines.last() == "" && lines.size > 2) lines.subList(1, lines.size - 1)
+      else lines.subList(1, lines.size)
 
     var index = 0
     while (index < symbols.size) {
