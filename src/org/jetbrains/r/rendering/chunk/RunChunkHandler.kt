@@ -36,7 +36,6 @@ import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.Graphic
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.ProcessOutput
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.ProgressStatus
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.getEditorManager
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
@@ -195,7 +194,6 @@ object RunChunkHandler {
     }
     prepare.onProcessed {
       executeCode(request, console, codeElement, beforeChunkPromise) {
-        getEditorManager(editor)?.addTextToInlay(inlayElement, it.text, it.kind)
         editor.rMarkdownNotebook?.let { nb -> nb[inlayElement]?.addText(it.text, it.kind) }
       }.onProcessed { result ->
         dumpAndShutdownAsync(graphicsDeviceRef.get()).onProcessed {
@@ -279,9 +277,6 @@ object RunChunkHandler {
   }
 
   private fun updateProgressBar(editor: EditorEx, inlayElement: PsiElement) {
-    val inlaysManager = getEditorManager(editor)
-    inlaysManager?.updateCell(inlayElement, listOf(), createTextOutput = true)
-    inlaysManager?.updateInlayProgressStatus(inlayElement, InlayProgressStatus(ProgressStatus.RUNNING))
     editor.rMarkdownNotebook?.get(inlayElement)?.let { e ->
       e.updateOutputs()
       e.updateProgressStatus(InlayProgressStatus(ProgressStatus.RUNNING))
@@ -316,9 +311,6 @@ object RunChunkHandler {
       result.exception != null -> InlayProgressStatus(ProgressStatus.STOPPED_ERROR, result.exception)
       else -> InlayProgressStatus(ProgressStatus.STOPPED_OK)
     }
-    val inlaysManager = getEditorManager(editor)
-    inlaysManager?.updateCell(inlayElement, createTextOutput = !success)
-    inlaysManager?.updateInlayProgressStatus(inlayElement, status)
     editor.rMarkdownNotebook?.get(inlayElement)?.let { e ->
       e.updateOutputs()
       e.updateProgressStatus(status)

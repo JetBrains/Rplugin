@@ -8,7 +8,6 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataKey
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.project.DumbAwareAction
@@ -23,7 +22,6 @@ import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
 import org.jetbrains.plugins.notebooks.visualization.NOTEBOOK_INTERVAL_POINTER_KEY
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.getEditorManager
 import org.jetbrains.r.actions.*
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
@@ -136,8 +134,7 @@ private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
   element.project.chunkExecutionState = chunkExecutionState
   RunChunkHandler.execute(element, isDebug = isDebug).onProcessed {
     element.project.chunkExecutionState = null
-    val inlayElement = runReadAction { findInlayElementByFenceElement(element) } ?: return@onProcessed
-    getEditorManager(editor)?.updateCell(inlayElement)
+    /** outputs will be updated in [RunChunkHandler.afterRunChunk] */
   }
 }
 
