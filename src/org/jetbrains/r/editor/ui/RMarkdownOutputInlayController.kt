@@ -30,7 +30,6 @@ import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointerFact
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.*
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
 import org.jetbrains.plugins.notebooks.visualization.ui.EditorCellView
-import org.jetbrains.r.rendering.chunk.ChunkDescriptorProvider
 import org.jetbrains.r.rendering.chunk.ChunkPath
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
 import java.awt.Graphics
@@ -188,10 +187,6 @@ class RMarkdownOutputInlayController private constructor(
     ): NotebookCellInlayController? {
       if (!isRMarkdown(editor))
         return null
-
-      if (!ChunkDescriptorProvider.isNewMode(editor)) {
-        return null
-      }
 
       val interval: NotebookCellLines.Interval = intervalIterator.next()
       return when (interval.type) {
