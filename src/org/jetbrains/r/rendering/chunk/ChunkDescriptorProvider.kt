@@ -9,7 +9,6 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.util.registry.Registry
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -50,8 +49,7 @@ class ChunkDescriptorProvider : InlayDescriptorProvider {
   }
 
   companion object {
-    fun isNewMode(editor: Editor): Boolean =
-      Registry.`is`("r.interpreter.useOutputInlays")
+    fun isNewMode(editor: Editor): Boolean = true
   }
 }
 
