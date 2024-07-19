@@ -4,12 +4,10 @@
 
 package org.jetbrains.r.rendering.chunk
 
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -18,13 +16,11 @@ import com.intellij.util.IconUtil
 import com.intellij.util.ui.ImageUtil
 import com.intellij.util.ui.UIUtil
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDescriptorProvider
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayElementDescriptor
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayOutput
 import org.jetbrains.plugins.notebooks.visualization.use
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RPlotUtil
@@ -38,20 +34,6 @@ import java.io.File
 import java.util.concurrent.Future
 import javax.imageio.ImageIO
 import javax.swing.Icon
-
-class ChunkDescriptorProvider : InlayDescriptorProvider {
-  override fun getInlayDescriptor(editor: Editor): InlayElementDescriptor? {
-    return runReadAction {
-      if (isNewMode(editor)) return@runReadAction null
-      val psiFile = PsiDocumentManager.getInstance(editor.project ?: return@runReadAction null).getPsiFile(editor.document)
-      if (psiFile?.virtualFile?.fileType is RMarkdownFileType) RMarkdownInlayDescriptor(psiFile) else null
-    }
-  }
-
-  companion object {
-    fun isNewMode(editor: Editor): Boolean = true
-  }
-}
 
 class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDescriptor {
   override fun cleanup(psi: PsiElement): Future<Void> =
