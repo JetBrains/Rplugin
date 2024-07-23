@@ -42,10 +42,10 @@ class RConsoleHighlightingTest : RConsoleBaseTestCase() {
     IdeEventQueue.getInstance().flushQueue()
 
     val editor = console.editor
-    val markup = DocumentMarkupModel.forDocument(editor.document, project, true)
+    val markup = DocumentMarkupModel.forDocument(editor!!.document, project, true)
 
     val result = StringBuilder()
-    val content = editor.document.charsSequence
+    val content = editor!!.document.charsSequence
     val comparator = Comparator.comparingInt<RangeHighlighter> { it.startOffset }.thenComparingInt { it.endOffset }
     val highlighting = markup.allHighlighters.toList().sortedWith(comparator)
 

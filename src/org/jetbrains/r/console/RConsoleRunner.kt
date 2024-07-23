@@ -203,7 +203,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
       override fun isSelected(e: AnActionEvent): Boolean = isSelected
 
       private fun updateEditors() {
-        console.editor.getSettings().setUseSoftWraps(isSelected)
+        console.editor!!.getSettings().setUseSoftWraps(isSelected)
         console.consoleEditor.getSettings().setUseSoftWraps(isSelected)
       }
 

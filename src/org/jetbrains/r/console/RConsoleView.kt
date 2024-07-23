@@ -10,7 +10,10 @@ import com.intellij.codeInsight.daemon.impl.SeverityRegistrar
 import com.intellij.execution.console.LanguageConsoleImpl
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CustomShortcutSet
+import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
@@ -246,7 +249,7 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
       }
     })
 
-    val to = DocumentMarkupModel.forDocument(editor.document, project, true)
+    val to = DocumentMarkupModel.forDocument(editor!!.document, project, true)
     val input = consoleEditor.document.charsSequence
     scheduleAnnotationsForHistory(to, input, holder, TextRange(0, input.length))
   }
@@ -298,7 +301,7 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
     }
 
     val historyLengthBeforeInput = to.document.textLength
-    val promptAttributes = promptAttributes?.attributes
+    val promptAttributes = promptAttributes.attributes
     postFlushActions.add {
       val allHighlighters = to.allHighlighters.toList()
       var currentOffset = historyLengthBeforeInput

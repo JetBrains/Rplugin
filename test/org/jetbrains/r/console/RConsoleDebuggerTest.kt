@@ -183,7 +183,7 @@ class RConsoleDebuggerTest : RConsoleBaseTestCase() {
   private fun checkConsoleText(s: String, exclude: Boolean = false) {
     PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
     console.flushDeferredText()
-    val text = console.editor.document.text
+    val text = console.editor!!.document.text
     if (exclude) {
       TestCase.assertTrue("Console contents:\n$text", s !in text)
     } else {
