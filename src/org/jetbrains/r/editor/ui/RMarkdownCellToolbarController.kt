@@ -3,6 +3,7 @@ package org.jetbrains.r.editor.ui
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
@@ -64,6 +65,7 @@ internal class RMarkdownCellToolbarController private constructor(
         inlayOffset
       )
     )!!
+
   override fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval, cellView: EditorCellView) {
     val startOffset = editor.document.getLineStartOffset(interval.lines.first)
     val endOffset = editor.document.getLineEndOffset(interval.lines.last)
@@ -76,14 +78,17 @@ internal class RMarkdownCellToolbarController private constructor(
   }
 
   class Factory : NotebookCellInlayController.Factory {
-    override fun compute(editor: EditorImpl,
-                         currentControllers: Collection<NotebookCellInlayController>,
-                         intervalIterator: ListIterator<NotebookCellLines.Interval>
+    override fun compute(
+      editor: EditorImpl,
+      currentControllers: Collection<NotebookCellInlayController>,
+      intervalIterator: ListIterator<NotebookCellLines.Interval>,
     ): NotebookCellInlayController? {
       if (!isRMarkdown(editor))
         return null
 
       val interval: NotebookCellLines.Interval = intervalIterator.next()
+      val offset = getOffset(editor.document, NotebookIntervalPointerFactory.get(editor).create(interval))
+
       return when (interval.type) {
         NotebookCellLines.CellType.CODE -> {
           val intervalPointer = NotebookIntervalPointerFactory.get(editor).create(interval)
@@ -91,19 +96,18 @@ internal class RMarkdownCellToolbarController private constructor(
             .filterIsInstance<RMarkdownCellToolbarController>()
             .firstOrNull {
               it.intervalPointer.get() == intervalPointer.get()
+              && it.inlay.offset == offset
             }
-          ?: createController(editor, intervalPointer)
-         }
+          ?: RMarkdownCellToolbarController(editor, this, intervalPointer, offset)
+        }
         NotebookCellLines.CellType.MARKDOWN,
-        NotebookCellLines.CellType.RAW -> null
+        NotebookCellLines.CellType.RAW,
+          -> null
       }
     }
 
-    private fun createController(editor: EditorImpl, intervalPointer: NotebookIntervalPointer): RMarkdownCellToolbarController? {
-      val offset = editor.document.getLineStartOffset(intervalPointer.get()!!.lines.first) + 1
-      if (offset > editor.document.textLength) return null
-      return RMarkdownCellToolbarController(editor, this, intervalPointer, offset)
-    }
+    private fun getOffset(document: Document, intervalPointer: NotebookIntervalPointer): Int =
+      document.getLineStartOffset(intervalPointer.get()!!.lines.first)
   }
 
   companion object {
