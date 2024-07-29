@@ -40,11 +40,12 @@ import java.awt.event.ComponentEvent
 class RMarkdownOutputInlayController private constructor(
   val editor: EditorImpl,
   override val factory: NotebookCellInlayController.Factory,
-  override val intervalPointer: NotebookIntervalPointer
+  override val intervalPointer: NotebookIntervalPointer,
+  offset: Int,
 ) : NotebookCellInlayController, RMarkdownNotebookOutput {
 
   private val notebook: RMarkdownNotebook = RMarkdownNotebook.installIfNotExists(editor)
-  private val inlayComponent: NotebookInlayComponent = addInlayComponent(editor, intervalPointer)!!
+  private val inlayComponent: NotebookInlayComponent = addInlayComponent(editor, intervalPointer, offset)
   override val inlay: Inlay<*> = inlayComponent.inlay!!
 
   init {
@@ -141,10 +142,8 @@ class RMarkdownOutputInlayController private constructor(
     inlayComponent.clearOutputs()
   }
 
-  private fun addInlayComponent(editor: EditorImpl, intervalPointer: NotebookIntervalPointer): NotebookInlayComponent? {
+  private fun addInlayComponent(editor: EditorImpl, intervalPointer: NotebookIntervalPointer, offset: Int): NotebookInlayComponent {
     InlayDimensions.init(editor)
-    val interval = intervalPointer.get() ?: return null
-    val offset = extractOffset(editor.document, interval)
     val inlayComponent = NotebookInlayComponentInterval(intervalPointer, editor)
 
     if (!editor.inlayModel.isInBatchMode) {
@@ -189,6 +188,8 @@ class RMarkdownOutputInlayController private constructor(
         return null
 
       val interval: NotebookCellLines.Interval = intervalIterator.next()
+      val offset = extractOffset(editor.document, interval)
+
       return when (interval.type) {
         NotebookCellLines.CellType.CODE -> {
           val pointer = NotebookIntervalPointerFactory.get(editor).create(interval)
@@ -196,8 +197,9 @@ class RMarkdownOutputInlayController private constructor(
             .filterIsInstance<RMarkdownOutputInlayController>()
             .firstOrNull {
               it.intervalPointer.get() == pointer.get()
+              && it.inlay.offset == offset
             }
-          ?: RMarkdownOutputInlayController(editor, this, pointer)
+          ?: RMarkdownOutputInlayController(editor, this, pointer, offset)
         }
         NotebookCellLines.CellType.MARKDOWN,
         NotebookCellLines.CellType.RAW -> null
@@ -260,7 +262,7 @@ private fun disposeComponent(component: NotebookInlayComponent) {
   component.dispose()
 }
 
-private fun extractOffset(document: Document, interval: NotebookCellLines.Interval) =
+private fun extractOffset(document: Document, interval: NotebookCellLines.Interval): Int =
   Integer.max(document.getLineEndOffset(interval.lines.last) - 1, 0)
 
 private val key = Key.create<RMarkdownNotebook>(RMarkdownNotebook::class.java.name)
