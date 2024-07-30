@@ -10,7 +10,7 @@ class ChunkInlayOutputProvider : InlayOutputProvider {
     return type == "IMG"
   }
 
-  override fun create(parent: Disposable, editor: Editor, clearAction: () -> Unit): InlayOutput {
-    return ChunkImageInlayOutput(parent, editor, clearAction)
+  override fun create(parent: Disposable, editor: Editor): InlayOutput {
+    return ChunkImageInlayOutput(parent, editor)
   }
 }

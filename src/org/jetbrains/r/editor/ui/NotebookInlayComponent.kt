@@ -233,11 +233,10 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
   }
 
   /** Event from notebook with console output. This output contains intermediate data from console. */
-  private fun onOutput(data: String, type: String, progressStatus: InlayProgressStatus?, cleanup: () -> Unit) {
+  private fun onOutput(data: String, type: String, progressStatus: InlayProgressStatus?) {
     state?.clear()
 
     val output = getOrCreateOutput()
-    output.clearAction = cleanup
     if (output.addData(type, data, progressStatus)?.shouldLimitHeight() == false) {
       shouldLimitMaxHeight = false
     }
@@ -249,7 +248,7 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
     }
   }
 
-  private fun onMultiOutput(inlayOutputs: List<InlayOutput>, cleanup: () -> Unit) {
+  private fun onMultiOutput(inlayOutputs: List<InlayOutput>) {
     state?.clear()
     removeToolbar()
 
@@ -265,7 +264,6 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
             adjustSize(height)
           }
         }
-        st.clearAction = cleanup
         addState(st)
       }
     }
@@ -277,13 +275,13 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
     }
   }
 
-  fun addInlayOutputs(inlayOutputs: List<InlayOutput>, cleanup: () -> Unit) {
+  fun addInlayOutputs(inlayOutputs: List<InlayOutput>) {
     if (inlayOutputs.size > 1) {
-      onMultiOutput(inlayOutputs, cleanup)
+      onMultiOutput(inlayOutputs)
     }
     else {
       val inlay = inlayOutputs.first()
-      onOutput(inlay.data, inlay.type, inlay.progressStatus, cleanup)
+      onOutput(inlay.data, inlay.type, inlay.progressStatus)
     }
   }
 
