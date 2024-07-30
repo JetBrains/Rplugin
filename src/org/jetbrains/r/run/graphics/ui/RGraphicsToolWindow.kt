@@ -5,6 +5,8 @@
 
 package org.jetbrains.r.run.graphics.ui
 
+import com.intellij.notebooks.images.CHANGE_DARK_MODE_TOPIC
+import com.intellij.notebooks.images.GraphicsPanel
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.CheckboxAction
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
@@ -17,8 +19,6 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.CHANGE_DARK_MODE_TOPIC
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.GraphicsPanel
 import org.jetbrains.plugins.notebooks.visualization.r.ui.ToolbarUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtAction

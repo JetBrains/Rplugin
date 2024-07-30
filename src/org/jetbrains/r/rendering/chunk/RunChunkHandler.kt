@@ -7,6 +7,7 @@ package org.jetbrains.r.rendering.chunk
 
 import com.google.common.annotations.VisibleForTesting
 import com.google.gson.Gson
+import com.intellij.notebooks.images.GraphicsPanel
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
@@ -32,7 +33,6 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.GraphicsPanel
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.ProcessOutput
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.ProgressStatus

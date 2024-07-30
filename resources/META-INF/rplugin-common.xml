@@ -3,6 +3,7 @@
         <plugin id="com.intellij.notebooks.core"/>
         <module name="intellij.notebooks.visualization"/>
         <module name="intellij.notebooks.ui"/>
+        <module name="intellij.notebooks.images"/>
         <plugin id="org.intellij.plugins.markdown"/>
         <plugin id="org.intellij.intelliLang"/>
     </dependencies>
