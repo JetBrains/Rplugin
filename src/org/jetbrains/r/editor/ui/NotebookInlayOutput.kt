@@ -36,16 +36,16 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
   private var output: InlayOutput? = null
 
 
-  private fun addTableOutput() = createOutput { parent, editor, clearAction -> InlayOutputTable(parent, editor, clearAction) }
+  private fun addTableOutput() = createOutput { parent, editor -> InlayOutputTable(parent, editor) }
 
-  private fun addTextOutput() = createOutput {  parent, editor, clearAction ->  InlayOutputText(parent, editor, clearAction) }
+  private fun addTextOutput() = createOutput {  parent, editor ->  InlayOutputText(parent, editor) }
 
-  private fun addHtmlOutput() = createOutput {  parent, editor, clearAction ->  InlayOutputHtml(parent, editor, clearAction) }
+  private fun addHtmlOutput() = createOutput {  parent, editor ->  InlayOutputHtml(parent, editor) }
 
-  private fun addImgOutput() = createOutput {  parent, editor, clearAction ->  InlayOutputImg(parent, editor, clearAction) }
+  private fun addImgOutput() = createOutput {  parent, editor ->  InlayOutputImg(parent, editor) }
 
-  private inline fun <T: InlayOutput> createOutput(constructor: (Disposable, Editor, () -> Unit) -> T) =
-    constructor(parent, editor, clearAction).apply { setupOutput(this) }
+  private inline fun <T: InlayOutput> createOutput(constructor: (Disposable, Editor) -> T) =
+    constructor(parent, editor).apply { setupOutput(this) }
 
   private fun setupOutput(output: InlayOutput) {
     this.output?.let { remove(it.getComponent()) }
@@ -84,8 +84,8 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
     val provider = InlayOutputProvider.EP.extensionList.asSequence().filter { it.acceptType(type) }.firstOrNull()
     val inlayOutput: InlayOutput
     if (provider != null) {
-      inlayOutput = output.takeIf { it?.acceptType(type) == true } ?: createOutput { parent, editor, clearAction ->
-        provider.create(parent, editor, clearAction)
+      inlayOutput = output.takeIf { it?.acceptType(type) == true } ?: createOutput { parent, editor ->
+        provider.create(parent, editor)
       }
     }
     else {
@@ -123,5 +123,5 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
     output?.onViewportChange(isInViewport)
   }
 
-  override fun createActions(): List<AnAction> = output?.actions?.filterNot { it is ClearOutputAction } ?: emptyList()
+  override fun createActions(): List<AnAction> = output?.actions ?: emptyList()
 }

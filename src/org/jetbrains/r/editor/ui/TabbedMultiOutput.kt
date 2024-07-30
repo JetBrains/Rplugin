@@ -153,12 +153,14 @@ class TabbedMultiOutput(private val editor: Editor, parent: Disposable) : Notebo
 
   private fun createTabToolbar(tabInfo: TabInfo): JComponent {
     val actionGroups = createTabActionGroups(tabInfo)
-    val toolbar = ToolbarUtil.createActionToolbar(javaClass.simpleName, actionGroups).component
-    if (toolbar is ActionToolbarImpl) {
-      toolbar.setForceMinimumSize(true)
+    val toolbar = ToolbarUtil.createActionToolbar(javaClass.simpleName, actionGroups)
+    toolbar.targetComponent = tabInfo.component
+    val toolbarComponent = toolbar.component
+    if (toolbarComponent is ActionToolbarImpl) {
+      toolbarComponent.setForceMinimumSize(true)
     }
     return JPanel().apply {  // Align toolbar to top
-      add(toolbar)
+      add(toolbarComponent)
     }
   }
 
@@ -167,12 +169,7 @@ class TabbedMultiOutput(private val editor: Editor, parent: Disposable) : Notebo
       (tabInfo.component as? ToolBarProvider)?.let { provider ->
         groups.add(provider.createActions())
       }
-      groups.add(listOf(createClearAction()))
     }
-  }
-
-  private fun createClearAction(): AnAction {
-    return ToolbarUtil.createAnActionButton(ClearOutputAction.ID, clearAction::invoke)
   }
 
   private fun updateMaxHeight(height: Int) {

@@ -114,9 +114,7 @@ class RMarkdownOutputInlayController private constructor(
       val outputs = makeChunkPath()?.let { RMarkdownInlayDescriptor.getInlayOutputs(it, editor) } ?: emptyList()
       if (outputs.isEmpty()) return@invokeLater
 
-      inlayComponent.addInlayOutputs(outputs) {
-        clearOutputs(removeFiles = true)
-      }
+      inlayComponent.addInlayOutputs(outputs)
     }
   }
 
