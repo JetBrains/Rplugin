@@ -55,5 +55,7 @@
     <orderEntry type="module" module-name="intellij.notebooks.ui" />
     <orderEntry type="library" name="kotlinx-coroutines-core" level="project" />
     <orderEntry type="module" module-name="intellij.python.psi" scope="TEST" />
+    <orderEntry type="module" module-name="intellij.notebooks.images" />
+    <orderEntry type="module" module-name="intellij.platform.editor" />
   </component>
 </module>

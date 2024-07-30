@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.run.graphics.ui
 
+import com.intellij.notebooks.images.GraphicsPanel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
@@ -12,7 +13,6 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.GraphicsPanel
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.run.graphics.*
