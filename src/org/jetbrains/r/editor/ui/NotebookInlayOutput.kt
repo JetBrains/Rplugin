@@ -23,16 +23,7 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
 
   private var output: InlayOutput? = null
 
-
-  private fun addTableOutput() = createOutput { parent, editor -> InlayOutputTable(parent, editor) }
-
-  private fun addTextOutput() = createOutput {  parent, editor ->  InlayOutputText(parent, editor) }
-
-  private fun addHtmlOutput() = createOutput {  parent, editor ->  InlayOutputHtml(parent, editor) }
-
-  private fun addImgOutput() = createOutput {  parent, editor ->  InlayOutputImg(parent, editor) }
-
-  private inline fun <T: InlayOutput> createOutput(constructor: (Disposable, Editor) -> T) =
+  private inline fun <reified T: InlayOutput> createOutputAndSetup(constructor: (Disposable, Editor) -> T) =
     constructor(parent, editor).apply { setupOutput(this) }
 
   private fun setupOutput(output: InlayOutput) {
@@ -65,15 +56,15 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
 
   private fun getOrAddTextOutput(): InlayOutputText {
     (output as? InlayOutputText)?.let { return it }
-    return addTextOutput()
+    return createOutputAndSetup(::InlayOutputText)
   }
 
   fun addData(type: String, data: String, progressStatus: InlayProgressStatus?) {
     val inlayOutput: InlayOutput = when (type) {
-      "IMG" -> createOutput { parent, editor -> ChunkImageInlayOutput(parent, editor) }
-      "TABLE" -> output?.takeIf { it is InlayOutputTable } ?: addTableOutput()
-      "HTML", "URL" -> output?.takeIf { it is InlayOutputHtml } ?: addHtmlOutput()
-      "IMGBase64", "IMGSVG" -> output?.takeIf { it is InlayOutputImg } ?: addImgOutput()
+      "IMG" -> createOutputAndSetup(::ChunkImageInlayOutput)
+      "TABLE" -> output?.takeIf { it is InlayOutputTable } ?: createOutputAndSetup(::InlayOutputTable)
+      "HTML", "URL" -> output?.takeIf { it is InlayOutputHtml } ?: createOutputAndSetup(::InlayOutputHtml)
+      "IMGBase64", "IMGSVG" -> output?.takeIf { it is InlayOutputImg } ?: createOutputAndSetup(::InlayOutputImg)
       else -> getOrAddTextOutput()
     }
     progressStatus?.let {
