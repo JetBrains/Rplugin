@@ -1,6 +1,6 @@
 package org.jetbrains.r.editor.ui
 
-import com.intellij.notebooks.images.InlayOutputImg
+import org.jetbrains.r.visualization.inlays.components.InlayOutputImg
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.editor.Editor
