@@ -2,7 +2,6 @@ package org.jetbrains.r.visualization.inlays.components
 
 import com.intellij.ui.components.JBScrollPane
 import org.jetbrains.plugins.notebooks.visualization.outputs.NotebookOutputNonStickyScrollPane
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.NotebookInlayState
 import javax.swing.JComponent
 
 object InlayStateScrollPaneCustomizer : InlayStateCustomizer {

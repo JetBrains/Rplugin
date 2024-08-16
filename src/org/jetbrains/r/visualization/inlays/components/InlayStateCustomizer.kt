@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.visualization.inlays.components
 
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.NotebookInlayState
+import org.jetbrains.r.visualization.inlays.components.NotebookInlayState
 
 /** This extension point allows to perform additional customizations to inlay outputs before adding
  * them to a notebook.

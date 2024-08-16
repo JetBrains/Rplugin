@@ -5,7 +5,6 @@
 package org.jetbrains.r.visualization.inlays.components
 
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayOutput
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.NotebookInlayState
 
 abstract class NotebookInlayMultiOutput : NotebookInlayState() {
   abstract fun onOutputs(inlayOutputs: List<InlayOutput>)
