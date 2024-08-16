@@ -19,7 +19,7 @@ import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOu
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.SaveOutputAction
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.initOutputTextConsole
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.updateOutputTextConsoleUI
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.runAsyncInlay
+import org.jetbrains.r.visualization.inlays.runAsyncInlay
 import java.awt.Dimension
 import java.io.File
 import javax.swing.SwingUtilities

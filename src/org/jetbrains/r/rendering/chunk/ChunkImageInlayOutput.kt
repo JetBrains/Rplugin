@@ -9,7 +9,7 @@ import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.CopyImageToClipboardAction
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutput
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutputUtil
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.runAsyncInlay
+import org.jetbrains.r.visualization.inlays.runAsyncInlay
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RPlotUtil
