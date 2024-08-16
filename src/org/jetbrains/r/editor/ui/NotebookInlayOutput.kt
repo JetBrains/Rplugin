@@ -9,6 +9,7 @@ import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.*
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
 import org.jetbrains.r.rendering.chunk.ChunkImageInlayOutput
 import org.jetbrains.r.visualization.inlays.components.InlayOutputTable
+import org.jetbrains.r.visualization.inlays.components.InlayOutputText
 import java.awt.BorderLayout
 import java.awt.Rectangle
 import java.awt.event.ComponentAdapter
