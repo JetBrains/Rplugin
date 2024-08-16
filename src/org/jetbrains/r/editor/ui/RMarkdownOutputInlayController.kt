@@ -28,6 +28,7 @@ import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progres
 import org.jetbrains.plugins.notebooks.visualization.ui.EditorCellView
 import org.jetbrains.r.rendering.chunk.ChunkPath
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
+import org.jetbrains.r.visualization.inlays.InlayComponent
 import java.awt.Graphics
 import java.awt.Point
 import java.awt.Rectangle

@@ -14,7 +14,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayComponent
+import org.jetbrains.r.visualization.inlays.InlayComponent
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayOutput
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
