@@ -5,14 +5,10 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.Key
-import com.intellij.ui.RelativeFont
-import com.intellij.util.ui.StartupUiUtil
-import com.intellij.util.ui.UIUtil
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.*
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
 import org.jetbrains.r.rendering.chunk.ChunkImageInlayOutput
 import java.awt.BorderLayout
-import java.awt.Font
 import java.awt.Rectangle
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -23,15 +19,6 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
 
   init {
     layout = BorderLayout()
-  }
-
-  companion object {
-    private const val RESIZE_TASK_NAME = "Resize graphics"
-    private const val RESIZE_TASK_IDENTITY = "Resizing graphics"
-    private const val RESIZE_TIME_SPAN = 500
-
-    private val monospacedFont = RelativeFont.NORMAL.family(Font.MONOSPACED)
-    private val outputFont = monospacedFont.derive(StartupUiUtil.labelFont.deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL)))
   }
 
   private var output: InlayOutput? = null
