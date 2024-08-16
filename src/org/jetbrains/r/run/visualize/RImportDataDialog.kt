@@ -29,7 +29,7 @@ import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.BorderlessDialogWrapper
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.DialogUtil
+import org.jetbrains.r.visualization.inlays.components.DialogUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.LocalOrRemotePath
 import org.jetbrains.r.interpreter.RInterpreter
