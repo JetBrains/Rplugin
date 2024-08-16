@@ -20,6 +20,7 @@ import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayOutput
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.*
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
 import org.jetbrains.plugins.notebooks.visualization.r.ui.UiCustomizer
+import org.jetbrains.r.visualization.inlays.components.NotebookInlayMultiOutput
 import java.awt.BorderLayout
 import java.awt.Cursor
 import java.awt.Graphics
