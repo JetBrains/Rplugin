@@ -10,6 +10,7 @@ import com.intellij.util.ui.StartupUiUtil
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.*
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
+import org.jetbrains.r.rendering.chunk.ChunkImageInlayOutput
 import java.awt.BorderLayout
 import java.awt.Font
 import java.awt.Rectangle
@@ -80,27 +81,18 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
     return addTextOutput()
   }
 
-  fun addData(type: String, data: String, progressStatus: InlayProgressStatus?): InlayOutputProvider? {
-    val provider = InlayOutputProvider.EP.extensionList.asSequence().filter { it.acceptType(type) }.firstOrNull()
-    val inlayOutput: InlayOutput
-    if (provider != null) {
-      inlayOutput = output.takeIf { it?.acceptType(type) == true } ?: createOutput { parent, editor ->
-        provider.create(parent, editor)
-      }
-    }
-    else {
-      inlayOutput = when (type) {
-        "TABLE" -> output?.takeIf { it is InlayOutputTable } ?: addTableOutput()
-        "HTML", "URL" -> output?.takeIf { it is InlayOutputHtml } ?: addHtmlOutput()
-        "IMG", "IMGBase64", "IMGSVG" -> output?.takeIf { it is InlayOutputImg } ?: addImgOutput()
-        else -> getOrAddTextOutput()
-      }
+  fun addData(type: String, data: String, progressStatus: InlayProgressStatus?) {
+    val inlayOutput: InlayOutput = when (type) {
+      "IMG" -> createOutput { parent, editor -> ChunkImageInlayOutput(parent, editor) }
+      "TABLE" -> output?.takeIf { it is InlayOutputTable } ?: addTableOutput()
+      "HTML", "URL" -> output?.takeIf { it is InlayOutputHtml } ?: addHtmlOutput()
+      "IMGBase64", "IMGSVG" -> output?.takeIf { it is InlayOutputImg } ?: addImgOutput()
+      else -> getOrAddTextOutput()
     }
     progressStatus?.let {
       inlayOutput.updateProgressStatus(editor, it)
     }
     inlayOutput.addData(data, type)
-    return provider
   }
 
   fun addText(message: String, outputType: Key<*>) {

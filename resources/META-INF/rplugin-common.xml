@@ -748,7 +748,6 @@ You can find the source code in the following repositories:
         <directoryProjectGenerator implementation="org.jetbrains.r.projectGenerator.template.RPackageProjectGenerator"/>
 
         <datavis.r.inlays.components.graphicsManagerProvider implementation="org.jetbrains.r.rendering.chunk.ChunkGraphicsManagerProvider"/>
-        <datavis.inlays.components.inlayOutputProvider implementation="org.jetbrains.r.rendering.chunk.ChunkInlayOutputProvider"/>
 
         <!-- R help providers -->
         <webHelpProvider implementation="org.jetbrains.r.help.RWebHelpProvider"/>

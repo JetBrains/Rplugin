@@ -237,9 +237,7 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
     state?.clear()
 
     val output = getOrCreateOutput()
-    if (output.addData(type, data, progressStatus)?.shouldLimitHeight() == false) {
-      shouldLimitMaxHeight = false
-    }
+    output.addData(type, data, progressStatus)
 
     InlayStateCustomizer.customize(output)
 
