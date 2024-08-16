@@ -11,7 +11,7 @@ import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.util.ui.JBUI
-import org.jetbrains.plugins.notebooks.visualization.r.ui.MaterialTable
+import org.jetbrains.r.visualization.ui.MaterialTable
 import javax.swing.table.DefaultTableColumnModel
 import javax.swing.table.TableColumn
 import kotlin.math.max

@@ -12,7 +12,7 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBEmptyBorder
 import com.intellij.util.ui.JBInsets
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.EmptyComponentPanel
-import org.jetbrains.plugins.notebooks.visualization.r.ui.MaterialTable
+import org.jetbrains.r.visualization.ui.MaterialTable
 import org.jetbrains.plugins.notebooks.visualization.r.ui.MaterialTableUtils
 import org.jetbrains.r.RBundle
 import java.awt.BorderLayout

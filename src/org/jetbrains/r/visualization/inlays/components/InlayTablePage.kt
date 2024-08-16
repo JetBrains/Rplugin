@@ -31,7 +31,7 @@ import org.jetbrains.plugins.notebooks.visualization.r.inlays.dataframe.columns.
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.*
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.filters.gui.TableFilterHeader
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.paging.TablePaginator
-import org.jetbrains.plugins.notebooks.visualization.r.ui.MaterialTable
+import org.jetbrains.r.visualization.ui.MaterialTable
 import org.jetbrains.plugins.notebooks.visualization.r.ui.MaterialTableUtils
 import java.awt.BorderLayout
 import java.awt.Event

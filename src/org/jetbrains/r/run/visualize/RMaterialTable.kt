@@ -6,7 +6,7 @@ package org.jetbrains.r.run.visualize
 
 import com.intellij.ui.JBColor
 import com.intellij.util.ui.JBUI
-import org.jetbrains.plugins.notebooks.visualization.r.ui.MaterialTable
+import org.jetbrains.r.visualization.ui.MaterialTable
 import java.awt.Component
 import java.awt.Font
 import javax.swing.JTable
