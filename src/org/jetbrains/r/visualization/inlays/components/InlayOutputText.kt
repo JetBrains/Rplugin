@@ -16,7 +16,6 @@ import com.intellij.openapi.util.Key
 import org.jetbrains.plugins.notebooks.visualization.r.VisualizationBundle
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.EmptySoftWrapPainter
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutput
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.ProcessOutput
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.SaveOutputAction
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.initOutputTextConsole
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.updateOutputTextConsoleUI
