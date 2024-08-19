@@ -5,8 +5,8 @@
 package org.jetbrains.r.run.visualize
 
 import com.google.protobuf.Empty
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.filters.IParser
 import org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter
+import org.jetbrains.r.visualization.inlays.table.filters.IParser
 import java.text.ParseException
 
 class RFilterParser(val column: Int) : IParser {

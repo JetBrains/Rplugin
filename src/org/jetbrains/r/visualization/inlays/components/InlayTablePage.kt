@@ -27,9 +27,12 @@ import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.dataframe.DataFrame
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.dataframe.columns.DoubleType
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.dataframe.columns.IntType
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.*
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.filters.gui.TableFilterHeader
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.paging.TablePaginator
+import org.jetbrains.r.visualization.inlays.table.DataFrameColumnModel
+import org.jetbrains.r.visualization.inlays.table.DoubleTableCellRenderer
+import org.jetbrains.r.visualization.inlays.table.IntegerTableCellRenderer
+import org.jetbrains.r.visualization.inlays.table.StringTableCellRenderer
+import org.jetbrains.r.visualization.inlays.table.filters.gui.TableFilterHeader
+import org.jetbrains.r.visualization.inlays.table.paging.TablePaginator
 import org.jetbrains.r.visualization.ui.MaterialTable
 import org.jetbrains.r.visualization.ui.MaterialTableUtils
 import java.awt.BorderLayout
@@ -141,7 +144,7 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
    */
   fun setDataFrame(dataFrame: DataFrame) {
     table.columnModel = DataFrameColumnModel(dataFrame)
-    table.model = DataFrameTableModel(dataFrame)
+    table.model = org.jetbrains.r.visualization.inlays.table.DataFrameTableModel(dataFrame)
 
     for (i in dataFrame.getColumns().indices) {
       table.columnModel.getColumn(i).cellRenderer = when (dataFrame[i].type) {

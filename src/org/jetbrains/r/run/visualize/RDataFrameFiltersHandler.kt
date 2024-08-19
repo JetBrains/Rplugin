@@ -4,18 +4,17 @@
 
 package org.jetbrains.r.run.visualize
 
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.filters.IFilter
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.filters.IParser
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.filters.gui.AbstractFiltersHandler
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.filters.gui.ChoicesHandler
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.filters.gui.IFilterEditor
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.filters.gui.ParserModel
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.filters.gui.editor.FilterEditor
 import org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter
+import org.jetbrains.r.visualization.inlays.table.filters.IFilter
+import org.jetbrains.r.visualization.inlays.table.filters.IParser
+import org.jetbrains.r.visualization.inlays.table.filters.gui.ChoicesHandler
+import org.jetbrains.r.visualization.inlays.table.filters.gui.IFilterEditor
+import org.jetbrains.r.visualization.inlays.table.filters.gui.ParserModel
+import org.jetbrains.r.visualization.inlays.table.filters.gui.editor.FilterEditor
 import javax.swing.RowFilter
 import javax.swing.table.TableModel
 
-class RDataFrameFiltersHandler : AbstractFiltersHandler() {
+class RDataFrameFiltersHandler : org.jetbrains.r.visualization.inlays.table.filters.gui.AbstractFiltersHandler() {
   override var currentFilter: RowFilter<*, *>? = null
     set(value) {
       field = value
