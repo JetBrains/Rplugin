@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.packages.remote.ui
 
-import org.jetbrains.plugins.notebooks.visualization.r.ui.DumbAwareActionAdapter
+import org.jetbrains.r.visualization.ui.DumbAwareActionAdapter
 
 class RInstallAction : DumbAwareActionAdapter()
 
