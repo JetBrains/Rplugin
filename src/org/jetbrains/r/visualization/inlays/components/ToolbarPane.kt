@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.visualization.inlays.components
 
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.JupyterProgressStatus
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -63,7 +62,7 @@ class ToolbarPane(val inlayOutput: InlayOutput) : JPanel(BorderLayout()) {
 
   private fun updateChildrenBounds() {
     mainPanel?.setBounds(0, 0, width, height)
-    val progressBarWidth = if (progressComponent != null) JupyterProgressStatus.PROGRESS_BAR_DEFAULT_WIDTH else 0
+    val progressBarWidth = if (progressComponent != null) InlayOutputProgressStatus.PROGRESS_BAR_DEFAULT_WIDTH else 0
     toolbarComponent?.setBounds(width - toolbarComponent!!.preferredSize.width, progressBarWidth, toolbarComponent!!.preferredSize.width,
                                 toolbarComponent!!.preferredSize.height)
   }

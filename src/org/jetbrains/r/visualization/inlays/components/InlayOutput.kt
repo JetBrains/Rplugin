@@ -49,7 +49,7 @@ abstract class InlayOutput(
   abstract fun acceptType(type: String): Boolean
 
   fun updateProgressStatus(editor: Editor, progressStatus: InlayProgressStatus) {
-    toolbarPane.progressComponent = UiCustomizer.instance.buildInlayProgressStatusComponent(progressStatus, editor)
+    toolbarPane.progressComponent = InlayOutputProgressStatus.buildProgressStatusComponent(progressStatus, editor)
   }
 
   private fun getProgressStatusHeight(): Int {
