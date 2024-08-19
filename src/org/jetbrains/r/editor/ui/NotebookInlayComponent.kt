@@ -8,17 +8,17 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.colors.EditorColors
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.openapi.editor.markup.*
+import com.intellij.openapi.editor.markup.CustomHighlighterRenderer
+import com.intellij.openapi.editor.markup.RangeHighlighter
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
-import org.jetbrains.r.visualization.inlays.InlayComponent
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
-import org.jetbrains.r.visualization.inlays.InlayOutput
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
-import org.jetbrains.plugins.notebooks.visualization.r.ui.UiCustomizer
+import org.jetbrains.r.visualization.inlays.InlayComponent
+import org.jetbrains.r.visualization.inlays.InlayOutput
 import org.jetbrains.r.visualization.inlays.components.InlayStateCustomizer
 import org.jetbrains.r.visualization.inlays.components.NotebookInlayMultiOutput
 import org.jetbrains.r.visualization.inlays.components.NotebookInlayState
@@ -42,6 +42,9 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
 
       g.drawLine(0, y1, editor.component.width, y1)
     }
+
+    /* DS-625 Those resizes cause scroll flickering. Currently, I am not sure which value is better */
+    private const val isResizeOutputToPreviewHeight: Boolean = true
   }
 
   lateinit var beforeHeightChanged: () -> Unit
@@ -243,7 +246,7 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
 
     InlayStateCustomizer.customize(output)
 
-    if (UiCustomizer.instance.isResizeOutputToPreviewHeight && size.height == InlayDimensions.smallHeight) {
+    if (isResizeOutputToPreviewHeight && size.height == InlayDimensions.smallHeight) {
       deltaSize(0, InlayDimensions.previewHeight - size.height)
     }
   }
