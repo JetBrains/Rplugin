@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.notebooks.visualization.NotebooksVisualizationIcons
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.BorderlessDialogWrapper
 import org.jetbrains.r.visualization.inlays.components.DialogUtil
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutputUtil
+import org.jetbrains.r.visualization.inlays.components.InlayOutputUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction

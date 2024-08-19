@@ -6,7 +6,6 @@ import com.intellij.openapi.editor.Editor
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.*
 import org.jetbrains.r.visualization.inlays.runAsyncInlay
 import java.io.File
 import javax.swing.JComponent
