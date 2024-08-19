@@ -19,12 +19,12 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
-import org.jetbrains.plugins.notebooks.visualization.r.ui.ToolbarUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.run.graphics.*
 import org.jetbrains.r.settings.RGraphicsSettings
+import org.jetbrains.r.visualization.ui.ToolbarUtil
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent

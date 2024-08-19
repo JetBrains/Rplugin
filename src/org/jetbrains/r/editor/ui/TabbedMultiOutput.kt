@@ -16,11 +16,11 @@ import com.intellij.ui.tabs.TabInfo
 import com.intellij.ui.tabs.TabsListener
 import com.intellij.ui.tabs.impl.JBTabsImpl
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
-import org.jetbrains.plugins.notebooks.visualization.r.ui.ToolbarUtil
 import org.jetbrains.r.visualization.inlays.InlayOutput
 import org.jetbrains.r.visualization.inlays.components.NotebookInlayMultiOutput
 import org.jetbrains.r.visualization.inlays.components.NotebookInlayState
 import org.jetbrains.r.visualization.inlays.components.ToolBarProvider
+import org.jetbrains.r.visualization.ui.ToolbarUtil
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Rectangle

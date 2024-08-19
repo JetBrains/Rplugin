@@ -28,6 +28,7 @@ import com.intellij.xdebugger.XExpression
 import com.intellij.xdebugger.XNamedTreeNode
 import com.intellij.xdebugger.frame.XStackFrame
 import com.intellij.xdebugger.impl.actions.XDebuggerActions
+import com.intellij.xdebugger.impl.frame.XDebugView.SessionEvent
 import com.intellij.xdebugger.impl.frame.XVariablesViewBase
 import com.intellij.xdebugger.impl.frame.XWatchesView
 import com.intellij.xdebugger.impl.frame.actions.XMoveWatchDown
@@ -36,7 +37,6 @@ import com.intellij.xdebugger.impl.frame.actions.XWatchesTreeActionBase
 import com.intellij.xdebugger.impl.ui.DebuggerUIUtil
 import com.intellij.xdebugger.impl.ui.tree.XDebuggerTree
 import com.intellij.xdebugger.impl.ui.tree.nodes.*
-import org.jetbrains.plugins.notebooks.visualization.r.ui.ToolbarUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
@@ -51,6 +51,7 @@ import org.jetbrains.r.run.debug.stack.RXVariableViewSettings
 import org.jetbrains.r.run.visualize.RImportBaseDataDialog
 import org.jetbrains.r.run.visualize.RImportCsvDataDialog
 import org.jetbrains.r.run.visualize.RImportExcelDataDialog
+import org.jetbrains.r.visualization.ui.ToolbarUtil
 import java.awt.BorderLayout
 import java.awt.event.*
 import javax.swing.SwingUtilities

@@ -18,7 +18,6 @@ import com.intellij.webcore.packaging.PackagesNotificationPanel
 import com.intellij.webcore.packaging.RepoPackage
 import icons.RIcons
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.plugins.notebooks.visualization.r.ui.ToolbarUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -26,6 +25,7 @@ import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackageVersion
 import org.jetbrains.r.packages.remote.RPackageManagementService
+import org.jetbrains.r.visualization.ui.ToolbarUtil
 
 class RInstalledPackagesPanel(private val project: Project, area: PackagesNotificationPanel) :
   RInstalledPackagesPanelBase(project, area), RPackageServiceListener {

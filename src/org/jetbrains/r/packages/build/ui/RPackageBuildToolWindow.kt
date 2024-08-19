@@ -16,7 +16,6 @@ import com.intellij.openapi.util.Disposer
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
-import org.jetbrains.plugins.notebooks.visualization.r.ui.ToolbarUtil
 import org.jetbrains.r.execution.ExecuteExpressionUtils.launchScript
 import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -25,6 +24,7 @@ import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.settings.RPackageBuildSettings
+import org.jetbrains.r.visualization.ui.ToolbarUtil
 import java.awt.BorderLayout
 import java.nio.file.Paths
 import javax.swing.JComponent
