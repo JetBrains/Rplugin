@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.visualization.inlays.components
 
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.NotebookInlayMouseListener
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.JupyterProgressStatus
 import java.awt.BorderLayout
 import javax.swing.JComponent
