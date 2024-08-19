@@ -8,15 +8,10 @@ import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.editor.markup.LineMarkerRenderer
 import com.intellij.openapi.util.TextRange
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
-import org.jetbrains.plugins.notebooks.visualization.r.ui.UiCustomizer
 import javax.swing.JComponent
 
 class NotebookInlayComponentInterval(val cell: NotebookIntervalPointer, editor: EditorImpl) : NotebookInlayComponent(editor) {
   override fun updateCellSeparator() {
-    if (!UiCustomizer.instance.showUpdateCellSeparator) {
-      return
-    }
-
     if (separatorHighlighter != null) {
       editor.markupModel.removeHighlighter(separatorHighlighter!!)
     }
