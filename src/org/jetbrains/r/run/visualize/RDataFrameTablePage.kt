@@ -33,9 +33,9 @@ import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.plugins.notebooks.visualization.NotebooksVisualizationIcons
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.filters.gui.TableFilterHeader
-import org.jetbrains.plugins.notebooks.visualization.r.ui.MaterialTableUtils
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
+import org.jetbrains.r.visualization.ui.MaterialTableUtils
 import java.awt.BorderLayout
 import java.awt.Event
 import java.awt.FlowLayout
