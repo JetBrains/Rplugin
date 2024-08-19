@@ -1,18 +1,12 @@
 package org.jetbrains.r.editor.ui
 
-import org.jetbrains.r.visualization.inlays.components.InlayOutputImg
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.Key
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.*
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
 import org.jetbrains.r.rendering.chunk.ChunkImageInlayOutput
-import org.jetbrains.r.visualization.inlays.components.InlayOutput
-import org.jetbrains.r.visualization.inlays.components.InlayOutputHtml
-import org.jetbrains.r.visualization.inlays.components.InlayOutputTable
-import org.jetbrains.r.visualization.inlays.components.InlayOutputText
-import org.jetbrains.r.visualization.inlays.components.NotebookInlayState
+import org.jetbrains.r.visualization.inlays.components.*
 import java.awt.BorderLayout
 import java.awt.Rectangle
 import java.awt.event.ComponentAdapter

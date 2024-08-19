@@ -24,15 +24,14 @@ import com.intellij.util.ui.TextTransferable
 import org.jetbrains.plugins.notebooks.visualization.NotebooksVisualizationIcons
 import org.jetbrains.plugins.notebooks.visualization.r.VisualizationBundle
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.ToolBarProvider
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.dataframe.DataFrame
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.dataframe.columns.DoubleType
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.dataframe.columns.IntType
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.*
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.filters.gui.TableFilterHeader
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.table.paging.TablePaginator
-import org.jetbrains.r.visualization.ui.MaterialTable
 import org.jetbrains.plugins.notebooks.visualization.r.ui.MaterialTableUtils
+import org.jetbrains.r.visualization.ui.MaterialTable
 import java.awt.BorderLayout
 import java.awt.Event
 import java.awt.event.ActionEvent
