@@ -6,7 +6,7 @@ import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.Messages
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.CopyImageToClipboardAction
+import org.jetbrains.r.visualization.inlays.components.CopyImageToClipboardAction
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutput
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutputUtil
 import org.jetbrains.r.visualization.inlays.runAsyncInlay

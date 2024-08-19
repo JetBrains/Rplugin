@@ -264,6 +264,12 @@ You can find the source code in the following repositories:
             <action id="org.jetbrains.r.rendering.chunk.ImageSettingsAction"
                     class="org.jetbrains.r.rendering.chunk.ImageSettingsAction"
                     icon="AllIcons.General.GearPlain"/>
+            <action id="org.jetbrains.r.visualization.inlays.components.SaveOutputAction"
+                    class="org.jetbrains.r.visualization.inlays.components.SaveOutputAction"
+                    icon="AllIcons.Actions.MenuSaveall"/>
+            <action id="org.jetbrains.r.visualization.inlays.components.CopyImageToClipboardAction"
+                    class="org.jetbrains.r.visualization.inlays.components.CopyImageToClipboardAction"
+                    icon="AllIcons.Actions.Copy"/>
         </group>
     </actions>
 
