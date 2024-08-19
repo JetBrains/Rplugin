@@ -16,8 +16,8 @@ import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointerFactory
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.calculateInlayExpansionRange
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.calculateViewportRange
+import org.jetbrains.r.visualization.inlays.calculateInlayExpansionRange
+import org.jetbrains.r.visualization.inlays.calculateViewportRange
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 
