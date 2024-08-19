@@ -6,13 +6,14 @@ package org.jetbrains.r.run.graphics.ui
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.DialogWrapper.IdeModalityType
 import com.intellij.openapi.util.Disposer
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.BorderlessDialogWrapper
-import org.jetbrains.r.visualization.inlays.components.DialogUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RSnapshot
+import org.jetbrains.r.visualization.inlays.components.BorderlessDialogWrapper
+import org.jetbrains.r.visualization.inlays.components.DialogUtil
 import java.awt.BorderLayout
 import java.awt.event.ActionListener
 import java.awt.event.KeyEvent

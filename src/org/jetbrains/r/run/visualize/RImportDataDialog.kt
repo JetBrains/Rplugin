@@ -12,6 +12,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.ex.FileChooserDialogImpl
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.DialogWrapper.IdeModalityType
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.ui.popup.JBPopupFactory
@@ -28,8 +29,6 @@ import com.intellij.util.ui.JBUI
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.BorderlessDialogWrapper
-import org.jetbrains.r.visualization.inlays.components.DialogUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.LocalOrRemotePath
 import org.jetbrains.r.interpreter.RInterpreter
@@ -37,6 +36,8 @@ import org.jetbrains.r.interpreter.findFile
 import org.jetbrains.r.interpreter.isLocal
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.run.visualize.forms.RImportDataDialogForm
+import org.jetbrains.r.visualization.inlays.components.BorderlessDialogWrapper
+import org.jetbrains.r.visualization.inlays.components.DialogUtil
 import java.awt.event.FocusAdapter
 import java.awt.event.FocusEvent
 import java.awt.event.ItemEvent
