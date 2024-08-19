@@ -4,6 +4,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.Messages
+import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
 import org.jetbrains.r.visualization.inlays.components.CopyImageToClipboardAction
@@ -182,7 +183,9 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor) :
   )
 
   companion object {
+    @Nls
     private val SWITCH_ERROR_TITLE = RBundle.message("plot.viewer.cannot.switch.to.standalone.title")
+    @Nls
     private val SWITCH_ERROR_DESCRIPTION = RBundle.message("plot.viewer.cannot.switch.to.standalone.description")
 
     private fun loadActions() = loadActions(
