@@ -57,5 +57,6 @@
     <orderEntry type="module" module-name="intellij.python.psi" scope="TEST" />
     <orderEntry type="module" module-name="intellij.notebooks.images" />
     <orderEntry type="module" module-name="intellij.platform.editor" />
+    <orderEntry type="library" name="jcef" level="project" />
   </component>
 </module>
