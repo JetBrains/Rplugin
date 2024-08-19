@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.visualization.inlays.components
 
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
 import javax.swing.JLayeredPane
 
 /** Base class for all NotebookInlay states. Inlay could be Data(Table/Chart) or Output(text/html) */

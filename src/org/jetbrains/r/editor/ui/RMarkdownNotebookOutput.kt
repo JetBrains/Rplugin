@@ -2,7 +2,7 @@ package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.util.Key
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
+import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 
 /**
  * calls to clearOutputs, addText and updateOutputs are runned in edt, order of calls is preserved

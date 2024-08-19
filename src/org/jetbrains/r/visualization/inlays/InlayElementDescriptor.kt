@@ -6,7 +6,7 @@ package org.jetbrains.r.visualization.inlays
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
+import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 import java.util.concurrent.Future
 import javax.swing.Icon
 

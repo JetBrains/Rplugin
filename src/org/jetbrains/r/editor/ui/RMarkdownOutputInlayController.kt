@@ -24,12 +24,12 @@ import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointerFactory
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
 import org.jetbrains.plugins.notebooks.visualization.ui.EditorCellView
 import org.jetbrains.r.rendering.chunk.ChunkPath
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
 import org.jetbrains.r.visualization.inlays.EditorInlaysManager
 import org.jetbrains.r.visualization.inlays.InlayComponent
+import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 import java.awt.Graphics
 import java.awt.Point
 import java.awt.Rectangle

@@ -3,8 +3,6 @@ package org.jetbrains.r.visualization.inlays.components
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.progress.util.ColorProgressBar
 import com.intellij.ui.scale.JBUIScale
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressBarUI
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.ProgressStatus
 import org.jetbrains.plugins.notebooks.visualization.r.ui.UiCustomizer
 import java.awt.BorderLayout
