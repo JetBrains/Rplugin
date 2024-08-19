@@ -8,6 +8,7 @@ import com.intellij.openapi.util.Key
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.*
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.InlayProgressStatus
 import org.jetbrains.r.rendering.chunk.ChunkImageInlayOutput
+import org.jetbrains.r.visualization.inlays.components.InlayOutput
 import org.jetbrains.r.visualization.inlays.components.InlayOutputHtml
 import org.jetbrains.r.visualization.inlays.components.InlayOutputTable
 import org.jetbrains.r.visualization.inlays.components.InlayOutputText

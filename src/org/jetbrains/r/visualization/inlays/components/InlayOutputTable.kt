@@ -2,7 +2,6 @@ package org.jetbrains.r.visualization.inlays.components
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.Editor
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutput
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.dataframe.DataFrameCSVAdapter
 
 class InlayOutputTable(val parent: Disposable, editor: Editor)

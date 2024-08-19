@@ -7,8 +7,7 @@ package org.jetbrains.r.visualization.inlays.components
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutput
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.InlayOutput.Companion.getInlayOutput
+import org.jetbrains.r.visualization.inlays.components.InlayOutput.Companion.getInlayOutput
 
 
 class SaveOutputAction private constructor() : DumbAwareAction() {
