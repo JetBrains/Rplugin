@@ -3,8 +3,8 @@ package org.jetbrains.r.visualization.inlays.components
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.progress.util.ColorProgressBar
 import com.intellij.ui.scale.JBUIScale
+import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.ProgressStatus
-import org.jetbrains.plugins.notebooks.visualization.r.ui.UiCustomizer
 import java.awt.BorderLayout
 import javax.swing.*
 
@@ -16,7 +16,7 @@ object InlayOutputProgressStatus {
   fun buildProgressStatusComponent(progressStatus: InlayProgressStatus, editor: Editor): JComponent? {
     if (progressStatus.progress == ProgressStatus.STOPPED_OK && progressStatus.statusText.isEmpty()) return null
     val progressPanel = JPanel(BorderLayout()).apply {
-      background = UiCustomizer.instance.getTextOutputBackground(editor)
+      background = editor.notebookAppearance.getTextOutputBackground(editor.colorsScheme)
     }
     var progressBar: JProgressBar? = null
     if (progressStatus.progress != ProgressStatus.STOPPED_OK) {
