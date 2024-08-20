@@ -1,6 +1,5 @@
 package org.jetbrains.r.visualization.inlays.components
 
-import com.intellij.notebooks.images.GraphicsPanel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.Editor
 import org.jetbrains.concurrency.Promise

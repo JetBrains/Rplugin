@@ -7,7 +7,6 @@ package org.jetbrains.r.rendering.chunk
 
 import com.google.common.annotations.VisibleForTesting
 import com.google.gson.Gson
-import com.intellij.notebooks.images.GraphicsPanel
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
@@ -48,6 +47,7 @@ import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.settings.RMarkdownGraphicsSettings
+import org.jetbrains.r.visualization.inlays.components.GraphicsPanel
 import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 import org.jetbrains.r.visualization.inlays.components.ProcessOutput
 import java.awt.Dimension

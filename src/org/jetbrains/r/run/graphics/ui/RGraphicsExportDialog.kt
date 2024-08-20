@@ -5,7 +5,6 @@
 package org.jetbrains.r.run.graphics.ui
 
 import com.intellij.icons.AllIcons
-import com.intellij.notebooks.images.GraphicsPanel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
@@ -27,6 +26,7 @@ import org.jetbrains.r.run.graphics.RSnapshot
 import org.jetbrains.r.run.graphics.ui.forms.RGraphicsExportDialogForm
 import org.jetbrains.r.visualization.inlays.components.BorderlessDialogWrapper
 import org.jetbrains.r.visualization.inlays.components.DialogUtil
+import org.jetbrains.r.visualization.inlays.components.GraphicsPanel
 import org.jetbrains.r.visualization.inlays.components.InlayOutputUtil
 import java.awt.*
 import java.awt.event.ComponentAdapter

@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.run.graphics.ui
 
-import com.intellij.notebooks.images.GraphicsPanel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
@@ -17,6 +16,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.run.graphics.*
 import org.jetbrains.r.settings.RGraphicsSettings
+import org.jetbrains.r.visualization.inlays.components.GraphicsPanel
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter

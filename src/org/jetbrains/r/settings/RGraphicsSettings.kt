@@ -4,13 +4,13 @@
 
 package org.jetbrains.r.settings
 
-import com.intellij.notebooks.images.CHANGE_DARK_MODE_TOPIC
-import com.intellij.notebooks.images.DarkModeNotifier
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
 import org.jetbrains.r.run.graphics.RGraphicsUtils
+import org.jetbrains.r.visualization.inlays.components.CHANGE_DARK_MODE_TOPIC
+import org.jetbrains.r.visualization.inlays.components.DarkModeNotifier
 import java.awt.Dimension
 
 @Service(Service.Level.PROJECT)

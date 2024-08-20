@@ -5,8 +5,6 @@
 
 package org.jetbrains.r.run.graphics.ui
 
-import com.intellij.notebooks.images.CHANGE_DARK_MODE_TOPIC
-import com.intellij.notebooks.images.GraphicsPanel
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.CheckboxAction
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
@@ -24,6 +22,8 @@ import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.run.graphics.*
 import org.jetbrains.r.settings.RGraphicsSettings
+import org.jetbrains.r.visualization.inlays.components.CHANGE_DARK_MODE_TOPIC
+import org.jetbrains.r.visualization.inlays.components.GraphicsPanel
 import org.jetbrains.r.visualization.ui.ToolbarUtil
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
