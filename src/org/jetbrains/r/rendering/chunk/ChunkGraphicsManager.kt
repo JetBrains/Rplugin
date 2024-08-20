@@ -7,7 +7,6 @@ package org.jetbrains.r.rendering.chunk
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.GraphicsManager
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.run.graphics.RGraphicsRepository
 import org.jetbrains.r.run.graphics.RGraphicsUtils

@@ -33,9 +33,9 @@ import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.plugins.notebooks.visualization.r.VisualizationBundle
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.EmptyComponentPanel
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.GraphicsManager
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.ImageInverter
 import org.jetbrains.plugins.terminal.block.util.TerminalDataContextUtils.editor
+import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.Dimension
@@ -54,7 +54,7 @@ interface DarkModeNotifier {
 }
 
 class GraphicsPanel(private val project: Project, private val disposableParent: Disposable) {
-  private val graphicsManager = GraphicsManager.getInstance(project)
+  private val graphicsManager = ChunkGraphicsManager(project)
   private val label = JLabel(VisualizationBundle.message("graphics.not.available"), JLabel.CENTER)
   private val rootPanel = EmptyComponentPanel(label)
 
@@ -119,7 +119,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   var overlayComponent: JComponent? = null
 
   @Volatile
-  private var darkMode = graphicsManager?.isDarkModeEnabled ?: true
+  private var darkMode = graphicsManager.isDarkModeEnabled
 
   init {
     val connect = project.messageBus.connect(disposableParent)
@@ -236,7 +236,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   }
 
   private val File.isInvertible: Boolean
-    get() = graphicsManager?.isInvertible(this) ?: false
+    get() = graphicsManager.isInvertible(this)
 
   private fun tryCreateInvertedImage(content: ByteArray, globalScheme: EditorColorsScheme): ByteArray {
     return try {

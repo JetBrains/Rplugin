@@ -753,8 +753,6 @@ You can find the source code in the following repositories:
         <directoryProjectGenerator implementation="org.jetbrains.r.projectGenerator.template.REmptyProjectGenerator"/>
         <directoryProjectGenerator implementation="org.jetbrains.r.projectGenerator.template.RPackageProjectGenerator"/>
 
-        <datavis.r.inlays.components.graphicsManagerProvider implementation="org.jetbrains.r.rendering.chunk.ChunkGraphicsManagerProvider"/>
-
         <!-- R help providers -->
         <webHelpProvider implementation="org.jetbrains.r.help.RWebHelpProvider"/>
 
