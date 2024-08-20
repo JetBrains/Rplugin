@@ -24,9 +24,9 @@ import com.intellij.util.ui.TextTransferable
 import org.jetbrains.plugins.notebooks.visualization.NotebooksVisualizationIcons
 import org.jetbrains.plugins.notebooks.visualization.r.VisualizationBundle
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.dataframe.DataFrame
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.dataframe.columns.DoubleType
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.dataframe.columns.IntType
+import org.jetbrains.r.visualization.inlays.dataframe.DataFrame
+import org.jetbrains.r.visualization.inlays.dataframe.columns.DoubleType
+import org.jetbrains.r.visualization.inlays.dataframe.columns.IntType
 import org.jetbrains.r.visualization.inlays.table.DataFrameColumnModel
 import org.jetbrains.r.visualization.inlays.table.DoubleTableCellRenderer
 import org.jetbrains.r.visualization.inlays.table.IntegerTableCellRenderer

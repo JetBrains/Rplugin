@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.visualization.inlays.table
 
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.dataframe.DataFrame
+import org.jetbrains.r.visualization.inlays.dataframe.DataFrame
 import javax.swing.table.AbstractTableModel
 
 class DataFrameTableModel(val dataFrame: DataFrame) : AbstractTableModel() {

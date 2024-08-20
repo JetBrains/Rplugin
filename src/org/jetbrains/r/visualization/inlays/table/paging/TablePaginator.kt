@@ -12,7 +12,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.ui.ComboBox
 import org.jetbrains.plugins.notebooks.visualization.r.VisualizationBundle
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.dataframe.DataFrame
+import org.jetbrains.r.visualization.inlays.dataframe.DataFrame
 import java.awt.BorderLayout
 import java.awt.FlowLayout
 import javax.swing.*
