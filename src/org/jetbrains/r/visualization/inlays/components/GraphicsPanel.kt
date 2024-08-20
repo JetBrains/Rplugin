@@ -32,7 +32,6 @@ import org.intellij.images.ui.ImageComponent
 import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.plugins.notebooks.visualization.r.VisualizationBundle
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.EmptyComponentPanel
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.ImageInverter
 import org.jetbrains.plugins.terminal.block.util.TerminalDataContextUtils.editor
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager

@@ -11,9 +11,9 @@ import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.util.ui.JBUI
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.EmptyComponentPanel
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.run.viewer.RViewerUtils
+import org.jetbrains.r.visualization.inlays.components.EmptyComponentPanel
 import java.io.File
 import java.net.URI
 import javax.swing.JLabel
