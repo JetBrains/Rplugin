@@ -4,44 +4,31 @@
 
 package org.jetbrains.r.visualization.inlays.components
 
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.util.ui.JBUI
-import com.intellij.util.ui.UIUtil
 import java.util.*
 
 /** github-markdown.css as String, dependent form current IDE theme. */
-class GithubMarkdownCss {
-  companion object {
+object GithubMarkdownCss {
 
-    private var storedCss: String? = null
+  private val bright: String by lazy { changeFontSize(getResourceAsString("/css/github-intellij.css")) }
+  private val dark: String by lazy { changeFontSize(getResourceAsString("/css/github-darcula.css")) }
 
-    private var isStoredDarkula = false
+  fun getDarkOrBright(): String =
+    if (EditorColorsManager.getInstance().isDarkEditor) dark
+    else bright
 
-    private fun getResourceAsString(resource: String): String {
-      val inputStream = GithubMarkdownCss::class.java.classLoader.getResourceAsStream(resource)
-      val scanner = Scanner(inputStream).useDelimiter("\\A")
-      return if (scanner.hasNext()) scanner.next() else ""
+  private fun getResourceAsString(resource: String): String {
+    val inputStream = GithubMarkdownCss::class.java.classLoader.getResourceAsStream(resource)
+    val scanner = Scanner(inputStream!!).useDelimiter("\\A")
+    return if (scanner.hasNext()) scanner.next() else ""
+  }
+
+  private fun changeFontSize(css: String): String {
+    val index = css.indexOf("font-size: 16px;")
+    if (index == -1) {
+      return css
     }
-
-    val css: String
-      get() {
-        if (storedCss != null && isStoredDarkula == UIUtil.isUnderDarcula()) {
-          return storedCss!!
-        }
-
-        storedCss = if (UIUtil.isUnderDarcula()) {
-          isStoredDarkula = true
-          getResourceAsString("/css/github-darcula.css")
-        }
-        else {
-          getResourceAsString("/css/github-intellij.css")
-        }
-
-        val index = storedCss!!.indexOf("font-size: 16px;")
-        if (index != -1) {
-          storedCss = storedCss!!.replaceRange(index + 11, index + 13, JBUI.scaleFontSize(14f).toString())
-        }
-
-        return storedCss!!
-      }
+    return css.replaceRange(index + 11, index + 13, JBUI.scaleFontSize(14f).toString())
   }
 }

@@ -58,7 +58,7 @@ class InlayOutputHtml(parent: Disposable, editor: Editor)
       jbBrowser.loadURL(data)
     }
     else {
-      jbBrowser.loadHTML("<head><style>" + GithubMarkdownCss.Companion.css + " </style></head><body>" + data + "</body>")
+      jbBrowser.loadHTML("<head><style>" + GithubMarkdownCss.getDarkOrBright() + " </style></head><body>" + data + "</body>")
     }
     jbBrowser.jbCefClient.addLoadHandler(object : org.cef.handler.CefLoadHandlerAdapter() {
       override fun onLoadingStateChange(browser: org.cef.browser.CefBrowser?, isLoading: Boolean, canGoBack: Boolean, canGoForward: Boolean) {
