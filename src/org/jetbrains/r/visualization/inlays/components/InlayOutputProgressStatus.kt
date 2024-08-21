@@ -24,13 +24,14 @@ object InlayOutputProgressStatus {
       when (progressStatus.progress) {
         RProgressStatus.RUNNING ->
           JProgressBar(0, 100).also { progressBar ->
-            progressBar.setUI(InlayProgressBarUI(progressStatus.progress))
+            // may be color should be JBColor.GRAY or may be InlayProgressBarUI color is not shown when RUNNING
+            progressBar.setUI(InlayProgressBarUI(JBColor.RED))
             progressBar.isIndeterminate = true
             progressBar.foreground = ColorProgressBar.GREEN
           }
         RProgressStatus.STOPPED_ERROR ->
           JProgressBar(0, 100).also { progressBar ->
-            progressBar.setUI(InlayProgressBarUI(progressStatus.progress))
+            progressBar.setUI(InlayProgressBarUI(JBColor.RED))
             progressBar.value = 100
           }
         RProgressStatus.STOPPED_OK -> null
@@ -44,11 +45,6 @@ object InlayOutputProgressStatus {
   }
 }
 
-private class InlayProgressBarUI(private val status: RProgressStatus) : DarculaProgressBarUI() {
-  override fun getFinishedColor(c: JComponent): Color = if (status == RProgressStatus.STOPPED_OK) {
-    JBColor.GRAY
-  }
-  else {
-    JBColor.RED
-  }
+private class InlayProgressBarUI(private val finishedColor: JBColor) : DarculaProgressBarUI() {
+  override fun getFinishedColor(c: JComponent): Color = finishedColor
 }
