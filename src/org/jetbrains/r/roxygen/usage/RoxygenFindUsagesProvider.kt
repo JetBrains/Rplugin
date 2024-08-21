@@ -12,7 +12,6 @@ import com.intellij.psi.tree.TokenSet
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.roxygen.lexer.RoxygenLexer
 import org.jetbrains.r.roxygen.parsing.RoxygenElementTypes.ROXYGEN_IDENTIFIER
-import org.jetbrains.r.roxygen.parsing.RoxygenParserDefinition
 import org.jetbrains.r.roxygen.parsing.RoxygenTokenSets
 import org.jetbrains.r.roxygen.psi.api.RoxygenParameter
 

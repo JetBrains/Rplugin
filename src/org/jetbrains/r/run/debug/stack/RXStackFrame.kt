@@ -8,11 +8,9 @@ package org.jetbrains.r.run.debug.stack
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.util.TextRange
 import com.intellij.ui.ColoredTextContainer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.xdebugger.XExpression
-import com.intellij.xdebugger.XSourcePosition
 import com.intellij.xdebugger.frame.*
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.rejectedPromise
@@ -24,7 +22,6 @@ import org.jetbrains.r.rinterop.RValueUnevaluated
 import org.jetbrains.r.rinterop.RVar
 import org.jetbrains.r.rinterop.RVariableLoader
 import org.jetbrains.r.util.tryRegisterDisposable
-import kotlin.math.exp
 import kotlin.math.min
 
 class RXStackFrame(val functionName: String,

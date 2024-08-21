@@ -10,9 +10,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.webcore.packaging.ManagePackagesDialog
 import com.intellij.webcore.packaging.PackageManagementService
 import org.jetbrains.r.packages.remote.RPackageManagementService
-
-import javax.swing.*
 import java.awt.*
+import javax.swing.*
 
 class RManagePackagesDialog(
   private val project: Project,

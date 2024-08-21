@@ -6,7 +6,6 @@ package org.jetbrains.r.util
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
-import com.intellij.util.IncorrectOperationException
 
 fun Disposable.tryRegisterDisposable(child: Disposable) {
   if (!Disposer.tryRegister(this, child)) {

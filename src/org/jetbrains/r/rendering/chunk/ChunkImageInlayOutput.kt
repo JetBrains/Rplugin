@@ -7,10 +7,6 @@ import com.intellij.openapi.ui.Messages
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
-import org.jetbrains.r.visualization.inlays.components.CopyImageToClipboardAction
-import org.jetbrains.r.visualization.inlays.components.InlayOutput
-import org.jetbrains.r.visualization.inlays.components.InlayOutputUtil
-import org.jetbrains.r.visualization.inlays.runAsyncInlay
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RPlotUtil
@@ -19,6 +15,10 @@ import org.jetbrains.r.run.graphics.ui.RChunkGraphicsSettingsDialog
 import org.jetbrains.r.run.graphics.ui.RGraphicsExportDialog
 import org.jetbrains.r.run.graphics.ui.RGraphicsPanelWrapper
 import org.jetbrains.r.run.graphics.ui.RGraphicsZoomDialog
+import org.jetbrains.r.visualization.inlays.components.CopyImageToClipboardAction
+import org.jetbrains.r.visualization.inlays.components.InlayOutput
+import org.jetbrains.r.visualization.inlays.components.InlayOutputUtil
+import org.jetbrains.r.visualization.inlays.runAsyncInlay
 import java.awt.Dimension
 import java.io.File
 import javax.swing.SwingUtilities

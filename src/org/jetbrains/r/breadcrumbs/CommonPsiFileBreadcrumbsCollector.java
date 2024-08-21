@@ -22,7 +22,10 @@ import com.intellij.ui.breadcrumbs.BreadcrumbsUtil;
 import com.intellij.ui.components.breadcrumbs.Crumb;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.text.CharArrayUtil;
-import com.intellij.xml.breadcrumbs.*;
+import com.intellij.xml.breadcrumbs.BreadcrumbsPresentationProvider;
+import com.intellij.xml.breadcrumbs.BreadcrumbsUtilEx;
+import com.intellij.xml.breadcrumbs.CrumbPresentation;
+import com.intellij.xml.breadcrumbs.PsiFileBreadcrumbsCollector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

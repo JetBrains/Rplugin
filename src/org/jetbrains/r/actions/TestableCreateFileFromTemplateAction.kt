@@ -5,11 +5,9 @@
 package org.jetbrains.r.actions
 
 import com.intellij.ide.actions.CreateFileFromTemplateAction
-import com.intellij.openapi.util.NlsActions
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
 import org.jetbrains.annotations.TestOnly
-import javax.swing.Icon
 
 abstract class TestableCreateFileFromTemplateAction : CreateFileFromTemplateAction() {
 

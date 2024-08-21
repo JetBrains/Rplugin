@@ -20,11 +20,9 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.DocumentUtil
-import com.intellij.util.io.parseAndCheckIsLocalHost
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.*
-import com.intellij.xdebugger.impl.XSourcePositionImpl
 import com.intellij.xdebugger.impl.breakpoints.XBreakpointManagerImpl
 import com.intellij.xdebugger.impl.breakpoints.XDependentBreakpointListener
 import org.jetbrains.r.RBundle

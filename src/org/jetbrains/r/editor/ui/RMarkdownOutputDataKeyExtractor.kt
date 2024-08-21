@@ -5,9 +5,9 @@ import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.outputs.NotebookOutputDataKey
 import org.jetbrains.plugins.notebooks.visualization.outputs.NotebookOutputDataKeyExtractor
 import org.jetbrains.plugins.notebooks.visualization.outputs.statistic.NotebookOutputKeyType
-import org.jetbrains.r.visualization.inlays.InlayOutput
 import org.jetbrains.r.rendering.chunk.ChunkPath
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
+import org.jetbrains.r.visualization.inlays.InlayOutput
 
 data class RMarkdownInlayOutputDataKey(val inlayOutput: InlayOutput): NotebookOutputDataKey {
   override val statisticKey = NotebookOutputKeyType.R_MARKDOWN

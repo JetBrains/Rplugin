@@ -17,8 +17,6 @@ import com.intellij.util.ui.ImageUtil
 import com.intellij.util.ui.UIUtil
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
-import org.jetbrains.r.visualization.inlays.InlayElementDescriptor
-import org.jetbrains.r.visualization.inlays.InlayOutput
 import org.jetbrains.plugins.notebooks.visualization.use
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
@@ -26,6 +24,8 @@ import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RPlotUtil
 import org.jetbrains.r.run.graphics.RSnapshot
 import org.jetbrains.r.settings.RGraphicsSettings
+import org.jetbrains.r.visualization.inlays.InlayElementDescriptor
+import org.jetbrains.r.visualization.inlays.InlayOutput
 import java.awt.Image
 import java.awt.Rectangle
 import java.awt.RenderingHints

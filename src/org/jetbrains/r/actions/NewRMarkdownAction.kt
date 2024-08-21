@@ -12,7 +12,6 @@ import com.intellij.psi.PsiFile
 import icons.RIcons
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 
 /**

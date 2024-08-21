@@ -1,7 +1,10 @@
 package org.jetbrains.r.rinterop.rstudioapi
 
 import com.intellij.credentialStore.CredentialAttributes
+import com.intellij.credentialStore.Credentials
+import com.intellij.credentialStore.generateServiceName
 import com.intellij.icons.AllIcons
+import com.intellij.ide.passwordSafe.PasswordSafe
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.FileChooserFactory
@@ -9,7 +12,11 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showOkCancelDialog
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.components.JBPasswordField
 import com.intellij.ui.components.JBTextField
+import com.intellij.ui.components.dialog
+import com.intellij.ui.dsl.builder.columns
+import com.intellij.ui.dsl.builder.panel
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
@@ -21,13 +28,6 @@ import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.rError
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRBoolean
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
 import javax.swing.JPasswordField
-import com.intellij.credentialStore.generateServiceName
-import com.intellij.ide.passwordSafe.PasswordSafe
-import com.intellij.credentialStore.Credentials
-import com.intellij.ui.components.JBPasswordField
-import com.intellij.ui.components.dialog
-import com.intellij.ui.dsl.builder.columns
-import com.intellij.ui.dsl.builder.panel
 
 
 object DialogUtils {

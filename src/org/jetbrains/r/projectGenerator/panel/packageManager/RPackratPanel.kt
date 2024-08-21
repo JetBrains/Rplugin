@@ -16,7 +16,6 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.AbstractTableCellEditor
 import com.intellij.util.ui.JBDimension
-import com.intellij.util.ui.UIUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
@@ -32,7 +31,6 @@ import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import javax.swing.table.AbstractTableModel
 import javax.swing.table.TableCellRenderer
-import kotlin.collections.HashMap
 
 const val SETTINGS_NAME_COLUMN = 0
 const val SETTINGS_VALUE_COLUMN = 1

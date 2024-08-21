@@ -6,7 +6,6 @@
 package org.jetbrains.r.run.graphics
 
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.ui.JreHiDpiUtil
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.r.rinterop.RInterop

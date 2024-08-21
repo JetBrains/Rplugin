@@ -9,10 +9,10 @@ import com.intellij.ui.CollectionListModel
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.visualization.inlays.components.DialogUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.settings.RInterpreterSettingsProvider
+import org.jetbrains.r.visualization.inlays.components.DialogUtil
 import javax.swing.JComponent
 import javax.swing.ListSelectionModel
 

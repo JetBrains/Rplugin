@@ -7,7 +7,6 @@ import com.intellij.codeInsight.documentation.DocumentationComponent
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.ex.ToolWindowEx
