@@ -8,7 +8,6 @@ import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.ui.jcef.JBCefBrowserBase
 import com.intellij.ui.jcef.JBCefJSQuery
 import org.jetbrains.plugins.notebooks.visualization.r.VisualizationBundle
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.GithubMarkdownCss
 import java.util.function.Function
 import javax.swing.SwingUtilities
 
