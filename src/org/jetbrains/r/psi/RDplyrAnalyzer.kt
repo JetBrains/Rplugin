@@ -20,7 +20,7 @@ object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
   @NonNls const val PIPE_OPERATOR = "%>%"
   @NonNls const val EVERYTHING_FUNCTION = "everything"
 
-  override val nameToFunction = DplyrFunction.values()
+  override val nameToFunction = DplyrFunction.entries
     .mapNotNull { (it.functionName ?: return@mapNotNull null) to it }
     .toMap()
 

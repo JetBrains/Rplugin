@@ -9,7 +9,6 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.FileViewProvider;
-import com.intellij.psi.PsiManager;
 import com.intellij.psi.SingleRootFileViewProvider;
 import com.intellij.psi.impl.PsiManagerEx;
 import com.intellij.psi.impl.file.impl.FileManager;
@@ -38,7 +37,7 @@ class RCodeFragment extends RFileImpl {
 
     @NotNull
     private static FileManager getFileManager(@NotNull final Project project) {
-        return ((PsiManagerEx) PsiManager.getInstance(project)).getFileManager();
+        return PsiManagerEx.getInstanceEx(project).getFileManager();
     }
 
 

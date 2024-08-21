@@ -25,7 +25,7 @@ fun getAllPackratSettings(interpreterLocation: RInterpreterLocation): List<Packr
     optionLines.drop(1).map { it.split(Regex("\\s+")).drop(1) }.forEach { values.addAll(it) }
     if (values.size == 1) {
       val value = values[0]
-      if (value in PackartLogicalConstants.values().map { it.name }) {
+      if (value in PackartLogicalConstants.entries.map { it.name }) {
         allPackratSettings.add(PackratSettings(optionName, PackartLogicalConstants.valueOf(value)))
         continue
       }

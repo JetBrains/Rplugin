@@ -17,7 +17,6 @@
 
 package org.jetbrains.r.psi;
 
-import com.intellij.openapi.util.ProperTextRange;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.LiteralTextEscaper;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +35,7 @@ public class RStringLiteralEscaper extends LiteralTextEscaper<RStringInjectHost>
     @Override
     public boolean decode(@NotNull final TextRange rangeInsideHost, @NotNull final StringBuilder outChars) {
         // todo implement proper java-like string escapes support
-        ProperTextRange.assertProperRange(rangeInsideHost);
+        TextRange.assertProperRange(rangeInsideHost);
         outChars.append(myHost.getText(), rangeInsideHost.getStartOffset(), rangeInsideHost.getEndOffset());
         return true;
     }
@@ -44,7 +43,7 @@ public class RStringLiteralEscaper extends LiteralTextEscaper<RStringInjectHost>
 
     @Override
     public int getOffsetInHost(final int offsetInDecoded, @NotNull final TextRange rangeInsideHost) {
-        ProperTextRange.assertProperRange(rangeInsideHost);
+        TextRange.assertProperRange(rangeInsideHost);
         int offset = offsetInDecoded;
         // todo implement proper java-like string escapes support
         offset += rangeInsideHost.getStartOffset();

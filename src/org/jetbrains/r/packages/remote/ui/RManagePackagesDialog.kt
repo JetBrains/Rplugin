@@ -22,9 +22,8 @@ class RManagePackagesDialog(
 
   init {
     isModal = false
-    createCenterPanel()?.let { panel ->
-      traverseComponents(panel, panel.components)
-    }
+    val panel = createCenterPanel()
+    traverseComponents(panel, panel.components)
   }
 
   private fun traverseComponents(parent: JComponent, components: Array<Component>) {  // Note: this ridiculous mix of both `JComponent` and `Component` was intentional

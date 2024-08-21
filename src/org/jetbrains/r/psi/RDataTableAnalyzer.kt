@@ -19,7 +19,7 @@ import org.jetbrains.r.psi.references.RResolveUtil
 import org.jetbrains.r.refactoring.rNamesValidator
 
 object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
-  override val nameToFunction = DataTableFunction.values()
+  override val nameToFunction = DataTableFunction.entries
     .mapNotNull { function ->
       listOf((function.functionName ?: return@mapNotNull null) to function) + function.extraFunctionNames.map { it to function }
     }

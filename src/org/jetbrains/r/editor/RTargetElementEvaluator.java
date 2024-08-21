@@ -52,7 +52,7 @@ public class RTargetElementEvaluator implements TargetElementEvaluatorEx {
 
 
     @Override
-    public boolean isIdentifierPart(PsiFile psiFile, CharSequence charSequence, int i) {
+    public boolean isIdentifierPart(@NotNull PsiFile psiFile, @NotNull CharSequence charSequence, int i) {
         return Character.isJavaIdentifierPart(charSequence.charAt(i));
     }
 }

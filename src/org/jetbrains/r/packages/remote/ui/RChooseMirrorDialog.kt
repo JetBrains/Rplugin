@@ -7,6 +7,7 @@ package org.jetbrains.r.packages.remote.ui
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
+import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.remote.RMirror
 import org.jetbrains.r.visualization.inlays.components.DialogUtil
@@ -47,6 +48,7 @@ class RChooseMirrorDialog(mirrors: List<RMirror>, selection: Int, private val on
   }
 
   companion object {
+    @Nls
     private val TITLE = RBundle.message("repo.dialog.choose.mirror.title")
   }
 }

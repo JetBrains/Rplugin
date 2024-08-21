@@ -131,7 +131,7 @@ class RLibraryWatcher(private val project: Project) : Disposable {
     private val LOGGER = Logger.getInstance(RLibraryWatcher::class.java)
 
     private class SlottedListenerDispatcher(project: Project) {
-      private val groups = TimeSlot.values().map { mutableListOf<(List<String>) -> Promise<Unit>>() }
+      private val groups = TimeSlot.entries.map { mutableListOf<(List<String>) -> Promise<Unit>>() }
 
       init {
         val connection = project.messageBus.connect(getInstance(project))

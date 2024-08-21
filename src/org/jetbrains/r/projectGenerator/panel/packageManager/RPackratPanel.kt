@@ -16,6 +16,7 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.AbstractTableCellEditor
 import com.intellij.util.ui.JBDimension
+import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
@@ -70,7 +71,7 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
     }
   }
 
-  private val errorMessages = HashMap<Int, String>()
+  private val errorMessages = HashMap<Int, @Nls String>()
   private val validationInfos
     get() = errorMessages.values.map { ValidationInfo(it) }
 
