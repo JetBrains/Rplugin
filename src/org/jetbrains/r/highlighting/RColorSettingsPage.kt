@@ -60,7 +60,7 @@ class RColorSettingsPage : RainbowColorSettingsPage {
 <info descr="R_FUNCTION_CALL">global_function</info>(2, <info descr="R_NAMED_ARGUMENT">named</info> = 'Hello World!')
 
 <info descr="R_LOCAL_VARIABLE">cat</info> = <info descr="R_FUNCTION_CALL">list</info>(<info descr="R_NAMED_ARGUMENT">name</info> = "Smudge", <info descr="R_NAMED_ARGUMENT">breed</info> = "Maine Coon")
-#variable acсess
+#variable access
 <info descr="R_FUNCTION_CALL">print</info>(<info descr="R_LOCAL_VARIABLE">cat</info>${'$'}<info descr="R_FIELD">breed</info>)
 
 # namespace access
