@@ -4,7 +4,6 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.progress.util.ColorProgressBar
 import com.intellij.ui.scale.JBUIScale
 import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.ProgressStatus
 import java.awt.BorderLayout
 import javax.swing.*
 
@@ -14,19 +13,19 @@ object InlayOutputProgressStatus {
   val PROGRESS_BAR_DEFAULT_WIDTH = JBUIScale.scale(4)
 
   fun buildProgressStatusComponent(progressStatus: InlayProgressStatus, editor: Editor): JComponent? {
-    if (progressStatus.progress == ProgressStatus.STOPPED_OK && progressStatus.statusText.isEmpty()) return null
+    if (progressStatus.progress == RProgressStatus.STOPPED_OK && progressStatus.statusText.isEmpty()) return null
     val progressPanel = JPanel(BorderLayout()).apply {
       background = editor.notebookAppearance.getTextOutputBackground(editor.colorsScheme)
     }
     var progressBar: JProgressBar? = null
-    if (progressStatus.progress != ProgressStatus.STOPPED_OK) {
+    if (progressStatus.progress != RProgressStatus.STOPPED_OK) {
       progressBar = JProgressBar(0, 100)
       progressBar.setUI(InlayProgressBarUI(progressStatus.progress))
-      if (progressStatus.progress == ProgressStatus.RUNNING) {
+      if (progressStatus.progress == RProgressStatus.RUNNING) {
         progressBar.isIndeterminate = true
         progressBar.foreground = ColorProgressBar.GREEN
       }
-      else if (progressStatus.progress == ProgressStatus.STOPPED_ERROR) {
+      else if (progressStatus.progress == RProgressStatus.STOPPED_ERROR) {
         progressBar.value = 100
       }
     }

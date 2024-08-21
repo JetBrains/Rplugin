@@ -32,7 +32,6 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.progress.ProgressStatus
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
@@ -50,6 +49,7 @@ import org.jetbrains.r.settings.RMarkdownGraphicsSettings
 import org.jetbrains.r.visualization.inlays.components.GraphicsPanel
 import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 import org.jetbrains.r.visualization.inlays.components.ProcessOutput
+import org.jetbrains.r.visualization.inlays.components.RProgressStatus
 import java.awt.Dimension
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
@@ -190,7 +190,7 @@ object RunChunkHandler {
     val prepare = if (isFirstChunk) rInterop.interpreter.prepareForExecution() else resolvedPromise()
     editor.rMarkdownNotebook?.get(inlayElement)?.let { e ->
       e.clearOutputs(removeFiles = false)
-      e.updateProgressStatus(InlayProgressStatus(ProgressStatus.RUNNING))
+      e.updateProgressStatus(InlayProgressStatus(RProgressStatus.RUNNING))
     }
     prepare.onProcessed {
       executeCode(request, console, codeElement, beforeChunkPromise) {
@@ -279,7 +279,7 @@ object RunChunkHandler {
   private fun updateProgressBar(editor: EditorEx, inlayElement: PsiElement) {
     editor.rMarkdownNotebook?.get(inlayElement)?.let { e ->
       e.updateOutputs()
-      e.updateProgressStatus(InlayProgressStatus(ProgressStatus.RUNNING))
+      e.updateProgressStatus(InlayProgressStatus(RProgressStatus.RUNNING))
     }
   }
 
@@ -307,9 +307,9 @@ object RunChunkHandler {
     }
     if (ApplicationManager.getApplication().isUnitTestMode) return
     @Suppress("HardCodedStringLiteral") val status = when {
-      result == null -> InlayProgressStatus(ProgressStatus.STOPPED_ERROR)
-      result.exception != null -> InlayProgressStatus(ProgressStatus.STOPPED_ERROR, result.exception)
-      else -> InlayProgressStatus(ProgressStatus.STOPPED_OK)
+      result == null -> InlayProgressStatus(RProgressStatus.STOPPED_ERROR)
+      result.exception != null -> InlayProgressStatus(RProgressStatus.STOPPED_ERROR, result.exception)
+      else -> InlayProgressStatus(RProgressStatus.STOPPED_OK)
     }
     editor.rMarkdownNotebook?.get(inlayElement)?.let { e ->
       e.updateOutputs()
