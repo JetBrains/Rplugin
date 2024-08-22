@@ -16,6 +16,7 @@ import com.intellij.ui.tabs.TabInfo
 import com.intellij.ui.tabs.TabsListener
 import com.intellij.ui.tabs.impl.JBTabsImpl
 import org.jetbrains.r.visualization.inlays.InlayOutput
+import org.jetbrains.r.visualization.inlays.MouseWheelUtils
 import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 import org.jetbrains.r.visualization.inlays.components.NotebookInlayMultiOutput
 import org.jetbrains.r.visualization.inlays.components.NotebookInlayState
@@ -61,6 +62,7 @@ class TabbedMultiOutput(private val editor: Editor, parent: Disposable) : Notebo
     tabs.component.isOpaque = false
     tabs.component.background = Gray.TRANSPARENT
 
+    MouseWheelUtils.wrapMouseWheelListeners(tabs.component, parent)
     add(tabs.component, BorderLayout.CENTER)
 
     // To make it possible to use JLayeredPane as a parent of NotebookInlayState.

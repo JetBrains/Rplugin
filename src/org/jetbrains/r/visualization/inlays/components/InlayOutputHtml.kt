@@ -8,6 +8,7 @@ import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.ui.jcef.JBCefBrowserBase
 import com.intellij.ui.jcef.JBCefJSQuery
 import org.jetbrains.plugins.notebooks.visualization.r.VisualizationBundle
+import org.jetbrains.r.visualization.inlays.MouseWheelUtils
 import java.util.function.Function
 import javax.swing.SwingUtilities
 
@@ -20,6 +21,7 @@ class InlayOutputHtml(parent: Disposable, editor: Editor)
   private var height: Int = 0
 
   init {
+    MouseWheelUtils.wrapMouseWheelListeners(jbBrowser.component, parent)
     heightJsCallback.addHandler {
       val height = it.toInt()
       if (this.height != height) {

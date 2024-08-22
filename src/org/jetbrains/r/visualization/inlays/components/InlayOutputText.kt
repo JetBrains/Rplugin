@@ -15,8 +15,8 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import org.jetbrains.plugins.notebooks.visualization.r.VisualizationBundle
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.EmptySoftWrapPainter
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.initOutputTextConsole
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.updateOutputTextConsoleUI
+import org.jetbrains.r.visualization.inlays.MouseWheelUtils
 import org.jetbrains.r.visualization.inlays.runAsyncInlay
 import java.awt.Dimension
 import java.io.File
@@ -36,7 +36,7 @@ class InlayOutputText(parent: Disposable, editor: Editor)
     toolbarPane.dataComponent = console.component
 
     val consoleEditor = console.editor as EditorEx
-    initOutputTextConsole(editor, consoleEditor, scrollPaneTopBorderHeight)
+    MouseWheelUtils.initOutputTextConsole(editor, parent, consoleEditor, scrollPaneTopBorderHeight)
     ApplicationManager.getApplication().messageBus.connect(console)
       .subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
         updateOutputTextConsoleUI(consoleEditor, editor)
