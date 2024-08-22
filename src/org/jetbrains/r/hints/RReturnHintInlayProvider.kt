@@ -32,7 +32,7 @@ class RReturnHintInlayProvider : InlayHintsProvider<RReturnHintInlayProvider.Set
     get() = InlayGroup.VALUES_GROUP
 
   override fun getProperty(key: String): String {
-    return RBundle.getMessage(key)
+    return RBundle.message(key)
   }
 
   override fun createSettings() = Settings()
