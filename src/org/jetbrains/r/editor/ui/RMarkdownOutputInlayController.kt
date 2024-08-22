@@ -2,36 +2,30 @@ package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
 import com.intellij.openapi.editor.ex.RangeMarkerEx
-import com.intellij.openapi.editor.ex.util.EditorScrollingPositionKeeper
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
-import com.intellij.psi.PsiElement
-import com.intellij.psi.util.elementType
-import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
-import org.jetbrains.plugins.notebooks.ui.visualization.NotebookLineMarkerRenderer
 import org.jetbrains.plugins.notebooks.ui.visualization.paintNotebookCellBackgroundGutter
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellInlayController
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointerFactory
 import org.jetbrains.plugins.notebooks.visualization.ui.EditorCellView
+import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.addBlockElement
+import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.disposeComponent
+import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.extractOffset
+import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.setupInlayComponent
 import org.jetbrains.r.rendering.chunk.ChunkPath
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
-import org.jetbrains.r.visualization.inlays.EditorInlaysManager
-import org.jetbrains.r.visualization.inlays.InlayComponent
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 import java.awt.Graphics
-import java.awt.Point
 import java.awt.Rectangle
 
 class RMarkdownOutputInlayController private constructor(
@@ -202,60 +196,3 @@ class RMarkdownOutputInlayController private constructor(
     }
   }
 }
-
-class RMarkdownOutputCellGutterLineMarkerRenderer(private val lines: IntRange, inlayId: Long) : NotebookLineMarkerRenderer(inlayId) {
-  override fun paint(editor: Editor, g: Graphics, r: Rectangle) {
-    editor as EditorImpl
-    val inlayBounds = getInlayBounds(editor, lines) ?: return
-    paintNotebookCellBackgroundGutter(editor, g, r, lines, inlayBounds.y, inlayBounds.height)
-  }
-}
-
-private fun addBlockElement(editor: Editor, offset: Int, inlayComponent: NotebookInlayComponent): Inlay<NotebookInlayComponent> =
-  editor.inlayModel.addBlockElement(offset, true, false, EditorInlaysManager.INLAY_PRIORITY, inlayComponent)!!
-
-
-private fun setupInlayComponent(editor: Editor, inlayComponent: NotebookInlayComponent) {
-  val scrollKeeper = EditorScrollingPositionKeeper(editor)
-
-  fun updateInlaysInEditor(editor: Editor) {
-    val end = editor.xyToLogicalPosition(Point(0, Int.MAX_VALUE))
-    val offsetEnd = editor.logicalPositionToOffset(end)
-
-    val inlays = editor.inlayModel.getBlockElementsInRange(0, offsetEnd)
-
-    inlays.forEach { inlay ->
-      if (inlay.renderer is InlayComponent) {
-        (inlay.renderer as InlayComponent).updateComponentBounds(inlay)
-      }
-    }
-  }
-  inlayComponent.beforeHeightChanged = {
-    scrollKeeper.savePosition()
-  }
-  inlayComponent.afterHeightChanged = {
-    updateInlaysInEditor(editor)
-    scrollKeeper.restorePosition(true)
-  }
-}
-
-private fun getPsiElement(editor: Editor, offset: Int): PsiElement? =
-  editor.psiFile?.viewProvider?.let { it.findElementAt(offset, it.baseLanguage) }
-
-private fun getCodeFenceEnd(psiElement: PsiElement): PsiElement? =
-  psiElement.let { it.parent.children.find { it.elementType == MarkdownTokenTypes.CODE_FENCE_END } }
-
-internal fun getCodeFenceEnd(editor: EditorImpl, interval: NotebookCellLines.Interval): PsiElement? {
-  val offset = extractOffset(editor.document, interval)
-  val psiElement = getPsiElement(editor, offset) ?: return null
-  return getCodeFenceEnd(psiElement)
-}
-
-private fun disposeComponent(component: NotebookInlayComponent) {
-  component.parent?.remove(component)
-  component.disposeInlay()
-  component.dispose()
-}
-
-private fun extractOffset(document: Document, interval: NotebookCellLines.Interval): Int =
-  Integer.max(document.getLineEndOffset(interval.lines.last) - 1, 0)
