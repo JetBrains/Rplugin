@@ -56,9 +56,6 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
 
   private var expandedHeight = 0
 
-  /** Inlay short view, shown in collapsed state or in empty state. */
-  private var toolbar: NotebookInlayToolbar? = null
-
   private var gutter: JComponent? = null
 
   private var mouseOverNewParagraphArea = false
@@ -109,11 +106,6 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
 
   override fun mouseDragged(e: MouseEvent?) {}
   // endregion
-
-  private fun removeToolbar() {
-    toolbar?.let { remove(it) }
-    toolbar = null
-  }
 
   override fun paintComponent(g: Graphics) {
     /** Paints rounded rect panel - background of inlay component. */
@@ -254,7 +246,6 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
 
   private fun onMultiOutput(inlayOutputs: List<InlayOutput>) {
     state?.clear()
-    removeToolbar()
 
     shouldLimitMaxHeight = false
 
@@ -302,6 +293,5 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
 
   fun clearOutputs() {
     state?.clear()
-    removeToolbar()
   }
 }
