@@ -31,9 +31,9 @@ import org.intellij.images.editor.impl.ImageEditorImpl
 import org.intellij.images.ui.ImageComponent
 import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.plugins.notebooks.visualization.r.VisualizationBundle
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.ImageInverter
 import org.jetbrains.plugins.terminal.block.util.TerminalDataContextUtils.editor
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import java.awt.BorderLayout
 import java.awt.Component
@@ -54,7 +54,7 @@ interface DarkModeNotifier {
 
 class GraphicsPanel(private val project: Project, private val disposableParent: Disposable) {
   private val graphicsManager = ChunkGraphicsManager(project)
-  private val label = JLabel(VisualizationBundle.message("graphics.not.available"), JLabel.CENTER)
+  private val label = JLabel(RBundle.message("graphics.not.available"), JLabel.CENTER)
   private val rootPanel = EmptyComponentPanel(label)
 
   private val loadingPanel = JBLoadingPanel(BorderLayout(), disposableParent).apply {
@@ -143,7 +143,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
   fun showImage(imageFile: File) {
     if (!tryShowImage(imageFile)) {
-      closeEditor(VisualizationBundle.message("graphics.could.not.be.loaded"))
+      closeEditor(RBundle.message("graphics.could.not.be.loaded"))
     }
   }
 
@@ -191,7 +191,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   fun showLoadingMessage(@Nls message: String? = null) {
     reset()
     rootPanel.contentComponent = loadingPanel
-    loadingPanel.setLoadingText(message ?: VisualizationBundle.message("graphics.loading"))
+    loadingPanel.setLoadingText(message ?: RBundle.message("graphics.loading"))
   }
 
   fun showMessageWithLink(@Nls message: String, @Nls linkText: String, linkAction: () -> Unit) {
@@ -201,7 +201,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
   fun reset(@Nls message: String? = null) {
     currentFile = null
-    closeEditor(message ?: VisualizationBundle.message("graphics.not.available"))
+    closeEditor(message ?: RBundle.message("graphics.not.available"))
   }
 
   private fun tryShowImage(imageFile: File): Boolean {
@@ -256,7 +256,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
       if (Disposer.isDisposed(disposableParent)) {
         return@runInEdt
       }
-      closeEditor(VisualizationBundle.message("graphics.not.available"))
+      closeEditor(RBundle.message("graphics.not.available"))
       val editor = createImageEditor(project, file, this)
       adjustImageZoom(editor.zoomModel)
       removeImageInfoLabelAndActionToolBar(editor)

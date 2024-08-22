@@ -7,7 +7,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.ui.jcef.JBCefBrowserBase
 import com.intellij.ui.jcef.JBCefJSQuery
-import org.jetbrains.plugins.notebooks.visualization.r.VisualizationBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.visualization.inlays.MouseWheelUtils
 import java.util.function.Function
 import javax.swing.SwingUtilities
@@ -77,8 +77,8 @@ class InlayOutputHtml(parent: Disposable, editor: Editor)
   }
 
   override fun saveAs() {
-    val title = VisualizationBundle.message("inlay.action.export.as.txt.title")
-    val description = VisualizationBundle.message("inlay.action.exports.range.csv.description")
+    val title = RBundle.message("inlay.action.export.as.txt.title")
+    val description = RBundle.message("inlay.action.exports.range.csv.description")
     saveWithFileChooser(title, description, arrayOf("txt"), "output") { destination ->
       saveJsCallback.addHandler(object : Function<String, JBCefJSQuery.Response> {
         override fun apply(selection: String): JBCefJSQuery.Response {

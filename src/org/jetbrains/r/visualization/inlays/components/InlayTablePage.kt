@@ -22,7 +22,6 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
 import org.jetbrains.plugins.notebooks.visualization.NotebooksVisualizationIcons
-import org.jetbrains.plugins.notebooks.visualization.r.VisualizationBundle
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.visualization.inlays.dataframe.DataFrame
@@ -122,7 +121,7 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
   }
 
   private fun setupSelectAllAction(table: JTable) {
-    val actionName = VisualizationBundle.message("action.name.table.select.all")
+    val actionName = RBundle.message("action.name.table.select.all")
     val action = object : AbstractAction(actionName) {
       override fun actionPerformed(e: ActionEvent) {
         table.setRowSelectionInterval(0, table.rowCount - 1)

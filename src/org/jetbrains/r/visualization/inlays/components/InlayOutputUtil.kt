@@ -15,7 +15,7 @@ import com.intellij.openapi.util.NlsContexts.Label
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.notebooks.visualization.r.VisualizationBundle
+import org.jetbrains.r.RBundle
 import java.awt.image.BufferedImage
 import java.io.File
 import java.nio.file.Paths
@@ -24,11 +24,11 @@ import javax.imageio.ImageTypeSpecifier
 
 object InlayOutputUtil {
   @Nls
-  private val EXPORT_FAILURE_TITLE = VisualizationBundle.message("inlay.output.export.failure")
+  private val EXPORT_FAILURE_TITLE = RBundle.message("inlay.output.export.failure")
   @Nls
-  private val EXPORT_FAILURE_DETAILS = VisualizationBundle.message("inlay.output.export.failure.details")
+  private val EXPORT_FAILURE_DETAILS = RBundle.message("inlay.output.export.failure.details")
   @Nls
-  private val EXPORT_FAILURE_DESCRIPTION = VisualizationBundle.message("inlay.output.export.failure.description")
+  private val EXPORT_FAILURE_DESCRIPTION = RBundle.message("inlay.output.export.failure.description")
 
   fun saveImageWithFileChooser(project: Project, image: BufferedImage, onSave: ((File) -> Unit)? = null) {
     chooseImageSaveLocation(project, image) { location ->
@@ -39,7 +39,7 @@ object InlayOutputUtil {
 
   private fun chooseImageSaveLocation(project: Project, image: BufferedImage, onChoose: (File) -> Unit) {
     val extensions = getAvailableFormats(image).toTypedArray()
-    saveWithFileChooser(project, VisualizationBundle.message("inlay.output.image.export.title"), VisualizationBundle.message("inlay.output.image.export.description"), extensions, "image", false, onChoose)
+    saveWithFileChooser(project, RBundle.message("inlay.output.image.export.title"), RBundle.message("inlay.output.image.export.description"), extensions, "image", false, onChoose)
   }
 
   private fun getAvailableFormats(image: BufferedImage): List<String> {

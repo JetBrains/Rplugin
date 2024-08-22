@@ -13,9 +13,9 @@ import com.intellij.openapi.editor.ex.SoftWrapChangeListener
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
-import org.jetbrains.plugins.notebooks.visualization.r.VisualizationBundle
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.EmptySoftWrapPainter
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.updateOutputTextConsoleUI
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.visualization.inlays.MouseWheelUtils
 import org.jetbrains.r.visualization.inlays.runAsyncInlay
 import java.awt.Dimension
@@ -105,8 +105,8 @@ class InlayOutputText(parent: Disposable, editor: Editor)
   }
 
   override fun saveAs() {
-    val title = VisualizationBundle.message("inlay.action.export.as.txt.title")
-    val description = VisualizationBundle.message("inlay.action.export.as.txt.description")
+    val title = RBundle.message("inlay.action.export.as.txt.title")
+    val description = RBundle.message("inlay.action.export.as.txt.description")
     saveWithFileChooser(title, description, arrayOf("txt"), "output") { destination ->
       destination.bufferedWriter().use { out ->
         out.write(console.text)
