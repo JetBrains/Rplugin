@@ -8,6 +8,8 @@ import org.jetbrains.plugins.notebooks.visualization.NotebookCellInlayManager
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLinesProvider
 import org.jetbrains.plugins.notebooks.visualization.NotebookEditorAppearanceProvider
 import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
+import org.jetbrains.r.visualization.RNotebookCellInlayManager
+import org.jetbrains.r.visualization.RNotebookGutterLineMarkerManager
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
 
 class RMarkdownEditorFactoryListener(private val coroutineScope: CoroutineScope) : EditorFactoryListener {
@@ -19,6 +21,14 @@ class RMarkdownEditorFactoryListener(private val coroutineScope: CoroutineScope)
     RInlayDimensions.init(editor)
     NotebookCellLinesProvider.install(editor)
     NotebookEditorAppearanceProvider.install(editor)
-    NotebookCellInlayManager.install(editor, shouldCheckInlayOffsets = false, parentScope = coroutineScope)
+
+    val useStableUI: Boolean = true
+
+    if (useStableUI) {
+      RNotebookCellInlayManager.install(editor)
+      RNotebookGutterLineMarkerManager.install(editor)
+    } else {
+      NotebookCellInlayManager.install(editor, shouldCheckInlayOffsets = false, parentScope = coroutineScope)
+    }
   }
 }
