@@ -6,7 +6,6 @@ import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.Messages
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RPlotUtil
@@ -15,6 +14,7 @@ import org.jetbrains.r.run.graphics.ui.RChunkGraphicsSettingsDialog
 import org.jetbrains.r.run.graphics.ui.RGraphicsExportDialog
 import org.jetbrains.r.run.graphics.ui.RGraphicsPanelWrapper
 import org.jetbrains.r.run.graphics.ui.RGraphicsZoomDialog
+import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.inlays.components.CopyImageToClipboardAction
 import org.jetbrains.r.visualization.inlays.components.InlayOutput
 import org.jetbrains.r.visualization.inlays.components.InlayOutputUtil
@@ -60,13 +60,13 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor) :
       val maxSize = addGraphics(File(data))
       SwingUtilities.invokeLater {
         val height = maxSize?.let { calculateHeight(it) }
-        onHeightCalculated?.invoke(height ?: InlayDimensions.defaultHeight)
+        onHeightCalculated?.invoke(height ?: RInlayDimensions.defaultHeight)
       }
     }
   }
 
   private fun calculateHeight(maxSize: Dimension): Int {
-    return InlayDimensions.calculateInlayHeight(maxSize.width, maxSize.height, editor)
+    return RInlayDimensions.calculateInlayHeight(maxSize.width, maxSize.height, editor)
   }
 
   private fun addGraphics(file: File): Dimension? {

@@ -23,12 +23,12 @@ import org.jetbrains.plugins.notebooks.visualization.NotebookCellInlayController
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointerFactory
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
 import org.jetbrains.plugins.notebooks.visualization.ui.EditorCellView
 import org.jetbrains.r.rendering.chunk.ChunkPath
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
 import org.jetbrains.r.visualization.inlays.EditorInlaysManager
 import org.jetbrains.r.visualization.inlays.InlayComponent
+import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 import java.awt.Graphics
 import java.awt.Point
@@ -138,7 +138,7 @@ class RMarkdownOutputInlayController private constructor(
   }
 
   private fun addInlayComponent(editor: EditorImpl, intervalPointer: NotebookIntervalPointer, offset: Int): NotebookInlayComponent {
-    InlayDimensions.init(editor)
+    RInlayDimensions.init(editor)
     val inlayComponent = NotebookInlayComponentInterval(intervalPointer, editor)
 
     if (!editor.inlayModel.isInBatchMode) {
@@ -146,12 +146,12 @@ class RMarkdownOutputInlayController private constructor(
 
       // On editor creation it has 0 width
       val gutterWidth = (editor.gutter as EditorGutterComponentEx).width
-      var editorWideWidth = editor.component.width - inlayComponent.width - gutterWidth - InlayDimensions.rightBorder
+      var editorWideWidth = editor.component.width - inlayComponent.width - gutterWidth - RInlayDimensions.rightBorder
       if (editorWideWidth <= 0) {
-        editorWideWidth = InlayDimensions.width
+        editorWideWidth = RInlayDimensions.width
       }
 
-      inlayComponent.setBounds(0, editor.offsetToXY(offset).y + editor.lineHeight, editorWideWidth, InlayDimensions.smallHeight)
+      inlayComponent.setBounds(0, editor.offsetToXY(offset).y + editor.lineHeight, editorWideWidth, RInlayDimensions.smallHeight)
     }
     editor.contentComponent.add(inlayComponent)
     val inlay = addBlockElement(editor, offset, inlayComponent)

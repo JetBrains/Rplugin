@@ -16,7 +16,6 @@ import com.intellij.util.IconUtil
 import com.intellij.util.ui.ImageUtil
 import com.intellij.util.ui.UIUtil
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
 import org.jetbrains.plugins.notebooks.visualization.use
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
@@ -26,6 +25,7 @@ import org.jetbrains.r.run.graphics.RSnapshot
 import org.jetbrains.r.settings.RGraphicsSettings
 import org.jetbrains.r.visualization.inlays.InlayElementDescriptor
 import org.jetbrains.r.visualization.inlays.InlayOutput
+import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import java.awt.Image
 import java.awt.Rectangle
 import java.awt.RenderingHints
@@ -110,7 +110,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
     }
 
     private val preferredWidth
-      get() = (InlayDimensions.lineHeight * 8.0f).toInt()
+      get() = (RInlayDimensions.lineHeight * 8.0f).toInt()
 
     private fun getUrls(chunkPath: ChunkPath): List<InlayOutput> {
       val imagesDirectory = chunkPath.getHtmlDirectory()

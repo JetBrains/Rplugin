@@ -4,7 +4,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.Editor
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
+import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.inlays.runAsyncInlay
 import java.io.File
 import javax.swing.JComponent
@@ -32,7 +32,7 @@ class InlayOutputImg(parent: Disposable, editor: Editor)
       SwingUtilities.invokeLater {
         val maxHeight = graphicsPanel.maximumSize?.height ?: 0
         val maxWidth = graphicsPanel.maximumSize?.width ?: 0
-        val height = InlayDimensions.calculateInlayHeight(maxWidth, maxHeight, editor)
+        val height = RInlayDimensions.calculateInlayHeight(maxWidth, maxHeight, editor)
         onHeightCalculated?.invoke(height)
       }
     }

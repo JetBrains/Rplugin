@@ -9,7 +9,6 @@ import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.util.Disposer
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ResizeController
 import java.awt.*
 import javax.swing.JPanel
@@ -73,7 +72,7 @@ open class InlayComponent : JPanel(BorderLayout()), EditorCustomElementRenderer 
 
   /** Returns width of component. */
   override fun calcWidthInPixels(inlay: Inlay<*>): Int {
-    return InlayDimensions.calculateInlayWidth(inlay.editor as EditorImpl)
+    return RInlayDimensions.calculateInlayWidth(inlay.editor as EditorImpl)
   }
 
   /** Returns height of component. */

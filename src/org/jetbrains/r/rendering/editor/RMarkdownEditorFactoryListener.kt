@@ -7,8 +7,8 @@ import kotlinx.coroutines.CoroutineScope
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellInlayManager
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLinesProvider
 import org.jetbrains.plugins.notebooks.visualization.NotebookEditorAppearanceProvider
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
 import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
+import org.jetbrains.r.visualization.inlays.RInlayDimensions
 
 class RMarkdownEditorFactoryListener(private val coroutineScope: CoroutineScope) : EditorFactoryListener {
 
@@ -16,7 +16,7 @@ class RMarkdownEditorFactoryListener(private val coroutineScope: CoroutineScope)
     val editor = event.editor as? EditorImpl ?: return
     if (!RMarkdownVirtualFile.hasVirtualFile(editor)) return
 
-    InlayDimensions.init(editor)
+    RInlayDimensions.init(editor)
     NotebookCellLinesProvider.install(editor)
     NotebookEditorAppearanceProvider.install(editor)
     NotebookCellInlayManager.install(editor, shouldCheckInlayOffsets = false, parentScope = coroutineScope)

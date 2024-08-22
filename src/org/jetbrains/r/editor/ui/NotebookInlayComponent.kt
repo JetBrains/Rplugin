@@ -18,6 +18,7 @@ import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
 import org.jetbrains.r.visualization.inlays.InlayComponent
 import org.jetbrains.r.visualization.inlays.InlayOutput
+import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 import org.jetbrains.r.visualization.inlays.components.InlayStateCustomizer
 import org.jetbrains.r.visualization.inlays.components.NotebookInlayMultiOutput
@@ -72,9 +73,9 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
   init {
     cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
     border = JBUI.Borders.empty(InlayDimensions.topBorderUnscaled,
-                                InlayDimensions.leftBorderUnscaled,
+                                RInlayDimensions.leftBorderUnscaled,
                                 InlayDimensions.bottomBorderUnscaled,
-                                InlayDimensions.rightBorderUnscaled)
+                                RInlayDimensions.rightBorderUnscaled)
     Disposer.register(editor.disposable, disposable)
     addMouseListener(this)
     addMouseMotionListener(this)
@@ -127,15 +128,15 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
       }
     //}
 
-    g2d.fillRect(0, 0, width, InlayDimensions.topOffset + InlayDimensions.cornerRadius)
-    g2d.fillRect(0, height - InlayDimensions.bottomOffset - InlayDimensions.cornerRadius, width,
-                 InlayDimensions.bottomOffset + InlayDimensions.cornerRadius)
+    g2d.fillRect(0, 0, width, RInlayDimensions.topOffset + RInlayDimensions.cornerRadius)
+    g2d.fillRect(0, height - RInlayDimensions.bottomOffset - RInlayDimensions.cornerRadius, width,
+                 RInlayDimensions.bottomOffset + RInlayDimensions.cornerRadius)
 
 
     g2d.color = UIUtil.getLabelBackground()
-    g2d.fillRoundRect(0, InlayDimensions.topOffset, width,
-                      height - InlayDimensions.bottomOffset - InlayDimensions.topOffset,
-                      InlayDimensions.cornerRadius, InlayDimensions.cornerRadius)
+    g2d.fillRoundRect(0, RInlayDimensions.topOffset, width,
+                      height - RInlayDimensions.bottomOffset - RInlayDimensions.topOffset,
+                      RInlayDimensions.cornerRadius, RInlayDimensions.cornerRadius)
 
     g2d.dispose()
   }
@@ -171,10 +172,10 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
       return
     }
 
-    val newWidth = max(size.width + dx, InlayDimensions.minWidth)
+    val newWidth = max(size.width + dx, RInlayDimensions.minWidth)
     var newHeight = size.height + dy
 
-    newHeight = max(InlayDimensions.minHeight, newHeight)
+    newHeight = max(RInlayDimensions.minHeight, newHeight)
     val newDx = newWidth - size.width
     val newDy = newHeight - size.height
 
@@ -215,8 +216,8 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
       deltaSize(0, expandedHeight - size.height)
       expandedHeight = 0
     }
-    else if (height < InlayDimensions.minHeight) {
-      deltaSize(0, InlayDimensions.defaultHeight - height)
+    else if (height < RInlayDimensions.minHeight) {
+      deltaSize(0, RInlayDimensions.defaultHeight - height)
     }
 
     revalidate()
@@ -229,7 +230,7 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
 
     var desiredHeight = height + InlayDimensions.topBorder + InlayDimensions.bottomBorder
     if (shouldLimitMaxHeight) {
-      desiredHeight = min(InlayDimensions.defaultHeight, desiredHeight)
+      desiredHeight = min(RInlayDimensions.defaultHeight, desiredHeight)
     }
 
     deltaSize(0, desiredHeight - size.height)
@@ -246,8 +247,8 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
 
     InlayStateCustomizer.customize(output)
 
-    if (isResizeOutputToPreviewHeight && size.height == InlayDimensions.smallHeight) {
-      deltaSize(0, InlayDimensions.previewHeight - size.height)
+    if (isResizeOutputToPreviewHeight && size.height == RInlayDimensions.smallHeight) {
+      deltaSize(0, RInlayDimensions.previewHeight - size.height)
     }
   }
 
@@ -290,8 +291,8 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
 
   fun addText(message: String, outputType: Key<*>) {
     getOrCreateOutput().addText(message, outputType)
-    if (size.height <= InlayDimensions.previewHeight * 3) {
-      deltaSize(0, min(InlayDimensions.lineHeight * (message.lines().size - 1), InlayDimensions.previewHeight * 3 - size.height))
+    if (size.height <= RInlayDimensions.previewHeight * 3) {
+      deltaSize(0, min(RInlayDimensions.lineHeight * (message.lines().size - 1), RInlayDimensions.previewHeight * 3 - size.height))
     }
   }
 

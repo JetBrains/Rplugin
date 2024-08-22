@@ -15,7 +15,7 @@ import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointerFactory
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
+import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.inlays.calculateInlayExpansionRange
 import org.jetbrains.r.visualization.inlays.calculateViewportRange
 import java.awt.event.ComponentAdapter
@@ -63,7 +63,7 @@ class RMarkdownNotebook(project: Project, editor: EditorImpl) {
   private fun addResizeListener(editor: EditorEx) {
     editor.component.addComponentListener(object : ComponentAdapter() {
       override fun componentResized(e: ComponentEvent) {
-        val inlayWidth = InlayDimensions.calculateInlayWidth(editor)
+        val inlayWidth = RInlayDimensions.calculateInlayWidth(editor)
         if (inlayWidth > 0) {
           outputs.values.forEach {
             it.setWidth(inlayWidth)
