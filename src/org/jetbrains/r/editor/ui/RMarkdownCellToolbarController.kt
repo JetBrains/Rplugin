@@ -1,10 +1,6 @@
 package org.jetbrains.r.editor.ui
 
-import com.intellij.openapi.actionSystem.ActionGroup
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.editor.Document
-import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.ex.EditorEx
@@ -14,21 +10,11 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.editor.markup.TextAttributes
-import org.jetbrains.plugins.notebooks.ui.SteadyUIPanel
-import org.jetbrains.plugins.notebooks.ui.visualization.NotebookLineMarkerRenderer
 import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
-import org.jetbrains.plugins.notebooks.ui.visualization.paintNotebookCellBackgroundGutter
 import org.jetbrains.plugins.notebooks.visualization.*
 import org.jetbrains.plugins.notebooks.visualization.ui.EditorCellView
-import org.jetbrains.r.rendering.chunk.RunChunkNavigator
-import java.awt.Cursor
-import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Rectangle
-import javax.swing.BoxLayout
-import javax.swing.JComponent
-import javax.swing.plaf.PanelUI
-import kotlin.math.max
 
 
 internal class RMarkdownCellToolbarController private constructor(
@@ -112,53 +98,5 @@ internal class RMarkdownCellToolbarController private constructor(
 
   companion object {
     private const val isRelatedToPrecedingText: Boolean = true
-  }
-}
-
-class RMarkdownCellToolbarGutterLineMarkerRenderer(private val lines: IntRange, inlayId: Long) : NotebookLineMarkerRenderer(inlayId) {
-  override fun paint(editor: Editor, g: Graphics, r: Rectangle) {
-    editor as EditorImpl
-    val inlayBounds = getInlayBounds(editor, lines) ?: return
-    paintNotebookCellBackgroundGutter(editor, g, r, lines, inlayBounds.y, inlayBounds.height)
-  }
-}
-
-
-private class RMarkdownCellToolbarPanelUI(private val editor: EditorImpl) : PanelUI() {
-  override fun getPreferredSize(c: JComponent): Dimension {
-    val preferredSize = super.getPreferredSize(c)
-    with(editor.notebookAppearance) {
-      val height = max(preferredSize?.height ?: 0, INNER_CELL_TOOLBAR_HEIGHT + SPACE_BELOW_CELL_TOOLBAR)
-      val width = max(preferredSize?.width ?: 0, editor.scrollingModel.visibleArea.width)
-      return Dimension(width, height)
-    }
-  }
-
-  override fun paint(g: Graphics, c: JComponent) {
-    @Suppress("NAME_SHADOWING") g.create().use { g ->
-      g.color = editor.notebookAppearance.getCodeCellBackground(editor.colorsScheme)
-      g.fillRect(0, 0, editor.scrollPane.let { it.viewport.width - it.verticalScrollBar.width }, c.height)
-    }
-    super.paint(g, c)
-  }
-}
-
-
-private class RMarkdownCellToolbarPanel(editor: EditorImpl, pointer: NotebookIntervalPointer) : SteadyUIPanel(RMarkdownCellToolbarPanelUI(editor)) {
-  init {
-    isOpaque = false
-    background = editor.notebookAppearance.getCodeCellBackground(editor.colorsScheme)
-    layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
-
-    val toolbar = ActionManager.getInstance().createActionToolbar("InlineToolbar", createToolbarActionGroup(editor, pointer), true)
-    toolbar.setTargetComponent(this)
-    add(toolbar.component)
-    toolbar.component.isOpaque = false
-    toolbar.component.cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
-  }
-
-  private fun createToolbarActionGroup(editor: Editor, pointer: NotebookIntervalPointer): ActionGroup {
-    val actions = RunChunkNavigator.createChunkToolbarActionsList(pointer, editor)
-    return DefaultActionGroup(actions)
   }
 }
