@@ -168,7 +168,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
         val editWatchAction = ActionManager.getInstance().getAction(XDebuggerActions.XEDIT_WATCH)
         val presentation = editWatchAction.getTemplatePresentation().clone()
         val context = DataManager.getInstance().getDataContext(watchTree)
-        val actionEvent = AnActionEvent(null, context, "WATCH_TREE", presentation, ActionManager.getInstance(), 0)
+        val actionEvent = AnActionEvent.createEvent(context, presentation, "WATCH_TREE", ActionUiKind.TOOLBAR, null)
         val runnable = { editWatchAction.actionPerformed(actionEvent) }
         if (editAlarm.isEmpty && quitePeriod.isEmpty) {
           editAlarm.addRequest(runnable, getMultiClickInterval())
