@@ -24,6 +24,7 @@ import com.intellij.util.ui.TextTransferable
 import org.jetbrains.plugins.notebooks.visualization.NotebooksVisualizationIcons
 import org.jetbrains.plugins.notebooks.visualization.r.VisualizationBundle
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.visualization.inlays.dataframe.DataFrame
 import org.jetbrains.r.visualization.inlays.dataframe.columns.DoubleType
 import org.jetbrains.r.visualization.inlays.dataframe.columns.IntType
@@ -107,10 +108,10 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
   }
 
   private fun setupTablePopupMenu(table: JTable) {
-    val copyAll = JMenuItem(VisualizationBundle.message("inlay.table.copy.all"))
+    val copyAll = JMenuItem(RBundle.message("inlay.table.copy.all"))
     copyAll.addActionListener { ClipboardUtils.copyAllToClipboard(table) }
 
-    val copySelected = JMenuItem(VisualizationBundle.message("inlay.table.copy.selected"))
+    val copySelected = JMenuItem(RBundle.message("inlay.table.copy.selected"))
     copySelected.addActionListener { ClipboardUtils.copySelectedToClipboard(table) }
 
     val popupMenu = JPopupMenu()
@@ -177,16 +178,16 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
 
   override fun createActions(): List<AnAction> {
 
-    val actionSaveAsCsv = object : DumbAwareAction(VisualizationBundle.message("inlay.table.export.as.text"),
-                                                   VisualizationBundle.message("inlay.table.export.as.description"),
+    val actionSaveAsCsv = object : DumbAwareAction(RBundle.message("inlay.table.export.as.text"),
+                                                   RBundle.message("inlay.table.export.as.description"),
                                                    AllIcons.ToolbarDecorator.Export) {
       override fun actionPerformed(e: AnActionEvent) {
         saveAsCsv(e.project ?: return)
       }
     }
 
-    val filterTable = object : DumbAwareToggleAction(VisualizationBundle.message("inlay.table.filter.text"),
-                                                     VisualizationBundle.message("inlay.table.filter.description"),
+    val filterTable = object : DumbAwareToggleAction(RBundle.message("inlay.table.filter.text"),
+                                                     RBundle.message("inlay.table.filter.description"),
                                                      AllIcons.Actions.Find) {
       override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
 
@@ -205,7 +206,7 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
       }
     }
 
-    val paginateTable = object : DumbAwareToggleAction(VisualizationBundle.message("inlay.table.pagination.text"),
+    val paginateTable = object : DumbAwareToggleAction(RBundle.message("inlay.table.pagination.text"),
                                                        null,
                                                        NotebooksVisualizationIcons.Table.Pagination) {
       override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
@@ -231,8 +232,8 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
 
   /** Save the file as tsv (tab separated values) via intellij SaveFileDialog. */
   private fun saveAsCsv(project: Project) {
-    val descriptor = FileSaverDescriptor(VisualizationBundle.message("inlay.table.export.as.csv.text"),
-                                         VisualizationBundle.message("inlay.table.export.as.csv.description"), "csv",
+    val descriptor = FileSaverDescriptor(RBundle.message("inlay.table.export.as.csv.text"),
+                                         RBundle.message("inlay.table.export.as.csv.description"), "csv",
                                          "tsv")
     val chooser: FileSaverDialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, this)
     val basePath = project.basePath ?: return

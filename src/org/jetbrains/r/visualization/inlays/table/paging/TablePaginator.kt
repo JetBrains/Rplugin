@@ -11,8 +11,10 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.ui.ComboBox
-import org.jetbrains.plugins.notebooks.visualization.r.VisualizationBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.visualization.inlays.dataframe.DataFrame
+import org.jetbrains.r.visualization.inlays.table.DataFrameTableModel
+import org.jetbrains.r.visualization.inlays.table.PagingTableModel
 import java.awt.BorderLayout
 import java.awt.FlowLayout
 import javax.swing.*
@@ -69,9 +71,9 @@ class TablePaginator : JPanel(BorderLayout()) {
         if (currentPageChanging)
           return
         tableModel?.pageOffset = currentPageIndex() - 1
-        label.text = VisualizationBundle.message("paginator.displaying", tableModel!!.pageOffset * tableModel!!.pageSize + 1,
-                                                 tableModel!!.pageOffset * tableModel!!.pageSize + tableModel!!.rowCount,
-                                                 tableModel!!.getRealRowCount())
+        label.text = RBundle.message("paginator.displaying", tableModel!!.pageOffset * tableModel!!.pageSize + 1,
+                                     tableModel!!.pageOffset * tableModel!!.pageSize + tableModel!!.rowCount,
+                                     tableModel!!.getRealRowCount())
       }
 
       override fun changedUpdate(e: DocumentEvent?) {
@@ -93,7 +95,7 @@ class TablePaginator : JPanel(BorderLayout()) {
     editorComponent?.putClientProperty("AuxEditorComponent", true)
 
     rowsNumber.addActionListener {
-      if(rowsNumber.selectedItem is Int) {
+      if (rowsNumber.selectedItem is Int) {
         tableModel?.pageSize = rowsNumber.selectedItem as Int
         updateInfo()
       }
@@ -113,7 +115,7 @@ class TablePaginator : JPanel(BorderLayout()) {
 
     panel.add(JToolBar.Separator())
 
-    panel.add(JLabel(VisualizationBundle.message("paginator.label.page")))
+    panel.add(JLabel(RBundle.message("paginator.label.page")))
 
     currentPage.putClientProperty("AuxEditorComponent", true)
 
@@ -147,7 +149,7 @@ class TablePaginator : JPanel(BorderLayout()) {
       columnWidths[i] = table!!.columnModel.getColumn(i).width
     }
 
-    table!!.model = org.jetbrains.r.visualization.inlays.table.DataFrameTableModel(getDataFrame(table!!))
+    table!!.model = DataFrameTableModel(getDataFrame(table!!))
 
     for (i in 0 until table!!.columnCount) {
       table!!.columnModel.getColumn(i).preferredWidth = columnWidths[i]
@@ -155,11 +157,11 @@ class TablePaginator : JPanel(BorderLayout()) {
   }
 
   private fun getDataFrame(table: JTable): DataFrame {
-    return if (table.model is org.jetbrains.r.visualization.inlays.table.DataFrameTableModel) {
-      (table.model as org.jetbrains.r.visualization.inlays.table.DataFrameTableModel).dataFrame
+    return if (table.model is DataFrameTableModel) {
+      (table.model as DataFrameTableModel).dataFrame
     }
     else {
-      (table.model as org.jetbrains.r.visualization.inlays.table.PagingTableModel).dataFrame
+      (table.model as PagingTableModel).dataFrame
     }
   }
 
@@ -174,12 +176,12 @@ class TablePaginator : JPanel(BorderLayout()) {
     parentPanel.add(this, BorderLayout.PAGE_END)
     parentPanel.revalidate()
 
-    if (table.model is org.jetbrains.r.visualization.inlays.table.PagingTableModel) {
-      tableModel = table.model as org.jetbrains.r.visualization.inlays.table.PagingTableModel
+    if (table.model is PagingTableModel) {
+      tableModel = table.model as PagingTableModel
       //   rowsNumber.selectedItem = tableModel!!.pageSize
     }
     else {
-      tableModel = org.jetbrains.r.visualization.inlays.table.PagingTableModel(getDataFrame(table))
+      tableModel = PagingTableModel(getDataFrame(table))
 
       val columnWidths = IntArray(table.columnCount) { 75 }
       for (i in 0 until table.columnCount) {
@@ -227,18 +229,18 @@ class TablePaginator : JPanel(BorderLayout()) {
 
   private fun updateInfo() {
     currentPageChanging = true
-    label.text = VisualizationBundle.message("paginator.displaying", tableModel!!.pageOffset * tableModel!!.pageSize + 1,
-                                                 tableModel!!.pageOffset * tableModel!!.pageSize + tableModel!!.rowCount,
-                                                 tableModel!!.getRealRowCount())
+    label.text = RBundle.message("paginator.displaying", tableModel!!.pageOffset * tableModel!!.pageSize + 1,
+                                             tableModel!!.pageOffset * tableModel!!.pageSize + tableModel!!.rowCount,
+                                             tableModel!!.getRealRowCount())
     currentPage.text = (tableModel!!.pageOffset + 1).toString()
-    totalPages.text = VisualizationBundle.message("paginator.of", tableModel!!.getPageCount().toString())
+    totalPages.text = RBundle.message("paginator.of", tableModel!!.getPageCount().toString())
     currentPageChanging = false
   }
 
   private fun createActionButtons() {
 
-    var action: AnAction = object : AnAction(VisualizationBundle.message("paginator.first.page.text"),
-                                             VisualizationBundle.message("paginator.first.page.description"),
+    var action: AnAction = object : AnAction(RBundle.message("paginator.first.page.text"),
+                                             RBundle.message("paginator.first.page.description"),
                                              AllIcons.Actions.Play_first) {
       override fun actionPerformed(e: AnActionEvent) {
         tableModel!!.pageOffset = 0
@@ -247,8 +249,8 @@ class TablePaginator : JPanel(BorderLayout()) {
     }
     toFirst = ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
 
-    action = object : AnAction(VisualizationBundle.message("paginator.previous.page.text"),
-                               VisualizationBundle.message("paginator.previous.page.description"), AllIcons.Actions.Play_back) {
+    action = object : AnAction(RBundle.message("paginator.previous.page.text"),
+                               RBundle.message("paginator.previous.page.description"), AllIcons.Actions.Play_back) {
       override fun actionPerformed(e: AnActionEvent) {
         tableModel!!.pageOffset--
         updateInfo()
@@ -256,8 +258,8 @@ class TablePaginator : JPanel(BorderLayout()) {
     }
     toPrevious = ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
 
-    action = object : AnAction(VisualizationBundle.message("paginator.next.page.text"),
-                               VisualizationBundle.message("paginator.next.page.description"), AllIcons.Actions.Play_forward) {
+    action = object : AnAction(RBundle.message("paginator.next.page.text"),
+                               RBundle.message("paginator.next.page.description"), AllIcons.Actions.Play_forward) {
       override fun actionPerformed(e: AnActionEvent) {
         tableModel!!.pageOffset++
         updateInfo()
@@ -265,8 +267,8 @@ class TablePaginator : JPanel(BorderLayout()) {
     }
     toNext = ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
 
-    action = object : AnAction(VisualizationBundle.message("paginator.last.page.text"),
-                               VisualizationBundle.message("paginator.last.page.description"), AllIcons.Actions.Play_last) {
+    action = object : AnAction(RBundle.message("paginator.last.page.text"),
+                               RBundle.message("paginator.last.page.description"), AllIcons.Actions.Play_last) {
       override fun actionPerformed(e: AnActionEvent) {
         tableModel!!.pageOffset = tableModel!!.getPageCount() - 1
         updateInfo()
