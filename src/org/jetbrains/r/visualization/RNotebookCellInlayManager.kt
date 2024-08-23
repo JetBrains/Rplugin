@@ -31,7 +31,6 @@ import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
-import org.jetbrains.plugins.notebooks.visualization.InlaysChangedListener
 import org.jetbrains.plugins.notebooks.visualization.NOTEBOOK_CELL_LINES_INTERVAL_DATA_KEY
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
@@ -51,11 +50,6 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
   /** 20 is 1000 / 50, two times faster than the eye refresh rate. Actually, the value has been chosen randomly, without experiments. */
   private val updateQueue = MergingUpdateQueue("NotebookCellInlayManager Interval Update", 20, true, null, editor.disposable, null, true)
   private var initialized = false
-
-  /**
-   * Listens for inlay changes (called after all inlays are updated). Feel free to convert it to the EP if you need another listener
-   */
-  var changedListener: InlaysChangedListener? = null
 
   fun inlaysForInterval(interval: NotebookCellLines.Interval): Iterable<RNotebookCellInlayController> =
     getMatchingInlaysForLines(interval.lines)
@@ -147,7 +141,6 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
       }
     }
     addHighlighters(notebookCellLines.intervals)
-    inlaysChanged()
   }
 
   private fun addDocumentListener() {
@@ -200,10 +193,6 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
         ?.let { min(logicalLines.first, it.first().first)..max(it.last().last, logicalLines.last) }
       ?: logicalLines
     updateConsequentInlays(interestingRange)
-  }
-
-  private fun inlaysChanged() {
-    changedListener?.inlaysChanged()
   }
 
   private fun updateConsequentInlays(interestingRange: IntRange) {
@@ -263,7 +252,6 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
     for ((_, controller) in allMatchingInlays) {
       Disposer.dispose(controller.inlay, false)
     }
-    inlaysChanged()
   }
 
   private data class NotebookCellDataProvider(
