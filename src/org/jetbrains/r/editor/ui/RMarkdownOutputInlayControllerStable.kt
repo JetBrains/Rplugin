@@ -170,21 +170,17 @@ class RMarkdownOutputInlayControllerStable private constructor(
   class Factory : RNotebookCellInlayController.Factory {
     override fun compute(editor: EditorImpl,
                          currentControllers: Collection<RNotebookCellInlayController>,
-                         intervalIterator: ListIterator<NotebookCellLines.Interval>
+                         interval: NotebookCellLines.Interval
     ): RNotebookCellInlayController? {
-      if (!isRMarkdown(editor))
-        return null
-
-      val interval: NotebookCellLines.Interval = intervalIterator.next()
-      val offset = extractOffset(editor.document, interval)
 
       return when (interval.type) {
         NotebookCellLines.CellType.CODE -> {
+          val offset = extractOffset(editor.document, interval)
           val pointer = NotebookIntervalPointerFactory.get(editor).create(interval)
           currentControllers.asSequence()
             .filterIsInstance<RMarkdownOutputInlayControllerStable>()
             .firstOrNull {
-              it.intervalPointer.get() == pointer.get()
+              it.intervalPointer.get() == interval
               && it.inlay.offset == offset
             }
           ?: RMarkdownOutputInlayControllerStable(editor, this, pointer, offset)

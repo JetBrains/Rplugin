@@ -29,7 +29,6 @@ import com.intellij.util.concurrency.ThreadingAssertions
 import com.intellij.util.containers.SmartHashSet
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
-import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
 import org.jetbrains.plugins.notebooks.visualization.NOTEBOOK_CELL_LINES_INTERVAL_DATA_KEY
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
@@ -55,14 +54,14 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
     getMatchingInlaysForLines(interval.lines)
 
   /** It's public, but think twice before using it. Called many times in a row, it can freeze UI. Consider using [update] instead. */
-  fun updateImmediately(lines: IntRange) {
+  internal fun updateImmediately(lines: IntRange) {
     if (initialized) {
       updateConsequentInlays(lines)
     }
   }
 
   /** It's public, but think seven times before using it. Called many times in a row, it can freeze UI. */
-  fun updateAllImmediately() {
+  internal fun updateAllImmediately() {
     if (initialized) {
       updateQueue.cancelAllUpdates()
       updateConsequentInlays(0..editor.document.lineCount)
@@ -134,7 +133,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
     val factories = RNotebookCellInlayController.Factory.factories
     for (interval in notebookCellLines.intervals) {
       for (factory in factories) {
-        val controller = failSafeCompute(factory, editor, emptyList(), notebookCellLines.intervals.listIterator(interval.ordinal))
+        val controller = failSafeCompute(factory, emptyList(), interval)
         if (controller != null) {
           rememberController(controller, interval)
         }
@@ -231,7 +230,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
       }
       for ((factory, controllers) in seenControllersByFactory) {
         val actualController = if (!editor.isDisposed) {
-          failSafeCompute(factory, editor, controllers, notebookCellLines.intervals.listIterator(interval.ordinal))
+          failSafeCompute(factory, controllers, interval)
         }
         else {
           null
@@ -355,25 +354,16 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
 
   private fun failSafeCompute(
     factory: RNotebookCellInlayController.Factory,
-    editor: EditorImpl,
     controllers: Collection<RNotebookCellInlayController>,
-    intervalIterator: ListIterator<NotebookCellLines.Interval>,
+    interval: NotebookCellLines.Interval,
   ): RNotebookCellInlayController? {
     try {
-      return factory.compute(editor, controllers, intervalIterator)
+      return factory.compute(editor, controllers, interval)
     }
     catch (t: Throwable) {
       thisLogger().error("${factory.javaClass.name} shouldn't throw exceptions at RNotebookCellInlayController.Factory.compute(...)", t)
       return null
     }
-  }
-
-  @TestOnly
-  fun getInlays(): MutableMap<Inlay<*>, RNotebookCellInlayController> = inlays
-
-  @TestOnly
-  fun updateControllers(matchingCells: List<NotebookCellLines.Interval>, logicalLines: IntRange) {
-    ensureInlaysAndHighlightersExist(matchingCells, logicalLines)
   }
 
   companion object {

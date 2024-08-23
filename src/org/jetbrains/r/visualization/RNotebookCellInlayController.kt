@@ -27,7 +27,7 @@ interface RNotebookCellInlayController {
     fun compute(
       editor: EditorImpl,
       currentControllers: Collection<RNotebookCellInlayController>,
-      intervalIterator: ListIterator<NotebookCellLines.Interval>,
+      interval: NotebookCellLines.Interval,
     ): RNotebookCellInlayController?
 
     companion object {

@@ -68,21 +68,17 @@ internal class RMarkdownCellToolbarControllerStable private constructor(
     override fun compute(
       editor: EditorImpl,
       currentControllers: Collection<RNotebookCellInlayController>,
-      intervalIterator: ListIterator<NotebookCellLines.Interval>,
+      interval: NotebookCellLines.Interval,
     ): RNotebookCellInlayController? {
-      if (!isRMarkdown(editor))
-        return null
-
-      val interval: NotebookCellLines.Interval = intervalIterator.next()
-      val offset = getOffset(editor.document, NotebookIntervalPointerFactory.get(editor).create(interval))
 
       return when (interval.type) {
         NotebookCellLines.CellType.CODE -> {
+          val offset = getOffset(editor.document, NotebookIntervalPointerFactory.get(editor).create(interval))
           val intervalPointer = NotebookIntervalPointerFactory.get(editor).create(interval)
           currentControllers.asSequence()
             .filterIsInstance<RMarkdownCellToolbarControllerStable>()
             .firstOrNull {
-              it.intervalPointer.get() == intervalPointer.get()
+              it.intervalPointer.get() == interval
               && it.inlay.offset == offset
             }
           ?: RMarkdownCellToolbarControllerStable(editor, this, intervalPointer, offset)
