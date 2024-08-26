@@ -37,12 +37,13 @@ import kotlin.math.max
 import kotlin.math.min
 
 class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
+  private val disposable = Disposer.newCheckedDisposable(editor.disposable)
   private val inlays: MutableMap<Inlay<*>, RNotebookCellInlayController> = HashMap()
   private val notebookCellLines = NotebookCellLines.get(editor)
-  private val viewportQueue = MergingUpdateQueue("RNotebookCellInlayManager Viewport Update", 100, true, null, editor.disposable, null, true)
+  private val viewportQueue = MergingUpdateQueue("RNotebookCellInlayManager Viewport Update", 100, true, null, disposable, null, true)
 
   /** 20 is 1000 / 50, two times faster than the eye refresh rate. Actually, the value has been chosen randomly, without experiments. */
-  private val updateQueue = MergingUpdateQueue("RNotebookCellInlayManager Interval Update", 20, true, null, editor.disposable, null, true)
+  private val updateQueue = MergingUpdateQueue("RNotebookCellInlayManager Interval Update", 20, true, null, disposable, null, true)
   private var initialized = false
 
   fun inlaysForInterval(interval: NotebookCellLines.Interval): Iterable<RNotebookCellInlayController> =
@@ -79,7 +80,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
     editor.scrollPane.viewport.addChangeListener {
       viewportQueue.queue(object : Update("Viewport change") {
         override fun run() {
-          if (editor.isDisposed) return
+          if (disposable.isDisposed) return
           for ((inlay, controller) in inlays) {
             controller.onViewportChange()
 
@@ -100,7 +101,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
 
     addDocumentListener()
 
-    val connection = ApplicationManager.getApplication().messageBus.connect(editor.disposable)
+    val connection = ApplicationManager.getApplication().messageBus.connect(disposable)
     connection.subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
       updateAll()
       refreshHighlightersLookAndFeel()
@@ -176,7 +177,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
       }
     }
 
-    editor.document.addDocumentListener(documentListener, editor.disposable)
+    editor.document.addDocumentListener(documentListener, disposable)
   }
 
   private fun ensureInlaysAndHighlightersExist(matchingCellsBeforeChange: List<NotebookCellLines.Interval>, logicalLines: IntRange) {
@@ -224,7 +225,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
         else false
       }
       for ((factory, controllers) in seenControllersByFactory) {
-        val actualController = if (!editor.isDisposed) {
+        val actualController = if (!disposable.isDisposed) {
           failSafeCompute(factory, controllers, interval)
         }
         else {
@@ -273,15 +274,15 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
       DataManager.registerDataProvider(component, NotebookCellDataProvider(editor, component, interval))
     }
     if (inlays.put(inlay, controller) !== controller) {
-      val disposable = Disposable {
+      val disposableForDataProvider = Disposable {
         inlay.renderer.asSafely<JComponent>()?.let { DataManager.removeDataProvider(it) }
         inlays.remove(inlay)
       }
       if (Disposer.isDisposed(inlay)) {
-        disposable.dispose()
+        disposableForDataProvider.dispose()
       }
       else {
-        Disposer.register(inlay, disposable)
+        Disposer.register(inlay, disposableForDataProvider)
       }
     }
   }
