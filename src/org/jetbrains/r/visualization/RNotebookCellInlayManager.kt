@@ -93,10 +93,6 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
   }
 
   private fun initialize() {
-    // TODO It would be a cool approach to add inlays lazily while scrolling.
-
-    editor.putUserData(key, this)
-
     handleRefreshedDocument()
 
     addDocumentListener()
@@ -112,6 +108,13 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
     })
 
     addViewportChangeListener()
+
+    editor.putUserData(key, this)
+
+    Disposer.register(disposable, Disposable {
+      disposeAllInlays()
+      editor.putUserData(key, null)
+    })
 
     initialized = true
   }
@@ -191,7 +194,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
   }
 
   private fun updateConsequentInlays(interestingRange: IntRange) {
-    ThreadingAssertions.softAssertReadAccess()
+    ThreadingAssertions.assertReadAccess()
     //editor.notebookCellEditorScrollingPositionKeeper?.saveSelectedCellPosition()
     val matchingIntervals = notebookCellLines.getMatchingCells(interestingRange)
     val fullInterestingRange =
@@ -362,11 +365,18 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
     }
   }
 
+  private fun disposeAllInlays() {
+    for (controllers in getMatchingInlaysForLines(0 until editor.document.lineCount)) {
+      Disposer.dispose(controllers.inlay, false)
+    }
+  }
+
   companion object {
     private val LOG = logger<RNotebookCellInlayManager>()
 
     @JvmStatic
     fun install(editor: EditorImpl) {
+      require(get(editor) == null)
       RNotebookCellInlayManager(editor).initialize()
     }
 
