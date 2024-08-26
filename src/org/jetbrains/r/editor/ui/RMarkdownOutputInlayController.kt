@@ -133,7 +133,7 @@ class RMarkdownOutputInlayController private constructor(
 
   private fun addInlayComponent(editor: EditorImpl, intervalPointer: NotebookIntervalPointer, offset: Int): NotebookInlayComponent {
     RInlayDimensions.init(editor)
-    val inlayComponent = NotebookInlayComponentInterval(intervalPointer, editor)
+    val inlayComponent = NotebookInlayComponent(intervalPointer, editor)
 
     if (!editor.inlayModel.isInBatchMode) {
       // TODO may be no need in `setBounds(...)` at all. In batch mode `offsetToXY` is not available

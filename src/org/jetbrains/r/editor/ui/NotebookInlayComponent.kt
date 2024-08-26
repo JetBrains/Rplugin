@@ -7,14 +7,16 @@ package org.jetbrains.r.editor.ui
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.colors.EditorColors
+import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.openapi.editor.markup.CustomHighlighterRenderer
-import com.intellij.openapi.editor.markup.RangeHighlighter
+import com.intellij.openapi.editor.markup.*
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.TextRange
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
+import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
 import org.jetbrains.r.visualization.inlays.InlayComponent
 import org.jetbrains.r.visualization.inlays.InlayOutput
@@ -33,7 +35,11 @@ import javax.swing.JComponent
 import kotlin.math.max
 import kotlin.math.min
 
-abstract class NotebookInlayComponent(protected val editor: EditorImpl)
+
+class NotebookInlayComponent(
+  val cell: NotebookIntervalPointer,
+  private val editor: EditorImpl,
+)
   : InlayComponent(), MouseListener, MouseMotionListener {
   companion object {
     val separatorRenderer = CustomHighlighterRenderer { editor, highlighter1, g ->
@@ -111,14 +117,10 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
     /** Paints rounded rect panel - background of inlay component. */
     val g2d = g.create()
 
-    g2d.color = //if (selected) {
-      //inlay!!.editor.colorsScheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor
-      //}
-      //else {
+    g2d.color =
       (inlay!!.editor as EditorImpl).let {
         it.notebookAppearance.getInlayBackgroundColor(it.colorsScheme) ?: it.backgroundColor
       }
-    //}
 
     g2d.fillRect(0, 0, width, RInlayDimensions.topOffset + RInlayDimensions.cornerRadius)
     g2d.fillRect(0, height - RInlayDimensions.bottomOffset - RInlayDimensions.cornerRadius, width,
@@ -136,7 +138,21 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
   /**
    * Draw separator line below cell. Also fills cell background
    */
-  protected abstract fun updateCellSeparator()
+  private fun updateCellSeparator() {
+    if (separatorHighlighter != null) {
+      editor.markupModel.removeHighlighter(separatorHighlighter!!)
+    }
+
+    try {
+      val interval = cell.get() ?: return
+      val doc = editor.document
+      val textRange = TextRange(doc.getLineStartOffset(interval.lines.first), doc.getLineEndOffset(interval.lines.last))
+      separatorHighlighter = createSeparatorHighlighter(editor, textRange)
+    }
+    catch (e: Exception) {
+      e.printStackTrace()
+    }
+  }
 
   override fun assignInlay(inlay: Inlay<*>) {
     super.assignInlay(inlay)
@@ -295,3 +311,18 @@ abstract class NotebookInlayComponent(protected val editor: EditorImpl)
     state?.clear()
   }
 }
+
+private fun createSeparatorHighlighter(editor: EditorImpl, textRange: TextRange) =
+  editor.markupModel.addRangeHighlighter(textRange.startOffset, textRange.endOffset,
+                                         HighlighterLayer.SYNTAX - 1, null,
+                                         HighlighterTargetArea.LINES_IN_RANGE).apply {
+
+    customRenderer = NotebookInlayComponent.separatorRenderer
+    lineMarkerRenderer = LineMarkerRenderer { _, g, r ->
+      val gutterWidth = ((editor as EditorEx).gutterComponentEx as JComponent).width
+
+      val y = r.y + r.height - editor.lineHeight
+      g.color = editor.colorsScheme.getColor(EditorColors.RIGHT_MARGIN_COLOR)
+      g.drawLine(0, y, gutterWidth + 10, y)
+    }
+  }
