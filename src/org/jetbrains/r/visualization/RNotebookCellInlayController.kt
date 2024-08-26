@@ -21,8 +21,6 @@ interface RNotebookCellInlayController {
      * The method should either choose one of the attached controllers, update and return it,
      * or should create a new controller, or return null if there should be no controller for the cell.
      * Inlays from all remaining controllers will be disposed automatically.
-     *
-     * The method may traverse iterator without returning to the initial position, the iterator is disposable.
      */
     fun compute(
       editor: EditorImpl,
@@ -44,9 +42,6 @@ interface RNotebookCellInlayController {
 
   fun onViewportChange() {}
 
-  /**
-   * The method may traverse iterator without returning to the initial position, the iterator is disposable.
-   */
   fun paintGutter(
     editor: EditorImpl,
     g: Graphics,
@@ -54,6 +49,5 @@ interface RNotebookCellInlayController {
     interval: NotebookCellLines.Interval,
   )
 
-
-  fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval) {}
+  fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval)
 }
