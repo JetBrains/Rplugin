@@ -30,14 +30,9 @@ import com.intellij.util.containers.SmartHashSet
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
-import org.jetbrains.plugins.notebooks.visualization.NOTEBOOK_CELL_LINES_INTERVAL_DATA_KEY
-import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
-import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
-import org.jetbrains.plugins.notebooks.visualization.mergeAndJoinIntersections
-import org.jetbrains.plugins.notebooks.visualization.use
+import org.jetbrains.plugins.notebooks.visualization.*
 import java.awt.Graphics
 import javax.swing.JComponent
-import kotlin.collections.iterator
 import kotlin.math.max
 import kotlin.math.min
 
@@ -89,7 +84,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
             controller.onViewportChange()
 
             // Many UI instances has overridden getPreferredSize relying on editor dimensions.
-            inlay.renderer?.asSafely<JComponent>()?.updateUI()
+            inlay.renderer.asSafely<JComponent>()?.updateUI()
           }
         }
       })
