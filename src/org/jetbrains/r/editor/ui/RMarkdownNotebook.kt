@@ -17,10 +17,11 @@ import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointerFactory
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.getCodeFenceEnd
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
-import org.jetbrains.r.visualization.inlays.calculateInlayExpansionRange
-import org.jetbrains.r.visualization.inlays.calculateViewportRange
+import java.awt.Point
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
+import kotlin.math.max
+import kotlin.math.min
 
 
 class RMarkdownNotebook(project: Project, editor: EditorImpl) {
@@ -113,3 +114,22 @@ private val key = Key.create<RMarkdownNotebook>(RMarkdownNotebook::class.java.na
 
 val Editor.rMarkdownNotebook: RMarkdownNotebook?
   get() = key.get(this)
+
+
+
+private const val VIEWPORT_INLAY_RANGE = 20
+
+private fun calculateViewportRange(editor: EditorImpl): IntRange {
+  val viewport = editor.scrollPane.viewport
+  val yMin = viewport.viewPosition.y
+  val yMax = yMin + viewport.height
+  return yMin until yMax
+}
+
+private fun calculateInlayExpansionRange(editor: EditorImpl, viewportRange: IntRange): IntRange {
+  val startLine = editor.xyToLogicalPosition(Point(0, viewportRange.first)).line
+  val endLine = editor.xyToLogicalPosition(Point(0, viewportRange.last + 1)).line
+  val startOffset = editor.document.getLineStartOffset(max(startLine - VIEWPORT_INLAY_RANGE, 0))
+  val endOffset = editor.document.getLineStartOffset(max(min(endLine + VIEWPORT_INLAY_RANGE, editor.document.lineCount - 1), 0))
+  return startOffset..endOffset
+}
