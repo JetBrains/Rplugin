@@ -43,7 +43,7 @@ const val RUN_CHUNKS_ABOVE_ID = "org.jetbrains.r.rendering.chunk.RunChunksAboveA
 const val RUN_CHUNKS_BELOW_ID = "org.jetbrains.r.rendering.chunk.RunChunksBelowAction"
 const val CLEAR_CHUNK_OUTPUTS_ID = "org.jetbrains.r.rendering.chunk.ClearChunkOutputsAction"
 
-abstract class BaseChunkAction: DumbAwareAction(), RPromotedAction {
+private abstract class BaseChunkAction : DumbAwareAction(), RPromotedAction {
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = isEnabled(e)
   }
@@ -51,7 +51,7 @@ abstract class BaseChunkAction: DumbAwareAction(), RPromotedAction {
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }
 
-class RunChunksAboveAction: BaseChunkAction() {
+private class RunChunksAboveAction : BaseChunkAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val editor = e.editor ?: return
     val file = e.psiFile ?: return
@@ -60,7 +60,7 @@ class RunChunksAboveAction: BaseChunkAction() {
   }
 }
 
-class RunChunksBelowAction: BaseChunkAction() {
+private class RunChunksBelowAction : BaseChunkAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val editor = e.editor ?: return
     val file = e.psiFile ?: return
@@ -69,19 +69,19 @@ class RunChunksBelowAction: BaseChunkAction() {
   }
 }
 
-class RunChunkAction : BaseChunkAction() {
+private class RunChunkAction : BaseChunkAction() {
   override fun actionPerformed(e: AnActionEvent) {
     showConsoleAndRun(e) { executeChunk(e) }
   }
 }
 
-class DebugChunkAction : BaseChunkAction() {
+private class DebugChunkAction : BaseChunkAction() {
   override fun actionPerformed(e: AnActionEvent) {
     showConsoleAndRun(e) { executeChunk(e, isDebug = true) }
   }
 }
 
-class ClearChunkOutputsAction: BaseChunkAction() {
+private class ClearChunkOutputsAction : BaseChunkAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val psiElement = getCodeFenceByEvent(e) ?: return
     e.editor?.rMarkdownNotebook?.get(psiElement)?.clearOutputs(removeFiles = true)
@@ -108,7 +108,7 @@ private fun getCodeFenceByEvent(e: AnActionEvent): PsiElement? {
   val markdown = SourceTreeToPsiMap.treeElementToPsi(file.node.findLeafElementAt(offset))
   val markdownCodeFence = PsiTreeUtil.getParentOfType(markdown, MarkdownCodeFence::class.java) ?: return null
   if (markdownCodeFence.children.size < 2) return null
-  return markdownCodeFence.children[1].takeIf {  isChunkFenceLang(it) }
+  return markdownCodeFence.children[1].takeIf { isChunkFenceLang(it) }
 }
 
 
