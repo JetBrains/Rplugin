@@ -88,8 +88,6 @@ class ClearChunkOutputsAction: BaseChunkAction() {
   }
 }
 
-fun isChunkRunning(psiElement: PsiElement?) = psiElement?.let { it.project.chunkExecutionState?.currentPsiElement?.get() == it } == true
-
 fun canRunChunk(editor: Editor?): Boolean =
   editor?.project?.let { canRunChunk(it) } == true
 
