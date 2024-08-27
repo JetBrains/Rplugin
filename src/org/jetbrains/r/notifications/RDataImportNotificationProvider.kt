@@ -67,7 +67,7 @@ class RDataImportNotificationProvider : EditorNotificationProvider, DumbAware {
 
   private fun EditorNotificationPanel.createActionLabel(onClick: (HyperlinkLabel) -> Unit) {
     val reference = Ref<HyperlinkLabel>()
-    val label = createActionLabel(ACTION_LABEL) {
+    val label = createActionLabel(RBundle.message("import.data.action.group.name")) {
       onClick(reference.get())
     }
     reference.set(label)
@@ -95,9 +95,6 @@ class RDataImportNotificationProvider : EditorNotificationProvider, DumbAware {
   }
 
   companion object {
-    private const val NAME = "RDataImportNotificationProvider"
-    private val ACTION_LABEL = RBundle.message("import.data.action.group.name")
-
     private fun RInterop.hasVariable(name: String): Boolean {
       return globalEnvLoader.variables.find { it.name == name } != null
     }

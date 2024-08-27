@@ -64,7 +64,7 @@ class RPackageBuildTaskManager(
       return if (!isRunning) {
         missing?.let { createMissingPackageMessage(it) }
       } else {
-        TASK_STILL_RUNNING_MESSAGE
+        RBundle.message("packages.build.panel.task.still.running")
       }
     }
 
@@ -73,7 +73,7 @@ class RPackageBuildTaskManager(
     }
 
     override fun getAlternativeEnabledDescription(): String? {
-      return INTERRUPT_TASK_MESSAGE.takeIf { isRunningMine }
+      return RBundle.message("packages.build.panel.interrupt.task").takeIf { isRunningMine }
     }
 
     private fun startTask() {
@@ -98,8 +98,6 @@ class RPackageBuildTaskManager(
 
   companion object {
     private val REQUIREMENTS = listOf(RequiredPackage("devtools"))
-    private val TASK_STILL_RUNNING_MESSAGE = RBundle.message("packages.build.panel.task.still.running")
-    private val INTERRUPT_TASK_MESSAGE = RBundle.message("packages.build.panel.interrupt.task")
 
     private fun createMissingPackageMessage(missing: List<RequiredPackage>): String {
       val packageString = missing.joinToString { it.toFormat(false) }

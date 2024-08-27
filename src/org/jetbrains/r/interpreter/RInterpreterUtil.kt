@@ -52,9 +52,6 @@ object RInterpreterUtil {
   private val R_DISTRO_REGEX = "R-.*".toRegex()
   private const val RPLUGIN_OUTPUT_BEGIN = ">>>RPLUGIN>>>"
   private const val RPLUGIN_OUTPUT_END = "<<<RPLUGIN<<<"
-  private val SUGGESTED_INTERPRETER_NAME = RBundle.message("project.settings.suggested.interpreter")
-  private val GO_TO_SETTINGS_HINT = RBundle.message("interpreter.manager.go.to.settings.hint")
-  private val DOWNLOAD_R_HINT = RBundle.message("interpreter.manager.download.r.hint")
 
   private val fromPathVariable: ArrayList<String>
     get() {
@@ -123,7 +120,7 @@ object RInterpreterUtil {
           addAll(RInterpreterSettings.existingInterpreters)
         }
         suggestAllHomePaths().forEach { path ->
-          addInterpreter(path, SUGGESTED_INTERPRETER_NAME)
+          addInterpreter(path, RBundle.message("project.settings.suggested.interpreter"))
         }
         suggestCondaPaths().forEach { (path, environment) ->
           addInterpreter(path, environment)
@@ -355,10 +352,10 @@ object RInterpreterUtil {
   fun showInvalidLocationErrorMessage(project: Project, location: RInterpreterLocation, details: String?) {
     val additional = details?.let { ":\n$it" }
     val message = RBundle.message("interpreter.manager.invalid.location", location, additional ?: ".")
-    val settingsAction = RNotificationUtil.createNotificationAction(GO_TO_SETTINGS_HINT) {
+    val settingsAction = RNotificationUtil.createNotificationAction(RBundle.message("interpreter.manager.go.to.settings.hint")) {
       ShowSettingsUtil.getInstance().showSettingsDialog(project, RSettingsProjectConfigurable::class.java)
     }
-    val downloadAction = RNotificationUtil.createNotificationAction(DOWNLOAD_R_HINT) {
+    val downloadAction = RNotificationUtil.createNotificationAction(RBundle.message("interpreter.manager.download.r.hint")) {
       RInterpreterManagerImpl.openDownloadRPage()
     }
     RNotificationUtil.notifyInterpreterError(project, message, settingsAction, downloadAction)

@@ -13,37 +13,30 @@ import com.intellij.openapi.project.Project
 import org.jetbrains.r.RBundle
 
 object RNotificationUtil {
-  private val UNKNOWN_ERROR_MESSAGE = RBundle.message("notification.unknown.error.message")
   private const val CONSOLE_GROUP_ID = "RConsole"
-  private val CONSOLE_FAILURE_TITLE = RBundle.message("notification.console.failure")
-
   private const val INTERPRETER_GROUP_ID = "RInterpreter"
-  private val INTERPRETER_FAILURE_TITLE = RBundle.message("notification.interpreter.failure")
-
   private const val GRAPHICS_GROUP_ID = "RGraphics"
-  private val GRAPHICS_FAILURE_TITLE = RBundle.message("notification.graphics.failure")
-
   private const val EXECUTION_GROUP_ID = "Console Execution"
-  private val EXECUTION_FAILURE_TITLE = RBundle.message("notification.execution.failure")
 
   fun notifyConsoleError(project: Project, message: String?, vararg actions: AnAction) {
-    notifyError(project, CONSOLE_GROUP_ID, CONSOLE_FAILURE_TITLE, message, *actions)
+    notifyError(project, CONSOLE_GROUP_ID, RBundle.message("notification.console.failure"), message, *actions)
   }
 
   fun notifyInterpreterError(project: Project, message: String?, vararg actions: AnAction) {
-    notifyError(project, INTERPRETER_GROUP_ID, INTERPRETER_FAILURE_TITLE, message, *actions)
+    notifyError(project, INTERPRETER_GROUP_ID, RBundle.message("notification.interpreter.failure"), message, *actions)
   }
 
   fun notifyGraphicsError(project: Project, message: String?, vararg actions: AnAction) {
-    notifyError(project, GRAPHICS_GROUP_ID, GRAPHICS_FAILURE_TITLE, message, *actions)
+    notifyError(project, GRAPHICS_GROUP_ID, RBundle.message("notification.graphics.failure"), message, *actions)
   }
 
   fun notifyExecutionError(project: Project, message: String?, vararg actions: AnAction) {
-    notifyError(project, EXECUTION_GROUP_ID, EXECUTION_FAILURE_TITLE, message, *actions)
+    notifyError(project, EXECUTION_GROUP_ID, RBundle.message("notification.execution.failure"), message, *actions)
   }
 
   private fun notifyError(project: Project, groupDisplayId: String, title: String, message: String?, vararg actions: AnAction) {
-    val notification = Notification(groupDisplayId, title, message ?: UNKNOWN_ERROR_MESSAGE, NotificationType.ERROR)
+    val notification = Notification(groupDisplayId, title, message
+                                                           ?: RBundle.message("notification.unknown.error.message"), NotificationType.ERROR)
     for (action in actions) {
       notification.addAction(action)
     }

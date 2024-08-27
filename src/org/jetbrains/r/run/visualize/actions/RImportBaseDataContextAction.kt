@@ -12,16 +12,14 @@ import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.run.visualize.RImportBaseDataDialog
 import org.jetbrains.r.run.visualize.RImportDataUtil
 
-class RImportBaseDataContextAction : RImportDataContextAction(TITLE, DESCRIPTION) {
+class RImportBaseDataContextAction : RImportDataContextAction(
+  RBundle.message("import.data.action.base.title"),
+  RBundle.message("import.data.action.base.description")
+) {
   override val supportedFormats = RImportDataUtil.supportedTextFormats
   override val suggestedFormats = RImportDataUtil.suggestedTextFormats
 
   override fun applyTo(project: Project, interop: RInterop, file: VirtualFile) {
     RImportBaseDataDialog.show(project, interop, project, file.getLocalOrRemotePath(interop.interpreter))
-  }
-
-  companion object {
-    private val DESCRIPTION = RBundle.message("import.data.action.base.description")
-    private val TITLE = RBundle.message("import.data.action.base.title")
   }
 }

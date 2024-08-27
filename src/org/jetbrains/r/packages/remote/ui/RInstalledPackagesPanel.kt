@@ -30,7 +30,7 @@ import org.jetbrains.r.visualization.ui.ToolbarUtil
 class RInstalledPackagesPanel(private val project: Project, area: PackagesNotificationPanel) :
   RInstalledPackagesPanelBase(project, area), RPackageServiceListener {
 
-  private val queue = MergingUpdateQueue(REFRESH_TASK_NAME, REFRESH_TIME_SPAN, true, null, project)
+  private val queue = MergingUpdateQueue(RBundle.message("packages.panel.refresh.task.name"), REFRESH_TIME_SPAN, true, null, project)
 
   private val listener = object : PackageManagementService.Listener {
     override fun operationStarted(packageName: String?) {
@@ -76,7 +76,7 @@ class RInstalledPackagesPanel(private val project: Project, area: PackagesNotifi
 
   private fun upgradeAllPackages() {
     rPackageManagementService?.let { service ->
-      getSynchronously(GETTING_AVAILABLE_PACKAGES_TITLE) {
+      getSynchronously(RBundle.message("packages.panel.getting.available.packages.title")) {
         service.allPackages
       }
       runAsync {
@@ -89,7 +89,7 @@ class RInstalledPackagesPanel(private val project: Project, area: PackagesNotifi
               service.installPackages(packages, true, multiListener)
             }.show()
           } else {
-            showInfoMessage(NOTHING_TO_UPGRADE_MESSAGE, NOTHING_TO_UPGRADE_TITLE)
+            showInfoMessage(RBundle.message("packages.panel.nothing.to.upgrade.message"), RBundle.message("packages.panel.nothing.to.upgrade.title"))
           }
         }
       }
@@ -139,7 +139,7 @@ class RInstalledPackagesPanel(private val project: Project, area: PackagesNotifi
   }
 
   fun scheduleRefresh() {
-    queue.queue(object : Update(REFRESH_TASK_IDENTITY) {
+    queue.queue(object : Update(RBundle.message("packages.panel.refresh.task.identity")) {
       override fun run() {
         immediatelyUpdatePackages(myPackageManagementService)
       }
@@ -150,11 +150,5 @@ class RInstalledPackagesPanel(private val project: Project, area: PackagesNotifi
     private const val UPGRADE_ALL_ACTION_ID = "org.jetbrains.r.packages.remote.ui.RUpgradeAllAction"
     private const val REFRESH_ACTION_ID = "org.jetbrains.r.packages.remote.ui.RRefreshAction"
     private const val REFRESH_TIME_SPAN = 500
-
-    private val GETTING_AVAILABLE_PACKAGES_TITLE = RBundle.message("packages.panel.getting.available.packages.title")
-    private val NOTHING_TO_UPGRADE_TITLE = RBundle.message("packages.panel.nothing.to.upgrade.title")
-    private val NOTHING_TO_UPGRADE_MESSAGE = RBundle.message("packages.panel.nothing.to.upgrade.message")
-    private val REFRESH_TASK_IDENTITY = RBundle.message("packages.panel.refresh.task.identity")
-    private val REFRESH_TASK_NAME = RBundle.message("packages.panel.refresh.task.name")
   }
 }

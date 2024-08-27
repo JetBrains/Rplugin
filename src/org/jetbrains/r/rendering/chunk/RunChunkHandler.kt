@@ -57,9 +57,6 @@ import java.util.concurrent.atomic.AtomicReference
 
 private val LOGGER = Logger.getInstance(RunChunkHandler::class.java)
 
-private val UNKNOWN_ERROR_MESSAGE = RBundle.message("notification.unknown.error.message")
-private val CHUNK_EXECUTOR_NAME = RBundle.message("run.chunk.executor.name")
-
 object RunChunkHandler {
 
   fun runAllChunks(psiFile: PsiFile,
@@ -123,14 +120,14 @@ object RunChunkHandler {
   fun execute(element: PsiElement, isDebug: Boolean = false, isBatchMode: Boolean = false, isFirstChunk: Boolean = true,
               textRange: TextRange? = null) : Promise<Boolean> {
     return AsyncPromise<Boolean>().also { promise ->
-      RMarkdownUtil.checkOrInstallPackages(element.project, CHUNK_EXECUTOR_NAME)
+      RMarkdownUtil.checkOrInstallPackages(element.project, RBundle.message("run.chunk.executor.name"))
         .onSuccess {
           runInEdt {
             executeAsync(element, isDebug, isBatchMode, isFirstChunk, textRange).processed(promise)
           }
         }
         .onError {
-          promise.setError(it.message ?: UNKNOWN_ERROR_MESSAGE)
+          promise.setError(it.message ?: RBundle.message("notification.unknown.error.message"))
         }
     }
   }

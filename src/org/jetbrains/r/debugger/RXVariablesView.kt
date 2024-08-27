@@ -28,7 +28,6 @@ import com.intellij.xdebugger.XExpression
 import com.intellij.xdebugger.XNamedTreeNode
 import com.intellij.xdebugger.frame.XStackFrame
 import com.intellij.xdebugger.impl.actions.XDebuggerActions
-import com.intellij.xdebugger.impl.frame.XDebugView.SessionEvent
 import com.intellij.xdebugger.impl.frame.XVariablesViewBase
 import com.intellij.xdebugger.impl.frame.XWatchesView
 import com.intellij.xdebugger.impl.frame.actions.XMoveWatchDown
@@ -284,7 +283,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
     val project = console.project
     val interop = console.rInterop
     val actions = listOf(
-      Separator(IMPORT_ACTION_GROUP_HEADER),
+      Separator(RBundle.message("group.org.jetbrains.r.run.visualize.actions.RImportDataContextActionGroup.text")),
       ToolbarUtil.createAnActionButton<RImportBaseDataAction> {
         RImportBaseDataDialog.show(project, interop, project)
       },
@@ -295,7 +294,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
         RImportExcelDataDialog.show(project, interop, project)
       }
     )
-    return DefaultActionGroup(IMPORT_ACTION_GROUP_NAME, actions).apply {
+    return DefaultActionGroup(RBundle.message("import.data.action.group.name"), actions).apply {
       templatePresentation.icon = AllIcons.ToolbarDecorator.Import
       isPopup = true
     }
@@ -382,8 +381,6 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
   }
 
   companion object {
-    private val IMPORT_ACTION_GROUP_NAME = RBundle.message("import.data.action.group.name")
-    private val IMPORT_ACTION_GROUP_HEADER = RBundle.message("group.org.jetbrains.r.run.visualize.actions.RImportDataContextActionGroup.text")
     private val IMPORT_EXCEL_REQUIREMENTS = listOf("readxl")
     private val IMPORT_CSV_REQUIREMENTS = listOf("readr")
 
