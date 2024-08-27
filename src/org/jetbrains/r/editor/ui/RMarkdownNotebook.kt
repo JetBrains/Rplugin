@@ -24,6 +24,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 
+// todo notebook should be related to document or virtual file because there could be several editors
 class RMarkdownNotebook(project: Project, editor: EditorImpl) {
   // pointerFactory reuses pointers
   private val outputs: MutableMap<NotebookIntervalPointer, RMarkdownNotebookOutput> = LinkedHashMap()

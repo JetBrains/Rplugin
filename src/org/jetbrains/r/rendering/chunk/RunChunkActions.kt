@@ -7,7 +7,6 @@ package org.jetbrains.r.rendering.chunk
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.project.DumbAwareAction
@@ -37,8 +36,6 @@ import java.util.concurrent.atomic.AtomicReference
 
 fun isChunkFenceLang(element: PsiElement) =
   element.node.elementType === MarkdownTokenTypes.FENCE_LANG && element.nextSibling?.nextSibling?.node?.elementType == R_FENCE_ELEMENT_TYPE
-
-val CODE_FENCE_DATA_KEY = DataKey.create<PsiElement>("org.jetbrains.r.rendering.chunk.actions.codeFence")
 
 const val RUN_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.RunChunkAction"
 const val DEBUG_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.DebugChunkAction"
@@ -106,7 +103,6 @@ private fun isConsoleReady(project: Project): Boolean {
 }
 
 private fun getCodeFenceByEvent(e: AnActionEvent): PsiElement? {
-  e.getData(CODE_FENCE_DATA_KEY)?.let { return it }
   val offset = e.intervalPointer?.get()?.let { interval -> e.editor?.document?.getLineStartOffset(interval.lines.first) }
                ?: e.caret?.offset
                ?: return null
@@ -141,15 +137,11 @@ private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
 internal fun findInlayElementByFenceElement(element: PsiElement) =
   TreeUtil.findChildBackward(element.parent.node, MarkdownTokenTypes.CODE_FENCE_END)?.psi
 
-private val AnActionEvent.codeFence: PsiElement?
-  get() = getData(CODE_FENCE_DATA_KEY)
-
 private val AnActionEvent.intervalPointer: NotebookIntervalPointer?
   get() = getData(NOTEBOOK_INTERVAL_POINTER_KEY)
 
 private fun getStartOffset(e: AnActionEvent, editor: Editor): Int =
-  e.codeFence?.textRange?.startOffset
-  ?: e.intervalPointer?.get()?.let { interval -> editor.document.getLineStartOffset(interval.lines.first) }
+  e.intervalPointer?.get()?.let { interval -> editor.document.getLineStartOffset(interval.lines.first) }
   ?: editor.caretModel.offset
 
 private fun showConsoleAndRun(e: AnActionEvent, action: () -> Unit) {
