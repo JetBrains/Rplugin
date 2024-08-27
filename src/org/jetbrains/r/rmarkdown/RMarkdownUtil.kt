@@ -18,9 +18,6 @@ import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 
 object RMarkdownUtil {
-  private val NOTIFICATION_GROUP = RBundle.message("rmarkdown.processor.notification.group.display")
-  private val UNKNOWN_ERROR_MESSAGE = RBundle.message("notification.unknown.error.message")
-
   private val requiredPackages = listOf(
     RequiredPackage("rmarkdown", "1.16"),  // Note: minimal version of "1.16" fixes "Extension ascii_identifiers is not supported for markdown" error
     RequiredPackage("knitr")
@@ -48,7 +45,7 @@ object RMarkdownUtil {
   private fun notifyFailure(project: Project, utilityName: String) {
     val title = makeNotificationTitle(utilityName)
     val content = makeNotificationContent(utilityName)
-    Notification(NOTIFICATION_GROUP, title, content, NotificationType.ERROR).notify(project)
+    Notification(RBundle.message("rmarkdown.processor.notification.group.display"), title, content, NotificationType.ERROR).notify(project)
   }
 
   private fun makeNotificationTitle(utilityName: String): String {
