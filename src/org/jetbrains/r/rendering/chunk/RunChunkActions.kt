@@ -4,9 +4,12 @@
 
 package org.jetbrains.r.rendering.chunk
 
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.project.DumbAwareAction
@@ -19,12 +22,13 @@ import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.util.PsiTreeUtil
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
-import org.jetbrains.plugins.notebooks.visualization.NOTEBOOK_INTERVAL_POINTER_KEY
-import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
+import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
+import org.jetbrains.plugins.notebooks.visualization.getCell
 import org.jetbrains.r.actions.*
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
+import org.jetbrains.r.editor.ui.rMarkdownCellToolbarPanel
 import org.jetbrains.r.editor.ui.rMarkdownNotebook
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
@@ -34,14 +38,29 @@ import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import java.util.concurrent.atomic.AtomicReference
 
 
+object RunChunkActions {
+  private const val RUN_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.RunChunkAction"
+  private const val DEBUG_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.DebugChunkAction"
+  private const val RUN_CHUNKS_ABOVE_ID = "org.jetbrains.r.rendering.chunk.RunChunksAboveAction"
+  private const val RUN_CHUNKS_BELOW_ID = "org.jetbrains.r.rendering.chunk.RunChunksBelowAction"
+  private const val CLEAR_CHUNK_OUTPUTS_ID = "org.jetbrains.r.rendering.chunk.ClearChunkOutputsAction"
+
+  fun createActionGroup(): DefaultActionGroup =
+    DefaultActionGroup(
+      getAction(RUN_CHUNK_ACTION_ID),
+      getAction(DEBUG_CHUNK_ACTION_ID),
+      getAction(RUN_CHUNKS_ABOVE_ID),
+      getAction(RUN_CHUNKS_BELOW_ID),
+      Separator.getInstance(),
+      getAction(CLEAR_CHUNK_OUTPUTS_ID),
+    )
+
+  private fun getAction(id: String) = ActionManager.getInstance().getAction(id)
+}
+
+
 fun isChunkFenceLang(element: PsiElement) =
   element.node.elementType === MarkdownTokenTypes.FENCE_LANG && element.nextSibling?.nextSibling?.node?.elementType == R_FENCE_ELEMENT_TYPE
-
-const val RUN_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.RunChunkAction"
-const val DEBUG_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.DebugChunkAction"
-const val RUN_CHUNKS_ABOVE_ID = "org.jetbrains.r.rendering.chunk.RunChunksAboveAction"
-const val RUN_CHUNKS_BELOW_ID = "org.jetbrains.r.rendering.chunk.RunChunksBelowAction"
-const val CLEAR_CHUNK_OUTPUTS_ID = "org.jetbrains.r.rendering.chunk.ClearChunkOutputsAction"
 
 private abstract class BaseChunkAction : DumbAwareAction(), RPromotedAction {
   override fun update(e: AnActionEvent) {
@@ -55,8 +74,9 @@ private class RunChunksAboveAction : BaseChunkAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val editor = e.editor ?: return
     val file = e.psiFile ?: return
-    val offset = getStartOffset(e, editor)
-    showConsoleAndRun(e) { runInRange(editor, file, 0, offset - 1) }
+    val interval = getCurrentInterval(e, editor)
+    val endOffset = getStartOffset(editor, interval) - 1
+    showConsoleAndRun(e) { runInRange(editor, file, 0, endOffset) }
   }
 }
 
@@ -64,8 +84,9 @@ private class RunChunksBelowAction : BaseChunkAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val editor = e.editor ?: return
     val file = e.psiFile ?: return
-    val offset = getStartOffset(e, editor)
-    showConsoleAndRun(e) { runInRange(editor, file, offset, Int.MAX_VALUE) }
+    val interval = getCurrentInterval(e, editor)
+    val startOffset = getStartOffset(editor, interval)
+    showConsoleAndRun(e) { runInRange(editor, file, startOffset, Int.MAX_VALUE) }
   }
 }
 
@@ -83,8 +104,9 @@ private class DebugChunkAction : BaseChunkAction() {
 
 private class ClearChunkOutputsAction : BaseChunkAction() {
   override fun actionPerformed(e: AnActionEvent) {
-    val psiElement = getCodeFenceByEvent(e) ?: return
-    e.editor?.rMarkdownNotebook?.get(psiElement)?.clearOutputs(removeFiles = true)
+    val editor = e.editor ?: return
+    val interval = getCurrentInterval(e, editor)
+    e.editor?.rMarkdownNotebook?.get(interval)?.clearOutputs(removeFiles = true)
   }
 }
 
@@ -100,10 +122,12 @@ private fun isConsoleReady(project: Project): Boolean {
   } ?: true
 }
 
-private fun getCodeFenceByEvent(e: AnActionEvent): PsiElement? {
-  val offset = e.intervalPointer?.get()?.let { interval -> e.editor?.document?.getLineStartOffset(interval.lines.first) }
-               ?: e.caret?.offset
-               ?: return null
+private fun getStartOffset(editor: Editor, interval: NotebookCellLines.Interval): Int =
+  editor.document.getLineStartOffset(interval.lines.first)
+
+private fun getCodeFenceByEvent(e: AnActionEvent, editor: Editor): PsiElement? {
+  val interval = getCurrentInterval(e, editor)
+  val offset = getStartOffset(editor, interval)
   val file = e.psiFile ?: return null
   val markdown = SourceTreeToPsiMap.treeElementToPsi(file.node.findLeafElementAt(offset))
   val markdownCodeFence = PsiTreeUtil.getParentOfType(markdown, MarkdownCodeFence::class.java) ?: return null
@@ -122,8 +146,8 @@ private fun runInRange(editor: Editor, file: PsiFile, startOffset: Int, endOffse
 }
 
 private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
-  val element = getCodeFenceByEvent(e) ?: return
   val editor = e.editor as? EditorEx ?: return
+  val element = getCodeFenceByEvent(e, editor) ?: return
   val chunkExecutionState = ChunkExecutionState(editor, currentPsiElement = AtomicReference(element), isDebug = isDebug)
   element.project.chunkExecutionState = chunkExecutionState
   RunChunkHandler.execute(element, isDebug = isDebug).onProcessed {
@@ -135,12 +159,9 @@ private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
 internal fun findInlayElementByFenceElement(element: PsiElement) =
   TreeUtil.findChildBackward(element.parent.node, MarkdownTokenTypes.CODE_FENCE_END)?.psi
 
-private val AnActionEvent.intervalPointer: NotebookIntervalPointer?
-  get() = getData(NOTEBOOK_INTERVAL_POINTER_KEY)
-
-private fun getStartOffset(e: AnActionEvent, editor: Editor): Int =
-  e.intervalPointer?.get()?.let { interval -> editor.document.getLineStartOffset(interval.lines.first) }
-  ?: editor.caretModel.offset
+private fun getCurrentInterval(e: AnActionEvent, editor: Editor): NotebookCellLines.Interval =
+  e.rMarkdownCellToolbarPanel?.pointer?.get()
+  ?: editor.getCell(editor.document.getLineNumber(editor.caretModel.offset))
 
 private fun showConsoleAndRun(e: AnActionEvent, action: () -> Unit) {
   val editor = e.editor ?: return
