@@ -33,7 +33,7 @@ object TerminalUtils {
     val terminal = terminalFromId(rInterop, id) ?: return rError("Unknown terminal identifier '$id'")
     val widget: ShellTerminalWidget = TerminalToolWindowManager.getWidgetByContent(terminal)!! as ShellTerminalWidget
     val lst = RObject.RString.newBuilder()
-    val lines = widget.terminalTextBuffer.screenLines
+    val lines = widget.terminalTextBuffer.getScreenLines()
     lst.addAllStrings(lines.trim().split("\n").map { it.trim() })
     return RObject.newBuilder().setRString(lst).build()
   }
