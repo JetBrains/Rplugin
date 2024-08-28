@@ -11,7 +11,10 @@ import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.editor.markup.TextAttributes
 import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
-import org.jetbrains.plugins.notebooks.visualization.*
+import org.jetbrains.plugins.notebooks.visualization.NotebookCellInlayController
+import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
+import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
+import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointerFactory
 import org.jetbrains.plugins.notebooks.visualization.ui.EditorCellView
 import java.awt.Graphics
 import java.awt.Rectangle
@@ -25,10 +28,6 @@ internal class RMarkdownCellToolbarController private constructor(
 ) : NotebookCellInlayController, EditorCustomElementRenderer {
 
   private val panel = RMarkdownCellToolbarPanel(editor, intervalPointer)
-
-  init {
-    panel.setUI(RMarkdownCellToolbarPanelUI(editor))
-  }
 
   override fun calcWidthInPixels(inlay: Inlay<*>): Int = inlay.editor.scrollingModel.visibleArea.width
 
