@@ -143,15 +143,10 @@ class NotebookInlayComponent(
       editor.markupModel.removeHighlighter(separatorHighlighter!!)
     }
 
-    try {
-      val interval = cell.get() ?: return
-      val doc = editor.document
-      val textRange = TextRange(doc.getLineStartOffset(interval.lines.first), doc.getLineEndOffset(interval.lines.last))
-      separatorHighlighter = createSeparatorHighlighter(editor, textRange)
-    }
-    catch (e: Exception) {
-      e.printStackTrace()
-    }
+    val interval = cell.get() ?: return
+    val doc = editor.document
+    val textRange = TextRange(doc.getLineStartOffset(interval.lines.first), doc.getLineEndOffset(interval.lines.last))
+    separatorHighlighter = createSeparatorHighlighter(editor, textRange)
   }
 
   override fun assignInlay(inlay: Inlay<*>) {
