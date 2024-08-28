@@ -15,7 +15,6 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.SourceTreeToPsiMap
 import com.intellij.psi.util.PsiTreeUtil
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
@@ -61,7 +60,9 @@ private class RunChunksAboveAction : BaseChunkAction() {
     val file = e.psiFile ?: return
     val interval = getCurrentInterval(e, editor)
     val endOffset = getStartOffset(editor, interval) - 1
-    showConsoleAndRun(e) { runInRange(editor, file, 0, endOffset) }
+    showConsoleAndRun(e) {
+      RunChunkHandler.runAllChunks(file, editor, 0, endOffset)
+    }
   }
 }
 
@@ -71,7 +72,9 @@ private class RunChunksBelowAction : BaseChunkAction() {
     val file = e.psiFile ?: return
     val interval = getCurrentInterval(e, editor)
     val startOffset = getStartOffset(editor, interval)
-    showConsoleAndRun(e) { runInRange(editor, file, startOffset, Int.MAX_VALUE) }
+    showConsoleAndRun(e) {
+      RunChunkHandler.runAllChunks(file, editor, startOffset - 1, Int.MAX_VALUE)
+    }
   }
 }
 
@@ -124,10 +127,6 @@ private fun getCodeFenceByEvent(e: AnActionEvent, editor: Editor): PsiElement? {
 private fun isEnabled(e: AnActionEvent): Boolean {
   return e.getData(CommonDataKeys.VIRTUAL_FILE)?.fileType == RMarkdownFileType &&
          canRunChunk(e.editor)
-}
-
-private fun runInRange(editor: Editor, file: PsiFile, startOffset: Int, endOffset: Int) {
-  RunChunkHandler.runAllChunks(file, editor, startOffset - 1, endOffset)
 }
 
 private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {

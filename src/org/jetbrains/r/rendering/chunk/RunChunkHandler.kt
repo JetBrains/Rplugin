@@ -60,11 +60,14 @@ import java.util.concurrent.atomic.AtomicReference
 private val LOGGER = Logger.getInstance(RunChunkHandler::class.java)
 
 object RunChunkHandler {
+  fun runAllChunks(psiFile: PsiFile, editor: Editor) {
+    runAllChunks(psiFile, editor, start = 0, end = Int.MAX_VALUE)
+  }
 
   fun runAllChunks(psiFile: PsiFile,
                    editor: Editor,
-                   start: Int = 0,
-                   end: Int = Int.MAX_VALUE,
+                   start: Int,
+                   end: Int,
                    runSelectedCode: Boolean = false,
                    isDebug: Boolean = false) {
     val state = ChunkExecutionState(editor)
@@ -113,10 +116,6 @@ object RunChunkHandler {
       }
     }
     return result
-  }
-
-  fun runSelectedRange(file: PsiFile, editor: Editor, range: TextRange, isDebug: Boolean = false) {
-    runAllChunks(file, editor, range.startOffset, range.endOffset, runSelectedCode = true, isDebug = isDebug)
   }
 
   fun execute(element: PsiElement, isDebug: Boolean = false, isBatchMode: Boolean = false, isFirstChunk: Boolean = true,
