@@ -25,8 +25,10 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SyntaxTraverser
 import com.intellij.psi.impl.source.tree.LeafPsiElement
+import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
+import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
@@ -373,4 +375,7 @@ object RunChunkHandler {
     val chunkExecutionState = project.chunkExecutionState ?: return
     chunkExecutionState.interrupt.get()?.invoke()
   }
+
+  private fun findInlayElementByFenceElement(element: PsiElement) =
+    TreeUtil.findChildBackward(element.parent.node, MarkdownTokenTypes.CODE_FENCE_END)?.psi
 }

@@ -17,7 +17,6 @@ import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.SourceTreeToPsiMap
-import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.util.PsiTreeUtil
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
@@ -141,9 +140,6 @@ private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
     /** outputs will be updated in [RunChunkHandler.afterRunChunk] */
   }
 }
-
-internal fun findInlayElementByFenceElement(element: PsiElement) =
-  TreeUtil.findChildBackward(element.parent.node, MarkdownTokenTypes.CODE_FENCE_END)?.psi
 
 private fun getCurrentInterval(e: AnActionEvent, editor: Editor): NotebookCellLines.Interval =
   e.rMarkdownCellToolbarPanel?.pointer?.get()
