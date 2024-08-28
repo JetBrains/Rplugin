@@ -17,7 +17,7 @@ internal class RMarkdownCellToolbarPanel(editor: EditorImpl, val pointer: Notebo
     background = editor.notebookAppearance.getCodeCellBackground(editor.colorsScheme)
     layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
 
-    val toolbar = ActionManager.getInstance().createActionToolbar("InlineToolbar", RunChunkActions.createActionGroup(), true)
+    val toolbar = ActionManager.getInstance().createActionToolbar("InlineToolbar", RunChunkActions.createToolbarActionGroup(), true)
     toolbar.setTargetComponent(this)
     add(toolbar.component)
     toolbar.component.isOpaque = false

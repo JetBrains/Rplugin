@@ -249,6 +249,15 @@ You can find the source code in the following repositories:
                     class="org.jetbrains.r.rendering.chunk.ClearChunkOutputsAction"
                     icon="AllIcons.General.Reset"/>
         </group>
+
+        <group id="org.jetbrains.r.rendering.chunk.toolbar">
+          <reference ref="org.jetbrains.r.rendering.chunk.RunChunkAction"/>
+          <reference ref="org.jetbrains.r.rendering.chunk.DebugChunkAction"/>
+          <reference ref="org.jetbrains.r.rendering.chunk.RunChunksAboveAction"/>
+          <reference ref="org.jetbrains.r.rendering.chunk.RunChunksBelowAction"/>
+          <separator/>
+          <reference ref="org.jetbrains.r.rendering.chunk.ClearChunkOutputsAction"/>
+        </group>
     </actions>
 
     <!-- Chunk output actions -->

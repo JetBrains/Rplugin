@@ -4,12 +4,11 @@
 
 package org.jetbrains.r.rendering.chunk
 
-import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionManager.getInstance
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.project.DumbAwareAction
@@ -24,7 +23,9 @@ import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.getCell
-import org.jetbrains.r.actions.*
+import org.jetbrains.r.actions.RPromotedAction
+import org.jetbrains.r.actions.editor
+import org.jetbrains.r.actions.psiFile
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
@@ -39,23 +40,8 @@ import java.util.concurrent.atomic.AtomicReference
 
 
 object RunChunkActions {
-  private const val RUN_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.RunChunkAction"
-  private const val DEBUG_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.DebugChunkAction"
-  private const val RUN_CHUNKS_ABOVE_ID = "org.jetbrains.r.rendering.chunk.RunChunksAboveAction"
-  private const val RUN_CHUNKS_BELOW_ID = "org.jetbrains.r.rendering.chunk.RunChunksBelowAction"
-  private const val CLEAR_CHUNK_OUTPUTS_ID = "org.jetbrains.r.rendering.chunk.ClearChunkOutputsAction"
-
-  fun createActionGroup(): DefaultActionGroup =
-    DefaultActionGroup(
-      getAction(RUN_CHUNK_ACTION_ID),
-      getAction(DEBUG_CHUNK_ACTION_ID),
-      getAction(RUN_CHUNKS_ABOVE_ID),
-      getAction(RUN_CHUNKS_BELOW_ID),
-      Separator.getInstance(),
-      getAction(CLEAR_CHUNK_OUTPUTS_ID),
-    )
-
-  private fun getAction(id: String) = ActionManager.getInstance().getAction(id)
+  fun createToolbarActionGroup(): DefaultActionGroup =
+    getInstance().getAction("org.jetbrains.r.rendering.chunk.toolbar") as DefaultActionGroup
 }
 
 
