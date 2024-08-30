@@ -15,10 +15,8 @@ import com.intellij.util.Consumer
 import org.jetbrains.plugins.notebooks.ui.visualization.NotebookCodeCellBackgroundLineMarkerRenderer
 import org.jetbrains.plugins.notebooks.ui.visualization.NotebookLineMarkerRenderer
 import org.jetbrains.plugins.notebooks.ui.visualization.NotebookTextCellBackgroundLineMarkerRenderer
-import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.addEditorDocumentListener
-import org.jetbrains.r.visualization.ui.NotebookCellLineNumbersLineMarkerRenderer
 
 
 class RNotebookGutterLineMarkerManager {
@@ -47,18 +45,6 @@ class RNotebookGutterLineMarkerManager {
     for (interval in notebookCellLines.intervals) {
       val startOffset = editor.document.getLineStartOffset(interval.lines.first)
       val endOffset = editor.document.getLineEndOffset(interval.lines.last)
-
-      if (interval.type == NotebookCellLines.CellType.CODE && editor.notebookAppearance.shouldShowCellLineNumbers() && editor.editorKind != EditorKind.DIFF) {
-        editor.markupModel.addRangeHighlighter(
-          null,
-          startOffset,
-          endOffset,
-          HighlighterLayer.FIRST - 99,  // Border should be seen behind any syntax highlighting, selection or any other effect.
-          HighlighterTargetArea.LINES_IN_RANGE
-        ).also {
-          it.lineMarkerRenderer = NotebookCellLineNumbersLineMarkerRenderer(it)
-        }
-      }
 
       if (interval.type == NotebookCellLines.CellType.CODE) {
         val changeAction = Consumer { o: RangeHighlighterEx ->
