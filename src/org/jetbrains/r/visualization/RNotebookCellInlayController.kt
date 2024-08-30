@@ -6,8 +6,6 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.r.editor.ui.RMarkdownCellToolbarControllerStable
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerStable
-import java.awt.Graphics
-import java.awt.Rectangle
 
 interface RNotebookCellInlayController {
   interface Factory {
@@ -41,13 +39,6 @@ interface RNotebookCellInlayController {
   val factory: Factory
 
   fun onViewportChange() {}
-
-  fun paintGutter(
-    editor: EditorImpl,
-    g: Graphics,
-    r: Rectangle,
-    interval: NotebookCellLines.Interval,
-  )
 
   fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval)
 }

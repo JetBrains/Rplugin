@@ -11,7 +11,6 @@ import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
-import org.jetbrains.plugins.notebooks.ui.visualization.paintNotebookCellBackgroundGutter
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointerFactory
@@ -26,8 +25,6 @@ import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
 import org.jetbrains.r.visualization.RNotebookCellInlayController
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
-import java.awt.Graphics
-import java.awt.Rectangle
 
 /**
  * same as [RMarkdownCellToolbarControllerStable] but relying on the old stable components
@@ -47,14 +44,6 @@ class RMarkdownOutputInlayControllerStable private constructor(
     notebook.update(this)
     updateOutputs(resetComponent = false)
     Disposer.register(inlayComponent.inlay!!, Disposable { dispose() })
-  }
-
-  override fun paintGutter(editor: EditorImpl,
-                           g: Graphics,
-                           r: Rectangle,
-                           interval: NotebookCellLines.Interval) {
-    val inlayBounds = inlay.bounds ?: return
-    paintNotebookCellBackgroundGutter(editor, g, r, interval.lines, inlayBounds.y, inlayBounds.height)
   }
 
   override fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval) {

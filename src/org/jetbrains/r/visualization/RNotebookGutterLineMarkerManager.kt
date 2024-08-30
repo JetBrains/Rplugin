@@ -1,26 +1,24 @@
 package org.jetbrains.r.visualization
 
 
-import com.intellij.openapi.editor.*
+import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.EditorKind
 import com.intellij.openapi.editor.event.CaretEvent
 import com.intellij.openapi.editor.event.CaretListener
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.RangeHighlighterEx
-import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.util.Consumer
-import org.jetbrains.plugins.notebooks.ui.visualization.*
+import org.jetbrains.plugins.notebooks.ui.visualization.NotebookCodeCellBackgroundLineMarkerRenderer
+import org.jetbrains.plugins.notebooks.ui.visualization.NotebookLineMarkerRenderer
+import org.jetbrains.plugins.notebooks.ui.visualization.NotebookTextCellBackgroundLineMarkerRenderer
+import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.addEditorDocumentListener
-import org.jetbrains.plugins.notebooks.visualization.use
 import org.jetbrains.r.visualization.ui.NotebookCellLineNumbersLineMarkerRenderer
-import java.awt.Graphics
-import java.awt.Graphics2D
-import java.awt.Point
-import java.awt.Rectangle
 
 
 class RNotebookGutterLineMarkerManager {
@@ -49,15 +47,6 @@ class RNotebookGutterLineMarkerManager {
     for (interval in notebookCellLines.intervals) {
       val startOffset = editor.document.getLineStartOffset(interval.lines.first)
       val endOffset = editor.document.getLineEndOffset(interval.lines.last)
-      editor.markupModel.addRangeHighlighter(
-        null,
-        startOffset,
-        endOffset,
-        HighlighterLayer.FIRST - 100,  // Border should be seen behind any syntax highlighting, selection or any other effect.
-        HighlighterTargetArea.LINES_IN_RANGE
-      ).also {
-        it.lineMarkerRenderer = NotebookGutterLineMarkerRenderer(interval)
-      }
 
       if (interval.type == NotebookCellLines.CellType.CODE && editor.notebookAppearance.shouldShowCellLineNumbers() && editor.editorKind != EditorKind.DIFF) {
         editor.markupModel.addRangeHighlighter(
@@ -86,37 +75,6 @@ class RNotebookGutterLineMarkerManager {
       val notebookCellInlayManager = RNotebookCellInlayManager.get(editor) ?: throw AssertionError("Register inlay manager first")
       for (controller: RNotebookCellInlayController in notebookCellInlayManager.inlaysForInterval(interval)) {
         controller.createGutterRendererLineMarker(editor, interval)
-      }
-    }
-  }
-
-  fun paintBackground(editor: EditorImpl,
-                      g: Graphics,
-                      r: Rectangle,
-                      interval: NotebookCellLines.Interval) {
-    val notebookCellInlayManager = RNotebookCellInlayManager.get(editor) ?: throw AssertionError("Register inlay manager first")
-
-    for (controller: RNotebookCellInlayController in notebookCellInlayManager.inlaysForInterval(interval)) {
-      controller.paintGutter(editor, g, r, interval)
-    }
-  }
-
-  inner class NotebookGutterLineMarkerRenderer(private val interval: NotebookCellLines.Interval) : NotebookLineMarkerRenderer() {
-    override fun paint(editor: Editor, g: Graphics, r: Rectangle) {
-      editor as EditorImpl
-
-      @Suppress("NAME_SHADOWING")
-      g.create().use { g ->
-        g as Graphics2D
-
-        val visualLineStart = editor.xyToVisualPosition(Point(0, g.clip.bounds.y)).line
-        val visualLineEnd = editor.xyToVisualPosition(Point(0, g.clip.bounds.run { y + height })).line
-        val logicalLineStart = editor.visualToLogicalPosition(VisualPosition(visualLineStart, 0)).line
-        val logicalLineEnd = editor.visualToLogicalPosition(VisualPosition(visualLineEnd, 0)).line
-
-        if (interval.lines.first > logicalLineEnd || interval.lines.last < logicalLineStart) return
-
-        paintBackground(editor, g, r, interval)
       }
     }
   }
