@@ -159,7 +159,7 @@ class RMarkdownOutputInlayController private constructor(
     return inlayComponent
   }
 
-  override fun onUpdateViewport(viewportRange: IntRange, expansionRange: IntRange) {
+  override fun onUpdateViewport(viewportRange: IntRange) {
     if (Disposer.isDisposed(inlay))
       return
 

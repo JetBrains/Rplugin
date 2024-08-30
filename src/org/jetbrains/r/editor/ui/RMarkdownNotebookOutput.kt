@@ -24,5 +24,5 @@ interface RMarkdownNotebookOutput {
 
   fun dispose()
 
-  fun onUpdateViewport(viewportRange: IntRange, expansionRange: IntRange)
+  fun onUpdateViewport(viewportRange: IntRange)
 }
