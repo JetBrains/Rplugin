@@ -18,7 +18,9 @@ import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointerFact
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.addBlockElement
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.disposeComponent
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.extractOffset
+import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.isInViewportByY
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.setupInlayComponent
+import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.updateInlayWidth
 import org.jetbrains.r.rendering.chunk.ChunkPath
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
 import org.jetbrains.r.visualization.RNotebookCellInlayController
@@ -113,14 +115,6 @@ class RMarkdownOutputInlayControllerStable private constructor(
     }
   }
 
-  private fun updateWidth() {
-    val expectedWidth = RInlayDimensions.calculateInlayWidth(editor)
-    if (expectedWidth > 0 && inlayComponent.width != expectedWidth) {
-      inlayComponent.setSize(expectedWidth, inlayComponent.height)
-      inlayComponent.inlay?.update()
-    }
-  }
-
   override fun dispose() {
     notebook.remove(this)
     disposeComponent(inlayComponent)
@@ -158,16 +152,13 @@ class RMarkdownOutputInlayControllerStable private constructor(
     return inlayComponent
   }
 
-  override fun onUpdateViewport(viewportRange: IntRange) {
+  // onViewportChange is called inside invokeLater and this is the source of flickering
+  override fun onViewportChange() {
     if (Disposer.isDisposed(inlay))
       return
 
-    // onUpdateViewport called in invokeLater and during horizontal resizing there is flickering
-    updateWidth()
-
-    val bounds = inlayComponent.bounds
-    val isInViewport = bounds.y <= viewportRange.last && bounds.y + bounds.height >= viewportRange.first
-    inlayComponent.onViewportChange(isInViewport)
+    updateInlayWidth(editor, inlayComponent)
+    inlayComponent.onViewportChange(isInViewportByY(editor, inlayComponent.bounds))
   }
 
   private fun makeChunkPath(): ChunkPath? =

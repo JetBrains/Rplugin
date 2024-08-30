@@ -23,6 +23,4 @@ interface RMarkdownNotebookOutput {
   fun updateProgressStatus(progressStatus: InlayProgressStatus)
 
   fun dispose()
-
-  fun onUpdateViewport(viewportRange: IntRange)
 }

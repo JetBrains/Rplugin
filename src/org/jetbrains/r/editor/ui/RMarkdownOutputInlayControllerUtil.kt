@@ -3,6 +3,7 @@ package org.jetbrains.r.editor.ui
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.Inlay
+import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.util.EditorScrollingPositionKeeper
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.psi.PsiElement
@@ -11,7 +12,9 @@ import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.r.visualization.inlays.EditorInlaysManager
 import org.jetbrains.r.visualization.inlays.InlayComponent
+import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import java.awt.Point
+import java.awt.Rectangle
 
 internal object RMarkdownOutputInlayControllerUtil {
   internal fun addBlockElement(editor: Editor, offset: Int, inlayComponent: NotebookInlayComponent): Inlay<NotebookInlayComponent> =
@@ -61,4 +64,18 @@ internal object RMarkdownOutputInlayControllerUtil {
 
   internal fun extractOffset(document: Document, interval: NotebookCellLines.Interval): Int =
     Integer.max(document.getLineEndOffset(interval.lines.last) - 1, 0)
+
+  internal fun isInViewportByY(editor: EditorEx, rect: Rectangle): Boolean {
+    val viewRect = editor.scrollPane.viewport.viewRect
+    return rect.y <= viewRect.y + viewRect.height &&
+           rect.y + rect.height >= viewRect.y
+  }
+
+  internal fun updateInlayWidth(editor: EditorEx, inlayComponent: NotebookInlayComponent) {
+    val expectedWidth = RInlayDimensions.calculateInlayWidth(editor)
+    if (expectedWidth > 0 && inlayComponent.width != expectedWidth) {
+      inlayComponent.setSize(expectedWidth, inlayComponent.height)
+      inlayComponent.inlay?.update()
+    }
+  }
 }

@@ -1,15 +1,12 @@
 package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
-import com.intellij.util.ui.update.MergingUpdateQueue
-import com.intellij.util.ui.update.Update
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
@@ -21,13 +18,8 @@ import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.getCodeFence
 class RMarkdownNotebook(project: Project, editor: EditorImpl) {
   // pointerFactory reuses pointers
   private val outputs: MutableMap<NotebookIntervalPointer, RMarkdownNotebookOutput> = LinkedHashMap()
-  private val viewportQueue = MergingUpdateQueue(VIEWPORT_TASK_NAME, VIEWPORT_TIME_SPAN, true, null, editor.disposable)
   private val pointerFactory = NotebookIntervalPointerFactory.Companion.get(editor)
   private val psiToInterval = PsiToInterval(project, editor) { interval -> getCodeFenceEnd(editor, interval) }
-
-  init {
-    addViewportListener(editor)
-  }
 
   operator fun get(cell: NotebookCellLines.Interval?): RMarkdownNotebookOutput? {
     if (cell == null) return null
@@ -55,30 +47,7 @@ class RMarkdownNotebook(project: Project, editor: EditorImpl) {
     outputs.remove(output.intervalPointer, output)
   }
 
-  private fun addViewportListener(editor: EditorImpl) {
-    editor.scrollPane.viewport.addChangeListener {
-      viewportQueue.queue(object : Update(VIEWPORT_TASK_IDENTITY) {
-        override fun run() =
-          updateInlaysForViewport(editor)
-      })
-    }
-  }
-
-  private fun updateInlaysForViewport(editor: EditorImpl) {
-    invokeLater {
-      if (editor.isDisposed) return@invokeLater
-      val viewportRange = calculateViewportRange(editor)
-      outputs.values.forEach {
-        it.onUpdateViewport(viewportRange)
-      }
-    }
-  }
-
   companion object {
-    private const val VIEWPORT_TASK_NAME = "On viewport change"
-    private const val VIEWPORT_TASK_IDENTITY = "On viewport change task"
-    private const val VIEWPORT_TIME_SPAN = 50
-
     private fun install(editor: EditorImpl): RMarkdownNotebook =
       RMarkdownNotebook(editor.project!!, editor).also {
         key.set(editor, it)
@@ -93,12 +62,3 @@ private val key = Key.create<RMarkdownNotebook>(RMarkdownNotebook::class.java.na
 
 val Editor.rMarkdownNotebook: RMarkdownNotebook?
   get() = key.get(this)
-
-
-
-private fun calculateViewportRange(editor: EditorImpl): IntRange {
-  val viewport = editor.scrollPane.viewport
-  val yMin = viewport.viewPosition.y
-  val yMax = yMin + viewport.height
-  return yMin until yMax
-}
