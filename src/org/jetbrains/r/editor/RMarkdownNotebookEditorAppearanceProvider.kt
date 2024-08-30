@@ -50,4 +50,6 @@ object RMarkdownNotebookEditorAppearance : NotebookEditorAppearance, NotebookEdi
 
   override fun getCellStripeColor(editor: Editor): Color = JBColor.GRAY
   override fun getCellStripeHoverColor(editor: Editor): Color = JBColor.BLUE
+
+  override fun getCellLeftLineWidth(editor: Editor): Int = 0
 }
