@@ -3,7 +3,6 @@ package org.jetbrains.r.editor.ui
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
@@ -16,10 +15,7 @@ import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointerFactory
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.getCodeFenceEnd
-import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import java.awt.Point
-import java.awt.event.ComponentAdapter
-import java.awt.event.ComponentEvent
 import kotlin.math.max
 import kotlin.math.min
 
@@ -33,7 +29,6 @@ class RMarkdownNotebook(project: Project, editor: EditorImpl) {
   private val psiToInterval = PsiToInterval(project, editor) { interval -> getCodeFenceEnd(editor, interval) }
 
   init {
-    addResizeListener(editor)
     addViewportListener(editor)
   }
 
@@ -61,19 +56,6 @@ class RMarkdownNotebook(project: Project, editor: EditorImpl) {
 
   fun remove(output: RMarkdownNotebookOutput) {
     outputs.remove(output.intervalPointer, output)
-  }
-
-  private fun addResizeListener(editor: EditorEx) {
-    editor.component.addComponentListener(object : ComponentAdapter() {
-      override fun componentResized(e: ComponentEvent) {
-        val inlayWidth = RInlayDimensions.calculateInlayWidth(editor)
-        if (inlayWidth > 0) {
-          outputs.values.forEach {
-            it.setWidth(inlayWidth)
-          }
-        }
-      }
-    })
   }
 
   private fun addViewportListener(editor: EditorImpl) {

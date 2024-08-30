@@ -25,6 +25,4 @@ interface RMarkdownNotebookOutput {
   fun dispose()
 
   fun onUpdateViewport(viewportRange: IntRange, expansionRange: IntRange)
-
-  fun setWidth(width: Int)
 }

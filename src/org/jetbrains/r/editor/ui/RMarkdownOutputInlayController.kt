@@ -114,9 +114,12 @@ class RMarkdownOutputInlayController private constructor(
     }
   }
 
-  override fun setWidth(width: Int) {
-    inlayComponent.setSize(width, inlayComponent.height)
-    inlayComponent.inlay?.update()
+  private fun updateWidth() {
+    val expectedWidth = RInlayDimensions.calculateInlayWidth(editor)
+    if (expectedWidth > 0 && inlayComponent.width != expectedWidth) {
+      inlayComponent.setSize(expectedWidth, inlayComponent.height)
+      inlayComponent.inlay?.update()
+    }
   }
 
   override fun dispose() {
@@ -159,6 +162,8 @@ class RMarkdownOutputInlayController private constructor(
   override fun onUpdateViewport(viewportRange: IntRange, expansionRange: IntRange) {
     if (Disposer.isDisposed(inlay))
       return
+
+    updateWidth()
 
     val bounds = inlayComponent.bounds
     val isInViewport = bounds.y <= viewportRange.last && bounds.y + bounds.height >= viewportRange.first
