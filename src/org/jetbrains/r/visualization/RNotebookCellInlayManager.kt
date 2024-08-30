@@ -245,7 +245,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
       }
     }
 
-    RNotebookGutterLineMarkerManager().putHighlighters(editor)
+    RNotebookGutterLineMarkerManager.updateHighlighters(editor)
 
     for ((_, controller) in allMatchingInlays) {
       Disposer.dispose(controller.inlay, false)

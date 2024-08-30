@@ -40,5 +40,8 @@ interface RNotebookCellInlayController {
 
   fun onViewportChange() {}
 
+  /**
+   * [RNotebookGutterLineMarkerManager] assumes that renderer is subclass of [NotebookLineMarkerRenderer]
+   */
   fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval)
 }

@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.RangeHighlighterEx
+import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.util.Consumer
@@ -19,24 +20,23 @@ import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
 import org.jetbrains.plugins.notebooks.visualization.addEditorDocumentListener
 
 
-class RNotebookGutterLineMarkerManager {
-
-  fun attachHighlighters(editor: EditorEx) {
+object RNotebookGutterLineMarkerManager {
+  fun install(editor: EditorImpl) {
     editor.addEditorDocumentListener(object : DocumentListener {
-      override fun documentChanged(event: DocumentEvent) = putHighlighters(editor)
-      override fun bulkUpdateFinished(document: Document) = putHighlighters(editor)
+      override fun documentChanged(event: DocumentEvent) = updateHighlighters(editor)
+      override fun bulkUpdateFinished(document: Document) = updateHighlighters(editor)
     })
 
     editor.caretModel.addCaretListener(object : CaretListener {
       override fun caretPositionChanged(event: CaretEvent) {
-        putHighlighters(editor)
+        updateHighlighters(editor)
       }
     })
 
-    putHighlighters(editor)
+    updateHighlighters(editor)
   }
 
-  fun putHighlighters(editor: EditorEx) {
+  fun updateHighlighters(editor: EditorEx) {
     val highlighters = editor.markupModel.allHighlighters.filter { it.lineMarkerRenderer is NotebookLineMarkerRenderer }
     highlighters.forEach { editor.markupModel.removeHighlighter(it) }
 
@@ -51,7 +51,8 @@ class RNotebookGutterLineMarkerManager {
           o.lineMarkerRenderer = NotebookCodeCellBackgroundLineMarkerRenderer(o)
         }
         editor.markupModel.addRangeHighlighterAndChangeAttributes(null, startOffset, endOffset, HighlighterLayer.FIRST - 100, HighlighterTargetArea.LINES_IN_RANGE, false, changeAction)
-      } else if (editor.editorKind != EditorKind.DIFF) {
+      }
+      else if (editor.editorKind != EditorKind.DIFF) {
         val changeAction = Consumer { o: RangeHighlighterEx ->
           o.lineMarkerRenderer = NotebookTextCellBackgroundLineMarkerRenderer(o)
         }
@@ -62,15 +63,6 @@ class RNotebookGutterLineMarkerManager {
       for (controller: RNotebookCellInlayController in notebookCellInlayManager.inlaysForInterval(interval)) {
         controller.createGutterRendererLineMarker(editor, interval)
       }
-    }
-  }
-
-  companion object {
-    fun install(editor: EditorEx): RNotebookGutterLineMarkerManager {
-      val instance = RNotebookGutterLineMarkerManager()
-      instance.attachHighlighters(editor)
-
-      return instance
     }
   }
 }
