@@ -28,7 +28,6 @@ import java.awt.Graphics
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import java.awt.event.MouseMotionListener
-import javax.swing.JComponent
 import kotlin.math.max
 import kotlin.math.min
 
@@ -50,8 +49,6 @@ class NotebookInlayComponent(
   private var state: NotebookInlayState? = null
 
   private var expandedHeight = 0
-
-  private var gutter: JComponent? = null
 
   private var mouseOverNewParagraphArea = false
 
@@ -126,8 +123,6 @@ class NotebookInlayComponent(
 
   override fun assignInlay(inlay: Inlay<*>) {
     super.assignInlay(inlay)
-
-    gutter = editor.gutter as JComponent
   }
 
   override fun disposeInlay() {
