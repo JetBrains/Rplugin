@@ -6,13 +6,10 @@ package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Inlay
-import com.intellij.openapi.editor.colors.EditorColors
-import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.*
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.TextRange
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
@@ -42,14 +39,6 @@ class NotebookInlayComponent(
 )
   : InlayComponent(), MouseListener, MouseMotionListener {
   companion object {
-    val separatorRenderer = CustomHighlighterRenderer { editor, highlighter1, g ->
-      val y1 = editor.offsetToPoint2D(highlighter1.endOffset).y.toInt()
-
-      g.color = editor.colorsScheme.getColor(EditorColors.RIGHT_MARGIN_COLOR)
-
-      g.drawLine(0, y1, editor.component.width, y1)
-    }
-
     /* DS-625 Those resizes cause scroll flickering. Currently, I am not sure which value is better */
     private const val isResizeOutputToPreviewHeight: Boolean = true
   }
@@ -135,24 +124,8 @@ class NotebookInlayComponent(
     g2d.dispose()
   }
 
-  /**
-   * Draw separator line below cell. Also fills cell background
-   */
-  private fun updateCellSeparator() {
-    if (separatorHighlighter != null) {
-      editor.markupModel.removeHighlighter(separatorHighlighter!!)
-    }
-
-    val interval = cell.get() ?: return
-    val doc = editor.document
-    val textRange = TextRange(doc.getLineStartOffset(interval.lines.first), doc.getLineEndOffset(interval.lines.last))
-    separatorHighlighter = createSeparatorHighlighter(editor, textRange)
-  }
-
   override fun assignInlay(inlay: Inlay<*>) {
     super.assignInlay(inlay)
-
-    updateCellSeparator()
 
     gutter = editor.gutter as JComponent
   }
@@ -306,18 +279,3 @@ class NotebookInlayComponent(
     state?.clear()
   }
 }
-
-private fun createSeparatorHighlighter(editor: EditorImpl, textRange: TextRange) =
-  editor.markupModel.addRangeHighlighter(textRange.startOffset, textRange.endOffset,
-                                         HighlighterLayer.SYNTAX - 1, null,
-                                         HighlighterTargetArea.LINES_IN_RANGE).apply {
-
-    customRenderer = NotebookInlayComponent.separatorRenderer
-    lineMarkerRenderer = LineMarkerRenderer { _, g, r ->
-      val gutterWidth = ((editor as EditorEx).gutterComponentEx as JComponent).width
-
-      val y = r.y + r.height - editor.lineHeight
-      g.color = editor.colorsScheme.getColor(EditorColors.RIGHT_MARGIN_COLOR)
-      g.drawLine(0, y, gutterWidth + 10, y)
-    }
-  }
