@@ -24,7 +24,7 @@ import java.io.File
 import javax.swing.SwingUtilities
 
 class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor) :
-  InlayOutput(parent, editor, loadActions()), InlayOutput.WithCopyImageToClipboard, InlayOutput.WithSaveAs {
+  InlayOutput(editor, loadActions()), InlayOutput.WithCopyImageToClipboard, InlayOutput.WithSaveAs {
 
   private val wrapper = RGraphicsPanelWrapper(project, parent).apply {
     isVisible = false

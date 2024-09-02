@@ -6,7 +6,7 @@ import org.jetbrains.r.visualization.inlays.MouseWheelUtils
 import org.jetbrains.r.visualization.inlays.dataframe.DataFrameCSVAdapter
 
 class InlayOutputTable(val parent: Disposable, editor: Editor)
-  : InlayOutput(parent, editor, loadActions()) {
+  : InlayOutput(editor, loadActions()) {
 
   private val inlayTablePage: InlayTablePage = InlayTablePage()
 

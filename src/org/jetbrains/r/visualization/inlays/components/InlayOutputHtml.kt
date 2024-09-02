@@ -13,7 +13,7 @@ import java.util.function.Function
 import javax.swing.SwingUtilities
 
 class InlayOutputHtml(parent: Disposable, editor: Editor)
-  : InlayOutput(parent, editor, loadActions(SaveOutputAction.Companion.ID)), InlayOutput.WithSaveAs {
+  : InlayOutput(editor, loadActions(SaveOutputAction.Companion.ID)), InlayOutput.WithSaveAs {
 
   private val jbBrowser: JBCefBrowser = JBCefBrowser().also { Disposer.register(parent, it) }
   private val heightJsCallback = JBCefJSQuery.create(jbBrowser as JBCefBrowserBase)

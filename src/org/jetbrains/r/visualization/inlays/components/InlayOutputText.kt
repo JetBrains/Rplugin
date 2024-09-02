@@ -25,7 +25,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class InlayOutputText(parent: Disposable, editor: Editor)
-  : InlayOutput(parent, editor, loadActions(SaveOutputAction.Companion.ID)), InlayOutput.WithSaveAs {
+  : InlayOutput(editor, loadActions(SaveOutputAction.Companion.ID)), InlayOutput.WithSaveAs {
 
   private val console = ColoredTextConsole(project, viewer = true)
 

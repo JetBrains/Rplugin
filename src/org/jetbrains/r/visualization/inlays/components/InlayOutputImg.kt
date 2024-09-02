@@ -11,7 +11,7 @@ import javax.swing.JComponent
 import javax.swing.SwingUtilities
 
 class InlayOutputImg(parent: Disposable, editor: Editor)
-  : InlayOutput(parent, editor, loadActions(CopyImageToClipboardAction.ID, SaveOutputAction.ID)), InlayOutput.WithCopyImageToClipboard, InlayOutput.WithSaveAs {
+  : InlayOutput(editor, loadActions(CopyImageToClipboardAction.ID, SaveOutputAction.ID)), InlayOutput.WithCopyImageToClipboard, InlayOutput.WithSaveAs {
   private val graphicsPanel = GraphicsPanel(project, parent).apply {
     isAdvancedMode = true
   }
