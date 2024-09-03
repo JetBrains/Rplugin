@@ -6,7 +6,7 @@ package org.jetbrains.r.visualization.inlays
 
 /**
  * There was EditorInlaysManager code, which later was replaced by
- * [org.jetbrains.plugins.notebooks.visualization.NotebookCellInlayManager]
+ * [com.intellij.notebooks.visualization.NotebookCellInlayManager]
  */
 object EditorInlaysManager {
   const val INLAY_PRIORITY = 0

@@ -3,7 +3,7 @@ package org.jetbrains.r.visualization
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
-import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
+import com.intellij.notebooks.visualization.NotebookCellLines
 import org.jetbrains.r.editor.ui.RMarkdownCellToolbarControllerStable
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerStable
 

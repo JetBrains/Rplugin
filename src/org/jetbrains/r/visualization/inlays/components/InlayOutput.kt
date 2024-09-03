@@ -11,7 +11,7 @@ import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
+import com.intellij.notebooks.ui.visualization.notebookAppearance
 import org.jetbrains.r.visualization.ui.ToolbarUtil
 import java.io.File
 import javax.swing.JComponent

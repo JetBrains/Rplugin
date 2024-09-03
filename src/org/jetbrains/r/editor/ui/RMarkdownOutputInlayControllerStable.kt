@@ -11,9 +11,9 @@ import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
-import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
-import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
-import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointerFactory
+import com.intellij.notebooks.visualization.NotebookCellLines
+import com.intellij.notebooks.visualization.NotebookIntervalPointer
+import com.intellij.notebooks.visualization.NotebookIntervalPointerFactory
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.addBlockElement
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.disposeComponent
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.extractOffset

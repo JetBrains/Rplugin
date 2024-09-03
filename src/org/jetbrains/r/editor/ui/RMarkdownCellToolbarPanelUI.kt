@@ -1,8 +1,8 @@
 package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.editor.impl.EditorImpl
-import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
-import org.jetbrains.plugins.notebooks.visualization.use
+import com.intellij.notebooks.ui.visualization.notebookAppearance
+import com.intellij.notebooks.visualization.use
 import java.awt.Dimension
 import java.awt.Graphics
 import javax.swing.JComponent

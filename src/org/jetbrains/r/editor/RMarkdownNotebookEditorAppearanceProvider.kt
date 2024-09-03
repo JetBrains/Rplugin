@@ -5,11 +5,11 @@ import com.intellij.openapi.editor.colors.EditorColorsScheme
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.ui.JBColor
-import org.jetbrains.plugins.notebooks.ui.editor.DefaultNotebookEditorAppearance
-import org.jetbrains.plugins.notebooks.ui.visualization.DefaultNotebookEditorAppearanceSizes
-import org.jetbrains.plugins.notebooks.ui.visualization.NotebookEditorAppearance
-import org.jetbrains.plugins.notebooks.ui.visualization.NotebookEditorAppearanceSizes
-import org.jetbrains.plugins.notebooks.visualization.NotebookEditorAppearanceProvider
+import com.intellij.notebooks.ui.editor.DefaultNotebookEditorAppearance
+import com.intellij.notebooks.ui.visualization.DefaultNotebookEditorAppearanceSizes
+import com.intellij.notebooks.ui.visualization.NotebookEditorAppearance
+import com.intellij.notebooks.ui.visualization.NotebookEditorAppearanceSizes
+import com.intellij.notebooks.visualization.NotebookEditorAppearanceProvider
 import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
 import java.awt.Color
 

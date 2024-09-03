@@ -19,8 +19,8 @@ import com.intellij.psi.impl.source.SourceTreeToPsiMap
 import com.intellij.psi.util.PsiTreeUtil
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
-import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
-import org.jetbrains.plugins.notebooks.visualization.getCell
+import com.intellij.notebooks.visualization.NotebookCellLines
+import com.intellij.notebooks.visualization.getCell
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.editor
 import org.jetbrains.r.actions.psiFile

@@ -3,7 +3,7 @@ package org.jetbrains.r.run.graphics
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.util.ui.ImageUtil
 import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.ImageInverter
+import com.intellij.notebooks.visualization.r.inlays.components.ImageInverter
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rinterop.*
 import java.awt.Color

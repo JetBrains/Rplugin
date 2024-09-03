@@ -4,9 +4,9 @@ import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.editor.impl.EditorImpl
 import kotlinx.coroutines.CoroutineScope
-import org.jetbrains.plugins.notebooks.visualization.NotebookCellInlayManager
-import org.jetbrains.plugins.notebooks.visualization.NotebookCellLinesProvider
-import org.jetbrains.plugins.notebooks.visualization.NotebookEditorAppearanceProvider
+import com.intellij.notebooks.visualization.NotebookCellInlayManager
+import com.intellij.notebooks.visualization.NotebookCellLinesProvider
+import com.intellij.notebooks.visualization.NotebookEditorAppearanceProvider
 import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
 import org.jetbrains.r.visualization.RNotebookCellInlayManager
 import org.jetbrains.r.visualization.RNotebookGutterLineMarkerManager

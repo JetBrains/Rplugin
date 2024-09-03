@@ -2,8 +2,8 @@ package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.impl.EditorImpl
-import org.jetbrains.plugins.notebooks.ui.visualization.NotebookLineMarkerRenderer
-import org.jetbrains.plugins.notebooks.ui.visualization.paintNotebookCellBackgroundGutter
+import com.intellij.notebooks.ui.visualization.NotebookLineMarkerRenderer
+import com.intellij.notebooks.ui.visualization.paintNotebookCellBackgroundGutter
 import java.awt.Graphics
 import java.awt.Rectangle
 

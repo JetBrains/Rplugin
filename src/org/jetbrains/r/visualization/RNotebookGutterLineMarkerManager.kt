@@ -13,11 +13,11 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.util.Consumer
-import org.jetbrains.plugins.notebooks.ui.visualization.NotebookCodeCellBackgroundLineMarkerRenderer
-import org.jetbrains.plugins.notebooks.ui.visualization.NotebookLineMarkerRenderer
-import org.jetbrains.plugins.notebooks.ui.visualization.NotebookTextCellBackgroundLineMarkerRenderer
-import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
-import org.jetbrains.plugins.notebooks.visualization.addEditorDocumentListener
+import com.intellij.notebooks.ui.visualization.NotebookCodeCellBackgroundLineMarkerRenderer
+import com.intellij.notebooks.ui.visualization.NotebookLineMarkerRenderer
+import com.intellij.notebooks.ui.visualization.NotebookTextCellBackgroundLineMarkerRenderer
+import com.intellij.notebooks.visualization.NotebookCellLines
+import com.intellij.notebooks.visualization.addEditorDocumentListener
 
 
 object RNotebookGutterLineMarkerManager {

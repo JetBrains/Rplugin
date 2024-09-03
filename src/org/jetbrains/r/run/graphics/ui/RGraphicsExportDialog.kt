@@ -16,7 +16,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.DocumentAdapter
 import com.intellij.util.ui.JBUI
 import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.notebooks.visualization.NotebooksVisualizationIcons
+import com.intellij.notebooks.visualization.NotebooksVisualizationIcons
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
@@ -516,7 +516,7 @@ class RGraphicsExportDialog(
     private val PX_TEXT = RBundle.message("graphics.panel.settings.dialog.pixels")
 
     private val KEEP_ASPECT_RATIO_PRESENTATION =
-      ToggleActionPresentation(RBundle.message("graphics.panel.export.dialog.keep.aspect.ratio.active"), RBundle.message("graphics.panel.export.dialog.keep.aspect.ratio.idle"), NotebooksVisualizationIcons.Graphics.ConstraintProportions, false)
+      ToggleActionPresentation(RBundle.message("graphics.panel.export.dialog.keep.aspect.ratio.active"), RBundle.message("graphics.panel.export.dialog.keep.aspect.ratio.idle"), com.intellij.notebooks.visualization.NotebooksVisualizationIcons.Graphics.ConstraintProportions, false)
 
     private val defaultImageRegion: Dimension
       get() = DialogUtil.calculatePreferredSize(DialogUtil.SizePreference.WIDE)

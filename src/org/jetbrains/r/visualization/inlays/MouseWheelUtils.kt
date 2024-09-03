@@ -14,8 +14,8 @@ import com.intellij.ui.ComponentUtil
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.MouseEventAdapter
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.NOTEBOOKS_CONSOLE_OUTPUT_KEY
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.components.updateOutputTextConsoleUI
+import com.intellij.notebooks.visualization.r.inlays.components.NOTEBOOKS_CONSOLE_OUTPUT_KEY
+import com.intellij.notebooks.visualization.r.inlays.components.updateOutputTextConsoleUI
 import java.awt.Component
 import java.awt.event.MouseWheelEvent
 import java.awt.event.MouseWheelListener
@@ -35,7 +35,7 @@ import javax.swing.JScrollPane
  *
  * ToDo we can also drop editor scroll time on mouse move event over other components.
  *
- * may be worth to try [org.jetbrains.plugins.notebooks.visualization.ui.NestedScrollingSupport]
+ * may be worth to try [com.intellij.notebooks.visualization.ui.NestedScrollingSupport]
  */
 object MouseWheelUtils {
   private class MouseWheelListenerWrapper(private val component: Component,

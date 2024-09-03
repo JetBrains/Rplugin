@@ -16,7 +16,7 @@ import com.intellij.util.IconUtil
 import com.intellij.util.ui.ImageUtil
 import com.intellij.util.ui.UIUtil
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
-import org.jetbrains.plugins.notebooks.visualization.use
+import com.intellij.notebooks.visualization.use
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice

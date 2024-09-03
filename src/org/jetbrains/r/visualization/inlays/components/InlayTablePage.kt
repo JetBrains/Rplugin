@@ -21,8 +21,8 @@ import com.intellij.ui.SideBorder
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
-import org.jetbrains.plugins.notebooks.visualization.NotebooksVisualizationIcons
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
+import com.intellij.notebooks.visualization.NotebooksVisualizationIcons
+import com.intellij.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.visualization.inlays.dataframe.DataFrame
 import org.jetbrains.r.visualization.inlays.dataframe.columns.DoubleType
@@ -207,7 +207,7 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
 
     val paginateTable = object : DumbAwareToggleAction(RBundle.message("inlay.table.pagination.text"),
                                                        null,
-                                                       NotebooksVisualizationIcons.Table.Pagination) {
+                                                       com.intellij.notebooks.visualization.NotebooksVisualizationIcons.Table.Pagination) {
       override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
 
       override fun isSelected(e: AnActionEvent): Boolean {

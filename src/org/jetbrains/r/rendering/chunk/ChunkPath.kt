@@ -7,8 +7,8 @@ package org.jetbrains.r.rendering.chunk
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiElement
-import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
-import org.jetbrains.plugins.notebooks.visualization.getText
+import com.intellij.notebooks.visualization.NotebookCellLines
+import com.intellij.notebooks.visualization.getText
 import org.jetbrains.r.editor.ui.psiFile
 import java.lang.Integer.toHexString
 import java.nio.file.Paths

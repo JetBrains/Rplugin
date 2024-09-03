@@ -29,8 +29,8 @@ import com.intellij.util.concurrency.ThreadingAssertions
 import com.intellij.util.containers.SmartHashSet
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
-import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
-import org.jetbrains.plugins.notebooks.visualization.*
+import com.intellij.notebooks.ui.visualization.notebookAppearance
+import com.intellij.notebooks.visualization.*
 import java.awt.Graphics
 import javax.swing.JComponent
 import kotlin.math.max

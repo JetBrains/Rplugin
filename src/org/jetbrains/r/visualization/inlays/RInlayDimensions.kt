@@ -5,9 +5,9 @@ import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions.bottomBorder
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.InlayDimensions.topBorder
+import com.intellij.notebooks.visualization.r.inlays.InlayDimensions
+import com.intellij.notebooks.visualization.r.inlays.InlayDimensions.bottomBorder
+import com.intellij.notebooks.visualization.r.inlays.InlayDimensions.topBorder
 import java.awt.Dimension
 import java.awt.Font
 import kotlin.math.max

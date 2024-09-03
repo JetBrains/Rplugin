@@ -1,7 +1,7 @@
 package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.util.Key
-import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
+import com.intellij.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 
 /**

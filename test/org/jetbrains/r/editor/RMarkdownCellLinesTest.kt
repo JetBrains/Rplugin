@@ -8,11 +8,11 @@ import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.testFramework.common.ThreadLeakTracker
 import com.jetbrains.python.PythonLanguage
 import org.intellij.plugins.markdown.lang.MarkdownLanguage
-import org.jetbrains.plugins.notebooks.visualization.CodeCellLinesChecker
-import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
-import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines.CellType.CODE
-import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines.CellType.MARKDOWN
-import org.jetbrains.plugins.notebooks.visualization.edt
+import com.intellij.notebooks.visualization.CodeCellLinesChecker
+import com.intellij.notebooks.visualization.NotebookCellLines
+import com.intellij.notebooks.visualization.NotebookCellLines.CellType.CODE
+import com.intellij.notebooks.visualization.NotebookCellLines.CellType.MARKDOWN
+import com.intellij.notebooks.visualization.edt
 import org.jetbrains.r.RLanguage
 import org.junit.Before
 import org.junit.Test

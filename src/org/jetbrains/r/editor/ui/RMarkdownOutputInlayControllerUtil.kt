@@ -9,7 +9,7 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
-import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
+import com.intellij.notebooks.visualization.NotebookCellLines
 import org.jetbrains.r.visualization.inlays.EditorInlaysManager
 import org.jetbrains.r.visualization.inlays.InlayComponent
 import org.jetbrains.r.visualization.inlays.RInlayDimensions

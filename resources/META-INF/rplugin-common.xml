@@ -396,9 +396,9 @@ You can find the source code in the following repositories:
       <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownCellToolbarController$Factory"/>
       <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownOutputInlayController$Factory"/>
       <notebookIntervalPointerFactoryProvider language="RMarkdown"
-                                              implementationClass="org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointerFactoryImplProvider"/>
+                                              implementationClass="com.intellij.notebooks.visualization.NotebookIntervalPointerFactoryImplProvider"/>
       <notebookIntervalPointerFactoryProvider language="Quarto"
-                                              implementationClass="org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointerFactoryImplProvider"/>
+                                              implementationClass="com.intellij.notebooks.visualization.NotebookIntervalPointerFactoryImplProvider"/>
       <editor.outputs.notebookOutputDataKeyExtractor implementation="org.jetbrains.r.editor.ui.RMarkdownOutputDataKeyExtractor"/>
 
     </extensions>
@@ -541,7 +541,7 @@ You can find the source code in the following repositories:
         <editorFactoryListener implementation="org.jetbrains.r.console.RConsoleEditorFactoryListener"/>
         <editorFactoryListener implementation="org.jetbrains.r.hints.RReturnHintEditorFactoryListener"/>
         <editorFactoryListener implementation="org.jetbrains.r.rendering.editor.RMarkdownEditorFactoryListener"
-                               order="before org.jetbrains.plugins.notebooks.visualization.r.inlays.InlaysManager"/>
+                               order="before com.intellij.notebooks.visualization.r.inlays.InlaysManager"/>
         <highlightingPassFactory implementation="org.jetbrains.r.hints.RReturnHintPass$Factory"/>
 
         <!-- Settings -->

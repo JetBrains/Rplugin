@@ -3,7 +3,7 @@ package org.jetbrains.r.visualization.inlays.components
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.Editor
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
+import com.intellij.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.inlays.runAsyncInlay
 import java.io.File

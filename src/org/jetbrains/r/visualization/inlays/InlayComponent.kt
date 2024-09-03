@@ -9,7 +9,7 @@ import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.util.Disposer
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.ResizeController
+import com.intellij.notebooks.visualization.r.inlays.ResizeController
 import java.awt.*
 import javax.swing.JPanel
 

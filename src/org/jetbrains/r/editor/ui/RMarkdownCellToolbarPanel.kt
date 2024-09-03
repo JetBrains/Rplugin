@@ -4,9 +4,9 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
 import com.intellij.openapi.editor.impl.EditorImpl
-import org.jetbrains.plugins.notebooks.ui.SteadyUIPanel
-import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
-import org.jetbrains.plugins.notebooks.visualization.NotebookIntervalPointer
+import com.intellij.notebooks.ui.SteadyUIPanel
+import com.intellij.notebooks.ui.visualization.notebookAppearance
+import com.intellij.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.r.rendering.chunk.RunChunkActions
 import java.awt.Cursor
 import javax.swing.BoxLayout

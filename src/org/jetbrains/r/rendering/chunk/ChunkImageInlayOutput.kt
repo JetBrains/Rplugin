@@ -5,7 +5,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.Messages
 import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.notebooks.visualization.r.inlays.ClipboardUtils
+import com.intellij.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RPlotUtil

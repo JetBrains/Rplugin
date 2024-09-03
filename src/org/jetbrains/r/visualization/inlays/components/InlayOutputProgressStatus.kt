@@ -5,7 +5,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.progress.util.ColorProgressBar
 import com.intellij.ui.JBColor
 import com.intellij.ui.scale.JBUIScale
-import org.jetbrains.plugins.notebooks.ui.visualization.notebookAppearance
+import com.intellij.notebooks.ui.visualization.notebookAppearance
 import java.awt.BorderLayout
 import java.awt.Color
 import javax.swing.*

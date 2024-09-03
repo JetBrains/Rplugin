@@ -8,7 +8,7 @@ import com.intellij.psi.PsiManager
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.testFramework.fixtures.impl.TempDirTestFixtureImpl
-import org.jetbrains.plugins.notebooks.visualization.extractTextAndCaretOffset
+import com.intellij.notebooks.visualization.extractTextAndCaretOffset
 import org.junit.After
 import org.junit.Before
 import org.junit.runner.RunWith

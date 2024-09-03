@@ -12,10 +12,10 @@ import com.intellij.util.keyFMap.KeyFMap
 import org.intellij.plugins.markdown.lang.MarkdownLanguage
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.lexer.MarkdownLexerAdapter
-import org.jetbrains.plugins.notebooks.visualization.IntervalsGenerator
-import org.jetbrains.plugins.notebooks.visualization.NonIncrementalCellLinesProvider
-import org.jetbrains.plugins.notebooks.visualization.NotebookCellLines
-import org.jetbrains.plugins.notebooks.visualization.NotebookCellLinesLexer
+import com.intellij.notebooks.visualization.IntervalsGenerator
+import com.intellij.notebooks.visualization.NonIncrementalCellLinesProvider
+import com.intellij.notebooks.visualization.NotebookCellLines
+import com.intellij.notebooks.visualization.NotebookCellLinesLexer
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 import org.jetbrains.r.rmarkdown.RmdCellLanguageProvider
 

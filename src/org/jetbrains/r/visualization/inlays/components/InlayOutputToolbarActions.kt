@@ -9,7 +9,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import org.jetbrains.r.visualization.inlays.components.InlayOutput.Companion.getInlayOutput
 
-
 class SaveOutputAction private constructor() : DumbAwareAction() {
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabledAndVisible = getInlayOutput<InlayOutput.WithSaveAs>(e) != null
@@ -26,7 +25,6 @@ class SaveOutputAction private constructor() : DumbAwareAction() {
     const val ID = "org.jetbrains.r.visualization.inlays.components.SaveOutputAction"
   }
 }
-
 
 class CopyImageToClipboardAction private constructor() : DumbAwareAction() {
   override fun update(e: AnActionEvent) {
