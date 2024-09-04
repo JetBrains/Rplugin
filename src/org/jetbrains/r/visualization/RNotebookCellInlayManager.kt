@@ -2,6 +2,12 @@ package org.jetbrains.r.visualization
 
 import com.intellij.ide.DataManager
 import com.intellij.ide.ui.LafManagerListener
+import com.intellij.notebooks.ui.visualization.notebookAppearance
+import com.intellij.notebooks.visualization.NotebookCellLines
+import com.intellij.notebooks.visualization.NotebookIntervalPointer
+import com.intellij.notebooks.visualization.context.NotebookDataContext
+import com.intellij.notebooks.visualization.mergeAndJoinIntersections
+import com.intellij.notebooks.visualization.use
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
@@ -29,8 +35,6 @@ import com.intellij.util.concurrency.ThreadingAssertions
 import com.intellij.util.containers.SmartHashSet
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
-import com.intellij.notebooks.ui.visualization.notebookAppearance
-import com.intellij.notebooks.visualization.*
 import java.awt.Graphics
 import javax.swing.JComponent
 import kotlin.math.max
@@ -259,7 +263,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
   ) : DataProvider {
     override fun getData(key: String): Any? =
       when (key) {
-        NOTEBOOK_CELL_LINES_INTERVAL_DATA_KEY.name -> interval
+        NotebookDataContext.NOTEBOOK_CELL_LINES_INTERVAL.name -> interval
         PlatformCoreDataKeys.CONTEXT_COMPONENT.name -> component
         PlatformDataKeys.EDITOR.name -> editor
         else -> null
