@@ -80,8 +80,7 @@ class RRunJobDialog(private val interpreter: RInterpreter, defaultScript: Virtua
               .gap(RightGap.SMALL)
               .component
             val placeholder = placeholder().align(AlignX.FILL)
-            val localField = com.intellij.ui.components.textFieldWithBrowseButton(null, null,
-                                                                                  fileChooserDescriptor = FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor())
+            val localField = com.intellij.ui.components.textFieldWithBrowseButton(project = null, FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor())
             localField.addTextChangedListener(::scriptPathLocal)
             val remoteField = interpreter.createFileChooserForHost()
             remoteField.addTextChangedListener(::scriptPathRemote)

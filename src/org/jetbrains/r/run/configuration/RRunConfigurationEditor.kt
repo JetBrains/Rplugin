@@ -53,14 +53,12 @@ class RRunConfigurationEditor: SettingsEditor<RRunConfiguration>() {
 
     panel.add(JBLabel(RBundle.message("r.run.configuration.editor.file.label")), g.nextLine().next())
     filePath = TextFieldWithBrowseButton()
-    filePath.addBrowseFolderListener(RBundle.message("r.run.configuration.editor.choose.file.title"), null, null,
-                                     FileChooserDescriptorFactory.createSingleLocalFileDescriptor())
+    filePath.addBrowseFolderListener(null, FileChooserDescriptorFactory.createSingleLocalFileDescriptor().withTitle(RBundle.message("r.run.configuration.editor.choose.file.title")))
     panel.add(filePath, g.next().coverLine())
 
     panel.add(JBLabel(RBundle.message("r.run.configuration.editor.working.directory.label")), g.nextLine().next())
     workingDirectory = TextFieldWithBrowseButton()
-    workingDirectory.addBrowseFolderListener(RBundle.message("r.run.configuration.editor.choose.working.directory.title"), null, null,
-                                             FileChooserDescriptorFactory.createSingleFolderDescriptor())
+    workingDirectory.addBrowseFolderListener(null, FileChooserDescriptorFactory.createSingleFolderDescriptor().withTitle(RBundle.message("r.run.configuration.editor.choose.working.directory.title")))
     panel.add(workingDirectory, g.next().coverLine())
 
     panel.add(JBLabel(RBundle.message("r.run.configuration.editor.interpreter.args.label")), g.nextLine().next())

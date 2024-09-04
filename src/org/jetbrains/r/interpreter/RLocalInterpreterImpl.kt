@@ -62,16 +62,15 @@ class RLocalInterpreterImpl(location: RLocalInterpreterLocation, project: Projec
       } else {
         FileChooserDescriptorFactory.createSingleFileDescriptor()
       }
-      component.addActionListener(
-        ComponentWithBrowseButton.BrowseFolderActionListener(
-          null, null, component, project, descriptor, TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT))
+      component.addActionListener(ComponentWithBrowseButton.BrowseFolderActionListener(
+        component, project, descriptor, TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT)
+      )
       FileChooserFactory.getInstance().installFileCompletion(component.textField, descriptor, true, null)
     }
   }
 
   override fun showFileChooserDialogForHost(selectFolder: Boolean): String? {
-    val descriptor = FileChooserDescriptor(
-      !selectFolder, selectFolder, false, false, false, false)
+    val descriptor = FileChooserDescriptor(!selectFolder, selectFolder, false, false, false, false)
     val dialog = FileChooserDialogImpl(descriptor, project)
     val choice = dialog.choose(project)
     return choice.firstOrNull()?.path
