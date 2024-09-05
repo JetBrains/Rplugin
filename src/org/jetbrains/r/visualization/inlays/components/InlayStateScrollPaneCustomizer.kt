@@ -16,19 +16,23 @@ object InlayStateScrollPaneCustomizer : InlayStateCustomizer {
     val queue = mutableListOf<JComponent>()
     queue.add(root)
     while (queue.isNotEmpty()) {
-      val c = queue.removeAt(queue.lastIndex)
-      if (c is JBScrollPane) {
-        val view = c.viewport.view
-        if (view != null) { // maybe something is broken, previously there weren't nulls
-          val jupyterOutputScrollPane = NotebookOutputNonStickyScrollPane(view)
-          val parent = c.parent
-          if (parent != null) {
-            parent.remove(c)
+      val scrollPane = queue.removeLast()
+      if (scrollPane is JBScrollPane) {
+        val parent = scrollPane.parent
+        if (parent != null) {
+          val view = scrollPane.viewport.view
+          if (view != null) { // maybe something is broken, previously there weren't nulls
+            val jupyterOutputScrollPane = NotebookOutputNonStickyScrollPane(view)
+
+            parent.remove(scrollPane)
             parent.add(jupyterOutputScrollPane)
+
+            // editorGutter component is in rowHeader
+            jupyterOutputScrollPane.rowHeader = scrollPane.rowHeader
           }
         }
       }
-      c.components.filterIsInstance<JComponent>().forEach { queue.add(it) }
+      scrollPane.components.filterIsInstance<JComponent>().forEach { queue.add(it) }
     }
   }
 }
