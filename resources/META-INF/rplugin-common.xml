@@ -540,8 +540,7 @@ You can find the source code in the following repositories:
         <highlightingPassFactory implementation="org.jetbrains.r.hints.parameterInfo.RMarkdownParameterHintsPassFactory"/>
         <editorFactoryListener implementation="org.jetbrains.r.console.RConsoleEditorFactoryListener"/>
         <editorFactoryListener implementation="org.jetbrains.r.hints.RReturnHintEditorFactoryListener"/>
-        <editorFactoryListener implementation="org.jetbrains.r.rendering.editor.RMarkdownEditorFactoryListener"
-                               order="before com.intellij.notebooks.visualization.r.inlays.InlaysManager"/>
+        <editorFactoryListener implementation="org.jetbrains.r.rendering.editor.RMarkdownEditorFactoryListener"/>
         <highlightingPassFactory implementation="org.jetbrains.r.hints.RReturnHintPass$Factory"/>
 
         <!-- Settings -->
