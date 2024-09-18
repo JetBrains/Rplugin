@@ -10,9 +10,8 @@ import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
 import org.jetbrains.r.visualization.inlays.InlayOutput
 
 data class RMarkdownInlayOutputDataKey(val inlayOutput: InlayOutput): NotebookOutputDataKey {
-  override val statisticKey = NotebookOutputKeyType.R_MARKDOWN
+  override fun getStatisticKey() = NotebookOutputKeyType.R_MARKDOWN
   override fun getContentForDiffing(): String = inlayOutput.data
-
 }
 
 class RMarkdownOutputDataKeyExtractor: NotebookOutputDataKeyExtractor {
