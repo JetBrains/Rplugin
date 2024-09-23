@@ -13,8 +13,8 @@ import com.intellij.openapi.editor.ex.SoftWrapChangeListener
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
-import com.intellij.notebooks.visualization.r.inlays.components.EmptySoftWrapPainter
 import com.intellij.notebooks.visualization.r.inlays.components.updateOutputTextConsoleUI
+import com.intellij.openapi.editor.impl.softwrap.EmptySoftWrapPainter
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.visualization.inlays.MouseWheelUtils
 import org.jetbrains.r.visualization.inlays.runAsyncInlay
