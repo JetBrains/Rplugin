@@ -227,7 +227,7 @@ class RequiredPackageInstaller(private val project: Project) {
         rPackageManagementService.resolvePackage(RepoPackage(required.name, null))
       } catch (e: PackageDetailsException) {
         val message = when (e) {
-          is MissingPackageDetailsException -> MISSING_DETAILS_ERROR_MESSAGE
+          is MissingPackageDetailsException -> RBundle.message("required.package.missing.details.error.message")
           is UnresolvedPackageDetailsException -> getUnresolvedPackageErrorMessage(required.name)
         }
         packageProcessed(required.name, message)
@@ -283,7 +283,8 @@ class RequiredPackageInstaller(private val project: Project) {
     private fun errorOccurred(packageName: String, errorMessage: String) {
       if (errorNotified.compareAndSet(false, true)) {
         expire()
-        promise.setError("$INSTALLATION_ERROR_MESSAGE:\n$packageName ($errorMessage)")
+        val msg = RBundle.message("required.package.installation.error.message")
+        promise.setError("${msg}:\n$packageName ($errorMessage)")
       }
     }
 
@@ -293,10 +294,6 @@ class RequiredPackageInstaller(private val project: Project) {
   }
 
   companion object {
-    private val INSTALLATION_ERROR_MESSAGE = RBundle.message("required.package.installation.error.message")
-    private val MISSING_DETAILS_ERROR_MESSAGE = RBundle.message("required.package.missing.details.error.message")
-    private val UNKNOWN_ERROR_MESSAGE = RBundle.message("required.package.unknown.error.message")
-
     private fun getUnresolvedPackageErrorMessage(packageName: String): String {
       return RBundle.message("required.package.resolve.details.error.message", packageName)
     }
