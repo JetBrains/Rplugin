@@ -9,11 +9,14 @@ import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.progress.runBackgroundableTask
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.RepoPackage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
@@ -44,7 +47,8 @@ data class RequiredPackage(val name: String, val minimalVersion: String = "", va
   }
 }
 
-class RequiredPackageInstaller(private val project: Project) {
+class RequiredPackageInstaller(private val project: Project,
+                               private val scope: CoroutineScope) {
 
   private val rPackageManagementService = RPackageManagementService(project)
   private val installingPackages2minimalVersions = ConcurrentHashMap<String, String>()
@@ -189,11 +193,17 @@ class RequiredPackageInstaller(private val project: Project) {
       }
     }
 
-    runBackgroundableTask(RBundle.message("required.package.background.preparing.title"), project, true) {
-      reloadPackagesIfNecessary()
-      val resolved = resolvePackages(needInstall)
-      if (resolved.isNotEmpty()) {
-        rPackageManagementService.installPackages(resolved, true, installPackageListener)
+    scope.launch {
+      withBackgroundProgress(project, RBundle.message("required.package.background.preparing.title"), cancellable = true) {
+        reloadPackagesIfNecessary()
+        val resolved = resolvePackages(needInstall)
+        if (resolved.isNotEmpty()) {
+          try {
+            rPackageManagementService.installPackages(resolved, forceUpgrade = true, installPackageListener)
+          } catch (ex: PackageDetailsException) {
+            thisLogger().warn(ex)
+          }
+        }
       }
     }
   }
