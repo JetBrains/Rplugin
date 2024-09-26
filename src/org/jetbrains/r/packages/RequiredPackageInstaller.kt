@@ -228,7 +228,7 @@ class RequiredPackageInstaller(private val project: Project) {
       } catch (e: PackageDetailsException) {
         val message = when (e) {
           is MissingPackageDetailsException -> RBundle.message("required.package.missing.details.error.message")
-          is UnresolvedPackageDetailsException -> getUnresolvedPackageErrorMessage(required.name)
+          is UnresolvedPackageDetailsException -> RBundle.message("required.package.resolve.details.error.message", required.name)
         }
         packageProcessed(required.name, message)
         null
@@ -294,10 +294,6 @@ class RequiredPackageInstaller(private val project: Project) {
   }
 
   companion object {
-    private fun getUnresolvedPackageErrorMessage(packageName: String): String {
-      return RBundle.message("required.package.resolve.details.error.message", packageName)
-    }
-
     fun getInstance(project: Project): RequiredPackageInstaller {
       return project.getService(RequiredPackageInstaller::class.java)
     }
