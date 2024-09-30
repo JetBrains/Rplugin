@@ -15,11 +15,12 @@ import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rinterop.RInterop
+import java.util.Locale
 
 abstract class RImportDataContextAction(text: String, description: String) : DumbAwareAction(text, description, null) {
-  protected abstract val supportedFormats: List<String>
+  protected abstract val supportedFormats: Array<String>
 
-  protected open val suggestedFormats: List<String>
+  protected open val suggestedFormats: Array<String>
     get() = supportedFormats
 
   final override fun actionPerformed(e: AnActionEvent) {
@@ -36,13 +37,11 @@ abstract class RImportDataContextAction(text: String, description: String) : Dum
 
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
-  fun isApplicableTo(e: AnActionEvent): Boolean {
-    return e.selectedFiles?.let { it.size == 1 && isApplicableTo(it.first()) } ?: false
-  }
+  fun isApplicableTo(e: AnActionEvent): Boolean =
+    e.selectedFiles?.let { it.size == 1 && isApplicableTo(it.first()) } ?: false
 
-  private fun isApplicableTo(file: VirtualFile): Boolean {
-    return checkFile(file, supportedFormats)
-  }
+  private fun isApplicableTo(file: VirtualFile): Boolean =
+    checkFile(file, supportedFormats)
 
   /**
    * Whether this import action should be **suggested** for a specified [file] opened in editor.
@@ -52,13 +51,10 @@ abstract class RImportDataContextAction(text: String, description: String) : Dum
    * of `txt` files are **not** datasets so it's **not suggested** using
    * this action for any opened `txt` file
    */
-  fun isSuggestedFor(file: VirtualFile): Boolean {
-    return checkFile(file, suggestedFormats)
-  }
+  fun isSuggestedFor(file: VirtualFile): Boolean = checkFile(file, suggestedFormats)
 
-  private fun checkFile(file: VirtualFile, formats: List<String>): Boolean {
-    return !file.isDirectory && !ScratchUtil.isScratch(file) && file.extension?.let { formats.contains(it.toLowerCase()) } == true
-  }
+  private fun checkFile(file: VirtualFile, formats: Array<String>): Boolean =
+    !file.isDirectory && !ScratchUtil.isScratch(file) && file.extension?.let { formats.contains(it.lowercase(Locale.ROOT)) } == true
 
   fun applyTo(project: Project, file: VirtualFile) {
     getCurrentInteropOrNull(project)?.let { interop ->

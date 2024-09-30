@@ -9,10 +9,9 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.fileChooser.FileChooserDescriptor
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.ex.FileChooserDialogImpl
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper.IdeModalityType
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.ui.popup.JBPopupFactory
@@ -21,7 +20,6 @@ import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.*
 import com.intellij.ui.components.ActionLink
 import com.intellij.util.PathUtil
@@ -116,7 +114,7 @@ abstract class RImportDataDialog(
 
   protected abstract val importOptionComponent: JComponent
   protected abstract val importOptions: RImportOptions?
-  protected abstract val supportedFormats: List<String>
+  protected abstract val supportedFormats: Array<String>
 
   @TestOnly
   internal fun variableName(): String? = variableName
@@ -178,9 +176,7 @@ abstract class RImportDataDialog(
     popup.showUnderneathOf(form.previewStatusComboBoxPanel)
   }
 
-  private fun chooseFile(): LocalOrRemotePath? {
-    return chooseFile(interpreter, supportedFormats)
-  }
+  private fun chooseFile(): LocalOrRemotePath? = chooseFile(interpreter, supportedFormats)
 
   private fun importData() {
     variableName?.let { name ->
@@ -466,8 +462,6 @@ abstract class RImportDataDialog(
     private val PREVIEW_FAILURE_DESCRIPTION = RBundle.message("import.data.dialog.preview.failure.description")
 
     private val OPEN_FILE_TEXT = RBundle.message("import.data.dialog.preview.open.file")
-    private val FILE_CHOOSER_TITLE = RBundle.message("import.data.dialog.file.chooser.title")
-    private val FILE_CHOOSER_DESCRIPTION = RBundle.message("import.data.dialog.file.chooser.description")
 
     private val COMBO_ICON = AllIcons.Actions.FindAndShowNextMatches
 
@@ -495,10 +489,6 @@ abstract class RImportDataDialog(
         '\\' -> "'\\\\'"
         else -> "'$this'"
       }
-    }
-
-    private fun checkFileSupported(file: VirtualFile, supportedFormats: List<String>): Boolean {
-      return file.extension?.let { it.toLowerCase() in supportedFormats } ?: false
     }
 
     private fun JComponent.detach() {
@@ -537,11 +527,10 @@ abstract class RImportDataDialog(
       component.isEnabled = isEnabled
     }
 
-    fun LocalOrRemotePath?.orChooseFile(interpreter: RInterpreter, supportedFormats: List<String>): LocalOrRemotePath? {
-      return this ?: chooseFile(interpreter, supportedFormats)
-    }
+    fun LocalOrRemotePath?.orChooseFile(interpreter: RInterpreter, supportedFormats: Array<String>): LocalOrRemotePath? =
+      this ?: chooseFile(interpreter, supportedFormats)
 
-    private fun chooseFile(interpreter: RInterpreter, supportedFormats: List<String>): LocalOrRemotePath? {
+    private fun chooseFile(interpreter: RInterpreter, supportedFormats: Array<String>): LocalOrRemotePath? {
       val project = interpreter.project
       val isRemote: Boolean
       if (interpreter.isLocal()) {
@@ -553,7 +542,7 @@ abstract class RImportDataDialog(
           RBundle.message("import.data.dialog.choose.host.cancel")
         )
         val result = Messages.showDialog(
-          project, RBundle.message("import.data.dialog.choose.host.message"), FILE_CHOOSER_TITLE, buttons,
+          project, RBundle.message("import.data.dialog.choose.host.message"), RBundle.message("import.data.dialog.file.chooser.title"), buttons,
           0, Messages.getQuestionIcon())
         isRemote = when (result) {
           0 -> false
@@ -565,11 +554,12 @@ abstract class RImportDataDialog(
       if (isRemote) {
         val path = interpreter.showFileChooserDialogForHost() ?: return null
         return LocalOrRemotePath(path, true)
-      } else {
-        val descriptor = FileChooserDescriptor(true, false, false, false, false, false)
-          .withFileFilter { checkFileSupported(it, supportedFormats) }
-          .withDescription(FILE_CHOOSER_DESCRIPTION)
-          .withTitle(FILE_CHOOSER_TITLE)
+      }
+      else {
+        val descriptor = FileChooserDescriptorFactory.createSingleLocalFileDescriptor()
+          .withExtensionFilter(RBundle.message("import.data.dialog.file.chooser.label"), *supportedFormats)
+          .withDescription(RBundle.message("import.data.dialog.file.chooser.description"))
+          .withTitle(RBundle.message("import.data.dialog.file.chooser.title"))
         val dialog = FileChooserDialogImpl(descriptor, project)
         val choice = dialog.choose(project)
         return choice.firstOrNull()?.path?.let { LocalOrRemotePath(it, false) }
