@@ -5,12 +5,11 @@
 package org.jetbrains.r.configuration
 
 import com.intellij.openapi.fileChooser.FileChooser
-import com.intellij.openapi.fileChooser.FileChooserDescriptor
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showYesNoDialog
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PathUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.execution.ExecuteExpressionUtils
@@ -18,16 +17,10 @@ import org.jetbrains.r.interpreter.*
 
 class RAddInterpreterDialog {
   companion object {
-    private val homeChooserDescriptor = object : FileChooserDescriptor(true, false, false, false, false, false) {
-      override fun isFileVisible(file: VirtualFile, showHiddenFiles: Boolean): Boolean {
-        fun checkExecutable(file: VirtualFile) : Boolean {
-          val name = file.name
-          return name == "R" || name == "R.exe"
-        }
-
-        return (file.isDirectory || checkExecutable(file)) && super.isFileVisible(file, showHiddenFiles)
-      }
-    }.withTitle(RBundle.message("project.settings.select.interpreter")).withShowHiddenFiles(SystemInfo.isUnix)
+    private val homeChooserDescriptor = FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor()
+      .withFileFilter { it.name.let { name -> name == "R" || name == "R.exe" } }
+      .withTitle(RBundle.message("project.settings.select.interpreter"))
+      .withShowHiddenFiles(SystemInfo.isUnix)
 
     fun show(existingInterpreters: List<RInterpreterInfo>, onAdded: (RInterpreterInfo) -> Unit) {
       FileChooser.chooseFiles(homeChooserDescriptor, null, null) { files ->
