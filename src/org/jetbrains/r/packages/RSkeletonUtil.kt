@@ -46,8 +46,6 @@ object RSkeletonUtil {
   private const val CUR_SKELETON_VERSION = 14
   const val SKELETON_DIR_NAME = "r_skeletons"
   private const val MAX_THREAD_POOL_SIZE = 4
-  private const val FAILED_SUFFIX = ".failed"
-  private const val PRIORITY_PREFIX = "## Package priority: "
   private const val DEFAULT_MAX_BUCKET_SIZE = 25 // 4 threads consume a total of ~1GB memory
 
   private val RAM_SIZE_HELPER by lazy { RPluginUtil.findFileInRHelpers("R/ram_size.R") }
