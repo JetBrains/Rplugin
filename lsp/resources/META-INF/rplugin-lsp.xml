@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<idea-plugin>
+  <resource-bundle>messages.RPluginLspBundle</resource-bundle>
+  <extensions defaultExtensionNs="com.intellij">
+  </extensions>
+</idea-plugin>
