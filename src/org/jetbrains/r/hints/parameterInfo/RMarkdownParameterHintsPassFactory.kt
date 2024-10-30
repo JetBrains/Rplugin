@@ -12,8 +12,8 @@ import org.jetbrains.r.RLanguage
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
 class RMarkdownParameterHintsPassFactory : ParameterHintsPassFactory() {
-  override fun createHighlightingPass(file: PsiFile, editor: Editor): TextEditorHighlightingPass? {
-    if (file.language != RMarkdownLanguage) return null
-    return super.createHighlightingPass(file.viewProvider.getPsi(RLanguage.INSTANCE), editor)
+  override fun createHighlightingPass(psiFile: PsiFile, editor: Editor): TextEditorHighlightingPass? {
+    if (psiFile.language != RMarkdownLanguage) return null
+    return super.createHighlightingPass(psiFile.viewProvider.getPsi(RLanguage.INSTANCE), editor)
   }
 }

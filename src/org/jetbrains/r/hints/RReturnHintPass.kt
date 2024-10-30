@@ -120,17 +120,17 @@ class RReturnHintPass(private val file: PsiFile,
 
   class Factory : TextEditorHighlightingPassFactory, TextEditorHighlightingPassFactoryRegistrar {
 
-    override fun createHighlightingPass(file: PsiFile, editor: Editor): TextEditorHighlightingPass? {
+    override fun createHighlightingPass(psiFile: PsiFile, editor: Editor): TextEditorHighlightingPass? {
       // For RFile information collect by org.jetbrains.r.hints.RReturnHintInlayProvider
-      if (file.language != RMarkdownLanguage) return null
+      if (psiFile.language != RMarkdownLanguage) return null
 
       val document = editor.document
       val settings = InlayHintsSettings.instance().findSettings(RReturnHintInlayProvider.settingsKey, RLanguage.INSTANCE) {
         RReturnHintInlayProvider.Settings()
       }
-      val documentsToForceRepaint = FactoryService.getInstance(file.project).documentsToForceRepaint
+      val documentsToForceRepaint = FactoryService.getInstance(psiFile.project).documentsToForceRepaint
 
-      return RReturnHintPass(file, editor, document in documentsToForceRepaint, settings).also {
+      return RReturnHintPass(psiFile, editor, document in documentsToForceRepaint, settings).also {
         documentsToForceRepaint.remove(document)
       }
     }
