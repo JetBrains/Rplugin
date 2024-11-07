@@ -2,7 +2,7 @@ package org.jetbrains.r.visualization
 
 import com.intellij.ide.DataManager
 import com.intellij.ide.ui.LafManagerListener
-import com.intellij.notebooks.ui.visualization.notebookAppearance
+import com.intellij.notebooks.ui.visualization.NotebookUtil.notebookAppearance
 import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.notebooks.visualization.NotebookIntervalPointer
 import com.intellij.notebooks.visualization.context.NotebookDataContext
