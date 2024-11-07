@@ -1,11 +1,11 @@
 package org.jetbrains.r.visualization.inlays.components
 
 import com.intellij.ide.ui.laf.darcula.ui.DarculaProgressBarUI
+import com.intellij.notebooks.ui.visualization.NotebookUtil.notebookAppearance
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.progress.util.ColorProgressBar
 import com.intellij.ui.JBColor
 import com.intellij.ui.scale.JBUIScale
-import com.intellij.notebooks.ui.visualization.notebookAppearance
 import java.awt.BorderLayout
 import java.awt.Color
 import javax.swing.*

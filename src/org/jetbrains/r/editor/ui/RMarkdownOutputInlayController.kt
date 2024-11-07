@@ -1,5 +1,6 @@
 package org.jetbrains.r.editor.ui
 
+import com.intellij.notebooks.ui.visualization.NotebookUtil.paintNotebookCellBackgroundGutter
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Inlay
@@ -11,7 +12,6 @@ import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
-import com.intellij.notebooks.ui.visualization.paintNotebookCellBackgroundGutter
 import com.intellij.notebooks.visualization.NotebookCellInlayController
 import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.notebooks.visualization.NotebookIntervalPointer

@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.editor.ui
 
+import com.intellij.notebooks.ui.visualization.NotebookUtil.notebookAppearance
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorImpl
@@ -12,7 +13,6 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
-import com.intellij.notebooks.ui.visualization.notebookAppearance
 import com.intellij.notebooks.visualization.NotebookIntervalPointer
 import com.intellij.notebooks.visualization.r.inlays.InlayDimensions
 import org.jetbrains.r.visualization.inlays.InlayComponent
