@@ -34,11 +34,11 @@ class RControlFlowTest: RLightCodeInsightFixtureTestCase() {
     if (GENERATE_SVG) {
       ShowControlFlowHandler.toSvgFile("$fullPath.$counter.svg", file)
     }
-    file.controlFlow.instructions.forEach { instruction -> builder.appendln(instruction) }
+    file.controlFlow.instructions.forEach { instruction -> builder.appendLine(instruction) }
     for (functionExpression in functionExpressions) {
       builder.appendLine(
         "[${counter++}]Function ${(functionExpression.parent as? org.jetbrains.r.psi.api.RAssignmentStatement)?.name ?: "anon"}")
-      functionExpression.controlFlow.instructions.forEach { instruction -> builder.appendln(instruction) }
+      functionExpression.controlFlow.instructions.forEach { instruction -> builder.appendLine(instruction) }
       if (GENERATE_SVG) {
         ShowControlFlowHandler.toSvgFile("$fullPath.$counter.svg", functionExpression)
       }
