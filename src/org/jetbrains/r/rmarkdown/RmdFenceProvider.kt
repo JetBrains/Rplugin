@@ -10,6 +10,7 @@ import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.tree.IElementType
 import org.jetbrains.r.editor.formatting.TemplateContext
+import java.util.Locale
 
 interface RmdFenceProvider {
   val fenceLanguage: Language
@@ -31,7 +32,7 @@ interface RmdFenceProvider {
 
     fun matchHeader(fullFenceHeader: CharSequence): RmdFenceProvider? {
       val language = RMarkdownPsiUtil.getExecutableFenceLanguage(fullFenceHeader) ?: return null
-      return find { language.toLowerCase() == it.fenceLanguage.displayName.toLowerCase() }
+      return find { language.lowercase(Locale.getDefault()) == it.fenceLanguage.displayName.lowercase(Locale.getDefault()) }
     }
   }
 }

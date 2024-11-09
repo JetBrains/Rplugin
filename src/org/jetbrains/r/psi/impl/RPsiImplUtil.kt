@@ -155,7 +155,7 @@ internal object RPsiImplUtil {
 
   /** This method relay on correct [string] (It should be checked in lexer already) */
   private fun rowStringMinusNumber(string: String): Int? {
-    if (string[0].toLowerCase() != 'r') return null
+    if (string[0].lowercaseChar() != 'r') return null
 
     var minusNumber = 0
     while(string[2 + minusNumber] == '-') minusNumber++

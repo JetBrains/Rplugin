@@ -14,6 +14,7 @@ import org.jetbrains.r.intentions.InstallPackagesFix
 import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.psi.api.RFile
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
+import java.util.Locale
 
 class MarkdownRequirementsInspection : RInspection() {
   override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {
@@ -38,6 +39,6 @@ class MarkdownRequirementsInspection : RInspection() {
     private val PROBLEM_DESCRIPTION = RBundle.message("inspection.markdownRequirements.description")
 
     private val RFile.isMarkdown: Boolean
-      get() = name.substringAfterLast('.').toLowerCase() == "rmd"
+      get() = name.substringAfterLast('.').lowercase(Locale.getDefault()) == "rmd"
   }
 }

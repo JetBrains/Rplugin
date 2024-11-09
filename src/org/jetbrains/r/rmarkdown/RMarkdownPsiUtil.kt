@@ -21,6 +21,7 @@ import org.intellij.plugins.markdown.lang.psi.MarkdownPsiElement
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownFile
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownHeader
+import java.util.Locale
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -46,7 +47,7 @@ object RMarkdownPsiUtil {
   fun getExecutableFenceLanguage(fullFenceHeader: CharSequence): String? {
     val matcher = executableFenceLabelPattern.matcher(fullFenceHeader)
     if (matcher.matches()) {
-      return matcher.group(1).toLowerCase()
+      return matcher.group(1).lowercase(Locale.getDefault())
     }
     return null
   }

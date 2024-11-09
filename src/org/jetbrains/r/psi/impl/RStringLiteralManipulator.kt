@@ -18,9 +18,9 @@ class RStringLiteralManipulator : AbstractElementManipulator<RStringLiteralExpre
 
   override fun getRangeInElement(element: RStringLiteralExpression): TextRange {
     val text = element.text
-    return if (text[0].toLowerCase() == 'r') {
+    return if (text[0].lowercaseChar() == 'r') {
       var dashCnt = 0
-      while(text[2 + dashCnt] == '-') ++dashCnt
+      while (text[2 + dashCnt] == '-') ++dashCnt
       TextRange(dashCnt + 3, element.textRange.length - 2 - dashCnt)
     }
     else TextRange(1, element.textRange.length - 1)

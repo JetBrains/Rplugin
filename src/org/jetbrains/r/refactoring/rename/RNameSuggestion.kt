@@ -45,7 +45,7 @@ object RNameSuggestion {
         wasDot -> defaultName.append(it)
         it.isUpperCase() -> {
           if (wasLetterOrDigit) defaultName.append("_")
-          defaultName.append(it.toLowerCase())
+          defaultName.append(it.lowercaseChar())
         }
         it == '.' -> {
           if (!isDotAvailable || !wasLetterOrDigit) defaultName.append('_')

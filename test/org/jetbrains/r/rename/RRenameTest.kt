@@ -17,6 +17,7 @@ import org.jetbrains.r.refactoring.rename.RMemberInplaceRenameHandler
 import org.jetbrains.r.refactoring.rename.RVariableInplaceRenameHandler
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import java.io.File
+import java.util.Locale
 
 class RRenameTest : RLightCodeInsightFixtureTestCase() {
 
@@ -209,7 +210,7 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
   }
 
   private fun getDotExtension(isRmd: Boolean): String {
-    val fileExtension = if (isRmd) RMarkdownFileType.defaultExtension.toLowerCase() else DOT_R_EXTENSION.drop(1)
+    val fileExtension = if (isRmd) RMarkdownFileType.defaultExtension.lowercase(Locale.getDefault()) else DOT_R_EXTENSION.drop(1)
     return ".$fileExtension"
   }
 }

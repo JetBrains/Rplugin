@@ -18,6 +18,7 @@ import org.intellij.markdown.ast.ASTNode
 import org.intellij.markdown.ast.accept
 import org.intellij.markdown.ast.visitors.RecursiveVisitor
 import org.intellij.markdown.parser.MarkdownParser
+import java.util.Locale
 import org.intellij.markdown.IElementType as MarkdownIElementType
 
 val INNER_ELEMENT = IElementType("INNER", RMarkdownLanguage)
@@ -50,7 +51,7 @@ class RMarkdownTemplate(private val templateLanguage: Language)
         if (node.type == MarkdownElementTypes.CODE_FENCE && depth == 1) {
           val children = node.children
           children.indexOfFirst { it.type == MarkdownTokenTypes.FENCE_LANG}.takeIf { it != -1 }?.let { languageIndex ->
-            if (getLanguage(children[languageIndex], sourceCode) != templateLanguage.id.toLowerCase()) return@let
+            if (getLanguage(children[languageIndex], sourceCode) != templateLanguage.id.lowercase(Locale.getDefault())) return@let
             /*
              * The Code Fence AST has the following structure:
              *   CodeFence --- ```     (0)
@@ -97,6 +98,6 @@ class RMarkdownTemplate(private val templateLanguage: Language)
 }
 
 fun getLanguage(fenceLanguage: ASTNode, sourceCode: CharSequence): String? {
-  val text = sourceCode.substring(fenceLanguage.startOffset, fenceLanguage.endOffset).toLowerCase()
+  val text = sourceCode.substring(fenceLanguage.startOffset, fenceLanguage.endOffset).lowercase(Locale.getDefault())
   return RMarkdownPsiUtil.getExecutableFenceLanguage(text)
 }

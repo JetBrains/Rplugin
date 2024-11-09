@@ -1,5 +1,6 @@
 package org.jetbrains.r.quarto
 
+import java.util.Locale
 import java.util.regex.Pattern
 
 object QuartoPsiUtil {
@@ -9,7 +10,7 @@ object QuartoPsiUtil {
   fun getExecutableFenceLanguage(fullFenceHeader: CharSequence): String? {
     val matcher = executableFenceLabelPattern.matcher(fullFenceHeader)
     if (matcher.matches()) {
-      return matcher.group(1).toLowerCase()
+      return matcher.group(1).lowercase(Locale.getDefault())
     }
     return null
   }
