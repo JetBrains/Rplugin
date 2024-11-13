@@ -216,7 +216,7 @@ object RSkeletonUtil {
       val parts = line.split('\u0001')
 
       if (parts.size < 3) {
-        throw IOException("Too short line $lineNum: $line")
+        throw IOException("Too short line $lineNum: $line, got ${parts.size} parts, expected at least 3")
       }
 
       val methodName = parts[0]
