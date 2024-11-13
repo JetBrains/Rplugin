@@ -12,10 +12,7 @@ import com.intellij.concurrency.ConcurrentCollectionFactory
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationInfo
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.*
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.ProcessCanceledException
@@ -33,6 +30,8 @@ import com.intellij.util.messages.Topic
 import io.grpc.*
 import io.grpc.stub.ClientCalls
 import io.grpc.stub.StreamObserver
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.*
 import org.jetbrains.r.RBundle
@@ -1097,7 +1096,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         }
       }
       AsyncEvent.EventCase.SHOWHELPREQUEST -> {
-        if (!ApplicationManager.getApplication().isUnitTestMode) invokeLater {
+        if (!ApplicationManager.getApplication().isUnitTestMode) RInteropCoroutineScope.getCoroutineScope(project).launch(Dispatchers.EDT) {
           RToolWindowFactory.getDocumentationComponent(project).setText(CodeInsightBundle.message("javadoc.fetching.progress"), null, null)
         }
         val httpdResponse = event.showHelpRequest.takeIf { it.success }?.let { HttpdResponse(it.content, it.url) } ?: return
@@ -1283,7 +1282,12 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   }
 
   fun invalidateCaches() {
-    invokeLater { if (!project.isDisposed) { PsiManager.getInstance(project).dropPsiCaches() } }
+    RInteropCoroutineScope.getCoroutineScope(project).launch {
+      writeAction {
+        PsiManager.getInstance(project).dropPsiCaches()
+      }
+    }
+
     cacheIndex.incrementAndGet()
   }
 
