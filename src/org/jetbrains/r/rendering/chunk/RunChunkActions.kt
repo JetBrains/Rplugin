@@ -4,10 +4,11 @@
 
 package org.jetbrains.r.rendering.chunk
 
+import com.intellij.notebooks.visualization.NotebookCellLines
+import com.intellij.notebooks.visualization.getCell
 import com.intellij.openapi.actionSystem.ActionManager.getInstance
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
@@ -19,11 +20,10 @@ import com.intellij.psi.impl.source.SourceTreeToPsiMap
 import com.intellij.psi.util.PsiTreeUtil
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
-import com.intellij.notebooks.visualization.NotebookCellLines
-import com.intellij.notebooks.visualization.getCell
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.editor
 import org.jetbrains.r.actions.psiFile
+import org.jetbrains.r.actions.virtualFile
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
@@ -31,8 +31,8 @@ import org.jetbrains.r.editor.ui.rMarkdownCellToolbarPanel
 import org.jetbrains.r.editor.ui.rMarkdownNotebook
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
+import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import java.util.concurrent.atomic.AtomicReference
 
@@ -47,6 +47,12 @@ fun isChunkFenceLang(element: PsiElement) =
   element.node.elementType === MarkdownTokenTypes.FENCE_LANG && element.nextSibling?.nextSibling?.node?.elementType == R_FENCE_ELEMENT_TYPE
 
 private abstract class BaseChunkAction : DumbAwareAction(), RPromotedAction {
+  private fun isEnabled(e: AnActionEvent): Boolean {
+    val virtualFile = e.virtualFile ?: return false
+    if (!RMarkdownVirtualFile.isRMarkdownOrQuarto(virtualFile)) return false
+    return canRunChunk(e.editor)
+  }
+
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = isEnabled(e)
   }
@@ -121,12 +127,6 @@ private fun getCodeFenceByEvent(e: AnActionEvent, editor: Editor): PsiElement? {
   val markdownCodeFence = PsiTreeUtil.getParentOfType(markdown, MarkdownCodeFence::class.java) ?: return null
   if (markdownCodeFence.children.size < 2) return null
   return markdownCodeFence.children[1].takeIf { isChunkFenceLang(it) }
-}
-
-
-private fun isEnabled(e: AnActionEvent): Boolean {
-  return e.getData(CommonDataKeys.VIRTUAL_FILE)?.fileType == RMarkdownFileType &&
-         canRunChunk(e.editor)
 }
 
 private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
