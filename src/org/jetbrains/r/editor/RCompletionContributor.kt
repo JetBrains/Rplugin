@@ -42,6 +42,7 @@ import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.editor.completion.*
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.interpreter.RInterpreterStateManager
+import org.jetbrains.r.lsp.RLspStatus
 import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.*
 import org.jetbrains.r.psi.api.*
@@ -68,6 +69,18 @@ class RCompletionContributor : CompletionContributor() {
     addS4ClassContextCompletion()
     addR6ClassContextCompletion()
     addIdentifierCompletion()
+  }
+
+  override fun fillCompletionVariants(parameters: CompletionParameters, resultSet: CompletionResultSet) {
+    val project = parameters.originalFile.project
+    if (RLspStatus.isLspRunning(project)) {
+      // do not run completions when LSP is running, otherwise we get duplicates
+      resultSet.runRemainingContributors(parameters) {
+        resultSet.addElement(it.lookupElement)
+      }
+    } else {
+      super.fillCompletionVariants(parameters, resultSet)
+    }
   }
 
   private fun addNamespaceAccessExpression() {

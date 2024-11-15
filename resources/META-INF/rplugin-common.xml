@@ -86,6 +86,9 @@ You can find the source code in the following repositories:
 
       <extensionPoint qualifiedName="com.intellij.rInterpreterSettingsProvider"
                       interface="org.jetbrains.r.settings.RInterpreterSettingsProvider" dynamic="true"/>
+
+      <extensionPoint qualifiedName="com.intellij.rLspStatus"
+                      interface="org.jetbrains.r.lsp.RLspStatus" dynamic="true"/>
     </extensionPoints>
 
     <resource-bundle>messages.RPluginBundle</resource-bundle>
