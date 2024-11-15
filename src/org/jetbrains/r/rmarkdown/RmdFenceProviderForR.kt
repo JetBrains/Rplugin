@@ -14,9 +14,8 @@ import org.jetbrains.r.RLanguage
 import org.jetbrains.r.editor.formatting.RFormatterBlock
 import org.jetbrains.r.editor.formatting.RFormattingContext
 import org.jetbrains.r.editor.formatting.TemplateContext
-import org.jetbrains.r.quarto.QmdFenceProvider
 
-class RmdFenceProviderForR : RmdFenceProvider, QmdFenceProvider {
+class RmdFenceProviderForR : RmdFenceProvider {
   override val fenceLanguage: Language = RLanguage.INSTANCE
   override val fenceElementType: IElementType = R_FENCE_ELEMENT_TYPE
 

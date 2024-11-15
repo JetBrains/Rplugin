@@ -11,6 +11,7 @@ import com.intellij.util.containers.FactoryMap
 import org.intellij.plugins.markdown.lang.parser.MarkdownParserManager
 import org.jetbrains.r.rmarkdown.RMarkdownFlavourDescriptor
 import org.jetbrains.r.rmarkdown.RMarkdownTemplate
+import org.jetbrains.r.rmarkdown.RmdFenceProvider
 
 private class QuartoFileViewProviderFactory : FileViewProviderFactory {
   override fun createFileViewProvider(
@@ -34,7 +35,7 @@ private class QuartoFileViewProvider(
   }
 
   override fun getLanguages(): Set<Language> {
-    return setOf(baseLanguage) + QmdFenceProvider.EP_NAME.extensionList.map { it.fenceLanguage }.toSet()
+    return setOf(baseLanguage) + RmdFenceProvider.EP_NAME.extensionList.map { it.fenceLanguage }.toSet()
   }
 
   override fun getBaseLanguage(): Language {
@@ -46,7 +47,7 @@ private class QuartoFileViewProvider(
   }
 
   override fun createFile(lang: Language): PsiFile? {
-    if (QmdFenceProvider.find { it.fenceLanguage == lang } == null) {
+    if (RmdFenceProvider.find { it.fenceLanguage == lang } == null) {
       return super.createFile(lang)?.apply {
         putUserData(MarkdownParserManager.FLAVOUR_DESCRIPTION, RMarkdownFlavourDescriptor)
       }

@@ -14,9 +14,8 @@ import com.jetbrains.python.formatter.PyBlock
 import com.jetbrains.python.formatter.PyBlockContext
 import com.jetbrains.python.formatter.PythonFormattingModelBuilder
 import org.jetbrains.r.editor.formatting.TemplateContext
-import org.jetbrains.r.quarto.QmdFenceProvider
 
-class RmdFenceProviderForPython : RmdFenceProvider, QmdFenceProvider {
+class RmdFenceProviderForPython : RmdFenceProvider {
   override val fenceLanguage: Language = PythonLanguage.INSTANCE
   override val fenceElementType: IElementType = IElementType("Python Fence", RMarkdownLanguage)
 

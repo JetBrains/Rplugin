@@ -81,9 +81,6 @@ You can find the source code in the following repositories:
       <extensionPoint qualifiedName="com.intellij.rmdCellLanguageProvider"
                       interface="org.jetbrains.r.rmarkdown.RmdCellLanguageProvider" dynamic="true"/>
 
-      <extensionPoint qualifiedName="com.intellij.qmdFenceProvider"
-                      interface="org.jetbrains.r.quarto.QmdFenceProvider" dynamic="true"/>
-
       <extensionPoint qualifiedName="com.intellij.rInterpreterSettingsProvider"
                       interface="org.jetbrains.r.settings.RInterpreterSettingsProvider" dynamic="true"/>
 

@@ -11,6 +11,7 @@ import org.intellij.plugins.markdown.lang.parser.MarkdownParserAdapter
 import org.intellij.plugins.markdown.lang.parser.MarkdownParserDefinition
 import org.jetbrains.r.rmarkdown.PatchingLexer
 import org.jetbrains.r.rmarkdown.RMarkdownFlavourDescriptor
+import org.jetbrains.r.rmarkdown.RmdFenceProvider
 
 class QuartoParserDefinition : MarkdownParserDefinition() {
   override fun getFileNodeType(): IFileElementType {
@@ -18,7 +19,7 @@ class QuartoParserDefinition : MarkdownParserDefinition() {
   }
 
   override fun createLexer(project: Project?): Lexer {
-    return PatchingLexer { tokenSequence -> QmdFenceProvider.matchHeader(tokenSequence)?.fenceElementType }
+    return PatchingLexer { tokenSequence -> RmdFenceProvider.matchHeader(tokenSequence)?.fenceElementType }
   }
 
   override fun createParser(project: Project?): PsiParser {
