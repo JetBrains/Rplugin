@@ -1,6 +1,7 @@
 package org.jetbrains.r.rinterop
 
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.CoroutineScope
 
@@ -9,7 +10,7 @@ class RInteropCoroutineScope(private val coroutineScope: CoroutineScope) {
 
   companion object {
     fun getInstance(project: Project): RInteropCoroutineScope =
-      project.getService(RInteropCoroutineScope::class.java)
+      project.service()
 
     fun getCoroutineScope(project: Project): CoroutineScope =
       getInstance(project).coroutineScope
