@@ -191,7 +191,7 @@ object RunChunkHandler {
       e.updateProgressStatus(InlayProgressStatus(RProgressStatus.RUNNING))
     }
     prepare.onProcessed {
-      executeCode(request, console, codeElement, beforeChunkPromise) {
+      executeCode(project, request, console, beforeChunkPromise) {
         editor.rMarkdownNotebook?.let { nb -> nb[inlayElement]?.addText(it.text, it.kind) }
       }.onProcessed { result ->
         dumpAndShutdownAsync(graphicsDeviceRef.get()).onProcessed {
@@ -320,9 +320,9 @@ object RunChunkHandler {
 
   private data class ExecutionResult(val output: List<ProcessOutput>, val exception: String? = null)
 
-  private fun executeCode(request: RInterop.ReplSourceFileRequest,
+  private fun executeCode(project: Project,
+                          request: RInterop.ReplSourceFileRequest,
                           console: RConsoleView,
-                          codeElement: PsiElement,
                           beforeChunkPromise: Promise<Unit>,
                           onOutput: (ProcessOutput) -> Unit = {}): Promise<ExecutionResult> {
     val result = mutableListOf<ProcessOutput>()
@@ -334,7 +334,7 @@ object RunChunkHandler {
         onOutput(output)
       }
       executePromise.onProcessed { promise.setResult(ExecutionResult(result, if (it == null) "Interrupted" else it.exception)) }
-      codeElement.project.chunkExecutionState?.interrupt?.set { executePromise.cancel() }
+      project.chunkExecutionState?.interrupt?.set { executePromise.cancel() }
     }
     return promise
   }
