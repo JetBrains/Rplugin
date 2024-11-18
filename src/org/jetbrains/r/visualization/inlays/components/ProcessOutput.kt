@@ -9,7 +9,7 @@ import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.openapi.util.Key
 
 class ProcessOutput(val text: String, kind: Key<*>) {
-  private val kindValue: Int = when(kind) {
+  private val kindValue: Int = when (kind) {
     ProcessOutputTypes.STDOUT -> 1
     ProcessOutputTypes.STDERR -> 2
     else -> 3
@@ -21,4 +21,13 @@ class ProcessOutput(val text: String, kind: Key<*>) {
       2 -> ProcessOutputType.STDERR
       else -> ProcessOutputType.SYSTEM
     }
+
+  override fun toString(): String =
+    "ProcessOutput(text='$text', kind=${
+      when (kindValue) {
+        1 -> "STDOUT"
+        2 -> "STDERR"
+        else -> "SYSTEM"
+      }
+    })"
 }
