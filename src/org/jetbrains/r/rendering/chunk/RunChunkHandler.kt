@@ -34,6 +34,7 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
@@ -44,6 +45,7 @@ import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
+import org.jetbrains.r.rmarkdown.RmdFenceProvider
 import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.settings.RMarkdownGraphicsSettings
@@ -178,11 +180,24 @@ object RunChunkHandler {
     }
 
     val range = if (textRange == null) {
-      codeElement.textRange
+      codeElement.psi.textRange
     } else {
-      textRange.intersection(codeElement.textRange) ?: TextRange.EMPTY_RANGE
+      textRange.intersection(codeElement.psi.textRange) ?: TextRange.EMPTY_RANGE
     }
-    val request = rInterop.prepareReplSourceFileRequest(file.virtualFile, range, isDebug)
+    val request = rInterop.prepareReplSourceFileRequest(file.virtualFile, range, isDebug).let{ request ->
+      when {
+        codeElement.fenceProvider.fenceLanguage === RLanguage.INSTANCE -> {
+          request
+        }
+        codeElement.fenceProvider.fenceLanguage.id === "Python" -> {
+          // TODO understand why output is not captured
+          request.copy(code = "reticulate::py_run_string(${wrapIntoRString(request.code)})")
+        }
+        else -> {
+          return promise.apply { setError("unknown code fence") }
+        }
+      }
+    }
 
     updateProgressBar(editor, inlayElement)
     val prepare = if (isFirstChunk) rInterop.interpreter.prepareForExecution() else resolvedPromise()
@@ -240,8 +255,29 @@ object RunChunkHandler {
     directory.mkdirs()
   }
 
-  private fun findCodeElement(parent: PsiElement?) =
-    SyntaxTraverser.psiTraverser(parent).firstOrNull { it.elementType == R_FENCE_ELEMENT_TYPE }
+  private data class CodeElement(
+    val psi: PsiElement,
+    val fenceProvider: RmdFenceProvider,
+  )
+
+  private fun findCodeElement(parent: PsiElement?): CodeElement? {
+    val providers = RmdFenceProvider.EP_NAME.extensionList.associate { it.fenceElementType to it }
+    val psi = SyntaxTraverser.psiTraverser(parent).firstOrNull { it.elementType in providers } ?: return null
+    return CodeElement(psi, providers[psi.elementType]!!)
+  }
+
+  private fun wrapIntoRString(s: String): String {
+    return s.map {
+      when (it) {
+        '\n' -> "\\n"
+        '\r' -> "\\r"
+        '\t' -> "\\t"
+        '\\' -> "\\\\"
+        '"' -> "\\\""
+        else -> "$it"
+      }
+    }.joinToString(prefix = "\"", postfix = "\"", separator = "")
+  }
 
   private fun beforeRunChunk(rInterop: RInterop, rmarkdownParameters: String, chunkText: String) {
     logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText))

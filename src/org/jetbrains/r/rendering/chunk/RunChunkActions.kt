@@ -33,7 +33,7 @@ import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
-import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
+import org.jetbrains.r.rmarkdown.RmdFenceProvider
 import java.util.concurrent.atomic.AtomicReference
 
 
@@ -43,8 +43,13 @@ object RunChunkActions {
 }
 
 
-fun isChunkFenceLang(element: PsiElement) =
-  element.node.elementType === MarkdownTokenTypes.FENCE_LANG && element.nextSibling?.nextSibling?.node?.elementType == R_FENCE_ELEMENT_TYPE
+fun isChunkFenceLang(element: PsiElement): Boolean {
+  if (element.node.elementType !== MarkdownTokenTypes.FENCE_LANG) return false
+  val fenceElementType = element.nextSibling?.nextSibling?.node?.elementType ?: return false
+  return (RmdFenceProvider.EP_NAME.extensionList.any {
+    it.fenceElementType == fenceElementType
+  })
+}
 
 private abstract class BaseChunkAction : DumbAwareAction(), RPromotedAction {
   private fun isEnabled(e: AnActionEvent): Boolean {
