@@ -34,7 +34,7 @@ abstract public class DateComparator implements Comparator<Date> {
             };
         }
 
-        int divisor = 0;
+        int divisor;
         if (change(calendar, dateFormat, Calendar.SECOND)) {
             divisor = 1000;
         } else if (change(calendar, dateFormat, Calendar.MINUTE)) {

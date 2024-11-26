@@ -823,7 +823,7 @@ class EditorComponent extends JTextField {
                 String begin = buffer.substring(0, offset) + text;
                 String newContent = begin + buffer.substring(offset + length);
                 ChoiceMatch match = getBestMatch(newContent);
-                String proposal = null;
+                String proposal;
                 if (match.exact) {
                     proposal = match.content.toString();
                 } else {

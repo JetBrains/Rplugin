@@ -86,7 +86,7 @@ abstract public class ComposedFilter extends Filter implements IFilterObserver {
     /** @see  IFilterObserver#filterUpdated(IFilter) */
     @Override public void filterUpdated(IFilter filter) {
         boolean enabled = isEnabled();
-        boolean changeState = false;
+        boolean changeState;
         if (filter.isEnabled()) {
             changeState = disabledFilters.remove(filter) && !enabled;
         } else {
