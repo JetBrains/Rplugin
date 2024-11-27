@@ -1,7 +1,5 @@
 ### auto-generated section `build intellij.r` start
-load("@rules_jvm//:jvm.bzl", "jvm_resources")
-load("@rules_jvm//:rules.bzl", "jvm_library")
-load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_test")
+load("@rules_jvm//:jvm.bzl", "jvm_library", "jvm_resources", "jvm_test")
 
 jvm_resources(
   name = "r_resources",
@@ -13,13 +11,12 @@ jvm_library(
   name = "r",
   module_name = "intellij.r",
   visibility = ["//visibility:public"],
-  srcs = glob(["src/**/*.kt", "src/**/*.java", "gen/**/*.kt", "gen/**/*.java", "gen-grpc/main/java/**/*.kt", "gen-grpc/main/java/**/*.java", "gen-grpc/main/grpc/**/*.kt", "gen-grpc/main/grpc/**/*.java"], allow_empty = True, exclude = ["**/module-info.java"]),
-  javac_opts = "@rules_jvm//:j17",
-  kotlinc_opts = "@rules_jvm//:k17",
+  srcs = glob(["src/**/*.kt", "src/**/*.java", "gen/**/*.kt", "gen/**/*.java", "gen-grpc/main/java/**/*.kt", "gen-grpc/main/java/**/*.java", "gen-grpc/main/grpc/**/*.kt", "gen-grpc/main/grpc/**/*.java"], allow_empty = True),
   deps = [
     "@lib//:guava",
     "@lib//:protobuf",
     "@lib//:grpc-core",
+    "@community//platform/ide-core-impl",
     "@lib//:grpc-protobuf",
     "@lib//:grpc-stub",
     "@community//platform/lang-api:lang",
@@ -64,17 +61,16 @@ jvm_library(
   ]
 )
 
-kt_jvm_test(
-  name = "r_test",
+jvm_library(
+  name = "r_test_lib",
   visibility = ["//visibility:public"],
-  srcs = glob(["test/**/*.kt", "test/**/*.java"], allow_empty = True, exclude = ["**/module-info.java"]),
-  javac_opts = "@rules_jvm//:j17",
-  kotlinc_opts = "@rules_jvm//:k17",
+  srcs = glob(["test/**/*.kt", "test/**/*.java"], allow_empty = True),
   associates = [":r"],
   deps = [
     "@lib//:guava",
     "@lib//:protobuf",
     "@lib//:grpc-core",
+    "@community//platform/ide-core-impl",
     "@lib//:grpc-protobuf",
     "@lib//:grpc-stub",
     "@community//platform/lang-api:lang",
@@ -82,23 +78,28 @@ kt_jvm_test(
     "@lib//:kotlin-stdlib",
     "@community//platform/core-api:core",
     "@community//notebooks/visualization",
+    "@community//notebooks/visualization:visualization_test_lib",
     "@community//plugins/markdown/core:markdown",
     "@community//platform/platform-api:ide",
     "@community//platform/xdebugger-api:debugger",
     "@community//platform/xdebugger-impl:debugger-impl",
+    "@community//platform/xdebugger-impl:debugger-impl_test_lib",
     "//plugins/remote-run:remoteRun",
+    "//plugins/remote-run:remoteRun_test_lib",
     "@lib//:jediterm-core",
     "@lib//:jediterm-ui",
     "@community//plugins/terminal",
+    "@community//plugins/terminal:terminal_test_lib",
     "@community//platform/execution-impl",
     "//plugins/webDeployment",
     "@lib//:winp",
     "@lib//:miglayout-swing",
     "@lib//:kotlin-reflect",
     "@community//platform/statistics",
+    "@community//platform/statistics:statistics_test_lib",
     "@lib//:javax_annotation-api",
     "@community//platform/testFramework",
-    "@community//platform/testFramework:testFramework_test",
+    "@community//platform/testFramework:testFramework_test_lib",
     "@lib//:commons-compress",
     "@lib//:gson",
     "//rplugin/plugin:r-plugin",
@@ -110,6 +111,7 @@ kt_jvm_test(
     "@community//platform/platform-util-io:ide-util-io",
     "@community//platform/platform-util-netty:ide-util-netty",
     "@community//platform/vcs-impl",
+    "@community//platform/vcs-impl:vcs-impl_test_lib",
     "@lib//:maven-resolver-provider",
     "@community//platform/util/jdom",
     "@community//notebooks/notebook-ui:ui",
@@ -118,7 +120,13 @@ kt_jvm_test(
     "@community//platform/editor-ui-api:editor",
     "@lib//:jcef",
     "@community//images",
+    "@community//images:images_test_lib",
   ],
   runtime_deps = [":r_resources"]
+)
+
+jvm_test(
+  name = "r_test",
+  runtime_deps = [":r_test_lib"]
 )
 ### auto-generated section `build intellij.r` end
