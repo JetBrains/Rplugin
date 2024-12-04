@@ -14,7 +14,7 @@ import com.intellij.psi.stubs.StubUpdatingIndex
 import com.intellij.util.indexing.FileBasedIndex
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.rejectedPromise
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.console.RConsoleManager
@@ -32,11 +32,11 @@ interface RInterpreterManager {
   val interpreterOrNull: RInterpreter?
   var interpreterLocation: RInterpreterLocation?
 
-  fun getInterpreterAsync(force: Boolean = false): Promise<RInterpreter>
+  fun getInterpreterAsync(force: Boolean = false): Promise<Result<RInterpreter>>
 
-  fun getInterpreterBlocking(timeout: Int) = getInterpreterAsync().run {
+  fun getInterpreterBlocking(timeout: Int): RInterpreter? = getInterpreterAsync().run {
     try {
-      blockingGet(timeout)
+      blockingGet(timeout)?.getOrNull()
     } catch (t: Throwable) {
       null
     }
@@ -49,7 +49,7 @@ interface RInterpreterManager {
     private fun getInstanceIfCreated(project: Project): RInterpreterManager? = project.getServiceIfCreated(RInterpreterManager::class.java)
 
     @JvmOverloads
-    fun getInterpreterAsync(project: Project, force: Boolean = false): Promise<RInterpreter> = getInstance(project).getInterpreterAsync(force)
+    fun getInterpreterAsync(project: Project, force: Boolean = false): Promise<RInterpreter> = getInstance(project).getInterpreterAsync(force).then<RInterpreter>{ it.getOrThrow() }
 
     fun getInterpreterOrNull(project: Project): RInterpreter? = getInstanceIfCreated(project)?.interpreterOrNull
     fun getInterpreterBlocking(project: Project, timeout: Int): RInterpreter? = getInstance(project).getInterpreterBlocking(timeout)
@@ -74,9 +74,11 @@ interface RInterpreterManager {
   }
 }
 
+private class NoRInterpreterException(message: String = "No R Interpreter"): RuntimeException(message)
+
 class RInterpreterManagerImpl(private val project: Project): RInterpreterManager {
   @Volatile
-  private var interpreterPromise: Promise<RInterpreter> = rejectedPromise("No R Interpreter")
+  private var interpreterPromise: Promise<Result<RInterpreter>> = resolvedPromise(Result.failure<RInterpreter>(NoRInterpreterException()))
   @Volatile
   private var initialized = false
 
@@ -98,7 +100,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     }
   }
 
-  override fun getInterpreterAsync(force: Boolean): Promise<RInterpreter> {
+  override fun getInterpreterAsync(force: Boolean): Promise<Result<RInterpreter>> {
     if (initialized && !force) return interpreterPromise
     synchronized(this) {
       if (initialized && !force) return interpreterPromise
@@ -107,7 +109,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
         interpreterLocation = fetchInterpreterLocation()
       }
       val location = interpreterLocation
-                     ?: return rejectedPromise<RInterpreter>("No R Interpreter").also { interpreterPromise = it }
+                     ?: return resolvedPromise(Result.failure<RInterpreter>(NoRInterpreterException())).also { interpreterPromise = it }
       if (!initialized) {
         RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.FIRST) { roots ->
           val states = RInterpreterStateManager.getInstance(project).states
@@ -122,9 +124,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
         }
       }
       initialized = true
-      return setupInterpreter(location)
-        .onError { RSettings.getInstance(project).interpreterLocation = null }
-        .also { interpreterPromise = it }
+      return setupInterpreter(location).also { interpreterPromise = it }
     }
   }
 
@@ -143,18 +143,21 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     RInterpreterSettings.addOrEnableInterpreter(info)
   }
 
-  private fun setupInterpreter(location: RInterpreterLocation): Promise<RInterpreter> {
-    val promise = AsyncPromise<RInterpreter>()
+  private fun setupInterpreter(location: RInterpreterLocation): Promise<Result<RInterpreter>> {
+    val promise = AsyncPromise<Result<RInterpreter>>()
     runBackgroundableTask(RBundle.message("initializing.r.interpreter.message"), project) {
-      location.createInterpreter(project).onSuccess {
+      val interpreterOrError: Result<RInterpreterBase> = location.createInterpreter(project)
+
+      interpreterOrError.onSuccess { it ->
         interpreterOrNull = it
         ensureInterpreterStored(it)
-        promise.setResult(it)
         RInterpretersCollector.logSetupInterpreter(project, it)
       }.onFailure { e ->
-        promise.setError(e)
         RInterpreterBase.LOG.warn(e)
+        RSettings.getInstance(project).interpreterLocation = null
       }
+
+      promise.setResult(interpreterOrError)
     }
     return promise
   }

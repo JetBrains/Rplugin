@@ -17,7 +17,7 @@ class MockInterpreterManager(project: Project) : RInterpreterManager {
 
   override val interpreterOrNull: RInterpreter = interpreterLocation!!.createInterpreter(project).getOrThrow()
 
-  override fun getInterpreterAsync(force: Boolean) = resolvedPromise(interpreterOrNull)
+  override fun getInterpreterAsync(force: Boolean) = resolvedPromise(Result.success(interpreterOrNull))
 
   override fun hasInterpreter(): Boolean = true
 
