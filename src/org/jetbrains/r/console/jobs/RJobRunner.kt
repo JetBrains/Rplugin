@@ -45,7 +45,7 @@ class RJobRunner(private val project: Project) {
     val console = rConsoleManager.currentConsoleOrNull
     val rInterop = console?.rInterop
     return RInterpreterManager.getInterpreterAsync(project).thenAsync { interpreter ->
-      interpreter.prepareForExecution().then {
+      interpreter.prepareForExecutionAsync().then {
         val (scriptFile, exportRDataFile) = generateRunScript(interpreter, task, rInterop)
         val processHandler: ProcessHandler = interpreter.runHelperProcess(scriptFile, emptyList(), task.workingDirectory)
         if (exportRDataFile != null) {

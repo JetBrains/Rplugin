@@ -82,7 +82,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
 
   private fun doRender(project: Project, rMarkdownFile: VirtualFile, promise: AsyncPromise<Unit>, isShiny: Boolean) {
     RInterpreterManager.getInterpreterAsync(project).onSuccess { interpreter ->
-      interpreter.prepareForExecution().onProcessed {
+      interpreter.prepareForExecutionAsync().onProcessed {
         runAsync {
           val rmdFileOnHost = interpreter.uploadFileToHostIfNeeded(rMarkdownFile, preserveName = true)
           val knitRootDirectory = PathUtil.getParentPath(rmdFileOnHost)

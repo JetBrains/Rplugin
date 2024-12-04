@@ -450,14 +450,14 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
         val text = consoleView.prepareExecuteAction(true, false, true)
         (UndoManager.getInstance(consoleView.project) as UndoManagerImpl).invalidateActionsFor(
           DocumentReferenceManager.getInstance().create(consoleView.currentEditor.document))
-        consoleView.interpreter.prepareForExecution().onProcessed { rInterop.replSendReadLn(text) }
+        consoleView.interpreter.prepareForExecutionAsync().onProcessed { rInterop.replSendReadLn(text) }
         fireBusy()
       }
       State.SUBPROCESS_INPUT -> {
         val text = consoleView.prepareExecuteAction(true, false, true)
         (UndoManager.getInstance(consoleView.project) as UndoManagerImpl).invalidateActionsFor(
           DocumentReferenceManager.getInstance().create(consoleView.currentEditor.document))
-        consoleView.interpreter.prepareForExecution().onProcessed {
+        consoleView.interpreter.prepareForExecutionAsync().onProcessed {
           rInterop.replSendReadLn(text + System.lineSeparator())
         }
       }
@@ -495,7 +495,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
             fireBeforeExecution()
             consoleView.appendCommandText(text.trim { it <= ' ' })
             fireBusy()
-            val prepare = if (index == 0) consoleView.interpreter.prepareForExecution() else resolvedPromise()
+            val prepare = if (index == 0) consoleView.interpreter.prepareForExecutionAsync() else resolvedPromise()
             prepare.thenAsync {
               doExecute().then { it.exception == null }
             }

@@ -29,7 +29,7 @@ class RConsoleEditorFactoryListener : EditorFactoryListener {
         if (toolWindow != null && toolWindow.contentManager.contentCount == 0) {
           /**
            * see R-1549
-           * currentConsoleAsync triggers file saving in [org.jetbrains.r.interpreter.RInterpreter.prepareForExecution]
+           * currentConsoleAsync triggers file saving in [org.jetbrains.r.interpreter.RInterpreter.prepareForExecutionAsync]
            * but RConsoleManager expects that currentConsoleAsync will be called after creation of RConsoleToolWindowFactory
            * see [org.jetbrains.r.console.RConsoleManager.runSingleConsole]
            * Ideally RConsole and toolwindow should not be bound in a such way

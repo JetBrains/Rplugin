@@ -8,7 +8,7 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.BaseProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
@@ -21,6 +21,7 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropCoroutineScope
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -76,13 +77,14 @@ interface RInterpreter : RInterpreterInfo {
   // Note: returns pair of writable path and indicator whether new library path was created
   fun getGuaranteedWritableLibraryPath(libraryPaths: List<RInterpreterState.LibraryPath>, userPath: String): Pair<String, Boolean>
 
-  fun prepareForExecution(): Promise<Unit> {
-    val promise = AsyncPromise<Unit>()
-    invokeLater {
+  fun prepareForExecutionAsync(): Promise<Unit> {
+    return RInteropCoroutineScope.wrapIntoPromise(project, this::prepareForExecution)
+  }
+
+  suspend fun prepareForExecution() {
+    writeAction {
       FileDocumentManager.getInstance().saveAllDocuments()
-      promise.setResult(Unit)
     }
-    return promise
   }
 
   fun showFileInViewer(rInterop: RInterop, pathOnHost: String): Promise<Unit> = resolvedPromise()

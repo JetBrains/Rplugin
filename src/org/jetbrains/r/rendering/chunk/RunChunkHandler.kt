@@ -200,7 +200,7 @@ object RunChunkHandler {
     }
 
     updateProgressBar(editor, inlayElement)
-    val prepare = if (isFirstChunk) rInterop.interpreter.prepareForExecution() else resolvedPromise()
+    val prepare = if (isFirstChunk) rInterop.interpreter.prepareForExecutionAsync() else resolvedPromise()
     editor.rMarkdownNotebook?.get(inlayElement)?.let { e ->
       e.clearOutputs(removeFiles = false)
       e.updateProgressStatus(InlayProgressStatus(RProgressStatus.RUNNING))

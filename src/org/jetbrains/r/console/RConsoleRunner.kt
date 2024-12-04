@@ -64,7 +64,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
   fun initAndRun(): Promise<RConsoleView> {
     val promise = AsyncPromise<RConsoleView>()
     checkRProfile().onSuccess {
-      interpreter.prepareForExecution().onProcessed {
+      interpreter.prepareForExecutionAsync().onProcessed {
         UIUtil.invokeLaterIfNeeded {
           val placeholder = RConsoleToolWindowFactory.addConsolePlaceholder(project, contentIndex)
           RInteropUtil.runRWrapperAndInterop(interpreter, workingDir).onSuccess { rInterop ->
@@ -133,7 +133,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
         }
       }
 
-      consoleView.interpreter.prepareForExecution().onProcessed { rInterop.replExecute(".rs.invokeHook(\"rstudio.sessionInit\")") }
+      consoleView.interpreter.prepareForExecutionAsync().onProcessed { rInterop.replExecute(".rs.invokeHook(\"rstudio.sessionInit\")") }
     }
     return promise
   }
@@ -287,7 +287,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
           val document = FileDocumentManager.getInstance().getDocument(file) ?: return@runWriteCommandAction
           document.insertString(document.textLength, "\n")
         }
-        interpreter.prepareForExecution()
+        interpreter.prepareForExecutionAsync()
       } else {
         resolvedPromise()
       }

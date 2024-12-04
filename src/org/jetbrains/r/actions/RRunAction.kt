@@ -27,7 +27,7 @@ abstract class RRunActionBase : REditorActionBase() {
       }
       console.executeActionHandler.fireBeforeExecution()
       console.executeActionHandler.fireBusy()
-      console.interpreter.prepareForExecution().onProcessed {
+      console.interpreter.prepareForExecutionAsync().onProcessed {
         doExecute(console, file)
       }
     }.onError {
