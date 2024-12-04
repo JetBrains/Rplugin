@@ -9,6 +9,7 @@ import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
@@ -47,6 +48,7 @@ data class RequiredPackage(val name: String, val minimalVersion: String = "", va
   }
 }
 
+@Service(Service.Level.PROJECT)
 class RequiredPackageInstaller(private val project: Project,
                                private val scope: CoroutineScope) {
 

@@ -7,6 +7,7 @@ package org.jetbrains.r.packages
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.vfs.VirtualFileManager
@@ -54,6 +55,7 @@ data class PackageDescriptionInfo(
   val suggests: List<DependencyPackage>
 )
 
+@Service(Service.Level.PROJECT)
 class RPackageProjectManager(private val project: Project) {
 
   private val rConsoleManager = RConsoleManager.getInstance(project)

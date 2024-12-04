@@ -6,6 +6,7 @@ package org.jetbrains.r.console
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
@@ -26,7 +27,7 @@ import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.packages.RPackageProjectManager
 import java.util.concurrent.atomic.AtomicInteger
 
-private val LOGGER = Logger.getInstance(RConsoleManager::class.java)
+@Service(Service.Level.PROJECT)
 class RConsoleManager(private val project: Project) {
   @Volatile
   private var currentConsole: RConsoleView? = null
@@ -131,6 +132,8 @@ class RConsoleManager(private val project: Project) {
   }
 
   companion object {
+    private val LOGGER = Logger.getInstance(RConsoleManager::class.java)
+
     private data class ContentDescription(
       val contentManager: ContentManager,
       val contentConsolePairs: Sequence<Pair<Content, RConsoleView>>
