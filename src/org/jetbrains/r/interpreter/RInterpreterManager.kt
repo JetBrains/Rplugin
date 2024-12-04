@@ -8,10 +8,12 @@ import com.intellij.ide.browsers.BrowserLauncher
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runInEdt
-import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
+import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.psi.stubs.StubUpdatingIndex
 import com.intellij.util.indexing.FileBasedIndex
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
@@ -76,7 +78,10 @@ interface RInterpreterManager {
 
 private class NoRInterpreterException(message: String = "No R Interpreter"): RuntimeException(message)
 
-class RInterpreterManagerImpl(private val project: Project): RInterpreterManager {
+class RInterpreterManagerImpl(
+  private val project: Project,
+  private val coroutineScope: CoroutineScope,
+): RInterpreterManager {
   @Volatile
   private var interpreterPromise: Promise<Result<RInterpreter>> = resolvedPromise(Result.failure<RInterpreter>(NoRInterpreterException()))
   @Volatile
@@ -145,19 +150,21 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
 
   private fun setupInterpreter(location: RInterpreterLocation): Promise<Result<RInterpreter>> {
     val promise = AsyncPromise<Result<RInterpreter>>()
-    runBackgroundableTask(RBundle.message("initializing.r.interpreter.message"), project) {
-      val interpreterOrError: Result<RInterpreterBase> = location.createInterpreter(project)
+    coroutineScope.async {
+      withBackgroundProgress(project, RBundle.message("initializing.r.interpreter.message")) {
+        val interpreterOrError: Result<RInterpreterBase> = location.createInterpreter(project)
 
-      interpreterOrError.onSuccess { it ->
-        interpreterOrNull = it
-        ensureInterpreterStored(it)
-        RInterpretersCollector.logSetupInterpreter(project, it)
-      }.onFailure { e ->
-        RInterpreterBase.LOG.warn(e)
-        RSettings.getInstance(project).interpreterLocation = null
+        interpreterOrError.onSuccess { it ->
+          interpreterOrNull = it
+          ensureInterpreterStored(it)
+          RInterpretersCollector.logSetupInterpreter(project, it)
+        }.onFailure { e ->
+          RInterpreterBase.LOG.warn(e)
+          RSettings.getInstance(project).interpreterLocation = null
+        }
+
+        promise.setResult(interpreterOrError)
       }
-
-      promise.setResult(interpreterOrError)
     }
     return promise
   }
