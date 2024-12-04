@@ -15,7 +15,7 @@ class MockInterpreterManager(project: Project) : RInterpreterManager {
     RInterpreterSettingsProvider.getProviders().asSequence().mapNotNull { it.provideInterpreterForTests() }.firstOrNull() ?:
       RLocalInterpreterLocation(RInterpreterUtil.suggestHomePath())
 
-  override val interpreterOrNull: RInterpreter = interpreterLocation!!.createInterpreter(project)
+  override val interpreterOrNull: RInterpreter = interpreterLocation!!.createInterpreter(project).getOrThrow()
 
   override fun getInterpreterAsync(force: Boolean) = resolvedPromise(interpreterOrNull)
 

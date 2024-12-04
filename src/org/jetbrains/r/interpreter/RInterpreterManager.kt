@@ -146,14 +146,12 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
   private fun setupInterpreter(location: RInterpreterLocation): Promise<RInterpreter> {
     val promise = AsyncPromise<RInterpreter>()
     runBackgroundableTask(RBundle.message("initializing.r.interpreter.message"), project) {
-      try {
-        location.createInterpreter(project).let {
-          interpreterOrNull = it
-          ensureInterpreterStored(it)
-          promise.setResult(it)
-          RInterpretersCollector.logSetupInterpreter(project, it)
-        }
-      } catch (e: Throwable) {
+      location.createInterpreter(project).onSuccess {
+        interpreterOrNull = it
+        ensureInterpreterStored(it)
+        promise.setResult(it)
+        RInterpretersCollector.logSetupInterpreter(project, it)
+      }.onFailure { e ->
         promise.setError(e)
         RInterpreterBase.LOG.warn(e)
       }

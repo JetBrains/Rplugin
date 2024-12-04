@@ -12,6 +12,7 @@ import com.intellij.openapi.util.Version
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
 import java.io.File
+import kotlin.Result
 
 interface RInterpreterLocation {
   @Nls
@@ -27,7 +28,7 @@ interface RInterpreterLocation {
 
   fun uploadFileToHost(file: File, preserveName: Boolean = false): String
 
-  fun createInterpreter(project: Project): RInterpreterBase
+  fun createInterpreter(project: Project): Result<RInterpreterBase>
 
   fun lastModified(): Long? = null
 
@@ -59,11 +60,13 @@ data class RLocalInterpreterLocation(val path: String): RInterpreterLocation {
 
   override fun uploadFileToHost(file: File, preserveName: Boolean): String = file.path
 
-  override fun createInterpreter(project: Project): RInterpreterBase {
-    if (!RInterpreterUtil.checkInterpreterLocation(project, this)) {
-      throw RuntimeException("Invalid R Interpreter")
+  override fun createInterpreter(project: Project): Result<RInterpreterBase> {
+    return runCatching {
+      if (!RInterpreterUtil.checkInterpreterLocation(project, this)) {
+        throw RuntimeException("Invalid R Interpreter")
+      }
+      RLocalInterpreterImpl(this, project)
     }
-    return RLocalInterpreterImpl(this, project)
   }
 
   override fun lastModified(): Long {
