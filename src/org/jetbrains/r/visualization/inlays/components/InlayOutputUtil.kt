@@ -23,12 +23,9 @@ import javax.imageio.ImageIO
 import javax.imageio.ImageTypeSpecifier
 
 object InlayOutputUtil {
-  @Nls
-  private val EXPORT_FAILURE_TITLE = RBundle.message("inlay.output.export.failure")
-  @Nls
-  private val EXPORT_FAILURE_DETAILS = RBundle.message("inlay.output.export.failure.details")
-  @Nls
-  private val EXPORT_FAILURE_DESCRIPTION = RBundle.message("inlay.output.export.failure.description")
+  private val EXPORT_FAILURE_TITLE: @Nls String = RBundle.message("inlay.output.export.failure")
+  private val EXPORT_FAILURE_DETAILS: @Nls String = RBundle.message("inlay.output.export.failure.details")
+  private val EXPORT_FAILURE_DESCRIPTION: @Nls String = RBundle.message("inlay.output.export.failure.description")
 
   fun saveImageWithFileChooser(project: Project, image: BufferedImage, onSave: ((File) -> Unit)? = null) {
     chooseImageSaveLocation(project, image) { location ->
