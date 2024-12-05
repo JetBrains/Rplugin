@@ -68,74 +68,82 @@ class RunChunkHandler(
   private val coroutineScope: CoroutineScope,
 ) {
 
+  fun interruptChunkExecution() {
+    val chunkExecutionState = project.chunkExecutionState ?: return
+    chunkExecutionState.interrupt.get()?.invoke()
+  }
+
+  fun runAllChunks(psiFile: PsiFile, editor: Editor) {
+    runAllChunks(psiFile, editor, start = 0, end = Int.MAX_VALUE)
+  }
+
+  fun runAllChunks(
+    psiFile: PsiFile,
+    editor: Editor,
+    start: Int,
+    end: Int,
+    runSelectedCode: Boolean = false,
+    isDebug: Boolean = false
+  ) {
+    val state = ChunkExecutionState(editor)
+    editor.chunkExecutionState = state
+    runAllChunks(psiFile, state.currentPsiElement, state.terminationRequired, start, end, runSelectedCode, isDebug).onProcessed {
+      editor.chunkExecutionState = null
+    }
+  }
+
+  private fun runAllChunks(
+    psiFile: PsiFile,
+    currentElement: AtomicReference<PsiElement>,
+    terminationRequired: AtomicBoolean,
+    start: Int,
+    end: Int,
+    runSelectedCode: Boolean,
+    isDebug: Boolean
+  ): Promise<Unit> {
+    val result = AsyncPromise<Unit>()
+    RConsoleManager.getInstance(psiFile.project).currentConsoleAsync.onSuccess { console ->
+      runAsync {
+        try {
+          val chunks = runReadAction {
+            PsiTreeUtil.collectElements(psiFile) {
+              isChunkFenceLang(it) && if (runSelectedCode) {
+                it.parent?.textRange?.intersects(TextRange(start, end)) == true
+              }
+              else {
+                (it.textRange.endOffset - 1) in start..end
+              }
+            }
+          }
+          for ((index, element) in chunks.withIndex()) {
+            if (terminationRequired.get()) break
+
+            currentElement.set(element)
+            val proceed = invokeAndWaitIfNeeded {
+              execute(element, isDebug = isDebug, isBatchMode = true,
+                      isFirstChunk = index == 0,
+                      textRange = if (runSelectedCode) TextRange(start, end) else null)
+            }
+                            .onError { LOGGER.error("Cannot execute chunk: $it") }
+                            .blockingGet(Int.MAX_VALUE) ?: false
+            currentElement.set(null)
+            if (!proceed) break
+          }
+        }
+        finally {
+          result.setResult(Unit)
+          console.resetHandler()
+        }
+      }
+    }
+    return result
+  }
+
   companion object {
     private val LOGGER = Logger.getInstance(RunChunkHandler::class.java)
 
-    fun runAllChunks(psiFile: PsiFile, editor: Editor) {
-      runAllChunks(psiFile, editor, start = 0, end = Int.MAX_VALUE)
-    }
-
-    fun runAllChunks(
-      psiFile: PsiFile,
-      editor: Editor,
-      start: Int,
-      end: Int,
-      runSelectedCode: Boolean = false,
-      isDebug: Boolean = false
-    ) {
-      val state = ChunkExecutionState(editor)
-      editor.chunkExecutionState = state
-      runAllChunks(psiFile, state.currentPsiElement, state.terminationRequired, start, end, runSelectedCode, isDebug).onProcessed {
-        editor.chunkExecutionState = null
-      }
-    }
-
-    private fun runAllChunks(
-      psiFile: PsiFile,
-      currentElement: AtomicReference<PsiElement>,
-      terminationRequired: AtomicBoolean,
-      start: Int,
-      end: Int,
-      runSelectedCode: Boolean,
-      isDebug: Boolean
-    ): Promise<Unit> {
-      val result = AsyncPromise<Unit>()
-      RConsoleManager.getInstance(psiFile.project).currentConsoleAsync.onSuccess { console ->
-        runAsync {
-          try {
-            val chunks = runReadAction {
-              PsiTreeUtil.collectElements(psiFile) {
-                isChunkFenceLang(it) && if (runSelectedCode) {
-                  it.parent?.textRange?.intersects(TextRange(start, end)) == true
-                }
-                else {
-                  (it.textRange.endOffset - 1) in start..end
-                }
-              }
-            }
-            for ((index, element) in chunks.withIndex()) {
-              if (terminationRequired.get()) break
-
-              currentElement.set(element)
-              val proceed = invokeAndWaitIfNeeded {
-                execute(element, isDebug = isDebug, isBatchMode = true,
-                        isFirstChunk = index == 0,
-                        textRange = if (runSelectedCode) TextRange(start, end) else null)
-              }
-                              .onError { LOGGER.error("Cannot execute chunk: $it") }
-                              .blockingGet(Int.MAX_VALUE) ?: false
-              currentElement.set(null)
-              if (!proceed) break
-            }
-          }
-          finally {
-            result.setResult(Unit)
-            console.resetHandler()
-          }
-        }
-      }
-      return result
-    }
+    fun getInstance(project: Project): RunChunkHandler =
+      project.getService(RunChunkHandler::class.java)
 
     fun execute(
       element: PsiElement, isDebug: Boolean = false, isBatchMode: Boolean = false, isFirstChunk: Boolean = true,
@@ -435,11 +443,6 @@ class RunChunkHandler(
           file.writeText(text)
         }
       }
-    }
-
-    fun interruptChunkExecution(project: Project) {
-      val chunkExecutionState = project.chunkExecutionState ?: return
-      chunkExecutionState.interrupt.get()?.invoke()
     }
 
     private fun findInlayElementByFenceElement(element: PsiElement) =

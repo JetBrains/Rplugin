@@ -18,7 +18,7 @@ import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.notifications.RNotificationUtil
-import org.jetbrains.r.rendering.chunk.RunChunkHandler.Companion.runAllChunks
+import org.jetbrains.r.rendering.chunk.RunChunkHandler
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 
@@ -62,7 +62,7 @@ abstract class RunSelectionBase : REditorActionBase() {
 
   private fun executeForRMarkdownFile(project: Project, virtualFile: VirtualFile, editor: Editor, range: TextRange) {
     val psiFile = PsiManager.getInstance(project).findFile(virtualFile) ?: return
-    runAllChunks(psiFile, editor, range.startOffset, range.endOffset, runSelectedCode = true, isDebug = isDebug)
+    RunChunkHandler.getInstance(project).runAllChunks(psiFile, editor, range.startOffset, range.endOffset, runSelectedCode = true, isDebug = isDebug)
   }
 }
 

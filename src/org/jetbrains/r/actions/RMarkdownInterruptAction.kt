@@ -23,7 +23,7 @@ class RMarkdownInterruptAction: DumbAwareAction(), RPromotedAction {
     fun interruptChunkExecution(state: ChunkExecutionState) {
       state.terminationRequired.set(true)
       val element = state.currentPsiElement.get() ?: return
-      RunChunkHandler.interruptChunkExecution(element.project)
+      RunChunkHandler.getInstance(element.project).interruptChunkExecution()
     }
   }
 }

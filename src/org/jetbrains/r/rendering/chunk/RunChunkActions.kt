@@ -67,24 +67,26 @@ private abstract class BaseChunkAction : DumbAwareAction(), RPromotedAction {
 
 private class RunChunksAboveAction : BaseChunkAction() {
   override fun actionPerformed(e: AnActionEvent) {
+    val project = e.project ?: return
     val editor = e.editor ?: return
     val file = e.psiFile ?: return
     val interval = getCurrentInterval(e, editor)
     val endOffset = getStartOffset(editor, interval) - 1
     showConsoleAndRun(e) {
-      RunChunkHandler.runAllChunks(file, editor, 0, endOffset)
+      RunChunkHandler.getInstance(project).runAllChunks(file, editor, 0, endOffset)
     }
   }
 }
 
 private class RunChunksBelowAction : BaseChunkAction() {
   override fun actionPerformed(e: AnActionEvent) {
+    val project = e.project ?: return
     val editor = e.editor ?: return
     val file = e.psiFile ?: return
     val interval = getCurrentInterval(e, editor)
     val startOffset = getStartOffset(editor, interval)
     showConsoleAndRun(e) {
-      RunChunkHandler.runAllChunks(file, editor, startOffset - 1, Int.MAX_VALUE)
+      RunChunkHandler.getInstance(project).runAllChunks(file, editor, startOffset - 1, Int.MAX_VALUE)
     }
   }
 }

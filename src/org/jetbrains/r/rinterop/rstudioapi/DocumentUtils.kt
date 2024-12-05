@@ -217,12 +217,12 @@ object DocumentUtils {
                       psiFile?.let {
                         val state = editor.chunkExecutionState
                         if (state == null) {
-                          RunChunkHandler.runAllChunks(psiFile, editor)
+                          RunChunkHandler.getInstance(project).runAllChunks(psiFile, editor)
                         }
                         else {
                           state.terminationRequired.set(true)
                           val element = state.currentPsiElement.get()
-                          RunChunkHandler.interruptChunkExecution(element.project)
+                          RunChunkHandler.getInstance(element.project).interruptChunkExecution()
                         }
                       }
                     }

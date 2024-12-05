@@ -237,11 +237,12 @@ private fun createRunAllAction(project: Project): AnAction {
     }
 
     override fun actionPerformed(e: AnActionEvent) {
+      val project = e.project ?: return
       val editor = e.editor ?: return
       val state = editor.chunkExecutionState
       if (state == null) {
         val psiFile = e.getData(CommonDataKeys.PSI_FILE) ?: return
-        RunChunkHandler.runAllChunks(psiFile, editor)
+        RunChunkHandler.getInstance(project).runAllChunks(psiFile, editor)
       } else {
         RMarkdownInterruptAction.interruptChunkExecution(state)
       }
