@@ -3,6 +3,7 @@ package org.jetbrains.r.visualization.inlays.components
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.intellij.execution.process.ProcessOutputType
+import com.intellij.notebooks.visualization.r.inlays.components.updateOutputTextConsoleUI
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
@@ -11,10 +12,9 @@ import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.SoftWrapChangeListener
 import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.openapi.editor.impl.softwrap.EmptySoftWrapPainter
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
-import com.intellij.notebooks.visualization.r.inlays.components.updateOutputTextConsoleUI
-import com.intellij.openapi.editor.impl.softwrap.EmptySoftWrapPainter
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.visualization.inlays.MouseWheelUtils
 import org.jetbrains.r.visualization.inlays.runAsyncInlay
@@ -107,7 +107,8 @@ class InlayOutputText(parent: Disposable, editor: Editor)
   override fun saveAs() {
     val title = RBundle.message("inlay.action.export.as.txt.title")
     val description = RBundle.message("inlay.action.export.as.txt.description")
-    saveWithFileChooser(title, description, arrayOf("txt"), "output") { destination ->
+    val label = RBundle.message("inlay.action.export.as.txt.label")
+    saveWithFileChooser(title, description, label, arrayOf("txt")) { destination ->
       destination.bufferedWriter().use { out ->
         out.write(console.text)
       }

@@ -80,12 +80,14 @@ abstract class InlayOutput(
     return toolbar.component
   }
 
-  protected fun saveWithFileChooser(@Nls title: String,
-                                    @Nls description: String,
-                                    extension: Array<String>,
-                                    defaultName: String,
-                                    onChoose: (File) -> Unit) {
-    InlayOutputUtil.saveWithFileChooser(project, title, description, extension, defaultName, true, onChoose)
+  protected fun saveWithFileChooser(
+    title: @Nls String,
+    description: @Nls String,
+    extensionLabel: @Nls String,
+    extension: Array<String>,
+    onChoose: (File) -> Unit,
+  ) {
+    InlayOutputUtil.saveWithFileChooser(project, title, description, extensionLabel, extension, "output", true, onChoose)
   }
 
   open fun toolbarPaneChanged(component: JComponent?) {}
@@ -113,5 +115,3 @@ abstract class InlayOutput(
     }
   }
 }
-
-

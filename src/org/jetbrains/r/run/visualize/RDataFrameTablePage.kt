@@ -9,6 +9,7 @@ import com.intellij.codeInsight.hints.presentation.mouseButton
 import com.intellij.icons.AllIcons
 import com.intellij.ide.CopyProvider
 import com.intellij.ide.DataManager
+import com.intellij.notebooks.visualization.r.inlays.ClipboardUtils
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.*
@@ -30,8 +31,6 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
 import org.jetbrains.concurrency.resolvedPromise
-import com.intellij.notebooks.visualization.NotebooksVisualizationIcons
-import com.intellij.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
 import org.jetbrains.r.visualization.inlays.table.filters.gui.TableFilterHeader
@@ -272,11 +271,9 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
 
   /** Save the file as tsv (tab separated values) via intellij SaveFileDialog. */
   private fun saveAsCsv() {
-    val descriptor = FileSaverDescriptor(
-      RBundle.message("dialog.title.dataframe.viewer.export.as"),
-      RBundle.message("dialog.title.dataframe.viewer.export.as.description"),
-      "csv", "tsv"
-    )
+    val descriptor = FileSaverDescriptor(RBundle.message("dialog.title.dataframe.viewer.export.as"), RBundle.message("dialog.title.dataframe.viewer.export.as.description")).apply {
+      withExtensionFilter(RBundle.message("inlay.table.export.as.csv.label"), "csv", "tsv")
+    }
     val chooser: FileSaverDialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, this)
     val virtualBaseDir = LocalFileSystem.getInstance().findFileByIoFile(File(ProjectManager.getInstance().openProjects[0].basePath!!))
     val fileWrapper = chooser.save(virtualBaseDir, "table.csv") ?: return

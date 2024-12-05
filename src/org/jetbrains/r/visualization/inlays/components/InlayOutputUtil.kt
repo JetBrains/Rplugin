@@ -10,7 +10,7 @@ import com.intellij.openapi.fileChooser.ex.FileChooserDialogImpl
 import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.util.NlsContexts
+import com.intellij.openapi.util.NlsContexts.DialogTitle
 import com.intellij.openapi.util.NlsContexts.Label
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -39,7 +39,7 @@ object InlayOutputUtil {
 
   private fun chooseImageSaveLocation(project: Project, image: BufferedImage, onChoose: (File) -> Unit) {
     val extensions = getAvailableFormats(image).toTypedArray()
-    saveWithFileChooser(project, RBundle.message("inlay.output.image.export.title"), RBundle.message("inlay.output.image.export.description"), extensions, "image", false, onChoose)
+    saveWithFileChooser(project, RBundle.message("inlay.output.image.export.title"), RBundle.message("inlay.output.image.export.description"), RBundle.message("inlay.output.image.export.label"), extensions, "image", false, onChoose)
   }
 
   private fun getAvailableFormats(image: BufferedImage): List<String> {
@@ -71,14 +71,15 @@ object InlayOutputUtil {
 
   fun saveWithFileChooser(
     project: Project,
-    @NlsContexts.DialogTitle title: String,
-    @Label description: String,
+    title: @DialogTitle String,
+    description: @Label String,
+    extensionLabel: @Label String,
     extensions: Array<String>,
     defaultName: String,
     createIfMissing: Boolean,
     onChoose: (File) -> Unit
   ) {
-    val descriptor = FileSaverDescriptor(title, description, *extensions)
+    val descriptor = FileSaverDescriptor(title, description).apply { withExtensionFilter(extensionLabel, *extensions) }
     val chooser = FileSaverDialogImpl(descriptor, project)
     chooser.save(project.virtualBaseDir, defaultName)?.let { fileWrapper ->
       val destination = fileWrapper.file

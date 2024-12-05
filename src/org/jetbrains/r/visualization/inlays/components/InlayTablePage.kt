@@ -7,10 +7,10 @@ package org.jetbrains.r.visualization.inlays.components
 import com.intellij.icons.AllIcons
 import com.intellij.ide.CopyProvider
 import com.intellij.ide.DataManager
+import com.intellij.notebooks.visualization.r.inlays.ClipboardUtils
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
-import com.intellij.openapi.fileChooser.FileSaverDialog
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.DumbAwareToggleAction
@@ -21,8 +21,6 @@ import com.intellij.ui.SideBorder
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
-import com.intellij.notebooks.visualization.NotebooksVisualizationIcons
-import com.intellij.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.visualization.inlays.dataframe.DataFrame
 import org.jetbrains.r.visualization.inlays.dataframe.columns.DoubleType
@@ -231,10 +229,10 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
 
   /** Save the file as tsv (tab separated values) via intellij SaveFileDialog. */
   private fun saveAsCsv(project: Project) {
-    val descriptor = FileSaverDescriptor(RBundle.message("inlay.table.export.as.csv.text"),
-                                         RBundle.message("inlay.table.export.as.csv.description"), "csv",
-                                         "tsv")
-    val chooser: FileSaverDialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, this)
+    val descriptor = FileSaverDescriptor(RBundle.message("inlay.table.export.as.csv.text"), RBundle.message("inlay.table.export.as.csv.description")).apply {
+      withExtensionFilter(RBundle.message("inlay.table.export.as.csv.label"), "csv", "tsv")
+    }
+    val chooser = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, this)
     val basePath = project.basePath ?: return
     val virtualBaseDir = LocalFileSystem.getInstance().findFileByIoFile(File(basePath))
     val fileWrapper = chooser.save(virtualBaseDir, "table.csv") ?: return

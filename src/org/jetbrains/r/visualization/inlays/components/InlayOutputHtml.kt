@@ -79,7 +79,8 @@ class InlayOutputHtml(parent: Disposable, editor: Editor)
   override fun saveAs() {
     val title = RBundle.message("inlay.action.export.as.txt.title")
     val description = RBundle.message("inlay.action.exports.range.csv.description")
-    saveWithFileChooser(title, description, arrayOf("txt"), "output") { destination ->
+    val label = RBundle.message("inlay.action.export.as.txt.label")
+    saveWithFileChooser(title, description, label, arrayOf("txt")) { destination ->
       saveJsCallback.addHandler(object : Function<String, JBCefJSQuery.Response> {
         override fun apply(selection: String): JBCefJSQuery.Response {
           destination.bufferedWriter().use { out ->
