@@ -85,7 +85,7 @@ abstract class RProjectGenerator : DirectoryProjectGeneratorBase<RProjectSetting
   override fun generateProject(project: Project, baseDir: VirtualFile, rProjectSettings: RProjectSettings, module: Module) {
     if (rProjectSettings.useNewInterpreter) {
       RSettings.getInstance(project).interpreterLocation = rProjectSettings.interpreterLocation
-      RInterpreterManager.getInstance(project).getInterpreterDeferred(force = true)
+      RInterpreterManager.getInstance(project).launchInterpreter(force = true)
     }
   }
 

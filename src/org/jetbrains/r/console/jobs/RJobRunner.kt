@@ -8,15 +8,21 @@ import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.openapi.application.invokeAndWaitIfNeeded
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.util.EventDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.future.asCompletableFuture
+import kotlinx.coroutines.launch
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.asPromise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
@@ -32,28 +38,41 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
 
 @Service(Service.Level.PROJECT)
-class RJobRunner(private val project: Project) {
+class RJobRunner(
+  private val project: Project,
+  val coroutineScope: CoroutineScope,
+) {
   internal val eventDispatcher = EventDispatcher.create(Listener::class.java)
 
   fun canRun(): Boolean = RInterpreterManager.getInstance(project).hasInterpreter()
 
   @TestOnly
   internal fun run(task: RJobTask, exportEnvName: String? = null): Promise<ProcessHandler> {
+    return coroutineScope.async {
+      suspendableRun(task, exportEnvName)
+    }.asCompletableFuture().asPromise()
+  }
+
+  private suspend fun suspendableRun(task: RJobTask, exportEnvName: String? = null): ProcessHandler {
     check(canRun())
-    invokeAndWaitIfNeeded { FileDocumentManager.getInstance().saveAllDocuments() }
+
+    writeAction {
+      FileDocumentManager.getInstance().saveAllDocuments()
+    }
+
     val rConsoleManager = RConsoleManager.getInstance(project)
     val console = rConsoleManager.currentConsoleOrNull
     val rInterop = console?.rInterop
-    return RInterpreterManager.getInterpreterAsync(project).thenAsync { interpreter ->
-      interpreter.prepareForExecutionAsync().then {
-        val (scriptFile, exportRDataFile) = generateRunScript(interpreter, task, rInterop)
-        val processHandler: ProcessHandler = interpreter.runHelperProcess(scriptFile, emptyList(), task.workingDirectory)
-        if (exportRDataFile != null) {
-          installProcessListener(processHandler, exportRDataFile, console, task, exportEnvName)
-        }
-        processHandler
-      }
+
+    val interpreter = RInterpreterManager.getInstance(project).awaitInterpreter().getOrThrow()
+    interpreter.prepareForExecution()
+
+    val (scriptFile, exportRDataFile) = generateRunScript(interpreter, task, rInterop)
+    val processHandler: ProcessHandler = interpreter.runHelperProcess(scriptFile, emptyList(), task.workingDirectory)
+    if (exportRDataFile != null) {
+      installProcessListener(processHandler, exportRDataFile, console, task, exportEnvName)
     }
+    return processHandler
   }
 
   private fun installProcessListener(processHandler: ProcessHandler,
@@ -101,25 +120,30 @@ class RJobRunner(private val project: Project) {
     return Pair(interpreter.createTempFileOnHost("rjob.R", text.toByteArray()), exportFile)
   }
 
-  fun runRJob(task: RJobTask, exportEnvName: String? = null, name: String? = null): Promise<RJobDescriptor> {
-    val promise = AsyncPromise<RJobDescriptor>()
-    run(task, exportEnvName).then { processHandler ->
-      val consoleView = ConsoleViewImpl(project, true)
-      consoleView.attachToProcess(processHandler)
-      val myInputMessageFilterField = ConsoleViewImpl::class.memberProperties.first { it.name == "myInputMessageFilter" }
-      val rJobProgressProvider = RJobProgressProvider()
-      val rSourceProgressInputFilter = RSourceProgressInputFilter(rJobProgressProvider::onProgressAvailable)
-      setFinalStatic(consoleView, myInputMessageFilterField.javaField!!, rSourceProgressInputFilter)
-      val rJobDescriptor = RJobDescriptorImpl(project, task, rJobProgressProvider, processHandler, consoleView, name)
-      eventDispatcher.multicaster.onJobDescriptionCreated(rJobDescriptor)
-      processHandler.startNotify()
-      invokeLater {
-        RJobsToolWindowFactory.getJobsPanel(project)?.addJobDescriptor(rJobDescriptor)
-        RJobsToolWindowFactory.focusOnJobs(project)
-      }
-      promise.setResult(rJobDescriptor)
+  suspend fun suspendableRunRJob(task: RJobTask, exportEnvName: String? = null, name: String? = null): RJobDescriptor {
+    val processHandler = suspendableRun(task, exportEnvName)
+    val consoleView = ConsoleViewImpl(project, true)
+    consoleView.attachToProcess(processHandler)
+    val myInputMessageFilterField = ConsoleViewImpl::class.memberProperties.first { it.name == "myInputMessageFilter" }
+    val rJobProgressProvider = RJobProgressProvider()
+    val rSourceProgressInputFilter = RSourceProgressInputFilter(rJobProgressProvider::onProgressAvailable)
+    setFinalStatic(consoleView, myInputMessageFilterField.javaField!!, rSourceProgressInputFilter)
+    val rJobDescriptor = RJobDescriptorImpl(project, task, rJobProgressProvider, processHandler, consoleView, name)
+    eventDispatcher.multicaster.onJobDescriptionCreated(rJobDescriptor)
+    processHandler.startNotify()
+
+    coroutineScope.launch(Dispatchers.EDT) {
+      RJobsToolWindowFactory.getJobsPanel(project)?.addJobDescriptor(rJobDescriptor)
+      RJobsToolWindowFactory.focusOnJobs(project)
     }
-    return promise
+
+    return rJobDescriptor
+  }
+
+  fun runRJob(task: RJobTask, exportEnvName: String? = null, name: String? = null): Promise<RJobDescriptor> {
+    return coroutineScope.async {
+      suspendableRunRJob(task, exportEnvName, name)
+    }.asCompletableFuture().asPromise()
   }
 
   companion object {

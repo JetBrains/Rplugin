@@ -7,7 +7,7 @@ package org.jetbrains.r.interpreter
 import com.intellij.ide.browsers.BrowserLauncher
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
@@ -16,8 +16,11 @@ import com.intellij.util.indexing.FileBasedIndex
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.future.asCompletableFuture
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.asPromise
@@ -28,6 +31,7 @@ import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.packages.remote.RepoProvider
 import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
+import org.jetbrains.r.rinterop.RInteropCoroutineScope
 import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RSettings
 import org.jetbrains.r.statistics.RInterpretersCollector
@@ -38,7 +42,17 @@ interface RInterpreterManager {
   val interpreterOrNull: RInterpreter?
   var interpreterLocation: RInterpreterLocation?
 
+  /**
+   * better to use [launchInterpreter] or [awaitInterpreter]
+   */
   fun getInterpreterDeferred(force: Boolean = false): Deferred<Result<RInterpreter>>
+
+  fun launchInterpreter(force: Boolean = false) {
+    getInterpreterDeferred(force)
+  }
+
+  suspend fun awaitInterpreter(force: Boolean = false): Result<RInterpreter> =
+    getInterpreterDeferred(force).await()
 
   fun hasInterpreter(): Boolean
 
@@ -56,21 +70,24 @@ interface RInterpreterManager {
     fun getInterpreterBlocking(project: Project, timeout: Int): RInterpreter? =
       runBlockingCancellable {
         withTimeoutOrNull(timeout.toLong()) {
-          getInstance(project).getInterpreterDeferred(force = false).await().getOrNull()
+          getInstance(project).awaitInterpreter(force = false).getOrNull()
         }
       }
 
     fun restartInterpreter(project: Project, afterRestart: Runnable? = null) {
-      getInterpreterAsync(project, true).onProcessed { interpreter ->
+      val manager = getInstance(project)
+
+      RInteropCoroutineScope.getCoroutineScope(project).launch {
+        val interpreter = manager.awaitInterpreter(force = true).getOrNull()
         if (interpreter != null) {
           RepoProvider.getInstance(project).onInterpreterVersionChange()
-          ApplicationManager.getApplication().invokeLater {
+          launch(Dispatchers.EDT) {
             val packagesPanel = RToolWindowFactory.findContent(project, RToolWindowFactory.PACKAGES).component as RInstalledPackagesPanel
             packagesPanel.scheduleRefresh()
           }
         }
-        RConsoleManager.getInstance(project).currentConsoleAsync.onSuccess {
-          runInEdt {
+        RConsoleManager.getInstance(project).awaitCurrentConsole().onSuccess {
+          withContext(Dispatchers.EDT) {
             RConsoleManager.closeMismatchingConsoles(project, interpreter)
             RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.show(afterRestart)
           }
