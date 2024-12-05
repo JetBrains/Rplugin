@@ -24,7 +24,7 @@ class SaveSessionTest : RUsefulTestCase() {
   override fun setUp() {
     super.setUp()
     setupMockInterpreterManager()
-    interpreter = RInterpreterManager.getInterpreterAsync(project).blockingGet(RProcessHandlerBaseTestCase.DEFAULT_TIMEOUT)!!
+    interpreter = RInterpreterManager.getInterpreterBlocking(project, RProcessHandlerBaseTestCase.DEFAULT_TIMEOUT)!!
     val workspaceFile = interpreter.createTempFileOnHost("a.RData")
     project.putUserData(RInteropUtil.WORKSPACE_FILE_FOR_TESTS, workspaceFile)
     runWriteAction {

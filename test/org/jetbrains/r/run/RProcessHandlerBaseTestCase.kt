@@ -45,7 +45,7 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
     project.putUserData(RInterop.DEADLINE_TEST_KEY, customDeadline)
     setupMockInterpreterManager()
     setupMockInterpreterStateManager()
-    interpreter = RInterpreterManager.getInterpreterAsync(project).blockingGet(DEFAULT_TIMEOUT)!!
+    interpreter = RInterpreterManager.getInterpreterBlocking(project, DEFAULT_TIMEOUT)!!
     rInterop = if (alwaysCreateNewInterop()) createRInterop(interpreter) else getRInterop(interpreter)
     // we want be sure that the interpreter is initialized
     rInterop.executeCode("1")

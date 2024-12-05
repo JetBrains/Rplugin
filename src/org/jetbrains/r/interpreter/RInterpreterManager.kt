@@ -8,15 +8,19 @@ import com.intellij.ide.browsers.BrowserLauncher
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.psi.stubs.StubUpdatingIndex
 import com.intellij.util.indexing.FileBasedIndex
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
-import org.jetbrains.concurrency.AsyncPromise
+import kotlinx.coroutines.future.asCompletableFuture
+import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.concurrency.asPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.console.RConsoleManager
@@ -34,15 +38,7 @@ interface RInterpreterManager {
   val interpreterOrNull: RInterpreter?
   var interpreterLocation: RInterpreterLocation?
 
-  fun getInterpreterAsync(force: Boolean = false): Promise<Result<RInterpreter>>
-
-  fun getInterpreterBlocking(timeout: Int): RInterpreter? = getInterpreterAsync().run {
-    try {
-      blockingGet(timeout)?.getOrNull()
-    } catch (t: Throwable) {
-      null
-    }
-  }
+  fun getInterpreterDeferred(force: Boolean = false): Deferred<Result<RInterpreter>>
 
   fun hasInterpreter(): Boolean
 
@@ -51,10 +47,17 @@ interface RInterpreterManager {
     private fun getInstanceIfCreated(project: Project): RInterpreterManager? = project.getServiceIfCreated(RInterpreterManager::class.java)
 
     @JvmOverloads
-    fun getInterpreterAsync(project: Project, force: Boolean = false): Promise<RInterpreter> = getInstance(project).getInterpreterAsync(force).then<RInterpreter>{ it.getOrThrow() }
+    fun getInterpreterAsync(project: Project, force: Boolean = false): Promise<RInterpreter> =
+      getInstance(project).getInterpreterDeferred(force).asCompletableFuture().asPromise().then<RInterpreter>{ it.getOrThrow() }
 
     fun getInterpreterOrNull(project: Project): RInterpreter? = getInstanceIfCreated(project)?.interpreterOrNull
-    fun getInterpreterBlocking(project: Project, timeout: Int): RInterpreter? = getInstance(project).getInterpreterBlocking(timeout)
+
+    fun getInterpreterBlocking(project: Project, timeout: Int): RInterpreter? =
+      runBlockingCancellable {
+        withTimeoutOrNull(timeout.toLong()) {
+          getInstance(project).getInterpreterDeferred(force = false).await().getOrNull()
+        }
+      }
 
     fun restartInterpreter(project: Project, afterRestart: Runnable? = null) {
       getInterpreterAsync(project, true).onProcessed { interpreter ->
@@ -83,7 +86,7 @@ class RInterpreterManagerImpl(
   private val coroutineScope: CoroutineScope,
 ): RInterpreterManager {
   @Volatile
-  private var interpreterPromise: Promise<Result<RInterpreter>> = resolvedPromise(Result.failure<RInterpreter>(NoRInterpreterException()))
+  private var interpreterDeferred: Deferred<Result<RInterpreter>> = CompletableDeferred(Result.failure<RInterpreter>(NoRInterpreterException()))
   @Volatile
   private var initialized = false
 
@@ -105,16 +108,15 @@ class RInterpreterManagerImpl(
     }
   }
 
-  override fun getInterpreterAsync(force: Boolean): Promise<Result<RInterpreter>> {
-    if (initialized && !force) return interpreterPromise
+  override fun getInterpreterDeferred(force: Boolean): Deferred<Result<RInterpreter>> {
     synchronized(this) {
-      if (initialized && !force) return interpreterPromise
+      if (initialized && !force) return interpreterDeferred
       if (force) {
         interpreterOrNull = null
         interpreterLocation = fetchInterpreterLocation()
       }
       val location = interpreterLocation
-                     ?: return resolvedPromise(Result.failure<RInterpreter>(NoRInterpreterException())).also { interpreterPromise = it }
+                     ?: return CompletableDeferred(Result.failure<RInterpreter>(NoRInterpreterException())).also { interpreterDeferred = it }
       if (!initialized) {
         RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.FIRST) { roots ->
           val states = RInterpreterStateManager.getInstance(project).states
@@ -129,7 +131,13 @@ class RInterpreterManagerImpl(
         }
       }
       initialized = true
-      return setupInterpreter(location).also { interpreterPromise = it }
+
+      val deferred = coroutineScope.async {
+        setupInterpreter(location)
+      }
+
+      interpreterDeferred = deferred
+      return deferred
     }
   }
 
@@ -148,25 +156,17 @@ class RInterpreterManagerImpl(
     RInterpreterSettings.addOrEnableInterpreter(info)
   }
 
-  private fun setupInterpreter(location: RInterpreterLocation): Promise<Result<RInterpreter>> {
-    val promise = AsyncPromise<Result<RInterpreter>>()
-    coroutineScope.async {
-      withBackgroundProgress(project, RBundle.message("initializing.r.interpreter.message")) {
-        val interpreterOrError: Result<RInterpreterBase> = location.createInterpreter(project)
-
-        interpreterOrError.onSuccess { it ->
-          interpreterOrNull = it
-          ensureInterpreterStored(it)
-          RInterpretersCollector.logSetupInterpreter(project, it)
-        }.onFailure { e ->
-          RInterpreterBase.LOG.warn(e)
-          RSettings.getInstance(project).interpreterLocation = null
-        }
-
-        promise.setResult(interpreterOrError)
+  private suspend fun setupInterpreter(location: RInterpreterLocation): Result<RInterpreter> {
+    return withBackgroundProgress(project, RBundle.message("initializing.r.interpreter.message")) {
+      location.createInterpreter(project).onSuccess { it ->
+        interpreterOrNull = it
+        ensureInterpreterStored(it)
+        RInterpretersCollector.logSetupInterpreter(project, it)
+      }.onFailure { e ->
+        RInterpreterBase.LOG.warn(e)
+        RSettings.getInstance(project).interpreterLocation = null
       }
     }
-    return promise
   }
 
   private fun removeLocalRDataTmpFiles() {

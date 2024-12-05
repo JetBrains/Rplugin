@@ -6,7 +6,7 @@ package org.jetbrains.r.mock
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import org.jetbrains.concurrency.resolvedPromise
+import kotlinx.coroutines.CompletableDeferred
 import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.settings.RInterpreterSettingsProvider
 
@@ -17,7 +17,7 @@ class MockInterpreterManager(project: Project) : RInterpreterManager {
 
   override val interpreterOrNull: RInterpreter = interpreterLocation!!.createInterpreter(project).getOrThrow()
 
-  override fun getInterpreterAsync(force: Boolean) = resolvedPromise(Result.success(interpreterOrNull))
+  override fun getInterpreterDeferred(force: Boolean) = CompletableDeferred(Result.success(interpreterOrNull))
 
   override fun hasInterpreter(): Boolean = true
 
