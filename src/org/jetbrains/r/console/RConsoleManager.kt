@@ -6,8 +6,6 @@ package org.jetbrains.r.console
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.EDT
-import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProcessCanceledException
@@ -33,8 +31,10 @@ import org.jetbrains.r.packages.RPackageProjectManager
 import java.util.concurrent.atomic.AtomicInteger
 
 @Service(Service.Level.PROJECT)
-class RConsoleManager(private val project: Project,
-                      private val coroutineScope: CoroutineScope) {
+class RConsoleManager(
+  private val project: Project,
+  private val coroutineScope: CoroutineScope
+) {
   @Volatile
   private var currentConsole: RConsoleView? = null
   private val consoleCounter: AtomicInteger = AtomicInteger()

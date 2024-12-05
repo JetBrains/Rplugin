@@ -46,6 +46,7 @@ interface RInterpreterManager {
     fun getInstance(project: Project): RInterpreterManager = project.getService(RInterpreterManager::class.java)
     private fun getInstanceIfCreated(project: Project): RInterpreterManager? = project.getServiceIfCreated(RInterpreterManager::class.java)
 
+    @Deprecated("use RInterpreterManager.getInstance(project).getInterpreterDeferred(force) instead")
     @JvmOverloads
     fun getInterpreterAsync(project: Project, force: Boolean = false): Promise<RInterpreter> =
       getInstance(project).getInterpreterDeferred(force).asCompletableFuture().asPromise().then<RInterpreter>{ it.getOrThrow() }

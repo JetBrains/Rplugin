@@ -77,6 +77,7 @@ interface RInterpreter : RInterpreterInfo {
   // Note: returns pair of writable path and indicator whether new library path was created
   fun getGuaranteedWritableLibraryPath(libraryPaths: List<RInterpreterState.LibraryPath>, userPath: String): Pair<String, Boolean>
 
+  @Deprecated("use prepareForExecution() instead")
   fun prepareForExecutionAsync(): Promise<Unit> {
     return RInteropCoroutineScope.wrapIntoPromise(project, this::prepareForExecution)
   }

@@ -33,7 +33,7 @@ class NewRScriptAction : TestableCreateFileFromTemplateAction(), DumbAware {
   }
 
   override fun createFile(name: String?, templateName: String, directory: PsiDirectory): PsiFile? {
-    RInterpreterManager.getInterpreterAsync(directory.project)
+    RInterpreterManager.getInstance(directory.project).getInterpreterDeferred()
     return super.createFile(name, templateName, directory)
   }
 
