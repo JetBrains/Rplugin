@@ -18,7 +18,7 @@ import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.notifications.RNotificationUtil
-import org.jetbrains.r.rendering.chunk.RunChunkHandler.runAllChunks
+import org.jetbrains.r.rendering.chunk.RunChunkHandler.Companion.runAllChunks
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 
