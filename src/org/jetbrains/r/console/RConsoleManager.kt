@@ -5,7 +5,9 @@
 package org.jetbrains.r.console
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProcessCanceledException
@@ -16,6 +18,9 @@ import com.intellij.ui.content.ContentManager
 import com.intellij.ui.content.ContentManagerEvent
 import com.intellij.ui.content.ContentManagerListener
 import com.intellij.util.ui.UIUtil.findComponentOfType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -28,7 +33,8 @@ import org.jetbrains.r.packages.RPackageProjectManager
 import java.util.concurrent.atomic.AtomicInteger
 
 @Service(Service.Level.PROJECT)
-class RConsoleManager(private val project: Project) {
+class RConsoleManager(private val project: Project,
+                      private val coroutineScope: CoroutineScope) {
   @Volatile
   private var currentConsole: RConsoleView? = null
   private val consoleCounter: AtomicInteger = AtomicInteger()
@@ -171,7 +177,7 @@ class RConsoleManager(private val project: Project) {
       RInterpreterManager.getInterpreterAsync(project).onSuccess { interpreter ->
         RConsoleRunner(interpreter, workingDir ?: interpreter.basePath).initAndRun().onSuccess { console ->
           result.setResult(console)
-          invokeLater {
+          getInstance(project).coroutineScope.launch(Dispatchers.EDT) {
             val toolWindow = RConsoleToolWindowFactory.getRConsoleToolWindows(project)
             if (requestFocus) {
               toolWindow?.show {
