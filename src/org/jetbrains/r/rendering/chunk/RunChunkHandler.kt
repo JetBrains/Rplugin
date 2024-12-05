@@ -10,7 +10,8 @@ import com.google.gson.Gson
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.invokeAndWaitIfNeeded
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.readAction
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.Service
@@ -30,6 +31,9 @@ import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -83,60 +87,57 @@ class RunChunkHandler(
     start: Int,
     end: Int,
     runSelectedCode: Boolean = false,
-    isDebug: Boolean = false
+    isDebug: Boolean = false,
   ) {
     val state = ChunkExecutionState(editor)
     editor.chunkExecutionState = state
-    runAllChunks(psiFile, state.currentPsiElement, state.terminationRequired, start, end, runSelectedCode, isDebug).onProcessed {
+
+    coroutineScope.launch(Dispatchers.IO) {
+      runAllChunks(psiFile, state.currentPsiElement, state.terminationRequired, start, end, runSelectedCode, isDebug)
       editor.chunkExecutionState = null
     }
   }
 
-  private fun runAllChunks(
+  private suspend fun runAllChunks(
     psiFile: PsiFile,
     currentElement: AtomicReference<PsiElement>,
     terminationRequired: AtomicBoolean,
     start: Int,
     end: Int,
     runSelectedCode: Boolean,
-    isDebug: Boolean
-  ): Promise<Unit> {
-    val result = AsyncPromise<Unit>()
-    RConsoleManager.getInstance(psiFile.project).currentConsoleAsync.onSuccess { console ->
-      runAsync {
-        try {
-          val chunks = runReadAction {
-            PsiTreeUtil.collectElements(psiFile) {
-              isChunkFenceLang(it) && if (runSelectedCode) {
-                it.parent?.textRange?.intersects(TextRange(start, end)) == true
-              }
-              else {
-                (it.textRange.endOffset - 1) in start..end
-              }
-            }
-          }
-          for ((index, element) in chunks.withIndex()) {
-            if (terminationRequired.get()) break
+    isDebug: Boolean,
+  ) {
+    val console = RConsoleManager.getInstance(psiFile.project).awaitCurrentConsole().getOrNull() ?: return
 
-            currentElement.set(element)
-            val proceed = invokeAndWaitIfNeeded {
-              execute(element, isDebug = isDebug, isBatchMode = true,
-                      isFirstChunk = index == 0,
-                      textRange = if (runSelectedCode) TextRange(start, end) else null)
-            }
-                            .onError { LOGGER.error("Cannot execute chunk: $it") }
-                            .blockingGet(Int.MAX_VALUE) ?: false
-            currentElement.set(null)
-            if (!proceed) break
+    runCatching {
+      val chunks = readAction {
+        PsiTreeUtil.collectElements(psiFile) {
+          isChunkFenceLang(it) && if (runSelectedCode) {
+            it.parent?.textRange?.intersects(TextRange(start, end)) == true
           }
-        }
-        finally {
-          result.setResult(Unit)
-          console.resetHandler()
+          else {
+            (it.textRange.endOffset - 1) in start..end
+          }
         }
       }
+      for ((index, element) in chunks.withIndex()) {
+        if (terminationRequired.get()) break
+
+        currentElement.set(element)
+        val proceed = withContext(Dispatchers.EDT) {
+          execute(element, isDebug = isDebug, isBatchMode = true,
+                  isFirstChunk = index == 0,
+                  textRange = if (runSelectedCode) TextRange(start, end) else null)
+        }
+                        .onError { LOGGER.error("Cannot execute chunk: $it") }
+                        .blockingGet(Int.MAX_VALUE) ?: false
+
+        currentElement.set(null)
+        if (!proceed) break
+      }
+    }.onFailure {
+      console.resetHandler()
     }
-    return result
   }
 
   companion object {
