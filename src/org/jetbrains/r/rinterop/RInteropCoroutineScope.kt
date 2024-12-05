@@ -5,6 +5,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.future.asCompletableFuture
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.asPromise
 
@@ -23,7 +24,7 @@ class RInteropCoroutineScope(private val coroutineScope: CoroutineScope) {
     fun <T> wrapIntoPromise(project: Project, body: suspend () -> T): Promise<T> {
       return getCoroutineScope(project).async<T> {
         body()
-      }.asPromise() as Promise<T>
+      }.asCompletableFuture().asPromise()
     }
   }
 }
