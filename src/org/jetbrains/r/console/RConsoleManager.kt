@@ -10,7 +10,7 @@ import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.fileLogger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFocusManager
@@ -33,6 +33,8 @@ import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.packages.RPackageProjectManager
 import java.util.concurrent.atomic.AtomicInteger
+
+private val LOG = fileLogger()
 
 @Service(Service.Level.PROJECT)
 class RConsoleManager(
@@ -65,7 +67,7 @@ class RConsoleManager(
       if (e is ProcessCanceledException || e is InterruptedException) {
         return@onError
       }
-      LOGGER.error(e)
+      LOG.error(e)
     }
   }
 
@@ -99,7 +101,7 @@ class RConsoleManager(
     if (RConsoleToolWindowFactory.getRConsoleToolWindows(project) == null) {
       return AsyncPromise<RConsoleView>().apply {
         val message = RBundle.message("notification.console.noToolWindowFound")
-        LOGGER.error(message)
+        LOG.error(message)
         setError(message)
       }
     }
@@ -148,8 +150,6 @@ class RConsoleManager(
   }
 
   companion object {
-    private val LOGGER = Logger.getInstance(RConsoleManager::class.java)
-
     private data class ContentDescription(
       val contentManager: ContentManager,
       val contentConsolePairs: Sequence<Pair<Content, RConsoleView>>

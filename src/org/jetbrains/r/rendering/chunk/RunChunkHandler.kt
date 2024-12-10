@@ -12,7 +12,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.*
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.fileLogger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.util.EditorUtil
@@ -61,6 +61,9 @@ import java.awt.Dimension
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
+
+
+private val LOG = fileLogger()
 
 
 @Service(Service.Level.PROJECT)
@@ -126,7 +129,7 @@ class RunChunkHandler(
                   isFirstChunk = index == 0,
                   textRange = if (runSelectedCode) TextRange(start, end) else null)
         }
-                        .onError { LOGGER.error("Cannot execute chunk: $it") }
+                        .onError { LOG.error("Cannot execute chunk: $it") }
                         .blockingGet(Int.MAX_VALUE) ?: false
 
         currentElement.set(null)
@@ -138,7 +141,6 @@ class RunChunkHandler(
   }
 
   companion object {
-    private val LOGGER = Logger.getInstance(RunChunkHandler::class.java)
 
     fun getInstance(project: Project): RunChunkHandler =
       project.service<RunChunkHandler>()
@@ -256,7 +258,7 @@ class RunChunkHandler(
 
     private fun pullOutputsWithLogAsync(rInterop: RInterop, cacheDirectory: String): Promise<Unit> {
       return pullOutputsAsync(rInterop, cacheDirectory).onError { e ->
-        LOGGER.error("Run Chunk: cannot pull outputs", e)
+        LOG.error("Run Chunk: cannot pull outputs", e)
       }
     }
 
@@ -414,7 +416,7 @@ class RunChunkHandler(
 
     private fun logNonEmptyError(result: RIExecutionResult) {
       if (result.stderr.isNotBlank()) {
-        LOGGER.error("Run Chunk: the command returns non-empty output; stdout='${result.stdout}', stderr='${result.stderr}'")
+        LOG.error("Run Chunk: the command returns non-empty output; stdout='${result.stdout}', stderr='${result.stderr}'")
       }
     }
 
