@@ -8,6 +8,8 @@ import com.intellij.ide.browsers.BrowserLauncher
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.components.service
 import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.Project
@@ -71,7 +73,7 @@ interface RInterpreterManager {
     fun restartInterpreter(project: Project, afterRestart: Runnable? = null) {
       val manager = getInstance(project)
 
-      RInteropCoroutineScope.getCoroutineScope(project).launch {
+      RInteropCoroutineScope.getCoroutineScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
         val interpreter = manager.awaitInterpreter(force = true).getOrNull()
         if (interpreter != null) {
           RepoProvider.getInstance(project).onInterpreterVersionChange()
@@ -144,7 +146,7 @@ class RInterpreterManagerImpl(
       }
       initialized = true
 
-      val deferred = coroutineScope.async {
+      val deferred = coroutineScope.async(ModalityState.defaultModalityState().asContextElement()) {
         setupInterpreter(location)
       }
 

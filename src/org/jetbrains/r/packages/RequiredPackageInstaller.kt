@@ -9,6 +9,8 @@ import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
@@ -196,7 +198,7 @@ class RequiredPackageInstaller(private val project: Project,
       }
     }
 
-    scope.launch {
+    scope.launch(ModalityState.defaultModalityState().asContextElement()) {
       withBackgroundProgress(project, RBundle.message("required.package.background.preparing.title"), cancellable = true) {
         reloadPackagesIfNecessary()
         val resolved = resolvePackages(needInstall)

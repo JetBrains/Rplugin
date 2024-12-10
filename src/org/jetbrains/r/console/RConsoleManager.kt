@@ -6,6 +6,8 @@ package org.jetbrains.r.console
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
@@ -185,7 +187,7 @@ class RConsoleManager(
       RInterpreterManager.getInterpreterAsync(project).onSuccess { interpreter ->
         RConsoleRunner(interpreter, workingDir ?: interpreter.basePath).initAndRun().onSuccess { console ->
           result.setResult(console)
-          getInstance(project).coroutineScope.launch(Dispatchers.EDT) {
+          getInstance(project).coroutineScope.launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
             val toolWindow = RConsoleToolWindowFactory.getRConsoleToolWindows(project)
             if (requestFocus) {
               toolWindow?.show {

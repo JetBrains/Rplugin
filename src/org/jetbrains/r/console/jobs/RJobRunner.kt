@@ -9,6 +9,8 @@ import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
@@ -140,7 +142,7 @@ class RJobRunner(
   }
 
   fun runRJob(task: RJobTask, exportEnvName: String? = null, name: String? = null): Promise<RJobDescriptor> {
-    return coroutineScope.async {
+    return coroutineScope.async(ModalityState.defaultModalityState().asContextElement()) {
       suspendableRunRJob(task, exportEnvName, name)
     }.asCompletableFuture().asPromise()
   }

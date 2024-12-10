@@ -9,11 +9,7 @@ import com.google.common.annotations.VisibleForTesting
 import com.google.gson.Gson
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.EDT
-import com.intellij.openapi.application.readAction
-import com.intellij.openapi.application.runInEdt
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.*
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
@@ -93,7 +89,7 @@ class RunChunkHandler(
     val state = ChunkExecutionState(editor)
     editor.chunkExecutionState = state
 
-    coroutineScope.launch(Dispatchers.IO) {
+    coroutineScope.launch(Dispatchers.IO + ModalityState.defaultModalityState().asContextElement()) {
       runAllChunks(psiFile, state.currentPsiElement, state.terminationRequired, start, end, runSelectedCode, isDebug)
       editor.chunkExecutionState = null
     }

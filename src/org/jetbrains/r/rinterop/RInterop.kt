@@ -1096,8 +1096,10 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         }
       }
       AsyncEvent.EventCase.SHOWHELPREQUEST -> {
-        if (!ApplicationManager.getApplication().isUnitTestMode) RInteropCoroutineScope.getCoroutineScope(project).launch(Dispatchers.EDT) {
-          RToolWindowFactory.getDocumentationComponent(project).setText(CodeInsightBundle.message("javadoc.fetching.progress"), null, null)
+        if (!ApplicationManager.getApplication().isUnitTestMode) {
+          RInteropCoroutineScope.getCoroutineScope(project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
+            RToolWindowFactory.getDocumentationComponent(project).setText(CodeInsightBundle.message("javadoc.fetching.progress"), null, null)
+          }
         }
         val httpdResponse = event.showHelpRequest.takeIf { it.success }?.let { HttpdResponse(it.content, it.url) } ?: return
         fireListeners { it.onShowHelpRequest(httpdResponse) }
@@ -1282,7 +1284,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   }
 
   fun invalidateCaches() {
-    RInteropCoroutineScope.getCoroutineScope(project).launch {
+    RInteropCoroutineScope.getCoroutineScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
       writeAction {
         PsiManager.getInstance(project).dropPsiCaches()
       }
