@@ -5,10 +5,7 @@
 
 package org.jetbrains.r.packages
 
-import com.intellij.openapi.components.PersistentStateComponent
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.components.State
-import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.*
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.XmlSerializerUtil
@@ -36,7 +33,7 @@ class RPackageService : PersistentStateComponent<RPackageService> {
     val LOG = Logger.getInstance(RPackageService::class.java)
 
     fun getInstance(project: Project): RPackageService {
-      return project.getService(RPackageService::class.java)
+      return project.service()
     }
   }
 }

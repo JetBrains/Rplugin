@@ -8,6 +8,7 @@ import com.intellij.codeHighlighting.*
 import com.intellij.codeInsight.hints.InlayHintsSettings
 import com.intellij.codeInsight.hints.InlayParameterHintsExtension
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorKind
@@ -113,7 +114,7 @@ class RReturnHintPass(private val file: PsiFile,
 
     companion object {
       fun getInstance(project: Project): FactoryService {
-        return project.getService(FactoryService::class.java)
+        return project.service()
       }
     }
   }

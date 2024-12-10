@@ -9,9 +9,9 @@ import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.application.EDT
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.util.EventDispatcher
@@ -147,7 +147,7 @@ class RJobRunner(
   }
 
   companion object {
-    fun getInstance(project: Project): RJobRunner = project.getService(RJobRunner::class.java)
+    fun getInstance(project: Project): RJobRunner = project.service()
 
     private fun setFinalStatic(o: Any, field: Field, newValue: Any) {
       field.isAccessible = true

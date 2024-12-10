@@ -6,6 +6,7 @@ package org.jetbrains.r.configuration
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.components.service
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
@@ -48,7 +49,7 @@ internal class RInterpreterBarWidgetFactory : StatusBarWidgetFactory {
 
   companion object {
     fun updateWidget(project: Project) {
-      project.getService(StatusBarWidgetsManager::class.java).updateWidget(RInterpreterBarWidgetFactory::class.java)
+      project.service<StatusBarWidgetsManager>().updateWidget(RInterpreterBarWidgetFactory::class.java)
     }
   }
 }

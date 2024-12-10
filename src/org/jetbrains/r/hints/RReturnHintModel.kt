@@ -4,6 +4,7 @@ import com.intellij.codeInsight.hints.InlayHintsSettings
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.serviceOrNull
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.LineExtensionInfo
@@ -126,7 +127,7 @@ class RReturnHintsModel(private val project: Project) {
 
   companion object {
     fun getInstance(project: Project): RReturnHintsModel =
-      project.getService(RReturnHintsModel::class.java) ?: error("Component 'RReturnHintsModel' is expected to be registered")
+      project.serviceOrNull() ?: error("Component 'RReturnHintsModel' is expected to be registered")
   }
 }
 

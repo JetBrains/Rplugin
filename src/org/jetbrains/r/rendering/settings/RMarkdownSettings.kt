@@ -4,10 +4,7 @@
 
 package org.jetbrains.r.rendering.settings
 
-import com.intellij.openapi.components.BaseState
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.components.SimplePersistentStateComponent
-import com.intellij.openapi.components.State
+import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
@@ -16,7 +13,7 @@ import com.intellij.openapi.vfs.VirtualFileManager
 @State(name="RMarkdownSettings")
 class RMarkdownSettings: SimplePersistentStateComponent<RMarkdownSettingsState>(RMarkdownSettingsState()) {
   companion object {
-    fun getInstance(project: Project): RMarkdownSettings = project.getService(RMarkdownSettings::class.java)
+    fun getInstance(project: Project): RMarkdownSettings = project.service()
   }
 }
 

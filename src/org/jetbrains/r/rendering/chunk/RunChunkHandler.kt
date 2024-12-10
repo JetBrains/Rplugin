@@ -15,6 +15,7 @@ import com.intellij.openapi.application.readAction
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
@@ -144,7 +145,7 @@ class RunChunkHandler(
     private val LOGGER = Logger.getInstance(RunChunkHandler::class.java)
 
     fun getInstance(project: Project): RunChunkHandler =
-      project.getService(RunChunkHandler::class.java)
+      project.service<RunChunkHandler>()
 
     fun execute(
       element: PsiElement, isDebug: Boolean = false, isBatchMode: Boolean = false, isFirstChunk: Boolean = true,

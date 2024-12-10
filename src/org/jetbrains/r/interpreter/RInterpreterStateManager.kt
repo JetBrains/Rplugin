@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.interpreter
 
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.console.RConsoleManager
@@ -24,7 +25,7 @@ interface RInterpreterStateManager {
   }
 
   companion object {
-    fun getInstance(project: Project): RInterpreterStateManager = project.getService(RInterpreterStateManager::class.java)
+    fun getInstance(project: Project): RInterpreterStateManager = project.service()
     private fun getInstanceIfCreated(project: Project): RInterpreterStateManager? = project.getServiceIfCreated(RInterpreterStateManager::class.java)
 
     fun getCurrentStateAsync(project: Project): Promise<RInterpreterState> = getInstance(project).getCurrentStateAsync()

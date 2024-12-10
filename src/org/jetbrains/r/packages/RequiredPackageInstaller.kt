@@ -10,6 +10,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
@@ -307,7 +308,7 @@ class RequiredPackageInstaller(private val project: Project,
 
   companion object {
     fun getInstance(project: Project): RequiredPackageInstaller {
-      return project.getService(RequiredPackageInstaller::class.java)
+      return project.service()
     }
   }
 }

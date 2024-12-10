@@ -6,6 +6,7 @@ package org.jetbrains.r.interpreter
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -200,7 +201,7 @@ class RLibraryWatcher(private val project: Project) : Disposable {
       }
     }
 
-    fun getInstance(project: Project): RLibraryWatcher = project.getService(RLibraryWatcher::class.java)
+    fun getInstance(project: Project): RLibraryWatcher = project.service()
   }
 }
 
