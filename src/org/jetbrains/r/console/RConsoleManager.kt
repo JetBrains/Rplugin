@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.asDeferred
+import org.jetbrains.concurrency.await
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.configuration.RInterpreterBarWidgetFactory
@@ -51,7 +51,7 @@ class RConsoleManager(
 
   suspend fun awaitCurrentConsole(): Result<RConsoleView> =
     runCatching {
-      currentConsoleAsync.asDeferred().await()
+      currentConsoleAsync.await()
     }
 
   private fun run(lambda: (RConsoleView) -> Unit): Promise<Unit> {
