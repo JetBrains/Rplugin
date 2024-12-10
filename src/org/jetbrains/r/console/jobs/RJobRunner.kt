@@ -15,11 +15,8 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.util.EventDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.future.asCompletableFuture
-import kotlinx.coroutines.launch
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.asPromise
@@ -121,23 +118,25 @@ class RJobRunner(
   }
 
   suspend fun suspendableRunRJob(task: RJobTask, exportEnvName: String? = null, name: String? = null): RJobDescriptor {
-    val processHandler = suspendableRun(task, exportEnvName)
-    val consoleView = ConsoleViewImpl(project, true)
-    consoleView.attachToProcess(processHandler)
-    val myInputMessageFilterField = ConsoleViewImpl::class.memberProperties.first { it.name == "myInputMessageFilter" }
-    val rJobProgressProvider = RJobProgressProvider()
-    val rSourceProgressInputFilter = RSourceProgressInputFilter(rJobProgressProvider::onProgressAvailable)
-    setFinalStatic(consoleView, myInputMessageFilterField.javaField!!, rSourceProgressInputFilter)
-    val rJobDescriptor = RJobDescriptorImpl(project, task, rJobProgressProvider, processHandler, consoleView, name)
-    eventDispatcher.multicaster.onJobDescriptionCreated(rJobDescriptor)
-    processHandler.startNotify()
+    return withContext(Dispatchers.Default) {
+      val processHandler = suspendableRun(task, exportEnvName)
+      val consoleView = ConsoleViewImpl(project, true)
+      consoleView.attachToProcess(processHandler)
+      val myInputMessageFilterField = ConsoleViewImpl::class.memberProperties.first { it.name == "myInputMessageFilter" }
+      val rJobProgressProvider = RJobProgressProvider()
+      val rSourceProgressInputFilter = RSourceProgressInputFilter(rJobProgressProvider::onProgressAvailable)
+      setFinalStatic(consoleView, myInputMessageFilterField.javaField!!, rSourceProgressInputFilter)
+      val rJobDescriptor = RJobDescriptorImpl(project, task, rJobProgressProvider, processHandler, consoleView, name)
+      eventDispatcher.multicaster.onJobDescriptionCreated(rJobDescriptor)
+      processHandler.startNotify()
 
-    coroutineScope.launch(Dispatchers.EDT) {
-      RJobsToolWindowFactory.getJobsPanel(project)?.addJobDescriptor(rJobDescriptor)
-      RJobsToolWindowFactory.focusOnJobs(project)
+      coroutineScope.launch(Dispatchers.EDT) {
+        RJobsToolWindowFactory.getJobsPanel(project)?.addJobDescriptor(rJobDescriptor)
+        RJobsToolWindowFactory.focusOnJobs(project)
+      }
+
+      return@withContext rJobDescriptor
     }
-
-    return rJobDescriptor
   }
 
   fun runRJob(task: RJobTask, exportEnvName: String? = null, name: String? = null): Promise<RJobDescriptor> {
