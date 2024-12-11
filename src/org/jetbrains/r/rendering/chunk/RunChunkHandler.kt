@@ -143,7 +143,7 @@ class RunChunkHandler(
   companion object {
 
     fun getInstance(project: Project): RunChunkHandler =
-      project.service<RunChunkHandler>()
+      project.service()
 
     fun execute(
       element: PsiElement, isDebug: Boolean = false, isBatchMode: Boolean = false, isFirstChunk: Boolean = true,
