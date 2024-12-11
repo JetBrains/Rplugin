@@ -10,6 +10,9 @@ import com.intellij.openapi.actionSystem.ActionManager.getInstance
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
+import com.intellij.openapi.diagnostic.fileLogger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.project.DumbAwareAction
@@ -18,6 +21,7 @@ import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.SourceTreeToPsiMap
 import com.intellij.psi.util.PsiTreeUtil
+import kotlinx.coroutines.launch
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
 import org.jetbrains.r.actions.RPromotedAction
@@ -31,10 +35,14 @@ import org.jetbrains.r.editor.ui.rMarkdownCellToolbarPanel
 import org.jetbrains.r.editor.ui.rMarkdownNotebook
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
+import org.jetbrains.r.rinterop.RInteropCoroutineScope
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
 import org.jetbrains.r.rmarkdown.RmdFenceProvider
 import java.util.concurrent.atomic.AtomicReference
+
+
+private val LOG = fileLogger()
 
 
 object RunChunkActions {
@@ -137,13 +145,22 @@ private fun getCodeFenceByEvent(e: AnActionEvent, editor: Editor): PsiElement? {
 }
 
 private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
+  val project = e.project ?: return
   val editor = e.editor as? EditorEx ?: return
   val element = getCodeFenceByEvent(e, editor) ?: return
-  val chunkExecutionState = ChunkExecutionState(editor, currentPsiElement = AtomicReference(element), isDebug = isDebug)
-  element.project.chunkExecutionState = chunkExecutionState
-  RunChunkHandler.execute(element, isDebug = isDebug).onProcessed {
-    element.project.chunkExecutionState = null
-    /** outputs will be updated in [RunChunkHandler.afterRunChunk] */
+
+  RInteropCoroutineScope.getCoroutineScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
+    val chunkExecutionState = ChunkExecutionState(editor, currentPsiElement = AtomicReference(element), isDebug = isDebug)
+    element.project.chunkExecutionState = chunkExecutionState
+    try {
+      RunChunkHandler.execute(element, isDebug = isDebug)
+    } catch (ex: Throwable) {
+      LOG.error(ex)
+    }
+    finally {
+      element.project.chunkExecutionState = null
+      /** outputs will be updated in [RunChunkHandler.afterRunChunk] */
+    }
   }
 }
 

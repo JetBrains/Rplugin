@@ -14,9 +14,11 @@ import com.intellij.psi.SyntaxTraverser
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownParagraph
 import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.await
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
+import kotlin.Throws
 
 object RMarkdownUtil {
   private val requiredPackages = listOf(
@@ -36,7 +38,13 @@ object RMarkdownUtil {
     return RequiredPackageInstaller.getInstance(project).getMissingPackagesOrNull(requiredPackages)
   }
 
-  fun checkOrInstallPackages(project: Project, utilityName: @Nls String): Promise<Unit> {
+  @Throws(Throwable::class)
+  suspend fun checkOrInstallPackages(project: Project, utilityName: @Nls String) {
+    checkOrInstallPackagesAsync(project, utilityName).await()
+  }
+
+  @Deprecated("use checkOrInstallPackages instead")
+  fun checkOrInstallPackagesAsync(project: Project, utilityName: @Nls String): Promise<Unit> {
     return RequiredPackageInstaller.getInstance(project).installPackagesWithUserPermission(utilityName, requiredPackages)
       .onError {
         notifyFailure(project, utilityName)

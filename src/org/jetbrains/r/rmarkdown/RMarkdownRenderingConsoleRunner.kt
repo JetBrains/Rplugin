@@ -50,7 +50,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
 
   fun render(project: Project, file: VirtualFile, isShiny: Boolean = false): Promise<Unit> {
     return AsyncPromise<Unit>().also { promise ->
-      RMarkdownUtil.checkOrInstallPackages(project, RBundle.message("rmarkdown.processor.notification.utility.name"))
+      RMarkdownUtil.checkOrInstallPackagesAsync(project, RBundle.message("rmarkdown.processor.notification.utility.name"))
         .onSuccess {
           if (!isInterrupted) {
             doRender(project, file, promise, isShiny)

@@ -32,10 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
-import org.jetbrains.concurrency.runAsync
+import org.jetbrains.concurrency.*
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
@@ -61,6 +58,7 @@ import java.awt.Dimension
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.Throws
 
 
 private val LOG = fileLogger()
@@ -109,7 +107,7 @@ class RunChunkHandler(
   ) {
     val console = RConsoleManager.getInstance(psiFile.project).awaitCurrentConsole().getOrNull() ?: return
 
-    runCatching {
+    try {
       val chunks = readAction {
         PsiTreeUtil.collectElements(psiFile) {
           isChunkFenceLang(it) && if (runSelectedCode) {
@@ -129,36 +127,32 @@ class RunChunkHandler(
                   isFirstChunk = index == 0,
                   textRange = if (runSelectedCode) TextRange(start, end) else null)
         }
-                        .onError { LOG.error("Cannot execute chunk: $it") }
-                        .blockingGet(Int.MAX_VALUE) ?: false
 
         currentElement.set(null)
         if (!proceed) break
       }
-    }.onFailure {
+    }
+    catch (t: Throwable) {
       console.resetHandler()
+      LOG.error("Cannot execute all chunks", t)
     }
   }
 
   companion object {
-
     fun getInstance(project: Project): RunChunkHandler =
       project.service()
 
-    fun execute(
-      element: PsiElement, isDebug: Boolean = false, isBatchMode: Boolean = false, isFirstChunk: Boolean = true,
-      textRange: TextRange? = null
-    ): Promise<Boolean> {
-      return AsyncPromise<Boolean>().also { promise ->
+    @Throws(Throwable::class)
+    suspend fun execute(
+      element: PsiElement,
+      isDebug: Boolean = false,
+      isBatchMode: Boolean = false,
+      isFirstChunk: Boolean = true,
+      textRange: TextRange? = null,
+    ): Boolean {
+      return withContext(Dispatchers.EDT) {
         RMarkdownUtil.checkOrInstallPackages(element.project, RBundle.message("run.chunk.executor.name"))
-          .onSuccess {
-            runInEdt {
-              executeAsync(element, isDebug, isBatchMode, isFirstChunk, textRange).processed(promise)
-            }
-          }
-          .onError {
-            promise.setError(it.message ?: RBundle.message("notification.unknown.error.message"))
-          }
+        return@withContext executeAsync(element, isDebug, isBatchMode, isFirstChunk, textRange).await()
       }
     }
 
