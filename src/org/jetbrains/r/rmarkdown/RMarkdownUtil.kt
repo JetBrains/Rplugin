@@ -12,6 +12,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SyntaxTraverser
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownParagraph
+import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RequiredPackage
@@ -35,24 +36,24 @@ object RMarkdownUtil {
     return RequiredPackageInstaller.getInstance(project).getMissingPackagesOrNull(requiredPackages)
   }
 
-  fun checkOrInstallPackages(project: Project, utilityName: String): Promise<Unit> {
+  fun checkOrInstallPackages(project: Project, utilityName: @Nls String): Promise<Unit> {
     return RequiredPackageInstaller.getInstance(project).installPackagesWithUserPermission(utilityName, requiredPackages)
       .onError {
         notifyFailure(project, utilityName)
       }
   }
 
-  private fun notifyFailure(project: Project, utilityName: String) {
+  private fun notifyFailure(project: Project, utilityName: @Nls String) {
     val title = makeNotificationTitle(utilityName)
     val content = makeNotificationContent(utilityName)
     Notification(RBundle.message("rmarkdown.processor.notification.group.display"), title, content, NotificationType.ERROR).notify(project)
   }
 
-  private fun makeNotificationTitle(utilityName: String): String {
+  private fun makeNotificationTitle(utilityName: @Nls String): @Nls String {
     return RBundle.message("rmarkdown.rendering.packages.notification.title", utilityName)
   }
 
-  private fun makeNotificationContent(utilityName: String): String {
+  private fun makeNotificationContent(utilityName: @Nls String): @Nls String {
     return RBundle.message("rmarkdown.rendering.packages.notification.content", utilityName)
   }
 
