@@ -124,7 +124,7 @@ class RManageInterpreterPanel(@Nls text: String, private val localOnly: Boolean,
       listOf(separator) +
       providers
 
-    comboBox.model = object : CollectionComboBoxModel<Any>(interpreters, currentSelection) {
+    comboBox.model = object : CollectionComboBoxModel<Any>(interpreters.toMutableList(), currentSelection) {
       override fun setSelectedItem(item: Any?) {
         if (item is RInterpreterSettingsProvider){
           item.showAddInterpreterDialog(currentInterpreters) { interpreter ->
