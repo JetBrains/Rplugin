@@ -17,6 +17,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.util.EditorUtil
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.progress.blockingContext
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.io.FileUtil
@@ -151,24 +152,19 @@ class RunChunkHandler(
     ): Boolean {
       return withContext(Dispatchers.EDT) {
         RMarkdownUtil.checkOrInstallPackages(element.project, RBundle.message("run.chunk.executor.name"))
-        return@withContext executeAsync(element, isDebug, isBatchMode, isFirstChunk, textRange).await()
-      }
-    }
 
-    private fun executeAsync(
-      element: PsiElement, isDebug: Boolean, isBatchMode: Boolean, isFirstChunk: Boolean,
-      textRange: TextRange? = null
-    ): Promise<Boolean> {
-      return AsyncPromise<Boolean>().also { promise ->
-        if (element.containingFile == null || element.context == null) return promise.apply { setError("parent not found") }
+        if (element.containingFile == null || element.context == null) throw RunChunkHandlerException("parent not found")
         val fileEditor = FileEditorManager.getInstance(element.project).getSelectedEditor(element.containingFile.originalFile.virtualFile)
-        val editor = EditorUtil.getEditorEx(fileEditor) ?: return promise.apply { setError("editor not found") }
-        RConsoleManager.getInstance(element.project).currentConsoleAsync.onSuccess {
-          runAsync {
-            runReadAction {
-              runHandlersAndExecuteChunk(it, element, editor, isDebug, isBatchMode, isFirstChunk, textRange)
-            }.processed(promise)
-          }
+        val editor = EditorUtil.getEditorEx(fileEditor) ?: throw RunChunkHandlerException("editor not found")
+        val console = RConsoleManager.getInstance(element.project).awaitCurrentConsole().getOrNull()
+        if (console == null) return@withContext false
+
+        return@withContext withContext(Dispatchers.IO) {
+          blockingContext {
+            ReadAction.compute<Promise<Boolean>, Throwable> {
+              runHandlersAndExecuteChunk(console, element, editor, isDebug, isBatchMode, isFirstChunk, textRange)
+            }
+          }.await()
         }
       }
     }
