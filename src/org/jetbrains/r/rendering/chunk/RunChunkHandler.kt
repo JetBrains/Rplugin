@@ -58,7 +58,6 @@ import java.awt.Dimension
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.Throws
 
 
 private val LOG = fileLogger()
@@ -87,12 +86,12 @@ class RunChunkHandler(
     runSelectedCode: Boolean = false,
     isDebug: Boolean = false,
   ) {
-    val state = ChunkExecutionState(editor)
-    editor.chunkExecutionState = state
-
     coroutineScope.launch(Dispatchers.IO + ModalityState.defaultModalityState().asContextElement()) {
-      runAllChunks(psiFile, state.currentPsiElement, state.terminationRequired, start, end, runSelectedCode, isDebug)
-      editor.chunkExecutionState = null
+      val state = ChunkExecutionState(editor)
+
+      state.useCurrent {
+        runAllChunks(psiFile, state.currentPsiElement, state.terminationRequired, start, end, runSelectedCode, isDebug)
+      }
     }
   }
 

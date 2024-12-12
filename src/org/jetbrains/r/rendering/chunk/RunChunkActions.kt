@@ -34,7 +34,6 @@ import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.editor.ui.rMarkdownCellToolbarPanel
 import org.jetbrains.r.editor.ui.rMarkdownNotebook
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
-import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rinterop.RInteropCoroutineScope
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
@@ -150,16 +149,13 @@ private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
   val element = getCodeFenceByEvent(e, editor) ?: return
 
   RInteropCoroutineScope.getCoroutineScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
-    val chunkExecutionState = ChunkExecutionState(editor, currentPsiElement = AtomicReference(element), isDebug = isDebug)
-    element.project.chunkExecutionState = chunkExecutionState
-    try {
-      RunChunkHandler.execute(element, isDebug = isDebug)
-    } catch (ex: Throwable) {
-      LOG.error(ex)
-    }
-    finally {
-      element.project.chunkExecutionState = null
-      /** outputs will be updated in [RunChunkHandler.afterRunChunk] */
+    ChunkExecutionState(editor, currentPsiElement = AtomicReference(element), isDebug = isDebug).useCurrent {
+      try {
+        RunChunkHandler.execute(element, isDebug = isDebug)
+        /** outputs will be updated in [RunChunkHandler.afterRunChunk] */
+      } catch (ex: Throwable) {
+        LOG.error(ex)
+      }
     }
   }
 }

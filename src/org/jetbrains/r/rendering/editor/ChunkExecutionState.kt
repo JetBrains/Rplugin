@@ -7,20 +7,41 @@ import org.jetbrains.r.console.RConsoleManager
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
-class ChunkExecutionState(private val editor: Editor,
-                          val terminationRequired: AtomicBoolean = AtomicBoolean(),
-                          val isDebug: Boolean = false,
-                          val currentPsiElement: AtomicReference<PsiElement> = AtomicReference(),
-                          val interrupt: AtomicReference<() -> Unit> = AtomicReference())
+class ChunkExecutionState(
+  val editor: Editor,
+  val terminationRequired: AtomicBoolean = AtomicBoolean(),
+  val isDebug: Boolean = false,
+  val currentPsiElement: AtomicReference<PsiElement> = AtomicReference(),
+  val interrupt: AtomicReference<() -> Unit> = AtomicReference(),
+) {
+  inline fun <T> useCurrent(f: () -> T): T {
+    val project = editor.project
 
-var Editor.chunkExecutionState: ChunkExecutionState?
+    if (project != null) {
+      setCurrent(project, this)
+    }
+    try {
+      return f()
+    }
+    finally {
+      if (project != null) {
+        setCurrent(project, null)
+      }
+    }
+  }
+
+  companion object {
+    fun setCurrent(project: Project, value: ChunkExecutionState?) {
+      RConsoleManager.Companion.getInstance(project).currentConsoleOrNull?.executeActionHandler?.chunkState = value
+    }
+
+    fun getCurrent(project: Project): ChunkExecutionState? =
+      RConsoleManager.Companion.getInstance(project).currentConsoleOrNull?.executeActionHandler?.chunkState
+  }
+}
+
+val Editor.chunkExecutionState: ChunkExecutionState?
   get() = project?.chunkExecutionState
-  set(value) {
-    project?.chunkExecutionState = value
-  }
 
-var Project.chunkExecutionState: ChunkExecutionState?
-  get() = RConsoleManager.Companion.getInstance(this).currentConsoleOrNull?.executeActionHandler?.chunkState
-  set(value) {
-    RConsoleManager.Companion.getInstance(this).currentConsoleOrNull?.executeActionHandler?.chunkState = value
-  }
+val Project.chunkExecutionState: ChunkExecutionState?
+  get() = ChunkExecutionState.getCurrent(this)
