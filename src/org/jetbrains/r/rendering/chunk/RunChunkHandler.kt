@@ -166,9 +166,13 @@ class RunChunkHandler(
 
   @VisibleForTesting
   internal fun runHandlersAndExecuteChunk(
-    console: RConsoleView, element: PsiElement, editor: EditorEx,
-    isDebug: Boolean = false, isBatchMode: Boolean = false,
-    isFirstChunk: Boolean = true, textRange: TextRange? = null,
+    console: RConsoleView,
+    element: PsiElement,
+    editor: EditorEx,
+    isDebug: Boolean = false,
+    isBatchMode: Boolean = false,
+    isFirstChunk: Boolean = true,
+    textRange: TextRange? = null,
   ): Promise<Boolean> {
     require(element.project == project)
 
@@ -205,12 +209,14 @@ class RunChunkHandler(
       e.updateProgressStatus(InlayProgressStatus(RProgressStatus.RUNNING))
     }
     prepare.onProcessed {
-      executeCode(project, request, console, beforeChunkPromise) {
-        editor.rMarkdownNotebook?.let { nb -> nb[inlayElement]?.addText(it.text, it.kind) }
-      }.onProcessed { result ->
-        dumpAndShutdownAsync(graphicsDeviceRef.get()).onProcessed {
-          pullOutputsWithLogAsync(console.rInterop, cacheDirectory).onProcessed {
-            afterRunChunk(element, console.rInterop, result, promise, console, editor, inlayElement, isBatchMode)
+      beforeChunkPromise.onProcessed {
+        executeCode(project, request, console) {
+          editor.rMarkdownNotebook?.let { nb -> nb[inlayElement]?.addText(it.text, it.kind) }
+        }.onProcessed { result ->
+          dumpAndShutdownAsync(graphicsDeviceRef.get()).onProcessed {
+            pullOutputsWithLogAsync(console.rInterop, cacheDirectory).onProcessed {
+              afterRunChunk(element, console.rInterop, result, promise, console, editor, inlayElement, isBatchMode)
+            }
           }
         }
       }
@@ -383,20 +389,17 @@ class RunChunkHandler(
       project: Project,
       request: RInterop.ReplSourceFileRequest,
       console: RConsoleView,
-      beforeChunkPromise: Promise<Unit>,
       onOutput: (ProcessOutput) -> Unit = {},
     ): Promise<ExecutionResult> {
       val result = mutableListOf<ProcessOutput>()
       val promise = AsyncPromise<ExecutionResult>()
-      beforeChunkPromise.onProcessed {
-        val executePromise = console.rInterop.replSourceFile(request) { s, type ->
-          val output = ProcessOutput(s, type)
-          result.add(output)
-          onOutput(output)
-        }
-        executePromise.onProcessed { promise.setResult(ExecutionResult(result, if (it == null) "Interrupted" else it.exception)) }
-        project.chunkExecutionState?.interrupt?.set { executePromise.cancel() }
+      val executePromise = console.rInterop.replSourceFile(request) { s, type ->
+        val output = ProcessOutput(s, type)
+        result.add(output)
+        onOutput(output)
       }
+      executePromise.onProcessed { promise.setResult(ExecutionResult(result, if (it == null) "Interrupted" else it.exception)) }
+      project.chunkExecutionState?.interrupt?.set { executePromise.cancel() }
       return promise
     }
 
