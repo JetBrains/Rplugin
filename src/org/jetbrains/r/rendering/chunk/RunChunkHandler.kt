@@ -199,28 +199,11 @@ class RunChunkHandler(
         graphicsDeviceRef.set(device)
       }
 
-      val range = if (textRange == null) {
-        codeElement.psi.textRange
-      }
-      else {
-        textRange.intersection(codeElement.psi.textRange) ?: TextRange.EMPTY_RANGE
-      }
-      val request = rInterop.prepareReplSourceFileRequest(file.virtualFile, range, isDebug).let { request ->
-        when {
-          codeElement.fenceProvider.fenceLanguage === RLanguage.INSTANCE -> {
-            request
-          }
-          codeElement.fenceProvider.fenceLanguage.id === "Python" -> {
-            // TODO understand why output is not captured
-            request.copy(code = "reticulate::py_run_string(${wrapIntoRString(request.code)})")
-          }
-          else -> {
-            return promise.apply { setError("unknown code fence") }
-          }
-        }
-      }
+      val range = codeElement.getTextRange(textRange)
+      val request =
+        modifyRequestIfPython(rInterop.prepareReplSourceFileRequest(file.virtualFile, range, isDebug), codeElement)
+        ?: return promise.apply { setError("unknown code fence") }
 
-      updateProgressBar(editor, inlayElement)
       val prepare = if (isFirstChunk) rInterop.interpreter.prepareForExecutionAsync() else resolvedPromise()
       editor.rMarkdownNotebook?.get(inlayElement)?.let { e ->
         e.clearOutputs(removeFiles = false)
@@ -240,6 +223,20 @@ class RunChunkHandler(
 
       return promise
     }
+
+    private fun modifyRequestIfPython(request: RInterop.ReplSourceFileRequest, codeElement: CodeElement): RInterop.ReplSourceFileRequest? =
+      when {
+        codeElement.fenceProvider.fenceLanguage === RLanguage.INSTANCE -> {
+          request
+        }
+        codeElement.fenceProvider.fenceLanguage.id === "Python" -> {
+          // TODO understand why output is not captured
+          request.copy(code = "reticulate::py_run_string(${wrapIntoRString(request.code)})")
+        }
+        else -> {
+          null
+        }
+      }
 
     private fun dumpAndShutdownAsync(device: RGraphicsDevice?): Promise<Unit> {
       return device?.dumpAndShutdownAsync() ?: resolvedPromise()
@@ -279,7 +276,15 @@ class RunChunkHandler(
     private data class CodeElement(
       val psi: PsiElement,
       val fenceProvider: RmdFenceProvider,
-    )
+    ) {
+      fun getTextRange(textRange: TextRange?): TextRange =
+        if (textRange == null) {
+          psi.textRange
+        }
+        else {
+          textRange.intersection(psi.textRange) ?: TextRange.EMPTY_RANGE
+        }
+    }
 
     private fun findCodeElement(parent: PsiElement?): CodeElement? {
       val providers = RmdFenceProvider.EP_NAME.extensionList.associate { it.fenceElementType to it }
@@ -332,13 +337,6 @@ class RunChunkHandler(
         return false
       }
       return true
-    }
-
-    private fun updateProgressBar(editor: EditorEx, inlayElement: PsiElement) {
-      editor.rMarkdownNotebook?.get(inlayElement)?.let { e ->
-        e.updateOutputs()
-        e.updateProgressStatus(InlayProgressStatus(RProgressStatus.RUNNING))
-      }
     }
 
     private fun afterRunChunk(
