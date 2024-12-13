@@ -122,11 +122,9 @@ class RunChunkHandler(
         if (terminationRequired.get()) break
 
         currentElement.set(element)
-        val proceed = withContext(Dispatchers.EDT) {
-          execute(element, isDebug = isDebug, isBatchMode = true,
-                  isFirstChunk = index == 0,
-                  textRange = if (runSelectedCode) TextRange(start, end) else null)
-        }
+        val proceed = execute(element, isDebug = isDebug, isBatchMode = true,
+                              isFirstChunk = index == 0,
+                              textRange = if (runSelectedCode) TextRange(start, end) else null)
 
         currentElement.set(null)
         if (!proceed) break
@@ -138,91 +136,92 @@ class RunChunkHandler(
     }
   }
 
-  companion object {
-    fun getInstance(project: Project): RunChunkHandler =
-      project.service()
+  @Throws(Throwable::class)
+  suspend fun execute(
+    element: PsiElement,
+    isDebug: Boolean = false,
+    isBatchMode: Boolean = false,
+    isFirstChunk: Boolean = true,
+    textRange: TextRange? = null,
+  ): Boolean {
+    return withContext(Dispatchers.EDT) {
+      require(element.project == project)
+      RMarkdownUtil.checkOrInstallPackages(project, RBundle.message("run.chunk.executor.name"))
 
-    @Throws(Throwable::class)
-    suspend fun execute(
-      element: PsiElement,
-      isDebug: Boolean = false,
-      isBatchMode: Boolean = false,
-      isFirstChunk: Boolean = true,
-      textRange: TextRange? = null,
-    ): Boolean {
-      return withContext(Dispatchers.EDT) {
-        RMarkdownUtil.checkOrInstallPackages(element.project, RBundle.message("run.chunk.executor.name"))
+      if (element.containingFile == null || element.context == null) throw RunChunkHandlerException("parent not found")
+      val fileEditor = FileEditorManager.getInstance(project).getSelectedEditor(element.containingFile.originalFile.virtualFile)
+      val editor = EditorUtil.getEditorEx(fileEditor) ?: throw RunChunkHandlerException("editor not found")
+      val console = RConsoleManager.getInstance(project).awaitCurrentConsole().getOrNull()
+      if (console == null) return@withContext false
 
-        if (element.containingFile == null || element.context == null) throw RunChunkHandlerException("parent not found")
-        val fileEditor = FileEditorManager.getInstance(element.project).getSelectedEditor(element.containingFile.originalFile.virtualFile)
-        val editor = EditorUtil.getEditorEx(fileEditor) ?: throw RunChunkHandlerException("editor not found")
-        val console = RConsoleManager.getInstance(element.project).awaitCurrentConsole().getOrNull()
-        if (console == null) return@withContext false
-
-        return@withContext withContext(Dispatchers.IO) {
-          blockingContext {
-            ReadAction.compute<Promise<Boolean>, Throwable> {
-              runHandlersAndExecuteChunk(console, element, editor, isDebug, isBatchMode, isFirstChunk, textRange)
-            }
-          }.await()
-        }
+      return@withContext withContext(Dispatchers.IO) {
+        blockingContext {
+          ReadAction.compute<Promise<Boolean>, Throwable> {
+            runHandlersAndExecuteChunk(console, element, editor, isDebug, isBatchMode, isFirstChunk, textRange)
+          }
+        }.await()
       }
     }
+  }
 
-    @VisibleForTesting
-    internal fun runHandlersAndExecuteChunk(
-      console: RConsoleView, element: PsiElement, editor: EditorEx,
-      isDebug: Boolean = false, isBatchMode: Boolean = false,
-      isFirstChunk: Boolean = true, textRange: TextRange? = null
-    ): Promise<Boolean> {
-      val promise = AsyncPromise<Boolean>()
-      val rInterop = console.rInterop
-      val parent = element.parent
-      val chunkText = parent?.text ?: return promise.apply { setError("parent is null") }
-      val codeElement = findCodeElement(parent) ?: return promise.apply { setError("cannot find code fence") }
-      val project = element.project
-      val file = element.containingFile
-      val inlayElement = findInlayElementByFenceElement(element) ?: return promise.apply { setError("cannot find code fence") }
-      val chunkPath = ChunkPath.create(inlayElement) ?: return promise.apply { setError("cannot create cache dir") }
-      val rMarkdownParameters = createRMarkdownParameters(file)
-      val cacheDirectory = createCacheDirectory(chunkPath)
-      val screenParameters = createScreenParameters(editor, project)
-      val imagesDirectory = chunkPath.getImagesDirectory()
-      val graphicsDeviceRef = AtomicReference<RGraphicsDevice>()
+  @VisibleForTesting
+  internal fun runHandlersAndExecuteChunk(
+    console: RConsoleView, element: PsiElement, editor: EditorEx,
+    isDebug: Boolean = false, isBatchMode: Boolean = false,
+    isFirstChunk: Boolean = true, textRange: TextRange? = null,
+  ): Promise<Boolean> {
+    require(element.project == project)
 
-      if (!ensureConsoleIsReady(console, project, promise)) return promise
+    val promise = AsyncPromise<Boolean>()
+    val parent = element.parent
+    val chunkText = parent?.text ?: return promise.apply { setError("parent is null") }
+    val codeElement = findCodeElement(parent) ?: return promise.apply { setError("cannot find code fence") }
+    val file = element.containingFile
+    val inlayElement = findInlayElementByFenceElement(element) ?: return promise.apply { setError("cannot find code fence") }
+    val chunkPath = ChunkPath.create(inlayElement) ?: return promise.apply { setError("cannot create cache dir") }
+    val rMarkdownParameters = createRMarkdownParameters(file)
+    val cacheDirectory = createCacheDirectory(chunkPath)
+    val screenParameters = createScreenParameters(editor, project)
+    val imagesDirectory = chunkPath.getImagesDirectory()
+    val graphicsDeviceRef = AtomicReference<RGraphicsDevice>()
 
-      // run before chunk handler without read action
-      val beforeChunkPromise = runAsync {
-        beforeRunChunk(rInterop, rMarkdownParameters, chunkText)
-        val device = RGraphicsDevice(rInterop, File(imagesDirectory), screenParameters, inMemory = false)
-        graphicsDeviceRef.set(device)
-      }
+    if (!ensureConsoleIsReady(console, project, promise)) return promise
 
-      val range = codeElement.getTextRange(textRange)
-      val request =
-        modifyRequestIfPython(rInterop.prepareReplSourceFileRequest(file.virtualFile, range, isDebug), codeElement)
-        ?: return promise.apply { setError("unknown code fence") }
+    // run before chunk handler without read action
+    val beforeChunkPromise = runAsync {
+      beforeRunChunk(console.rInterop, rMarkdownParameters, chunkText)
+      val device = RGraphicsDevice(console.rInterop, File(imagesDirectory), screenParameters, inMemory = false)
+      graphicsDeviceRef.set(device)
+    }
 
-      val prepare = if (isFirstChunk) rInterop.interpreter.prepareForExecutionAsync() else resolvedPromise()
-      editor.rMarkdownNotebook?.get(inlayElement)?.let { e ->
-        e.clearOutputs(removeFiles = false)
-        e.updateProgressStatus(InlayProgressStatus(RProgressStatus.RUNNING))
-      }
-      prepare.onProcessed {
-        executeCode(project, request, console, beforeChunkPromise) {
-          editor.rMarkdownNotebook?.let { nb -> nb[inlayElement]?.addText(it.text, it.kind) }
-        }.onProcessed { result ->
-          dumpAndShutdownAsync(graphicsDeviceRef.get()).onProcessed {
-            pullOutputsWithLogAsync(rInterop, cacheDirectory).onProcessed {
-              afterRunChunk(element, rInterop, result, promise, console, editor, inlayElement, isBatchMode)
-            }
+    val range = codeElement.getTextRange(textRange)
+    val request =
+      modifyRequestIfPython(console.rInterop.prepareReplSourceFileRequest(file.virtualFile, range, isDebug), codeElement)
+      ?: return promise.apply { setError("unknown code fence") }
+
+    val prepare = if (isFirstChunk) console.rInterop.interpreter.prepareForExecutionAsync() else resolvedPromise()
+    editor.rMarkdownNotebook?.get(inlayElement)?.let { e ->
+      e.clearOutputs(removeFiles = false)
+      e.updateProgressStatus(InlayProgressStatus(RProgressStatus.RUNNING))
+    }
+    prepare.onProcessed {
+      executeCode(project, request, console, beforeChunkPromise) {
+        editor.rMarkdownNotebook?.let { nb -> nb[inlayElement]?.addText(it.text, it.kind) }
+      }.onProcessed { result ->
+        dumpAndShutdownAsync(graphicsDeviceRef.get()).onProcessed {
+          pullOutputsWithLogAsync(console.rInterop, cacheDirectory).onProcessed {
+            afterRunChunk(element, console.rInterop, result, promise, console, editor, inlayElement, isBatchMode)
           }
         }
       }
-
-      return promise
     }
+
+    return promise
+  }
+
+  companion object {
+    fun getInstance(project: Project): RunChunkHandler =
+      project.service()
 
     private fun modifyRequestIfPython(request: RInterop.ReplSourceFileRequest, codeElement: CodeElement): RInterop.ReplSourceFileRequest? =
       when {
@@ -328,7 +327,7 @@ class RunChunkHandler(
     private fun ensureConsoleIsReady(
       console: RConsoleView,
       project: Project,
-      promise: AsyncPromise<Boolean>
+      promise: AsyncPromise<Boolean>,
     ): Boolean {
       if (console.executeActionHandler.state != RConsoleExecuteActionHandler.State.PROMPT) {
         Notification("RMarkdownRunChunkStatus", RBundle.message("run.chunk.notification.title"), RBundle.message("console.previous.command.still.running"), NotificationType.WARNING)
@@ -347,7 +346,7 @@ class RunChunkHandler(
       console: RConsoleView,
       editor: EditorEx,
       inlayElement: PsiElement,
-      isBatchMode: Boolean
+      isBatchMode: Boolean,
     ) {
       logNonEmptyError(rInterop.runAfterChunk())
       val outputs = result?.output
@@ -385,7 +384,7 @@ class RunChunkHandler(
       request: RInterop.ReplSourceFileRequest,
       console: RConsoleView,
       beforeChunkPromise: Promise<Unit>,
-      onOutput: (ProcessOutput) -> Unit = {}
+      onOutput: (ProcessOutput) -> Unit = {},
     ): Promise<ExecutionResult> {
       val result = mutableListOf<ProcessOutput>()
       val promise = AsyncPromise<ExecutionResult>()

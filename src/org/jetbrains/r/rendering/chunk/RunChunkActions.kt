@@ -151,7 +151,7 @@ private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
   RInteropCoroutineScope.getCoroutineScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
     ChunkExecutionState(editor, currentPsiElement = AtomicReference(element), isDebug = isDebug).useCurrent {
       try {
-        RunChunkHandler.execute(element, isDebug = isDebug)
+        RunChunkHandler.getInstance(project).execute(element, isDebug = isDebug)
         /** outputs will be updated in [RunChunkHandler.afterRunChunk] */
       } catch (ex: Throwable) {
         LOG.error(ex)
