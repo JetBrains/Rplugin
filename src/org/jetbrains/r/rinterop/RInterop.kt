@@ -325,24 +325,47 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
                                    val lineOffset: Int, val firstLineOffset: Int,
                                    val debug: Boolean, val firstDebugCommand: ExecuteCodeRequest.DebugCommand)
 
-  fun prepareReplSourceFileRequest(file: VirtualFile, textRange: TextRange? = null, debug: Boolean = false,
-                                   firstDebugCommand: ExecuteCodeRequest.DebugCommand? = null
+  fun prepareReplSourceFileRequest(
+    file: VirtualFile,
+    textRange: TextRange? = null,
+    debug: Boolean = false,
+    firstDebugCommand: ExecuteCodeRequest.DebugCommand? = null
   ): ReplSourceFileRequest {
     return runReadAction {
-      val debugCommand = firstDebugCommand ?: if (isUnitTestMode || !debug) {
-        ExecuteCodeRequest.DebugCommand.CONTINUE
-      } else {
-        RDebuggerUtil.getFirstDebugCommand(project, file, textRange)
-      }
-      val document = FileDocumentManager.getInstance().getDocument(file)
-      if (document == null) return@runReadAction ReplSourceFileRequest("", file, 0, 0, debug, debugCommand)
-      val range = textRange?.let { it.intersection(TextRange(0, document.textLength)) ?: TextRange.EMPTY_RANGE }
-                  ?: TextRange(0, document.textLength)
-      val code = document.getText(range)
-      val lineOffset = document.getLineNumber(range.startOffset)
-      val firstLineOffset = range.startOffset - document.getLineStartOffset(lineOffset)
-      ReplSourceFileRequest(code, file, lineOffset, firstLineOffset, debug, debugCommand)
+      prepareReplSourceFileRequestImpl(file, textRange, debug, firstDebugCommand)
     }
+  }
+
+  suspend fun prepareReplSourceFileRequestSuspendable(
+    file: VirtualFile,
+    textRange: TextRange? = null,
+    debug: Boolean = false,
+    firstDebugCommand: ExecuteCodeRequest.DebugCommand? = null,
+  ): ReplSourceFileRequest {
+    return readAction {
+      prepareReplSourceFileRequestImpl(file, textRange, debug, firstDebugCommand)
+    }
+  }
+
+  private fun prepareReplSourceFileRequestImpl(
+    file: VirtualFile,
+    textRange: TextRange?,
+    debug: Boolean,
+    firstDebugCommand: ExecuteCodeRequest.DebugCommand?
+  ): ReplSourceFileRequest {
+    val debugCommand = firstDebugCommand ?: if (isUnitTestMode || !debug) {
+      ExecuteCodeRequest.DebugCommand.CONTINUE
+    } else {
+      RDebuggerUtil.getFirstDebugCommand(project, file, textRange)
+    }
+    val document = FileDocumentManager.getInstance().getDocument(file)
+    if (document == null) return ReplSourceFileRequest("", file, 0, 0, debug, debugCommand)
+    val range = textRange?.let { it.intersection(TextRange(0, document.textLength)) ?: TextRange.EMPTY_RANGE }
+                ?: TextRange(0, document.textLength)
+    val code = document.getText(range)
+    val lineOffset = document.getLineNumber(range.startOffset)
+    val firstLineOffset = range.startOffset - document.getLineStartOffset(lineOffset)
+    return ReplSourceFileRequest(code, file, lineOffset, firstLineOffset, debug, debugCommand)
   }
 
   fun replSourceFile(file: VirtualFile, debug: Boolean = false, textRange: TextRange? = null,
