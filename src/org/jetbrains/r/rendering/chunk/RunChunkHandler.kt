@@ -162,7 +162,7 @@ class RunChunkHandler(
     return withContext(Dispatchers.IO) {
       blockingContext {
         ReadAction.compute<Promise<Boolean>, Throwable> {
-          runHandlersAndExecuteChunk(console, element, editor, isDebug, isBatchMode, isFirstChunk, textRange)
+          runHandlersAndExecuteChunkAsync(console, element, editor, isDebug, isBatchMode, isFirstChunk, textRange)
         }
       }.await()
     }
@@ -204,7 +204,7 @@ class RunChunkHandler(
   }
 
   @VisibleForTesting
-  internal fun runHandlersAndExecuteChunk(
+  internal fun runHandlersAndExecuteChunkAsync(
     console: RConsoleView,
     element: PsiElement,
     editor: EditorEx,
@@ -268,6 +268,8 @@ class RunChunkHandler(
   }
 
   companion object {
+    const val isNewMode: Boolean = true
+
     fun getInstance(project: Project): RunChunkHandler =
       project.service()
 

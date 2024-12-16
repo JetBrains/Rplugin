@@ -149,7 +149,7 @@ class RunChunkTest : RConsoleBaseTestCase() {
     TestCase.assertNotNull(fenceLang)
 
     val promise = helper.invokeAndWait(true) {
-      RunChunkHandler.getInstance(project).runHandlersAndExecuteChunk(console, fenceLang!!, myFixture.editor as EditorEx, true)
+      RunChunkHandler.getInstance(project).runHandlersAndExecuteChunkAsync(console, fenceLang!!, myFixture.editor as EditorEx, true)
     }
     TestCase.assertTrue(rInterop.isDebug)
     TestCase.assertEquals(listOf(5), rInterop.debugStack.map { it.position?.line })
@@ -183,7 +183,7 @@ class RunChunkTest : RConsoleBaseTestCase() {
     TestCase.assertNotNull(fenceLang)
     val result = runAsync {
       runReadAction {
-        RunChunkHandler.getInstance(project).runHandlersAndExecuteChunk(console, fenceLang!!, myFixture.editor as EditorEx, debug)
+        RunChunkHandler.getInstance(project).runHandlersAndExecuteChunkAsync(console, fenceLang!!, myFixture.editor as EditorEx, debug)
       }
     }
     val firstPromise = result.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
