@@ -103,6 +103,14 @@ class RGraphicsDevice(
     }
   }
 
+  suspend inline fun dumpAndShutdownAsyncAfterAction(action: suspend () -> Unit) {
+    try {
+      action()
+    } finally {
+      dumpAndShutdownAsync().await()
+    }
+  }
+
   fun addListener(listener: (RGraphicsUpdate) -> Unit) {
     listeners.add(listener)
     listener(lastUpdate)

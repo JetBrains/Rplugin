@@ -159,12 +159,16 @@ class RunChunkHandler(
 
     if (console == null) return false
 
-    return withContext(Dispatchers.IO) {
-      blockingContext {
-        ReadAction.compute<Promise<Boolean>, Throwable> {
-          runHandlersAndExecuteChunkAsync(console, element, editor, isDebug, isBatchMode, isFirstChunk, textRange)
-        }
-      }.await()
+    if (isNewMode) {
+      return runHandlersAndExecuteChunk(console, element, editor, isDebug, isBatchMode, isFirstChunk, textRange)
+    } else {
+      return withContext(Dispatchers.IO) {
+        blockingContext {
+          ReadAction.compute<Promise<Boolean>, Throwable> {
+            runHandlersAndExecuteChunkAsync(console, element, editor, isDebug, isBatchMode, isFirstChunk, textRange)
+          }
+        }.await()
+      }
     }
   }
 
@@ -201,6 +205,61 @@ class RunChunkHandler(
     val screenParameters = createScreenParameters(editor, project)
 
     return PsiElementWithContext(element, chunkText, codeElement, file, inlayElement, chunkPath, rMarkdownParameters, screenParameters)
+  }
+
+  private suspend fun runHandlersAndExecuteChunk(
+    console: RConsoleView,
+    element: PsiElement,
+    editor: EditorEx,
+    isDebug: Boolean = false,
+    isBatchMode: Boolean = false,
+    isFirstChunk: Boolean = true,
+    textRange: TextRange? = null,
+  ): Boolean {
+    return withContext(Dispatchers.IO) {
+      require(element.project == project)
+
+      val (elementWithContext, request) = readAction {
+        val elementWithContext = readElementContext(element, editor)
+        val request = elementWithContext.makeRequest(textRange, console, isDebug)
+        elementWithContext to request
+      }
+
+      val cacheDirectory = writeAction {
+        createCacheDirectory(elementWithContext.chunkPath)
+      }
+      val imagesDirectory = elementWithContext.chunkPath.getImagesDirectory()
+
+      checkConsoleIsReady(console, project)
+
+      if (isFirstChunk) console.rInterop.interpreter.prepareForExecution()
+      editor.rMarkdownNotebook?.get(elementWithContext.inlayElement)?.let { e ->
+        e.clearOutputs(removeFiles = false)
+        e.updateProgressStatus(InlayProgressStatus(RProgressStatus.RUNNING))
+      }
+
+      beforeRunChunk(console.rInterop, elementWithContext.rMarkdownParameters, elementWithContext.chunkText)
+      var result: ExecutionResult? = null
+
+      try {
+        val graphicsDevice = RGraphicsDevice(console.rInterop, File(imagesDirectory), elementWithContext.screenParameters, inMemory = false)
+
+        graphicsDevice.dumpAndShutdownAsyncAfterAction {
+          result = executeCode(project, request, console) {
+            editor.rMarkdownNotebook?.let { nb -> nb[elementWithContext.inlayElement]?.addText(it.text, it.kind) }
+          }.await()
+        }
+
+        pullOutputs(console.rInterop, cacheDirectory)
+      } catch (t: Throwable) {
+        afterRunChunk(element, console.rInterop, result, AsyncPromise<Boolean>(), console, editor, elementWithContext.inlayElement, isBatchMode)
+        throw t
+      }
+
+      val afterRunChunkResult = AsyncPromise<Boolean>()
+      afterRunChunk(element, console.rInterop, result, afterRunChunkResult, console, editor, elementWithContext.inlayElement, isBatchMode)
+      return@withContext afterRunChunkResult.await()
+    }
   }
 
   @VisibleForTesting
@@ -268,7 +327,8 @@ class RunChunkHandler(
   }
 
   companion object {
-    const val isNewMode: Boolean = true
+    /** In case of critical bugs in RunChunkHandler it could be switched off */
+    private const val isNewMode: Boolean = true
 
     fun getInstance(project: Project): RunChunkHandler =
       project.service()
@@ -293,12 +353,14 @@ class RunChunkHandler(
     }
 
     private fun pullOutputsWithLogAsync(rInterop: RInterop, cacheDirectory: String): Promise<Unit> {
-      return pullOutputsAsync(rInterop, cacheDirectory).onError { e ->
+      return runAsync {
+        pullOutputs(rInterop, cacheDirectory)
+      }.onError { e ->
         LOG.error("Run Chunk: cannot pull outputs", e)
       }
     }
 
-    private fun pullOutputsAsync(rInterop: RInterop, cacheDirectory: String) = runAsync {
+    private fun pullOutputs(rInterop: RInterop, cacheDirectory: String) {
       val response = rInterop.pullChunkOutputPaths()
       for (relativePath in response.relativePaths) {
         val remotePath = "${response.directory}/$relativePath"
@@ -387,6 +449,18 @@ class RunChunkHandler(
         return false
       }
       return true
+    }
+
+    @Throws(RunChunkHandlerException::class)
+    private fun checkConsoleIsReady(
+      console: RConsoleView,
+      project: Project,
+    ) {
+      if (console.executeActionHandler.state != RConsoleExecuteActionHandler.State.PROMPT) {
+        Notification("RMarkdownRunChunkStatus", RBundle.message("run.chunk.notification.title"), RBundle.message("console.previous.command.still.running"), NotificationType.WARNING)
+          .notify(project)
+        throw RunChunkHandlerException("console.previous.command.still.running")
+      }
     }
 
     private fun afterRunChunk(
