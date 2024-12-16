@@ -336,17 +336,6 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     }
   }
 
-  suspend fun prepareReplSourceFileRequestSuspendable(
-    file: VirtualFile,
-    textRange: TextRange? = null,
-    debug: Boolean = false,
-    firstDebugCommand: ExecuteCodeRequest.DebugCommand? = null,
-  ): ReplSourceFileRequest {
-    return readAction {
-      prepareReplSourceFileRequestImpl(file, textRange, debug, firstDebugCommand)
-    }
-  }
-
   private fun prepareReplSourceFileRequestImpl(
     file: VirtualFile,
     textRange: TextRange?,

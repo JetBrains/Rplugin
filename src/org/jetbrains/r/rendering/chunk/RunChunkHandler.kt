@@ -144,23 +144,27 @@ class RunChunkHandler(
     isFirstChunk: Boolean = true,
     textRange: TextRange? = null,
   ): Boolean {
-    return withContext(Dispatchers.EDT) {
+    val editor: EditorEx
+    val console: RConsoleView?
+
+    withContext(Dispatchers.EDT) {
       require(element.project == project)
       RMarkdownUtil.checkOrInstallPackages(project, RBundle.message("run.chunk.executor.name"))
 
       if (element.containingFile == null || element.context == null) throw RunChunkHandlerException("parent not found")
       val fileEditor = FileEditorManager.getInstance(project).getSelectedEditor(element.containingFile.originalFile.virtualFile)
-      val editor = EditorUtil.getEditorEx(fileEditor) ?: throw RunChunkHandlerException("editor not found")
-      val console = RConsoleManager.getInstance(project).awaitCurrentConsole().getOrNull()
-      if (console == null) return@withContext false
+      editor = EditorUtil.getEditorEx(fileEditor) ?: throw RunChunkHandlerException("editor not found")
+      console = RConsoleManager.getInstance(project).awaitCurrentConsole().getOrNull()
+    }
 
-      return@withContext withContext(Dispatchers.IO) {
-        blockingContext {
-          ReadAction.compute<Promise<Boolean>, Throwable> {
-            runHandlersAndExecuteChunk(console, element, editor, isDebug, isBatchMode, isFirstChunk, textRange)
-          }
-        }.await()
-      }
+    if (console == null) return false
+
+    return withContext(Dispatchers.IO) {
+      blockingContext {
+        ReadAction.compute<Promise<Boolean>, Throwable> {
+          runHandlersAndExecuteChunk(console, element, editor, isDebug, isBatchMode, isFirstChunk, textRange)
+        }
+      }.await()
     }
   }
 
