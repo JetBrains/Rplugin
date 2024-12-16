@@ -164,6 +164,41 @@ class RunChunkHandler(
     }
   }
 
+  private data class PsiElementWithContext(
+    val element: PsiElement,
+    val chunkText: String,
+    val codeElement: CodeElement,
+    val file: PsiFile,
+    val inlayElement: PsiElement,
+    val chunkPath: ChunkPath,
+    val rMarkdownParameters: String,
+    val screenParameters: RGraphicsUtils.ScreenParameters,
+  ) {
+
+    /** should be inside read action */
+    @Throws(RunChunkHandlerException::class)
+    fun makeRequest(textRange: TextRange?, console: RConsoleView, isDebug: Boolean): RInterop.ReplSourceFileRequest {
+      val range = codeElement.getTextRange(textRange)
+      val originalRequest = console.rInterop.prepareReplSourceFileRequest(file.virtualFile, range, isDebug)
+      return modifyRequestIfPython(originalRequest, codeElement)
+    }
+  }
+
+  /** should be inside read action */
+  @Throws(RunChunkHandlerException::class)
+  private fun readElementContext(element: PsiElement, editor: EditorEx): PsiElementWithContext {
+    val parent = element.parent
+    val chunkText = parent?.text ?: throw RunChunkHandlerException("parent is null")
+    val codeElement = findCodeElement(parent) ?: throw RunChunkHandlerException("cannot find code fence")
+    val file = element.containingFile ?: throw RunChunkHandlerException("containing file is null")
+    val inlayElement = findInlayElementByFenceElement(element) ?: throw RunChunkHandlerException("cannot find code fence")
+    val chunkPath = ChunkPath.create(inlayElement) ?: throw RunChunkHandlerException("cannot create cache dir")
+    val rMarkdownParameters = createRMarkdownParameters(file)
+    val screenParameters = createScreenParameters(editor, project)
+
+    return PsiElementWithContext(element, chunkText, codeElement, file, inlayElement, chunkPath, rMarkdownParameters, screenParameters)
+  }
+
   @VisibleForTesting
   internal fun runHandlersAndExecuteChunk(
     console: RConsoleView,
@@ -177,45 +212,48 @@ class RunChunkHandler(
     require(element.project == project)
 
     val promise = AsyncPromise<Boolean>()
-    val parent = element.parent
-    val chunkText = parent?.text ?: return promise.apply { setError("parent is null") }
-    val codeElement = findCodeElement(parent) ?: return promise.apply { setError("cannot find code fence") }
-    val file = element.containingFile
-    val inlayElement = findInlayElementByFenceElement(element) ?: return promise.apply { setError("cannot find code fence") }
-    val chunkPath = ChunkPath.create(inlayElement) ?: return promise.apply { setError("cannot create cache dir") }
-    val rMarkdownParameters = createRMarkdownParameters(file)
-    val cacheDirectory = createCacheDirectory(chunkPath)
-    val screenParameters = createScreenParameters(editor, project)
-    val imagesDirectory = chunkPath.getImagesDirectory()
+
+    val elementWithContext = try {
+      readElementContext(element, editor)
+    }
+    catch (ex: RunChunkHandlerException) {
+      return promise.apply { setError(ex) }
+    }
+
+    val cacheDirectory = createCacheDirectory(elementWithContext.chunkPath)
+    val imagesDirectory = elementWithContext.chunkPath.getImagesDirectory()
     val graphicsDeviceRef = AtomicReference<RGraphicsDevice>()
 
     if (!ensureConsoleIsReady(console, project, promise)) return promise
 
     // run before chunk handler without read action
     val beforeChunkPromise = runAsync {
-      beforeRunChunk(console.rInterop, rMarkdownParameters, chunkText)
-      val device = RGraphicsDevice(console.rInterop, File(imagesDirectory), screenParameters, inMemory = false)
+      beforeRunChunk(console.rInterop, elementWithContext.rMarkdownParameters, elementWithContext.chunkText)
+      val device = RGraphicsDevice(console.rInterop, File(imagesDirectory), elementWithContext.screenParameters, inMemory = false)
       graphicsDeviceRef.set(device)
     }
 
-    val range = codeElement.getTextRange(textRange)
     val request =
-      modifyRequestIfPython(console.rInterop.prepareReplSourceFileRequest(file.virtualFile, range, isDebug), codeElement)
-      ?: return promise.apply { setError("unknown code fence") }
+      try {
+        elementWithContext.makeRequest(textRange, console, isDebug)
+      }
+      catch (ex: RunChunkHandlerException) {
+        return promise.apply { setError(ex) }
+      }
 
     val prepare = if (isFirstChunk) console.rInterop.interpreter.prepareForExecutionAsync() else resolvedPromise()
-    editor.rMarkdownNotebook?.get(inlayElement)?.let { e ->
+    editor.rMarkdownNotebook?.get(elementWithContext.inlayElement)?.let { e ->
       e.clearOutputs(removeFiles = false)
       e.updateProgressStatus(InlayProgressStatus(RProgressStatus.RUNNING))
     }
     prepare.onProcessed {
       beforeChunkPromise.onProcessed {
         executeCode(project, request, console) {
-          editor.rMarkdownNotebook?.let { nb -> nb[inlayElement]?.addText(it.text, it.kind) }
+          editor.rMarkdownNotebook?.let { nb -> nb[elementWithContext.inlayElement]?.addText(it.text, it.kind) }
         }.onProcessed { result ->
           dumpAndShutdownAsync(graphicsDeviceRef.get()).onProcessed {
             pullOutputsWithLogAsync(console.rInterop, cacheDirectory).onProcessed {
-              afterRunChunk(element, console.rInterop, result, promise, console, editor, inlayElement, isBatchMode)
+              afterRunChunk(element, console.rInterop, result, promise, console, editor, elementWithContext.inlayElement, isBatchMode)
             }
           }
         }
@@ -229,7 +267,8 @@ class RunChunkHandler(
     fun getInstance(project: Project): RunChunkHandler =
       project.service()
 
-    private fun modifyRequestIfPython(request: RInterop.ReplSourceFileRequest, codeElement: CodeElement): RInterop.ReplSourceFileRequest? =
+    @Throws(RunChunkHandlerException::class)
+    private fun modifyRequestIfPython(request: RInterop.ReplSourceFileRequest, codeElement: CodeElement): RInterop.ReplSourceFileRequest =
       when {
         codeElement.fenceProvider.fenceLanguage === RLanguage.INSTANCE -> {
           request
@@ -239,7 +278,7 @@ class RunChunkHandler(
           request.copy(code = "reticulate::py_run_string(${wrapIntoRString(request.code)})")
         }
         else -> {
-          null
+          throw RunChunkHandlerException("unknown code fence")
         }
       }
 
