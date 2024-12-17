@@ -14,7 +14,7 @@ import javax.swing.BoxLayout
 internal class RMarkdownCellToolbarPanel(editor: EditorImpl, val pointer: NotebookIntervalPointer) : SteadyUIPanel(RMarkdownCellToolbarPanelUI(editor)) {
   init {
     isOpaque = false
-    background = editor.notebookAppearance.getCodeCellBackground(editor.colorsScheme)
+    background = editor.notebookAppearance.codeCellBackgroundColor.get()
     layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
 
     val toolbar = ActionManager.getInstance().createActionToolbar("InlineToolbar", RunChunkActions.createToolbarActionGroup(), true)

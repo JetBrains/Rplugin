@@ -11,6 +11,6 @@ class RMarkdownOutputCellGutterLineMarkerRenderer(private val lines: IntRange, i
   override fun paint(editor: Editor, g: Graphics, r: Rectangle) {
     editor as EditorImpl
     val inlayBounds = getInlayBounds(editor, lines) ?: return
-    paintNotebookCellBackgroundGutter(editor, g, r, lines, inlayBounds.y, inlayBounds.height)
+    paintNotebookCellBackgroundGutter(editor, g, r, inlayBounds.y, inlayBounds.height)
   }
 }

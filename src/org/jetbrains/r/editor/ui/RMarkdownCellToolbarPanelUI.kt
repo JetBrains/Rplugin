@@ -21,7 +21,7 @@ internal class RMarkdownCellToolbarPanelUI(private val editor: EditorImpl) : Pan
 
   override fun paint(g: Graphics, c: JComponent) {
     @Suppress("NAME_SHADOWING") g.create().use { g ->
-      g.color = editor.notebookAppearance.getCodeCellBackground(editor.colorsScheme)
+      g.color = editor.notebookAppearance.codeCellBackgroundColor.get()
       g.fillRect(0, 0, editor.scrollPane.let { it.viewport.width - it.verticalScrollBar.width }, c.height)
     }
     super.paint(g, c)

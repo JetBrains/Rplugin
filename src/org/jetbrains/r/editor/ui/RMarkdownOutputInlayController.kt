@@ -52,7 +52,7 @@ class RMarkdownOutputInlayController private constructor(
                            r: Rectangle,
                            interval: NotebookCellLines.Interval) {
     val inlayBounds = inlay.bounds ?: return
-    paintNotebookCellBackgroundGutter(editor, g, r, interval.lines, inlayBounds.y, inlayBounds.height)
+    paintNotebookCellBackgroundGutter(editor, g, r, inlayBounds.y, inlayBounds.height)
   }
 
   override fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval, cellView: EditorCellView) {
