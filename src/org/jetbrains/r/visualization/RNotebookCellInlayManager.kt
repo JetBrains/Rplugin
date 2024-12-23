@@ -335,7 +335,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
           textAttributesForHighlighter(),
           HighlighterTargetArea.LINES_IN_RANGE
         )
-        highlighter.customRenderer = NotebookCellHighlighterRenderer
+        highlighter.setCustomRenderer(NotebookCellHighlighterRenderer)
       }
     }
   }
