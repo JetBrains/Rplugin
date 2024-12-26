@@ -12,7 +12,7 @@ import org.jetbrains.r.hints.parameterInfo.RArgumentInfo;
 import org.jetbrains.r.psi.api.*;
 
 public final class RPatterns {
-  private final static Logger LOG = Logger.getInstance(RPatterns.class);
+  private static final Logger LOG = Logger.getInstance(RPatterns.class);
 
   /**
    * Used in rplugin/resources/injections/rInjections.xml
@@ -65,7 +65,7 @@ public final class RPatterns {
 
     return PlatformPatterns.psiElement(RStringLiteralExpression.class).with(new PatternCondition<>(argumentName) {
       @Override
-      public boolean accepts(@NotNull final RStringLiteralExpression stringLiteral, final ProcessingContext context) {
+      public boolean accepts(final @NotNull RStringLiteralExpression stringLiteral, final ProcessingContext context) {
         PsiElement parent = stringLiteral.getParent();
         if (parent instanceof RNamedArgument) {
           parent = parent.getParent();

@@ -16,7 +16,7 @@ import java.awt.*;
  */
 public final class FilterSettings {
     /** Properties must be defined with this prefix. */
-    public final static String PROPERTIES_PREFIX = "net.coderazzi.filters.";
+    public static final String PROPERTIES_PREFIX = "net.coderazzi.filters.";
 
     /** Whether to enable adaptive choices, true by default. */
     public static boolean adaptiveChoices = Boolean.parseBoolean(getString( "AdaptiveChoices", "true"));

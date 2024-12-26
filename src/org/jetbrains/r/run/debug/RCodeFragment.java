@@ -18,37 +18,33 @@ import org.jetbrains.r.psi.RFileImpl;
 
 class RCodeFragment extends RFileImpl {
 
-    public RCodeFragment(@NotNull final Project project, @NotNull final String name, @NotNull final String text) {
+    public RCodeFragment(final @NotNull Project project, final @NotNull String name, final @NotNull String text) {
         super(createLightVirtualFileViewProvider(project, name, text));
 
         ((SingleRootFileViewProvider) getViewProvider()).forceCachedPsi(this);
     }
 
 
-    @NotNull
-    private static FileViewProvider createLightVirtualFileViewProvider(@NotNull final Project project,
-                                                                       @NotNull final String name,
-                                                                       @NotNull final String text) {
+    private static @NotNull FileViewProvider createLightVirtualFileViewProvider(final @NotNull Project project,
+                                                                                final @NotNull String name,
+                                                                                final @NotNull String text) {
         return getFileManager(project).createFileViewProvider(
                 createLightVirtualFile(name, text), true
         );
     }
 
 
-    @NotNull
-    private static FileManager getFileManager(@NotNull final Project project) {
+    private static @NotNull FileManager getFileManager(final @NotNull Project project) {
         return PsiManagerEx.getInstanceEx(project).getFileManager();
     }
 
 
-    @NotNull
-    private static LightVirtualFile createLightVirtualFile(@NotNull final String name, @NotNull final String text) {
+    private static @NotNull LightVirtualFile createLightVirtualFile(final @NotNull String name, final @NotNull String text) {
         return new LightVirtualFile(name, getFileType(name), text);
     }
 
 
-    @NotNull
-    private static FileType getFileType(@NotNull final String name) {
+    private static @NotNull FileType getFileType(final @NotNull String name) {
         return FileTypeManager.getInstance().getFileTypeByFileName(name);
     }
 }

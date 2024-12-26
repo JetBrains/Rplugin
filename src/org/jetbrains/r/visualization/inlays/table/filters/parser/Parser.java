@@ -193,7 +193,7 @@ public class Parser implements IParser {
   /**
    * IOperand for comparison operations.
    */
-  abstract protected static class ComparisonOperand implements IOperand {
+  protected abstract static class ComparisonOperand implements IOperand {
     abstract boolean matches(int comparison);
 
     private String getOperator() {
@@ -281,7 +281,7 @@ public class Parser implements IParser {
   /**
    * IOperand for equal/unequal operations.
    */
-  static protected class EqualOperand implements IOperand {
+  protected static class EqualOperand implements IOperand {
 
     boolean expected;
 
@@ -376,7 +376,7 @@ public class Parser implements IParser {
   /**
    * Operand for regular expressions.
    */
-  static protected class REOperand implements IOperand {
+  protected static class REOperand implements IOperand {
     boolean equals;
 
     /**
@@ -432,7 +432,7 @@ public class Parser implements IParser {
   /**
    * Operand for wildcard expressions.
    */
-  static protected class WildcardOperand extends REOperand {
+  protected static class WildcardOperand extends REOperand {
 
     private boolean instantMode;
     private int instantApplied;

@@ -37,7 +37,7 @@ import java.util.*;
  * @see CommonPsiFileBreadcrumbsCollector#createCrumb(PsiElement, BreadcrumbsProvider, CrumbPresentation)
  */
 public class CommonPsiFileBreadcrumbsCollector extends FileBreadcrumbsCollector {
-  private final static Logger LOG = Logger.getInstance(CommonPsiFileBreadcrumbsCollector.class);
+  private static final Logger LOG = Logger.getInstance(CommonPsiFileBreadcrumbsCollector.class);
 
   private final Project myProject;
 
@@ -93,8 +93,7 @@ public class CommonPsiFileBreadcrumbsCollector extends FileBreadcrumbsCollector 
   }
 
   @Override
-  @NotNull
-  public Iterable<Crumb> computeCrumbs(@NotNull VirtualFile file, @NotNull Document document, int offset, Boolean forcedShown) {
+  public @NotNull Iterable<Crumb> computeCrumbs(@NotNull VirtualFile file, @NotNull Document document, int offset, Boolean forcedShown) {
     BreadcrumbsProvider defaultInfoProvider = findProvider(file, myProject, forcedShown);
 
     Collection<Pair<PsiElement, BreadcrumbsProvider>> pairs =
@@ -116,8 +115,7 @@ public class CommonPsiFileBreadcrumbsCollector extends FileBreadcrumbsCollector 
     return result;
   }
 
-  @NotNull
-  public Crumb createCrumb(@NotNull PsiElement element, @NotNull BreadcrumbsProvider provider, @Nullable CrumbPresentation presentation) {
+  public @NotNull Crumb createCrumb(@NotNull PsiElement element, @NotNull BreadcrumbsProvider provider, @Nullable CrumbPresentation presentation) {
     return new CommonPsiCrumb(element, provider, presentation);
   }
 
@@ -131,13 +129,12 @@ public class CommonPsiFileBreadcrumbsCollector extends FileBreadcrumbsCollector 
     return null;
   }
 
-  @Nullable
-  private static Collection<Pair<PsiElement, BreadcrumbsProvider>> getLineElements(Document document,
-                                                                                   int offset,
-                                                                                   VirtualFile file,
-                                                                                   Project project,
-                                                                                   BreadcrumbsProvider defaultInfoProvider,
-                                                                                   boolean checkSettings) {
+  private static @Nullable Collection<Pair<PsiElement, BreadcrumbsProvider>> getLineElements(Document document,
+                                                                                             int offset,
+                                                                                             VirtualFile file,
+                                                                                             Project project,
+                                                                                             BreadcrumbsProvider defaultInfoProvider,
+                                                                                             boolean checkSettings) {
     PsiElement element = findStartElement(document, offset, file, project, defaultInfoProvider, checkSettings);
     if (element == null) return null;
 
@@ -167,8 +164,7 @@ public class CommonPsiFileBreadcrumbsCollector extends FileBreadcrumbsCollector 
    * </code></pre>
    * will highlight bar's braces, looking backwards. So it should include it to breadcrumbs, too.
    */
-  @Nullable
-  private static PsiElement findStartElement(Document document,
+  private static @Nullable PsiElement findStartElement(Document document,
                                              int offset,
                                              VirtualFile file,
                                              Project project,
@@ -190,12 +186,11 @@ public class CommonPsiFileBreadcrumbsCollector extends FileBreadcrumbsCollector 
     }
   }
 
-  @Nullable
-  private static PsiElement findFirstBreadcrumbedElement(final int offset,
-                                                         final VirtualFile file,
-                                                         final Project project,
-                                                         final BreadcrumbsProvider defaultInfoProvider,
-                                                         boolean checkSettings) {
+  private static @Nullable PsiElement findFirstBreadcrumbedElement(final int offset,
+                                                                   final VirtualFile file,
+                                                                   final Project project,
+                                                                   final BreadcrumbsProvider defaultInfoProvider,
+                                                                   boolean checkSettings) {
     if (file == null || !file.isValid() || file.isDirectory()) return null;
 
     PriorityQueue<PsiElement> leafs =
@@ -233,15 +228,13 @@ public class CommonPsiFileBreadcrumbsCollector extends FileBreadcrumbsCollector 
     return null;
   }
 
-  @Nullable
-  private static PsiElement getParent(@NotNull PsiElement element, @Nullable BreadcrumbsProvider provider) {
+  private static @Nullable PsiElement getParent(@NotNull PsiElement element, @Nullable BreadcrumbsProvider provider) {
     return provider != null ? provider.getParent(element) : element.getParent();
   }
 
-  @Nullable
-  private static BreadcrumbsProvider findProviderForElement(@NotNull PsiElement element,
-                                                            BreadcrumbsProvider defaultProvider,
-                                                            boolean checkSettings) {
+  private static @Nullable BreadcrumbsProvider findProviderForElement(@NotNull PsiElement element,
+                                                                      BreadcrumbsProvider defaultProvider,
+                                                                      boolean checkSettings) {
     Language language = element.getLanguage();
     if (checkSettings && !BreadcrumbsUtilEx.isBreadcrumbsShownFor(language)) return defaultProvider;
     BreadcrumbsProvider provider = BreadcrumbsUtil.getInfoProvider(language);
@@ -257,14 +250,12 @@ public class CommonPsiFileBreadcrumbsCollector extends FileBreadcrumbsCollector 
     return elements;
   }
 
-  @Nullable
-  static FileViewProvider findViewProvider(final VirtualFile file, final Project project) {
+  static @Nullable FileViewProvider findViewProvider(final VirtualFile file, final Project project) {
     if (file == null || file.isDirectory()) return null;
     return PsiManager.getInstance(project).findViewProvider(file);
   }
 
-  @Nullable
-  static BreadcrumbsProvider findProvider(VirtualFile file, @Nullable Project project, @Nullable Boolean forcedShown) {
+  static @Nullable BreadcrumbsProvider findProvider(VirtualFile file, @Nullable Project project, @Nullable Boolean forcedShown) {
     return project == null ? null : BreadcrumbsUtilEx.findProvider(findViewProvider(file, project), forcedShown);
   }
 }

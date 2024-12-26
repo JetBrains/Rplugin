@@ -19,8 +19,8 @@ public class RAssignmentStubImpl extends StubBase<RAssignmentStatement> implemen
     private final boolean isRight;
 
 
-    public RAssignmentStubImpl(@Nullable final String name,
-                               @NotNull final StubElement parent,
+    public RAssignmentStubImpl(final @Nullable String name,
+                               final @NotNull StubElement parent,
                                @NotNull IStubElementType stubElementType,
                                boolean isFunctionDefinition,
                                boolean isTopLevel,

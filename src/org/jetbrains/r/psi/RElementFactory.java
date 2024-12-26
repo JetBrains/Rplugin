@@ -37,8 +37,7 @@ public final class RElementFactory {
     return (RPsiElement)fromText.getFirstChild();
   }
 
-  @Nullable
-  public static RPsiElement createRPsiElementFromTextOrNull(Project project, String text) {
+  public static @Nullable RPsiElement createRPsiElementFromTextOrNull(Project project, String text) {
     PsiFile fromText = buildRFileFromText(project, text);
     if (fromText.getFirstChild() instanceof RPsiElement) {
       return (RPsiElement)fromText.getFirstChild();

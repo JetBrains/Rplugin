@@ -22,30 +22,29 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class RParameterElementType extends RStubElementType<RParameterStub, RParameter> {
-  RParameterElementType(@NotNull final String debugName) {
+  RParameterElementType(final @NotNull String debugName) {
     super(debugName);
   }
 
   @Override
-  public PsiElement createElement(@NotNull final ASTNode node) {
+  public PsiElement createElement(final @NotNull ASTNode node) {
     return new RParameterImpl(node);
   }
 
   @Override
-  public RParameter createPsi(@NotNull final RParameterStub stub) {
+  public RParameter createPsi(final @NotNull RParameterStub stub) {
     return new RParameterImpl(stub, this);
   }
 
 
-  @NotNull
   @Override
-  public RParameterStub createStub(@NotNull RParameter psi, StubElement parentStub) {
+  public @NotNull RParameterStub createStub(@NotNull RParameter psi, StubElement parentStub) {
     final String name = psi.getName();
     return new RParameterStubImpl(name, parentStub, this);
   }
 
   @Override
-  public void serialize(@NotNull final RParameterStub stub, @NotNull final StubOutputStream dataStream)
+  public void serialize(final @NotNull RParameterStub stub, final @NotNull StubOutputStream dataStream)
     throws IOException {
     dataStream.writeName(stub.getName());
   }
@@ -56,8 +55,7 @@ public class RParameterElementType extends RStubElementType<RParameterStub, RPar
   }
 
   @Override
-  @NotNull
-  public RParameterStub deserialize(@NotNull final StubInputStream dataStream, final StubElement parentStub) throws IOException {
+  public @NotNull RParameterStub deserialize(final @NotNull StubInputStream dataStream, final StubElement parentStub) throws IOException {
     String name = Objects.requireNonNull(StringRef.toString(dataStream.readName()));
     return new RParameterStubImpl(name, parentStub, this);
   }

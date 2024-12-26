@@ -33,7 +33,7 @@ public class RStringLiteralEscaper extends LiteralTextEscaper<RStringInjectHost>
 
 
     @Override
-    public boolean decode(@NotNull final TextRange rangeInsideHost, @NotNull final StringBuilder outChars) {
+    public boolean decode(final @NotNull TextRange rangeInsideHost, final @NotNull StringBuilder outChars) {
         // todo implement proper java-like string escapes support
         TextRange.assertProperRange(rangeInsideHost);
         outChars.append(myHost.getText(), rangeInsideHost.getStartOffset(), rangeInsideHost.getEndOffset());
@@ -42,7 +42,7 @@ public class RStringLiteralEscaper extends LiteralTextEscaper<RStringInjectHost>
 
 
     @Override
-    public int getOffsetInHost(final int offsetInDecoded, @NotNull final TextRange rangeInsideHost) {
+    public int getOffsetInHost(final int offsetInDecoded, final @NotNull TextRange rangeInsideHost) {
         TextRange.assertProperRange(rangeInsideHost);
         int offset = offsetInDecoded;
         // todo implement proper java-like string escapes support

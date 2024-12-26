@@ -27,7 +27,7 @@ public class RHelpParser {
     private final String docHeader;
 
 
-    public RHelpParser(@NotNull final String documentationText) {
+    public RHelpParser(final @NotNull String documentationText) {
 
         // parse help text
         final String[] lines = documentationText.split("\n");
@@ -77,8 +77,7 @@ public class RHelpParser {
     }
 
 
-    @NotNull
-    public String getFormattedString() {
+    public @NotNull String getFormattedString() {
         final StringBuilder builder = new StringBuilder();
 
         builder.append(docHeader);
@@ -114,7 +113,7 @@ public class RHelpParser {
     }
 
 
-    private static void formatAndAppend(@NotNull final StringBuilder builder, @NotNull final String docString) {
+    private static void formatAndAppend(final @NotNull StringBuilder builder, final @NotNull String docString) {
         builder.append("<br/>");
         final Matcher matcher = ARG_PATTERN.matcher(docString);
         if (matcher.find()) {

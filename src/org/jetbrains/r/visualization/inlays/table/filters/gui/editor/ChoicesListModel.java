@@ -306,7 +306,7 @@ public class ChoicesListModel extends AbstractListModel
      * content is rendered- and the position on the model when is sorted
      * alphabetically.
      */
-    static public class Choice {
+    public static class Choice {
         public Object o;
         public String str;
         public int idx;
@@ -340,7 +340,7 @@ public class ChoicesListModel extends AbstractListModel
     }
 
     /** Comparator to compare Wrappers by their string member. */
-    static private final class ChoiceTextComparator implements Comparator<Choice> {
+    private static final class ChoiceTextComparator implements Comparator<Choice> {
 
         private final Comparator<String> stringComparator;
 

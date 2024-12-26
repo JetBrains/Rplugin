@@ -14,7 +14,7 @@ import java.util.Set;
  * Commodity class implementing the interface {@link
  * IFilter} on a {@link RowFilter}.
  */
-abstract public class Filter extends RowFilter implements IFilter {
+public abstract class Filter extends RowFilter implements IFilter {
 
     /** The set of currently subscribed observers. */
     private Set<IFilterObserver> observers = new HashSet<>();

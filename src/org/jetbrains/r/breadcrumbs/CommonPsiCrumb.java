@@ -54,9 +54,8 @@ public class CommonPsiCrumb extends Crumb.Impl implements NavigatableCrumb, Lazy
     return element != null ? element.getTextOffset() : -1;
   }
 
-  @Nullable
   @Override
-  public TextRange getHighlightRange() {
+  public @Nullable TextRange getHighlightRange() {
     PsiElement element = anchor.retrieve();
     return element != null ? element.getTextRange() : null;
   }

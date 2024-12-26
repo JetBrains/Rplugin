@@ -632,11 +632,11 @@ class EditorComponent extends JTextField {
          * Method called when consolidating a filter instant, if the text and
          * the filter content do not match.
          */
-        abstract protected void consolidateInstantFilter(String text,
+        protected abstract void consolidateInstantFilter(String text,
                                                          String content);
 
         /** Method called to handle parse text before invoking the parser. */
-        abstract protected String parseEscape(String text);
+        protected abstract String parseEscape(String text);
     }
 
 

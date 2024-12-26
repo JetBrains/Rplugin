@@ -37,11 +37,11 @@ import java.awt.*;
 class FilterListCellRenderer extends JComponent implements ListCellRenderer {
 
     private static final long serialVersionUID = 6736940091246039334L;
-    private final static int X_MARGIN_ARROW = 1;
-    private final static int WIDTH_ARROW = 5;
-    private final static int HEIGHT_ARROW = 6; // must be even
-    private final static int[] X = { 0, WIDTH_ARROW, 0 };
-    private final static int[] Y = { 0, HEIGHT_ARROW / 2, HEIGHT_ARROW };
+    private static final int X_MARGIN_ARROW = 1;
+    private static final int WIDTH_ARROW = 5;
+    private static final int HEIGHT_ARROW = 6; // must be even
+    private static final int[] X = { 0, WIDTH_ARROW, 0 };
+    private static final int[] Y = { 0, HEIGHT_ARROW / 2, HEIGHT_ARROW };
 
     private final CellRendererPane painter = new CellRendererPane();
     private final JList referenceList;

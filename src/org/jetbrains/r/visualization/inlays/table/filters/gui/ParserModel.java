@@ -237,7 +237,7 @@ public class ParserModel implements IParserModel {
         return DateFormat.getDateInstance(DateFormat.SHORT);
     }
 
-    static abstract class TypeFormat extends Format {
+    abstract static class TypeFormat extends Format {
         private static final long serialVersionUID = -6161901343218446716L;
 
         @Override public StringBuffer format(Object        obj,

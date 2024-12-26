@@ -20,26 +20,25 @@ import org.jetbrains.r.psi.stubs.*;
 import java.io.IOException;
 
 public class RAssignmentElementType extends RStubElementType<RAssignmentStub, RAssignmentStatement> {
-    RAssignmentElementType(@NotNull final String debugName) {
+    RAssignmentElementType(final @NotNull String debugName) {
         super(debugName);
     }
 
 
     @Override
-    public PsiElement createElement(@NotNull final ASTNode node) {
+    public PsiElement createElement(final @NotNull ASTNode node) {
         return new RAssignmentStatementImpl(node);
     }
 
 
     @Override
-    public RAssignmentStatement createPsi(@NotNull final RAssignmentStub stub) {
+    public RAssignmentStatement createPsi(final @NotNull RAssignmentStub stub) {
         return new RAssignmentStatementImpl(stub, this);
     }
 
 
-    @NotNull
     @Override
-    public RAssignmentStub createStub(@NotNull RAssignmentStatement psi, StubElement parentStub) {
+    public @NotNull RAssignmentStub createStub(@NotNull RAssignmentStatement psi, StubElement parentStub) {
         final String name = psi.getName();
         final RPsiElement value = psi.getAssignedValue();
         boolean isTopLevelAssign = value != null && value.getParent() != null && value.getParent().getParent() != null && value.getParent().getParent() instanceof RFile;
@@ -50,7 +49,7 @@ public class RAssignmentElementType extends RStubElementType<RAssignmentStub, RA
     }
 
     @Override
-    public void serialize(@NotNull final RAssignmentStub stub, @NotNull final StubOutputStream dataStream)
+    public void serialize(final @NotNull RAssignmentStub stub, final @NotNull StubOutputStream dataStream)
             throws IOException {
         dataStream.writeName(stub.getName());
         dataStream.writeBoolean(stub.isFunctionDeclaration());
@@ -60,8 +59,7 @@ public class RAssignmentElementType extends RStubElementType<RAssignmentStub, RA
 
 
     @Override
-    @NotNull
-    public RAssignmentStub deserialize(@NotNull final StubInputStream dataStream, final StubElement parentStub) throws IOException {
+    public @NotNull RAssignmentStub deserialize(final @NotNull StubInputStream dataStream, final StubElement parentStub) throws IOException {
         String name = StringRef.toString(dataStream.readName());
         final boolean isFunctionDefinition = dataStream.readBoolean();
         final boolean isTopLevel = dataStream.readBoolean();
@@ -71,7 +69,7 @@ public class RAssignmentElementType extends RStubElementType<RAssignmentStub, RA
 
 
     @Override
-    public void indexStub(@NotNull final RAssignmentStub stub, @NotNull final IndexSink sink) {
+    public void indexStub(final @NotNull RAssignmentStub stub, final @NotNull IndexSink sink) {
         final String name = stub.getName();
         if (name != null && stub.getParentStub() instanceof PsiFileStub && stub.isTopLevelAssignment()) {
             RAssignmentNameIndex.sink(sink, name);

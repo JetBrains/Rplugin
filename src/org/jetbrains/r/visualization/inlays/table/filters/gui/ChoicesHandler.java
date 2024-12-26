@@ -124,7 +124,7 @@ public abstract class ChoicesHandler implements TableModelListener, Runnable {
      * Basic RowFilter.Entry instance, used internally to handle the RowFilter
      * default filtering.
      */
-    static protected class RowEntry extends RowFilter.Entry {
+    protected static class RowEntry extends RowFilter.Entry {
         private final TableModel model;
         private final int count;
         private final Format[] formatters;

@@ -38,7 +38,7 @@ public abstract class RStringInjectHost extends ASTWrapperPsiElement implements 
      * note: this method is called if incjected snippet is edited in split pane view.
      */
     @Override
-    public RStringInjectHost updateText(@NotNull final String text) {
+    public RStringInjectHost updateText(final @NotNull String text) {
         final RStringLiteralExpression expression = createExpressionFromText(getProject(), text);
         assert expression != null : text + "-->" + expression;
         return (RStringInjectHost) this.replace(expression);
@@ -55,10 +55,9 @@ public abstract class RStringInjectHost extends ASTWrapperPsiElement implements 
     public String toString() {
         return RElementTypes.R_STRING_LITERAL_EXPRESSION.toString();
     }
-    @NotNull
-    @Override
     // provide path completion. see ResourceFileRefernceProvider
-    public PsiReference[] getReferences() {
+    @Override
+    public @NotNull PsiReference[] getReferences() {
         return ReferenceProvidersRegistry.getReferencesFromProviders(this);
     }
 
@@ -73,9 +72,8 @@ public abstract class RStringInjectHost extends ASTWrapperPsiElement implements 
     }
 
 
-    @NotNull
     @Override
-    public LiteralTextEscaper<? extends PsiLanguageInjectionHost> createLiteralTextEscaper() {
+    public @NotNull LiteralTextEscaper<? extends PsiLanguageInjectionHost> createLiteralTextEscaper() {
         return new RStringLiteralEscaper(this);
     }
 }

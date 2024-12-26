@@ -20,19 +20,18 @@ public class RElementType extends IElementType {
     private static final Class[] PARAMETER_TYPES = new Class[]{ASTNode.class};
 
 
-    public RElementType(@NotNull @NonNls final String debugName) {
+    public RElementType(final @NotNull @NonNls String debugName) {
         super(debugName, RLanguage.INSTANCE);
     }
 
 
-    public RElementType(@NotNull @NonNls final String debugName, @NotNull final Class<? extends PsiElement> psiElementClass) {
+    public RElementType(final @NotNull @NonNls String debugName, final @NotNull Class<? extends PsiElement> psiElementClass) {
         super(debugName, RLanguage.INSTANCE);
         myPsiElementClass = psiElementClass;
     }
 
 
-    @NotNull
-    public PsiElement createElement(@NotNull final ASTNode node) {
+    public @NotNull PsiElement createElement(final @NotNull ASTNode node) {
         if (myPsiElementClass == null) {
             throw new IllegalStateException("Cannot create an element for " + node.getElementType() + " without element class");
         }

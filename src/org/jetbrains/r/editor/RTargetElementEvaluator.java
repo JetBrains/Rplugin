@@ -28,9 +28,8 @@ public class RTargetElementEvaluator implements TargetElementEvaluatorEx {
     }
 
 
-    @Nullable
     @Override
-    public PsiElement getElementByReference(@NotNull PsiReference ref, int flags) {
+    public @Nullable PsiElement getElementByReference(@NotNull PsiReference ref, int flags) {
 //    if (ref instanceof JSTextReference) {
 //      final PsiElement element = ref.getElement();
 //      final JSCallExpression call = PsiTreeUtil.getParentOfType(element, JSCallExpression.class);

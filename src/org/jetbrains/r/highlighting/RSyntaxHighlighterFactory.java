@@ -14,8 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class RSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
     @Override
-    @NotNull
-    public SyntaxHighlighter getSyntaxHighlighter(@Nullable final Project project, @Nullable final VirtualFile virtualFile) {
+    public @NotNull SyntaxHighlighter getSyntaxHighlighter(final @Nullable Project project, final @Nullable VirtualFile virtualFile) {
         return new RHighlighter();
     }
 }

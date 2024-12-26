@@ -12,7 +12,7 @@ import java.util.Set;
  *
  * <p>The exact composition semantics (and / or / not) are not defined.</p>
  */
-abstract public class ComposedFilter extends Filter implements IFilterObserver {
+public abstract class ComposedFilter extends Filter implements IFilterObserver {
 
     /** Set of associated IFilters. */
     protected Set<IFilter> filters;

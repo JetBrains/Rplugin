@@ -15,20 +15,19 @@ import org.jetbrains.r.RLanguage;
 import org.jetbrains.r.psi.api.RPsiElement;
 
 public abstract class RStubElementType<StubT extends StubElement<?>, PsiT extends RPsiElement> extends IStubElementType<StubT, PsiT> {
-  public RStubElementType(@NonNls final String debugName) {
+  public RStubElementType(final @NonNls String debugName) {
     super(debugName, RLanguage.INSTANCE);
   }
 
-  public abstract PsiElement createElement(@NotNull final ASTNode node);
+  public abstract PsiElement createElement(final @NotNull ASTNode node);
 
 
   @Override
-  public void indexStub(@NotNull final StubT stub, @NotNull final IndexSink sink) {
+  public void indexStub(final @NotNull StubT stub, final @NotNull IndexSink sink) {
   }
 
   @Override
-  @NotNull
-  public String getExternalId() {
+  public @NotNull String getExternalId() {
     return "r." + super.toString();
   }
 }

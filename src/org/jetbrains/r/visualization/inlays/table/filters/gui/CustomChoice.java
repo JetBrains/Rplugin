@@ -39,8 +39,8 @@ public abstract class CustomChoice implements Serializable {
 
   private static final long serialVersionUID = -2894134608058210332L;
 
-  public final static int DEFAULT_PRECEDENCE = 0;
-  public final static int MATCH_ALL_PRECEDENCE = -255;
+  public static final int DEFAULT_PRECEDENCE = 0;
+  public static final int MATCH_ALL_PRECEDENCE = -255;
 
   static final RowFilter passAllRawFilter = new RowFilter() {
     @Override
@@ -52,7 +52,7 @@ public abstract class CustomChoice implements Serializable {
   /**
    * Empty filter, returns all entries.
    */
-  public final static CustomChoice MATCH_ALL = new CustomChoice("", null,
+  public static final CustomChoice MATCH_ALL = new CustomChoice("", null,
                                                                 MATCH_ALL_PRECEDENCE) {
 
     private static final long serialVersionUID = -8964761397870138666L;
@@ -66,7 +66,7 @@ public abstract class CustomChoice implements Serializable {
   /**
    * Special empty filter, returns all entries with null or empty values.
    */
-  public final static CustomChoice MATCH_EMPTY = new CustomChoice(
+  public static final CustomChoice MATCH_EMPTY = new CustomChoice(
     FilterSettings.matchEmptyFilterString,
     FilterSettings.matchEmptyFilterIcon) {
 
@@ -332,9 +332,9 @@ public abstract class CustomChoice implements Serializable {
    * Returns the string representation of the filter.
    */
   @Override
-  final public String toString() {
+  public final String toString() {
     return str;
   }
 
-  static private final @NotNull NotNullFunction<String, String> escaper = StringUtil.escaper(true, "\"");
+  private static final @NotNull NotNullFunction<String, String> escaper = StringUtil.escaper(true, "\"");
 }

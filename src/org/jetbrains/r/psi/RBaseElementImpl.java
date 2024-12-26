@@ -16,19 +16,18 @@ import org.jetbrains.r.RLanguage;
 import org.jetbrains.r.psi.api.RPsiElement;
 
 public class RBaseElementImpl<T extends StubElement> extends StubBasedPsiElementBase<T> implements RPsiElement {
-    public RBaseElementImpl(@NotNull final ASTNode node) {
+    public RBaseElementImpl(final @NotNull ASTNode node) {
         super(node);
     }
 
 
-    public RBaseElementImpl(@NotNull final T stub, @NotNull final IStubElementType nodeType) {
+    public RBaseElementImpl(final @NotNull T stub, final @NotNull IStubElementType nodeType) {
         super(stub, nodeType);
     }
 
 
-    @NotNull
     @Override
-    public Language getLanguage() {
+    public @NotNull Language getLanguage() {
         return RLanguage.INSTANCE;
     }
 

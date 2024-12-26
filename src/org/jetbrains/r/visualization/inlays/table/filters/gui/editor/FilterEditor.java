@@ -20,8 +20,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.text.Format;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 
 /**
@@ -984,7 +984,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
    * some added functionality (like auto-adding to the history list when the
    * filter changes).
    */
-  final public class EditorFilter extends Filter {
+  public final class EditorFilter extends Filter {
     RowFilter delegate;
     boolean toBeConsolidated;
     boolean reportOnConsolidation;

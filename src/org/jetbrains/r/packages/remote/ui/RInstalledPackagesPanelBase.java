@@ -57,8 +57,8 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RInstalledPackagesPanelBase extends JPanel {
@@ -311,8 +311,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
     model.getColumn(UNINSTALL_COLUMN).setMaxWidth(singleIconWidth * 3 / 2);
   }
 
-  @NotNull
-  private static Point getMouseColumnRow(Point screen, JTable table) {
+  private static @NotNull Point getMouseColumnRow(Point screen, JTable table) {
     Point location = new Point(screen);
     SwingUtilities.convertPointFromScreen(location, table);
     int columnAtPoint = table.columnAtPoint(location);
@@ -324,8 +323,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
     return AnAction.EMPTY_ARRAY;
   }
 
-  @NotNull
-  protected ManagePackagesDialog createManagePackagesDialog() {
+  protected @NotNull ManagePackagesDialog createManagePackagesDialog() {
     return new ManagePackagesDialog(myProject,
                                     myPackageManagementService,
                                     new PackageManagementService.Listener() {
@@ -390,7 +388,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
     return Collections.emptySet();
   }
 
-  private void upgradePackage(@NotNull final RInstalledPackage pkg, @Nullable final String toVersion) {
+  private void upgradePackage(final @NotNull RInstalledPackage pkg, final @Nullable String toVersion) {
     final RPackageManagementService selectedPackageManagementService = myPackageManagementService;
     myPackageManagementService.fetchPackageVersions(pkg.getName(), new CatchingConsumer<>() {
       @Override
@@ -409,7 +407,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
 
             @Override
             public void operationFinished(final String packageName,
-                                          @Nullable final PackageManagementService.ErrorDescription errorDescription) {
+                                          final @Nullable PackageManagementService.ErrorDescription errorDescription) {
               ApplicationManager.getApplication().invokeLater(() -> {
                 myPackagesTable.clearSelection();
                 updatePackages(selectedPackageManagementService);
@@ -449,8 +447,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
     });
   }
 
-  @Nullable
-  private PackageManagementServiceEx getServiceEx() {
+  private @Nullable PackageManagementServiceEx getServiceEx() {
     return ObjectUtils.tryCast(myPackageManagementService, PackageManagementServiceEx.class);
   }
 
@@ -491,7 +488,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
     return true;
   }
 
-  protected boolean canInstallPackage(@NotNull final RInstalledPackage pyPackage) {
+  protected boolean canInstallPackage(final @NotNull RInstalledPackage pyPackage) {
     return true;
   }
 
@@ -514,7 +511,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
 
         @Override
         public void operationFinished(final String packageName,
-                                      @Nullable final PackageManagementService.ErrorDescription errorDescription) {
+                                      final @Nullable PackageManagementService.ErrorDescription errorDescription) {
           ApplicationManager.getApplication().invokeLater(() -> {
             myPackagesTable.clearSelection();
             updatePackages(selectedPackageManagementService);
@@ -560,7 +557,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
     ActivityTracker.getInstance().inc();
   }
 
-  public void doUpdatePackages(@NotNull final RPackageManagementService packageManagementService) {
+  public void doUpdatePackages(final @NotNull RPackageManagementService packageManagementService) {
     onUpdateStarted();
     ProgressManager.getInstance().run(new Task.Backgroundable(myProject,
                                                               LOADING_PACKAGES_LIST_TITLE,
@@ -601,8 +598,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
     });
   }
 
-  @Nullable
-  private RInstalledPackage getInstalledPackageAt(int index) {
+  private @Nullable RInstalledPackage getInstalledPackageAt(int index) {
     return (RInstalledPackage) myPackageFilteringModel.getValueAt(index, PACKAGE_NAME_COLUMN);
   }
 
@@ -635,7 +631,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
           }
 
           @Override
-          public void consume(@Nullable final String latestVersion) {
+          public void consume(final @Nullable String latestVersion) {
             UIUtil.invokeLaterIfNeeded(() -> {
               if (finalIndex < myPackagesTableModel.getRowCount()) {
                 RInstalledPackage p = getInstalledPackageAt(finalIndex);
@@ -715,8 +711,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
       return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
     }
 
-    @Nullable
-    private static RInstalledPackage getInstalledPackageAt(final JTable table, final int row) {
+    private static @Nullable RInstalledPackage getInstalledPackageAt(final JTable table, final int row) {
       final Object o = table.getValueAt(row, PACKAGE_NAME_COLUMN);
       if (o instanceof RInstalledPackage) {
         return (RInstalledPackage) o;
@@ -754,9 +749,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
     public void actionPerformed(@NotNull AnActionEvent e) {
     }
 
-    @NotNull
     @Override
-    public JComponent createCustomComponent(@NotNull Presentation presentation, @NotNull String place) {
+    public @NotNull JComponent createCustomComponent(@NotNull Presentation presentation, @NotNull String place) {
       return myField;
     }
 

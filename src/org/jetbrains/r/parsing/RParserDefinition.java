@@ -27,8 +27,7 @@ public class RParserDefinition implements ParserDefinition {
     }
 
     @Override
-    @NotNull
-    public Lexer createLexer(Project project) {
+    public @NotNull Lexer createLexer(Project project) {
         return new RLexer();
     }
 
@@ -44,26 +43,22 @@ public class RParserDefinition implements ParserDefinition {
     //}
 
     @Override
-    @NotNull
-    public TokenSet getCommentTokens() {
+    public @NotNull TokenSet getCommentTokens() {
         return RTokenTypes.COMMENTS;
     }
 
     @Override
-    @NotNull
-    public TokenSet getStringLiteralElements() {
+    public @NotNull TokenSet getStringLiteralElements() {
         return RTokenTypes.STRINGS;
     }
 
     @Override
-    @NotNull
-    public PsiParser createParser(Project project) {
+    public @NotNull PsiParser createParser(Project project) {
         return new RParser();
     }
 
     @Override
-    @NotNull
-    public PsiElement createElement(@NotNull ASTNode node) {
+    public @NotNull PsiElement createElement(@NotNull ASTNode node) {
         return RElementTypes.Factory.createElement(node);
     }
 

@@ -20,8 +20,7 @@ public class RAssignmentNameIndex extends StringStubIndexExtension<RAssignmentSt
     private static final StubIndexKey<String, RAssignmentStatement> KEY = StubIndexKey.createIndexKey("R.function.shortName");
 
     @Override
-    @NotNull
-    public StubIndexKey<String, RAssignmentStatement> getKey() {
+    public @NotNull StubIndexKey<String, RAssignmentStatement> getKey() {
         return KEY;
     }
 

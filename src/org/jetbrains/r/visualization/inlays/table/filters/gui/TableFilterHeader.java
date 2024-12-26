@@ -78,9 +78,8 @@ public class TableFilterHeader extends AdditionalTableHeader {
   }
 
   /** Returns the table currently attached. */
-  @Nullable
   @Override
-  public JTable getTable() {
+  public @Nullable JTable getTable() {
     return filtersHandler == null ? null : filtersHandler.getTable();
   }
 
@@ -106,9 +105,8 @@ public class TableFilterHeader extends AdditionalTableHeader {
     getColumnsController().detach();
   }
 
-  @NotNull
   @Override
-  public ColumnsControllerPanel createColumnsController() {
+  public @NotNull ColumnsControllerPanel createColumnsController() {
     JTable currentTable = Objects.requireNonNull(getTable());
     return new TableFilterHeader.FilterColumnsControllerPanel(currentTable, getFont(), getForeground());
   }
@@ -149,9 +147,8 @@ public class TableFilterHeader extends AdditionalTableHeader {
       getTableColumnModel().addColumnModelListener(this);
     }
 
-    @NotNull
     @Override
-    public FilterColumnPanel createColumn(int columnView) {
+    public @NotNull FilterColumnPanel createColumn(int columnView) {
       boolean enabled = filtersHandler.isEnabled();
       int columnModel = getTable().convertColumnIndexToModel(columnView);
       FilterEditor editor = createEditor(columnModel, enabled);
@@ -256,9 +253,8 @@ public class TableFilterHeader extends AdditionalTableHeader {
       super.columnRemoved(e);
     }
 
-    @NotNull
     @Override
-    public Dimension computeMyPreferredSize() {
+    public @NotNull Dimension computeMyPreferredSize() {
       int count = getTableColumnModel().getColumnCount();
       return new Dimension(0,
                            (count == 0) ? 0 : (getColumns().get(0).getMyHeight() + filterRowHeightDelta));

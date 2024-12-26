@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  * Class to deduce a sensible {@link Comparator} for {@link Date} instances.<br>
  */
-abstract public class DateComparator implements Comparator<Date> {
+public abstract class DateComparator implements Comparator<Date> {
 
     /**
      * Factory constructor, returning an instance suitable for the given format.
@@ -59,7 +59,7 @@ abstract public class DateComparator implements Comparator<Date> {
         return new TimeComparator(divisor);
     }
 
-    static private boolean change(Calendar c, Format f, int field) {
+    private static boolean change(Calendar c, Format f, int field) {
         c.set(field, 10);
 
         String sf = f.format(c.getTime());

@@ -44,9 +44,8 @@ public class FiltersHandler extends AbstractFiltersHandler {
     setParserModel(parserModel);
   }
 
-  @Nullable
   @Override
-  protected RowFilter<?, ?> getCurrentFilter() {
+  protected @Nullable RowFilter<?, ?> getCurrentFilter() {
     return currentFilter;
   }
 
@@ -60,9 +59,8 @@ public class FiltersHandler extends AbstractFiltersHandler {
     }
   }
 
-  @NotNull
   @Override
-  protected ChoicesHandler getChoicesHandler() {
+  protected @NotNull ChoicesHandler getChoicesHandler() {
     return choicesHandler;
   }
 
