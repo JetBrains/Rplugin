@@ -95,7 +95,7 @@ interface RInterpreterManager {
 
 private class NoRInterpreterException(message: String = "No R Interpreter"): RuntimeException(message)
 
-class RInterpreterManagerImpl(
+internal class RInterpreterManagerImpl(
   private val project: Project,
   private val coroutineScope: CoroutineScope,
 ): RInterpreterManager {

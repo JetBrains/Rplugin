@@ -23,7 +23,7 @@ import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 
-class RFindUsagesProvider : FindUsagesProvider {
+private class RFindUsagesProvider : FindUsagesProvider {
   override fun getWordsScanner(): WordsScanner {
     return DefaultWordsScanner(RLexer(), TokenSet.create(RElementTypes.R_IDENTIFIER),
                                TokenSet.create(RTokenTypes.END_OF_LINE_COMMENT),
