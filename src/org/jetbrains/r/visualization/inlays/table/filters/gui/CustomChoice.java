@@ -90,7 +90,7 @@ public abstract class CustomChoice implements Serializable {
 
           Format fmt = editor.getFormat();
           String s = (fmt == null) ? o.toString() : fmt.format(o);
-          return (s == null) || (s.trim().length() == 0);
+          return (s == null) || (s.trim().isEmpty());
         }
       };
     }

@@ -130,7 +130,7 @@ public class ChoicesListModel extends AbstractListModel
             } else if (!renderedContent && !(o instanceof CustomChoice)) {
                 // if null, content is rendered, no need to handle strings
                 s = (format == null) ? o.toString() : format.format(o);
-                if (s.length() == 0) {
+                if (s.isEmpty()) {
                     o = CustomChoice.MATCH_EMPTY;
                 } else {
                     s = parser.escapeChoice(s);

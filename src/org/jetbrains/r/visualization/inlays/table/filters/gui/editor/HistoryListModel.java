@@ -91,7 +91,7 @@ class HistoryListModel extends AbstractListModel {
         boolean ret = false;
         boolean removed = history.remove(st);
         if ((maxHistory > 0) && (lastAdded != null)
-                && (lastAdded.toString().length() > 0)
+                && (!lastAdded.toString().isEmpty())
                 && !lastAdded.equals(st)) {
             history.add(0, lastAdded);
 

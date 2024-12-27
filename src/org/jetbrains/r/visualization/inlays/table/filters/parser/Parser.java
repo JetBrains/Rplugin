@@ -173,7 +173,7 @@ public class Parser implements IParser {
         }
       }
 
-      if (escapeBuffer.length() > 0) {
+      if (!escapeBuffer.isEmpty()) {
         escapeBuffer.append(expression, lastAdded, total);
         expression = escapeBuffer.toString();
         escapeBuffer.delete(0, escapeBuffer.length());
@@ -271,7 +271,7 @@ public class Parser implements IParser {
 
           String s = format.format(left);
 
-          return (s.length() > 0)
+          return (!s.isEmpty())
                  && matches(stringComparator.compare(s, right));
         }
       };
@@ -306,7 +306,7 @@ public class Parser implements IParser {
                                     self.stringComparator);
       }
 
-      if (right.length() == 0) {
+      if (right.isEmpty()) {
         return createNullOperator(self.modelIndex);
       }
 
