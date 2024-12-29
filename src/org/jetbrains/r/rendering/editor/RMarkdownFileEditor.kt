@@ -42,8 +42,7 @@ import java.io.File
 import javax.swing.Icon
 import javax.swing.JComponent
 
-
-class RMarkdownFileEditor(project: Project, textEditor: TextEditor, virtualFile: VirtualFile)
+internal class RMarkdownFileEditor(project: Project, textEditor: TextEditor, virtualFile: VirtualFile)
   : AdvancedTextEditor(project, textEditor, virtualFile) {
   init {
     val toolbarComponent = createRMarkdownEditorToolbar(project, virtualFile, textEditor.editor).component
