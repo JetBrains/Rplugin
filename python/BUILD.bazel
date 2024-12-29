@@ -35,6 +35,7 @@ jvm_library(
     "@community//platform/testFramework",
     "@community//platform/testFramework:testFramework_test_lib",
     "@community//python/openapi:community",
+    "@community//python/openapi:community_test_lib",
     "@community//python:python-community-impl",
     "@community//python/testFramework:community-testFramework",
   ],
