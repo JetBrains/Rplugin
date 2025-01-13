@@ -28,6 +28,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
+import com.intellij.util.concurrency.annotations.RequiresReadLock
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -161,7 +162,8 @@ class RunChunkHandler(
 
     if (isNewMode) {
       return runHandlersAndExecuteChunk(console, element, editor, isDebug, isBatchMode, isFirstChunk, textRange)
-    } else {
+    }
+    else {
       return withContext(Dispatchers.IO) {
         blockingContext {
           ReadAction.compute<Promise<Boolean>, Throwable> {
@@ -183,7 +185,7 @@ class RunChunkHandler(
     val screenParameters: RGraphicsUtils.ScreenParameters,
   ) {
 
-    /** should be inside read action */
+    @RequiresReadLock
     @Throws(RunChunkHandlerException::class)
     fun makeRequest(textRange: TextRange?, console: RConsoleView, isDebug: Boolean): RInterop.ReplSourceFileRequest {
       val range = codeElement.getTextRange(textRange)
@@ -251,7 +253,8 @@ class RunChunkHandler(
         }
 
         pullOutputs(console.rInterop, cacheDirectory)
-      } catch (t: Throwable) {
+      }
+      catch (t: Throwable) {
         afterRunChunk(element, console.rInterop, result, AsyncPromise<Boolean>(), console, editor, elementWithContext.inlayElement, isBatchMode)
         throw t
       }
@@ -262,6 +265,7 @@ class RunChunkHandler(
     }
   }
 
+  @RequiresReadLock
   @VisibleForTesting
   internal fun runHandlersAndExecuteChunkAsync(
     console: RConsoleView,
