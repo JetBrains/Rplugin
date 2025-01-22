@@ -6,12 +6,10 @@ package org.jetbrains.r.annotator
 
 import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInsight.daemon.impl.HighlightInfoType
-import com.intellij.openapi.actionSystem.IdeActions
+import com.intellij.codeInsight.highlighting.HyperlinkAnnotator
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.colors.CodeInsightColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.openapi.keymap.KeymapManager
-import com.intellij.openapi.keymap.KeymapUtil
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
@@ -19,7 +17,6 @@ import com.intellij.openapi.util.UserDataHolder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReference
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.containers.ContainerUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.highlighting.*
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
@@ -169,18 +166,7 @@ class RAnnotatorVisitor(private val holder: MutableList<HighlightInfo>, private 
     private val sourceTooltipMessage: String
       get() {
         val messagePrefix = RBundle.message("open.source.file.in.editor.tooltip")
-        val shortcuts = KeymapManager.getInstance().activeKeymap.getShortcuts(IdeActions.ACTION_GOTO_DECLARATION)
-        val shortcutText = buildString {
-          ContainerUtil.find(shortcuts) { !it.isKeyboard }?.let {
-            append(KeymapUtil.getShortcutText(it).replace(Regex("Button\\d "), ""))
-          }
-
-          ContainerUtil.find(shortcuts) { it.isKeyboard }?.let {
-            if (isNotEmpty()) append(", ")
-            append(KeymapUtil.getShortcutText(it))
-          }
-        }
-
+        val shortcutText = HyperlinkAnnotator.getGoToDeclarationShortcutsText()
         return if (shortcutText.isNotEmpty()) "$messagePrefix ($shortcutText)"
         else messagePrefix
       }
