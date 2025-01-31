@@ -56,7 +56,7 @@ class RInlineAssignmentProcessor(private val project: Project,
     return RInlineUtil.getPostRefs(controlFlow, name, assignment).map { UsageInfo(it) }.toTypedArray()
   }
 
-  override fun preprocessUsages(refUsages: Ref<Array<UsageInfo>>): Boolean {
+  protected override fun preprocessUsages(refUsages: Ref<Array<UsageInfo>>): Boolean {
     try {
       if (refUsages.isNull) return false
       val usages = refUsages.get()
