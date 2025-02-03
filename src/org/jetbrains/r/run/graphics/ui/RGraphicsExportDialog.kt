@@ -9,14 +9,12 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper.IdeModalityType
 import com.intellij.openapi.ui.MessageDialogBuilder
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.DocumentAdapter
 import com.intellij.util.ui.JBUI
 import org.jetbrains.annotations.Nls
-import com.intellij.notebooks.visualization.NotebooksVisualizationIcons
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction

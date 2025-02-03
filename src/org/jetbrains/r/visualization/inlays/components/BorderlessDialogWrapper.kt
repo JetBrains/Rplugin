@@ -6,7 +6,6 @@ package org.jetbrains.r.visualization.inlays.components
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.openapi.ui.DialogWrapper.IdeModalityType
 import com.intellij.openapi.util.SystemInfo
 import org.jetbrains.annotations.Nls
 import javax.swing.Action

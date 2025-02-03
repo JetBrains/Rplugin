@@ -18,7 +18,6 @@ import org.jetbrains.r.rinterop.rstudioapi.RStudioAPISourceMarkerInspection
 import org.jetbrains.r.rinterop.rstudioapi.RStudioAPISourceMarkerInspection.RStudioAPIMarker
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRBoolean
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
-import kotlin.streams.toList
 
 class RStudioApiUtilsTest : RConsoleBaseTestCase() {
 

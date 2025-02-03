@@ -6,7 +6,6 @@ package org.jetbrains.r.documentation
 
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.r.rinterop.HttpdResponse
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 

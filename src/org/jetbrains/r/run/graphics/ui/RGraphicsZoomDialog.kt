@@ -6,7 +6,6 @@ package org.jetbrains.r.run.graphics.ui
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper.IdeModalityType
 import com.intellij.openapi.util.Disposer
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager

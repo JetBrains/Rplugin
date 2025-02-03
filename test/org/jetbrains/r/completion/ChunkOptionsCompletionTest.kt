@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.completion
 
-import com.intellij.util.containers.toArray
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.console.addRuntimeInfo
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
