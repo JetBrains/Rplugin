@@ -49,7 +49,7 @@ class RInlineAssignmentProcessor(private val project: Project,
 
   override fun getCommandName(): String = RBundle.message("inline.local.processor.command.name", assignment.name)
 
-  override fun findUsages(): Array<UsageInfo> {
+  protected override fun findUsages(): Array<UsageInfo> {
     val name = assignment.assignee?.name ?: return UsageInfo.EMPTY_ARRAY
     if (inlineThisOnly) return arrayOf(UsageInfo(refElement!!))
     val controlFlow = RRefactoringUtil.getRScope(assignment).controlFlow
