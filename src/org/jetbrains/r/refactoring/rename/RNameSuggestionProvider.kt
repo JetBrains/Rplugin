@@ -25,7 +25,7 @@ class RNameSuggestionProvider : NameSuggestionProvider {
     val shownNames = mutableSetOf<String>()
 
     val scopes = mutableSetOf(RRefactoringUtil.getRScope(element))
-    for (ref in refs) {
+    for (ref in refs.asIterable()) {
       if (ref !is RReferenceBase<*>) continue
       scopes += RRefactoringUtil.getRScope(ref.element)
     }
