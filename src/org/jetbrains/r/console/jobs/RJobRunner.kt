@@ -11,7 +11,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
-import com.intellij.openapi.application.writeAction
+import com.intellij.openapi.application.edtWriteAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -55,7 +55,7 @@ class RJobRunner(
   private suspend fun suspendableRun(task: RJobTask, exportEnvName: String? = null): ProcessHandler {
     check(canRun())
 
-    writeAction {
+    edtWriteAction {
       FileDocumentManager.getInstance().saveAllDocuments()
     }
 

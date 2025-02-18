@@ -1297,7 +1297,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
 
   fun invalidateCaches() {
     RInteropCoroutineScope.getCoroutineScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
-      writeAction {
+      edtWriteAction {
         PsiManager.getInstance(project).dropPsiCaches()
       }
     }

@@ -8,7 +8,7 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.BaseProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.writeAction
+import com.intellij.openapi.application.edtWriteAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
@@ -83,7 +83,7 @@ interface RInterpreter : RInterpreterInfo {
   }
 
   suspend fun prepareForExecution() {
-    writeAction {
+    edtWriteAction {
       FileDocumentManager.getInstance().saveAllDocuments()
     }
   }

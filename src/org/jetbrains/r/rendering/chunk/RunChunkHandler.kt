@@ -227,7 +227,7 @@ class RunChunkHandler(
         elementWithContext to request
       }
 
-      val cacheDirectory = writeAction {
+      val cacheDirectory = edtWriteAction {
         createCacheDirectory(elementWithContext.chunkPath)
       }
       val imagesDirectory = elementWithContext.chunkPath.getImagesDirectory()
