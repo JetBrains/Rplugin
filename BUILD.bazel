@@ -7,6 +7,12 @@ jvm_resources(
   strip_prefix = "resources"
 )
 
+jvm_resources(
+  name = "r_test_resources",
+  files = glob(["testResources/**/*"]),
+  strip_prefix = "testResources"
+)
+
 jvm_library(
   name = "r",
   module_name = "intellij.r",
@@ -133,7 +139,10 @@ jvm_library(
     "@community//images",
     "@community//images:images_test_lib",
   ],
-  runtime_deps = [":r_resources"]
+  runtime_deps = [
+    ":r_resources",
+    ":r_test_resources",
+  ]
 )
 
 jvm_test(
