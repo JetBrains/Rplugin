@@ -28,9 +28,8 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.DocumentUtil
 import com.intellij.xdebugger.XSourcePositionWrapper
-import com.intellij.xdebugger.impl.DebuggerSupport
 import com.intellij.xdebugger.impl.XDebuggerUtilImpl
-import com.intellij.xdebugger.impl.actions.DebuggerToggleActionHandler
+import com.intellij.xdebugger.impl.actions.handlers.XDebuggerCustomMuteBreakpointHandler
 import com.intellij.xdebugger.impl.frame.XDebuggerFramesList
 import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
 import icons.RIcons
@@ -409,25 +408,21 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   }
 }
 
-class RDebuggerSupport : DebuggerSupport() {
-  override fun getMuteBreakpointsHandler(): DebuggerToggleActionHandler {
-    return object : DebuggerToggleActionHandler() {
-      override fun isEnabled(project: Project, event: AnActionEvent?): Boolean {
-        return getPanel(project) != null
-      }
+class RDebuggerCustomMuteBreakpointHandler : XDebuggerCustomMuteBreakpointHandler {
+  override fun updateBreakpointsState(project: Project, event: AnActionEvent, muted: Boolean) {
+    getPanel(project)?.apply { breakpointsMuted = muted }
+  }
 
-      override fun isSelected(project: Project, event: AnActionEvent?): Boolean {
-        return getPanel(project)?.breakpointsMuted ?: false
-      }
+  override fun areBreakpointsMuted(project: Project, event: AnActionEvent): Boolean {
+    return getPanel(project)?.breakpointsMuted ?: false
+  }
 
-      override fun setSelected(project: Project, event: AnActionEvent?, state: Boolean) {
-        getPanel(project)?.apply { breakpointsMuted = state }
-      }
+  override fun canHandleMuteBreakpoints(project: Project, event: AnActionEvent): Boolean {
+    return getPanel(project) != null
+  }
 
-      private fun getPanel(project: Project): RDebuggerPanel? {
-        return RConsoleManager.getInstance(project).currentConsoleOrNull?.debuggerPanel
-      }
-    }
+  private fun getPanel(project: Project): RDebuggerPanel? {
+    return RConsoleManager.getInstance(project).currentConsoleOrNull?.debuggerPanel
   }
 }
 

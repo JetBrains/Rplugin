@@ -569,7 +569,7 @@ You can find the source code in the following repositories:
 
         <xdebugger.breakpointType implementation="org.jetbrains.r.run.debug.RLineBreakpointType"/>
 
-        <xdebugger.debuggerSupport implementation="org.jetbrains.r.console.RDebuggerSupport" order="first,before XDebuggerSupport"/>
+        <xdebugger.customMuteBreakpointHandler implementation="org.jetbrains.r.console.RDebuggerCustomMuteBreakpointHandler"/>
 
         <editorNotificationProvider implementation="org.jetbrains.r.console.RSourceChangedEditorNotificationProvider"/>
 
