@@ -46,6 +46,9 @@ class RCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
     return RLanguage.INSTANCE.displayName
   }
 
+  override fun getConfigurableId(): String {
+    return CodeStyleSettings.generateConfigurableIdByLanguage(RLanguage.INSTANCE)
+  }
 
   override fun createCustomSettings(settings: CodeStyleSettings): CustomCodeStyleSettings {
     return RCodeStyleSettings(settings)
