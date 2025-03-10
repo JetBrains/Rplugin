@@ -2,8 +2,10 @@ package org.jetbrains.r.hints
 
 import com.intellij.codeInsight.hints.InlayHintsSettings
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.components.serviceOrNull
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.Document
@@ -19,17 +21,34 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiUtilCore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 import java.util.concurrent.ConcurrentHashMap
+
+private val rMarkdownLanguages = listOf(RLanguage.INSTANCE, RMarkdownLanguage)
 
 class RReturnHintEditorFactoryListener : EditorFactoryListener {
   override fun editorCreated(event: EditorFactoryEvent) {
     val editorEx = event.editor as? EditorEx ?: return
     val project = editorEx.project ?: return
     val virtualFile = FileDocumentManager.getInstance().getFile(editorEx.document)
-    if (PsiUtilCore.findFileSystemItem(project, virtualFile)?.language !in listOf(RLanguage.INSTANCE, RMarkdownLanguage)) return
-    editorEx.registerLineExtensionPainter(RReturnHintLineExtensionPainter(project, editorEx.document)::getLineExtensions)
+
+    project.service<RReturnHintsModel>().coroutineScope.launch {
+      val file = withContext(Dispatchers.IO) {
+        runReadAction {
+          PsiUtilCore.findFileSystemItem(project, virtualFile)
+        }
+      } ?: return@launch
+      if (file.language in rMarkdownLanguages) {
+        withContext(Dispatchers.EDT) {
+          editorEx.registerLineExtensionPainter(RReturnHintLineExtensionPainter(project, editorEx.document)::getLineExtensions)
+        }
+      }
+    }
   }
 
   override fun editorReleased(event: EditorFactoryEvent) {
@@ -40,7 +59,7 @@ class RReturnHintEditorFactoryListener : EditorFactoryListener {
 }
 
 @Service(Service.Level.PROJECT)
-class RReturnHintsModel(private val project: Project) {
+class RReturnHintsModel(private val project: Project, internal val coroutineScope: CoroutineScope) {
 
   private val documentModels = ConcurrentHashMap<Document, DocumentReturnExtensionInfo>()
   private val hintsSetting = InlayHintsSettings.instance()
