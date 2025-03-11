@@ -28,6 +28,7 @@ import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesScanner
 import junit.framework.TestCase
+import org.intellij.lang.annotations.Language
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.isPending
 import org.jetbrains.r.console.RConsoleView
@@ -231,8 +232,8 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     return dirName.indexOf('-').takeIf { it != -1 }?.let { dirName.substring(0, it) } ?: dirName
   }
 
-  protected fun doActionTest(expected: String, actionId: String) {
-    val action = ActionManager.getInstance().getAction(actionId) ?: error("Action $actionId is non found")
+  protected fun doActionTest(expected: String, @Language("devkit-action-id") actionId: String) {
+    val action = ActionManager.getInstance().getAction(actionId) ?: error("Action $actionId is not found")
     DataManager.getInstance().dataContextFromFocusAsync.onSuccess { dataContext ->
       TransactionGuard.submitTransaction(project, Runnable {
         val event = AnActionEvent.createFromAnAction(action, null, ActionPlaces.UNKNOWN, dataContext)
