@@ -48,9 +48,9 @@ r-helpers/rwrapper-*
 rwrapper/Rkernel-proto
 
 /testData/skeletons/
-/ide
-/plugin
-/ultimate
-/rwrapper
-/protos
-/lsp
+/rplugin/ide
+/rplugin/plugin
+/rplugin/ultimate
+/rplugin/rwrapper
+/rplugin/protos
+/rplugin/lsp
