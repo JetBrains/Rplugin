@@ -9,7 +9,6 @@ import com.intellij.codeInsight.controlflow.Instruction
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.parser.GeneratedParserUtilBase
 import com.intellij.openapi.fileTypes.FileType
-import com.intellij.psi.DummyBlockType
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
@@ -87,7 +86,7 @@ open class RFileImpl(viewProvider: FileViewProvider) : PsiFileBase(viewProvider,
       override fun process(psiElement: PsiElement): Boolean {
         var child: PsiElement? = psiElement.firstChild
         while (child != null) {
-          if (child is DummyBlockType.DummyBlock) {
+          if (child is GeneratedParserUtilBase.DummyBlock) {
             if (!process(child)) return false
           }
           else if (!processor.process(child)) return false
