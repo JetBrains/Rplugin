@@ -4,8 +4,8 @@
 
 package org.jetbrains.r.editor
 
+import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate.Result
-import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiElement
@@ -30,7 +30,7 @@ private val R_OPEN_PAIRS = TokenSet.create(
   RElementTypes.R_LDBRACKET
 )
 
-class REnterAdapter : EnterHandlerDelegateAdapter() {
+class REnterAdapter : EnterHandlerDelegate {
   override fun postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): Result {
     if (file.language == RLanguage.INSTANCE) adjustAlignmentAfterEnter(editor, file)
     return Result.Continue

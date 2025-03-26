@@ -4,8 +4,8 @@
 package org.jetbrains.r.roxygen
 
 import com.intellij.codeInsight.editorActions.EnterHandler
+import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate.Result
-import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
@@ -16,7 +16,7 @@ import com.intellij.psi.util.elementType
 import org.jetbrains.r.roxygen.parsing.RoxygenElementTypes.ROXYGEN_DOC_PREFIX
 import org.jetbrains.r.roxygen.parsing.RoxygenElementTypes.ROXYGEN_WS
 
-class RoxygenEnterInLineCommentHandler : EnterHandlerDelegateAdapter() {
+class RoxygenEnterInLineCommentHandler : EnterHandlerDelegate {
 
   override fun preprocessEnter(file: PsiFile,
                                editor: Editor,
