@@ -158,6 +158,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
 
     val toolbarActions = createDebugActions()
     actionToolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.DEBUGGER_TOOLBAR, toolbarActions, true)
+    actionToolbar.setTargetComponent(this)
     onCommandExecuted()
   }
 

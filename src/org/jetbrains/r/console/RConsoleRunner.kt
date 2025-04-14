@@ -18,6 +18,7 @@ import com.intellij.ide.CommonActionsManager
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.WriteIntentReadAction
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -87,7 +88,9 @@ class RConsoleRunner(private val interpreter: RInterpreter,
 
   internal fun initByInterop(rInterop: RInterop, promise: AsyncPromise<RConsoleView> = AsyncPromise()): Promise<RConsoleView> {
     UIUtil.invokeLaterIfNeeded {
-      consoleView = RConsoleView(rInterop, consoleTitle)
+      WriteIntentReadAction.run {
+        consoleView = RConsoleView(rInterop, consoleTitle)
+      }
       ProcessTerminatedListener.attach(rInterop.processHandler)
       rInterop.processHandler.addProcessListener(object : ProcessAdapter() {
         override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
