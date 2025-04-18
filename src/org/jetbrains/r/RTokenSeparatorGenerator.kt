@@ -9,12 +9,12 @@ import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.psi.api.RExpression
 
 class RTokenSeparatorGenerator : TokenSeparatorGenerator {
-  override fun generateWhitespaceBetweenTokens(left: ASTNode, right: ASTNode): ASTNode? {
-    if (left.elementType == TokenType.WHITE_SPACE || right.elementType == TokenType.WHITE_SPACE) {
+  override fun generateWhitespaceBetweenTokens(left: ASTNode?, right: ASTNode): ASTNode? {
+    if (left?.elementType == TokenType.WHITE_SPACE || right.elementType == TokenType.WHITE_SPACE) {
       return null
     }
 
-    if (left.psi.isValid && right.psi.isValid) {
+    if (left?.psi?.isValid == true && right.psi.isValid) {
       val commonParent = PsiTreeUtil.findCommonParent(left.psi, right.psi) ?: return null
       val leftPrevAncestor = PsiTreeUtil.findPrevParent(commonParent, left.psi)
       val rightPrevAncestor = PsiTreeUtil.findPrevParent(commonParent, right.psi)
