@@ -1,5 +1,8 @@
 package org.jetbrains.r.editor.ui
 
+import com.intellij.notebooks.visualization.NotebookCellLines
+import com.intellij.notebooks.visualization.NotebookIntervalPointer
+import com.intellij.notebooks.visualization.NotebookIntervalPointerFactory
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Inlay
@@ -11,9 +14,6 @@ import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
-import com.intellij.notebooks.visualization.NotebookCellLines
-import com.intellij.notebooks.visualization.NotebookIntervalPointer
-import com.intellij.notebooks.visualization.NotebookIntervalPointerFactory
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.addBlockElement
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.disposeComponent
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.extractOffset
@@ -26,9 +26,6 @@ import org.jetbrains.r.visualization.RNotebookCellInlayController
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 
-/**
- * same as [RMarkdownCellToolbarControllerStable] but relying on the old stable components
- */
 class RMarkdownOutputInlayControllerStable private constructor(
   val editor: EditorImpl,
   override val factory: RNotebookCellInlayController.Factory,
