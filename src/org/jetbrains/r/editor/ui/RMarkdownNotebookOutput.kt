@@ -1,7 +1,7 @@
 package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.util.Key
-import com.intellij.notebooks.visualization.NotebookIntervalPointer
+import org.jetbrains.r.visualization.RNotebookIntervalPointer
 import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 
 /**
@@ -9,7 +9,7 @@ import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
  * dispose() and updates of RMarkdownNotebook done at call time
  */
 interface RMarkdownNotebookOutput {
-  val intervalPointer: NotebookIntervalPointer
+  val intervalPointer: RNotebookIntervalPointer
 
   /** clear outputs and text */
   fun clearOutputs(removeFiles: Boolean)

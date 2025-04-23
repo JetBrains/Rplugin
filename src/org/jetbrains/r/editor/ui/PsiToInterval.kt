@@ -1,24 +1,24 @@
 package org.jetbrains.r.editor.ui
 
+import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
-import com.intellij.notebooks.visualization.NotebookCellLines
-import com.intellij.notebooks.visualization.NotebookIntervalPointer
-import com.intellij.notebooks.visualization.NotebookIntervalPointerFactory
+import org.jetbrains.r.visualization.RNotebookIntervalPointer
+import org.jetbrains.r.visualization.RNotebookIntervalPointerFactory
 
 
 /**
  * preserves correct mapping between psiElement and NotebookCellLines.Interval even when document is changing
  */
 class PsiToInterval(project: Project, editor: EditorImpl, extractPsi: (NotebookCellLines.Interval) -> PsiElement?) {
-  private val psiToInterval = LinkedHashMap<PsiElement, NotebookIntervalPointer>()
+  private val psiToInterval = LinkedHashMap<PsiElement, RNotebookIntervalPointer>()
 
   init {
-    val pointerFactory = NotebookIntervalPointerFactory.get(editor)
+    val pointerFactory = RNotebookIntervalPointerFactory.get(editor)
 
     fun scheduleUpdateForCommittedDocument() {
       PsiDocumentManager.getInstance(project).performForCommittedDocument(editor.document) {

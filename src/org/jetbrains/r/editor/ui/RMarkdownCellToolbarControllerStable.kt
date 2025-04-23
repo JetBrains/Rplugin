@@ -2,8 +2,6 @@ package org.jetbrains.r.editor.ui
 
 import com.intellij.notebooks.ui.visualization.NotebookUtil.notebookAppearance
 import com.intellij.notebooks.visualization.NotebookCellLines
-import com.intellij.notebooks.visualization.NotebookIntervalPointer
-import com.intellij.notebooks.visualization.NotebookIntervalPointerFactory
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
@@ -15,13 +13,15 @@ import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.editor.markup.TextAttributes
 import org.jetbrains.r.visualization.RNotebookCellInlayController
+import org.jetbrains.r.visualization.RNotebookIntervalPointer
+import org.jetbrains.r.visualization.RNotebookIntervalPointerFactory
 import java.awt.Graphics
 import java.awt.Rectangle
 
 internal class RMarkdownCellToolbarControllerStable private constructor(
   val editor: EditorImpl,
   override val factory: Factory,
-  private val intervalPointer: NotebookIntervalPointer,
+  private val intervalPointer: RNotebookIntervalPointer,
   inlayOffset: Int,
 ) : RNotebookCellInlayController, EditorCustomElementRenderer {
 
@@ -66,8 +66,8 @@ internal class RMarkdownCellToolbarControllerStable private constructor(
 
       return when (interval.type) {
         NotebookCellLines.CellType.CODE -> {
-          val offset = getOffset(editor.document, NotebookIntervalPointerFactory.get(editor).create(interval))
-          val intervalPointer = NotebookIntervalPointerFactory.get(editor).create(interval)
+          val offset = getOffset(editor.document, RNotebookIntervalPointerFactory.get(editor).create(interval))
+          val intervalPointer = RNotebookIntervalPointerFactory.get(editor).create(interval)
           currentControllers.asSequence()
             .filterIsInstance<RMarkdownCellToolbarControllerStable>()
             .firstOrNull {
@@ -82,7 +82,7 @@ internal class RMarkdownCellToolbarControllerStable private constructor(
       }
     }
 
-    private fun getOffset(document: Document, intervalPointer: NotebookIntervalPointer): Int =
+    private fun getOffset(document: Document, intervalPointer: RNotebookIntervalPointer): Int =
       document.getLineStartOffset(intervalPointer.get()!!.lines.first)
   }
 

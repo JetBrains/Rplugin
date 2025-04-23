@@ -4,7 +4,6 @@ import com.intellij.ide.DataManager
 import com.intellij.ide.ui.LafManagerListener
 import com.intellij.notebooks.ui.visualization.NotebookUtil.notebookAppearance
 import com.intellij.notebooks.visualization.NotebookCellLines
-import com.intellij.notebooks.visualization.NotebookIntervalPointer
 import com.intellij.notebooks.visualization.context.NotebookDataContext
 import com.intellij.notebooks.visualization.mergeAndJoinIntersections
 import com.intellij.notebooks.visualization.use
@@ -72,11 +71,11 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
     updateQueue.queue(UpdateInlaysTask(this, updateAll = true))
   }
 
-  fun update(pointers: Collection<NotebookIntervalPointer>) {
+  fun update(pointers: Collection<RNotebookIntervalPointer>) {
     updateQueue.queue(UpdateInlaysTask(this, pointers = pointers))
   }
 
-  fun update(pointer: NotebookIntervalPointer) {
+  fun update(pointer: RNotebookIntervalPointer) {
     updateQueue.queue(UpdateInlaysTask(this, pointers = SmartList(pointer)))
   }
 
@@ -420,7 +419,7 @@ private object NotebookCellHighlighterRenderer : CustomHighlighterRenderer {
 
 private class UpdateInlaysTask(
   private val manager: RNotebookCellInlayManager,
-  pointers: Collection<NotebookIntervalPointer>? = null,
+  pointers: Collection<RNotebookIntervalPointer>? = null,
   private var updateAll: Boolean = false,
 ) : Update(Any()) {
   private val pointerSet = pointers?.let { SmartHashSet(pointers) } ?: SmartHashSet()

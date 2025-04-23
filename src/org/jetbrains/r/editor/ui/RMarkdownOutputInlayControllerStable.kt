@@ -1,8 +1,6 @@
 package org.jetbrains.r.editor.ui
 
 import com.intellij.notebooks.visualization.NotebookCellLines
-import com.intellij.notebooks.visualization.NotebookIntervalPointer
-import com.intellij.notebooks.visualization.NotebookIntervalPointerFactory
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Inlay
@@ -23,13 +21,15 @@ import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.updateInlayW
 import org.jetbrains.r.rendering.chunk.ChunkPath
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
 import org.jetbrains.r.visualization.RNotebookCellInlayController
+import org.jetbrains.r.visualization.RNotebookIntervalPointer
+import org.jetbrains.r.visualization.RNotebookIntervalPointerFactory
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 
 class RMarkdownOutputInlayControllerStable private constructor(
   val editor: EditorImpl,
   override val factory: RNotebookCellInlayController.Factory,
-  override val intervalPointer: NotebookIntervalPointer,
+  override val intervalPointer: RNotebookIntervalPointer,
   offset: Int,
 ) : RNotebookCellInlayController, RMarkdownNotebookOutput {
 
@@ -113,7 +113,7 @@ class RMarkdownOutputInlayControllerStable private constructor(
     inlayComponent.clearOutputs()
   }
 
-  private fun addInlayComponent(editor: EditorImpl, intervalPointer: NotebookIntervalPointer, offset: Int): NotebookInlayComponent {
+  private fun addInlayComponent(editor: EditorImpl, intervalPointer: RNotebookIntervalPointer, offset: Int): NotebookInlayComponent {
     RInlayDimensions.init(editor)
     val inlayComponent = NotebookInlayComponent(intervalPointer, editor)
 
@@ -151,15 +151,16 @@ class RMarkdownOutputInlayControllerStable private constructor(
     intervalPointer.get()?.let { ChunkPath.create(editor, it) }
 
   class Factory : RNotebookCellInlayController.Factory {
-    override fun compute(editor: EditorImpl,
-                         currentControllers: Collection<RNotebookCellInlayController>,
-                         interval: NotebookCellLines.Interval
+    override fun compute(
+      editor: EditorImpl,
+      currentControllers: Collection<RNotebookCellInlayController>,
+      interval: NotebookCellLines.Interval,
     ): RNotebookCellInlayController? {
 
       return when (interval.type) {
         NotebookCellLines.CellType.CODE -> {
           val offset = extractOffset(editor.document, interval)
-          val pointer = NotebookIntervalPointerFactory.get(editor).create(interval)
+          val pointer = RNotebookIntervalPointerFactory.get(editor).create(interval)
           currentControllers.asSequence()
             .filterIsInstance<RMarkdownOutputInlayControllerStable>()
             .firstOrNull {
@@ -169,7 +170,8 @@ class RMarkdownOutputInlayControllerStable private constructor(
           ?: RMarkdownOutputInlayControllerStable(editor, this, pointer, offset)
         }
         NotebookCellLines.CellType.MARKDOWN,
-        NotebookCellLines.CellType.RAW -> null
+        NotebookCellLines.CellType.RAW,
+          -> null
       }
     }
   }
