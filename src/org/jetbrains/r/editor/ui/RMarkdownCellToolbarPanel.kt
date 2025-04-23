@@ -1,17 +1,17 @@
 package org.jetbrains.r.editor.ui
 
+import com.intellij.notebooks.ui.SteadyUIPanel
+import com.intellij.notebooks.ui.visualization.NotebookUtil.notebookAppearance
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.notebooks.ui.SteadyUIPanel
-import com.intellij.notebooks.ui.visualization.NotebookUtil.notebookAppearance
-import com.intellij.notebooks.visualization.NotebookIntervalPointer
 import org.jetbrains.r.rendering.chunk.RunChunkActions
+import org.jetbrains.r.visualization.RNotebookIntervalPointer
 import java.awt.Cursor
 import javax.swing.BoxLayout
 
-internal class RMarkdownCellToolbarPanel(editor: EditorImpl, val pointer: NotebookIntervalPointer) : SteadyUIPanel(RMarkdownCellToolbarPanelUI(editor)) {
+internal class RMarkdownCellToolbarPanel(editor: EditorImpl, val pointer: RNotebookIntervalPointer) : SteadyUIPanel(RMarkdownCellToolbarPanelUI(editor)) {
   init {
     isOpaque = false
     background = editor.notebookAppearance.codeCellBackgroundColor.get()
