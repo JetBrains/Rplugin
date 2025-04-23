@@ -2,7 +2,6 @@ package org.jetbrains.r.visualization
 
 import com.intellij.ide.DataManager
 import com.intellij.ide.ui.LafManagerListener
-import com.intellij.notebooks.ui.visualization.NotebookUtil.notebookAppearance
 import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.notebooks.visualization.context.NotebookDataContext
 import com.intellij.notebooks.visualization.mergeAndJoinIntersections
@@ -34,6 +33,7 @@ import com.intellij.util.concurrency.ThreadingAssertions
 import com.intellij.util.containers.SmartHashSet
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
+import org.jetbrains.r.editor.rNotebookAppearance
 import java.awt.Graphics
 import javax.swing.JComponent
 import kotlin.math.max
@@ -340,7 +340,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
   }
 
   private fun textAttributesForHighlighter() = TextAttributes().apply {
-    backgroundColor = editor.notebookAppearance.codeCellBackgroundColor.get()
+    backgroundColor = editor.rNotebookAppearance.codeCellBackgroundColor.get()
   }
 
   private fun NotebookCellLines.getMatchingCells(logicalLines: IntRange): List<NotebookCellLines.Interval> =

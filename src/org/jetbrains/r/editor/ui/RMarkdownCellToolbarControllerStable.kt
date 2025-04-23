@@ -1,6 +1,5 @@
 package org.jetbrains.r.editor.ui
 
-import com.intellij.notebooks.ui.visualization.NotebookUtil.notebookAppearance
 import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.EditorCustomElementRenderer
@@ -12,6 +11,7 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.editor.markup.TextAttributes
+import org.jetbrains.r.editor.rNotebookAppearance
 import org.jetbrains.r.visualization.RNotebookCellInlayController
 import org.jetbrains.r.visualization.RNotebookIntervalPointer
 import org.jetbrains.r.visualization.RNotebookIntervalPointerFactory
@@ -29,7 +29,7 @@ internal class RMarkdownCellToolbarControllerStable private constructor(
 
   override fun calcWidthInPixels(inlay: Inlay<*>): Int = inlay.editor.scrollingModel.visibleArea.width
 
-  override fun calcHeightInPixels(inlay: Inlay<*>): Int = editor.notebookAppearance.run {
+  override fun calcHeightInPixels(inlay: Inlay<*>): Int = editor.rNotebookAppearance.run {
     INNER_CELL_TOOLBAR_HEIGHT + SPACE_BELOW_CELL_TOOLBAR
   }
 
@@ -44,7 +44,7 @@ internal class RMarkdownCellToolbarControllerStable private constructor(
         null,
         isRelatedToPrecedingText,
         true,
-        editor.notebookAppearance.JUPYTER_CELL_SPACERS_INLAY_PRIORITY,
+        editor.rNotebookAppearance.JUPYTER_CELL_SPACERS_INLAY_PRIORITY,
         inlayOffset
       )
     )!!

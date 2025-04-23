@@ -1,10 +1,10 @@
 package org.jetbrains.r.rendering.editor
 
 import com.intellij.notebooks.visualization.NotebookCellLinesProvider
-import com.intellij.notebooks.visualization.NotebookEditorAppearanceProvider
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.editor.impl.EditorImpl
+import org.jetbrains.r.editor.RNotebookEditorAppearanceProvider
 import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
 import org.jetbrains.r.visualization.RNotebookCellInlayManager
 import org.jetbrains.r.visualization.RNotebookGutterLineMarkerManager
@@ -18,7 +18,7 @@ class RMarkdownEditorFactoryListener : EditorFactoryListener {
 
     RInlayDimensions.init(editor)
     NotebookCellLinesProvider.install(editor)
-    NotebookEditorAppearanceProvider.install(editor)
+    RNotebookEditorAppearanceProvider.install(editor)
 
     RNotebookCellInlayManager.install(editor)
     RNotebookGutterLineMarkerManager.install(editor)

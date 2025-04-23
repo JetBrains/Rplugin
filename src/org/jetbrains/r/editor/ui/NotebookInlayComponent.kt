@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.editor.ui
 
-import com.intellij.notebooks.ui.visualization.NotebookUtil.notebookAppearance
 import com.intellij.notebooks.visualization.r.inlays.InlayDimensions
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Inlay
@@ -14,6 +13,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
+import org.jetbrains.r.editor.rNotebookAppearance
 import org.jetbrains.r.visualization.RNotebookIntervalPointer
 import org.jetbrains.r.visualization.inlays.InlayComponent
 import org.jetbrains.r.visualization.inlays.InlayOutput
@@ -105,7 +105,7 @@ class NotebookInlayComponent(
 
     g2d.color =
       (inlay!!.editor as EditorImpl).let {
-        it.notebookAppearance.getInlayBackgroundColor(it.colorsScheme) ?: it.backgroundColor
+        it.rNotebookAppearance.getInlayBackgroundColor(it.colorsScheme) ?: it.backgroundColor
       }
 
     g2d.fillRect(0, 0, width, RInlayDimensions.topOffset + RInlayDimensions.cornerRadius)
