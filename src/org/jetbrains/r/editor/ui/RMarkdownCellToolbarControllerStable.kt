@@ -1,6 +1,9 @@
 package org.jetbrains.r.editor.ui
 
 import com.intellij.notebooks.ui.visualization.NotebookUtil.notebookAppearance
+import com.intellij.notebooks.visualization.NotebookCellLines
+import com.intellij.notebooks.visualization.NotebookIntervalPointer
+import com.intellij.notebooks.visualization.NotebookIntervalPointerFactory
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
@@ -11,16 +14,10 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.editor.markup.TextAttributes
-import com.intellij.notebooks.visualization.NotebookCellLines
-import com.intellij.notebooks.visualization.NotebookIntervalPointer
-import com.intellij.notebooks.visualization.NotebookIntervalPointerFactory
 import org.jetbrains.r.visualization.RNotebookCellInlayController
 import java.awt.Graphics
 import java.awt.Rectangle
 
-/**
- * same as [RMarkdownCellToolbarController] but relying on the old stable components
- */
 internal class RMarkdownCellToolbarControllerStable private constructor(
   val editor: EditorImpl,
   override val factory: Factory,
