@@ -3,9 +3,9 @@ package org.jetbrains.r.run.graphics
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.util.ui.ImageUtil
 import org.jetbrains.annotations.Nls
-import com.intellij.notebooks.visualization.r.inlays.components.ImageInverter
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rinterop.*
+import org.jetbrains.r.visualization.inlays.components.RImageInverter
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.Image
@@ -39,7 +39,7 @@ object RPlotUtil {
     val editorColorsManager = EditorColorsManager.getInstance()
     val colorScheme = editorColorsManager.globalScheme
     val shouldInvert = darkMode && editorColorsManager.isDarkEditor
-    return if (shouldInvert) ImageInverter(colorScheme.defaultForeground, colorScheme.defaultBackground).invert(image) else image
+    return if (shouldInvert) RImageInverter(colorScheme.defaultForeground, colorScheme.defaultBackground).invert(image) else image
   }
 
   private fun getPlotFile(directory: File, number: Int): File {
@@ -248,7 +248,7 @@ object RPlotUtil {
 
     private val editorColorsManager = EditorColorsManager.getInstance()
     private val colorScheme = editorColorsManager.globalScheme
-    private val inverter = ImageInverter(colorScheme.defaultForeground, colorScheme.defaultBackground)
+    private val inverter = RImageInverter(colorScheme.defaultForeground, colorScheme.defaultBackground)
 
     private val plotter = provider.create(plot.fonts.map { scale(it) }, fitTheme(plot.colors), plot.strokes.map { scale(it) })
     private val clippingAreas = Array(plot.viewports.size) { Rectangle2D.Float() }

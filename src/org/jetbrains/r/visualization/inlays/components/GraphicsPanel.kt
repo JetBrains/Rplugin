@@ -31,7 +31,6 @@ import org.intellij.images.editor.impl.ImageEditorImpl
 import org.intellij.images.ui.ImageComponent
 import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.runAsync
-import com.intellij.notebooks.visualization.r.inlays.components.ImageInverter
 import org.jetbrains.plugins.terminal.block.util.TerminalDataContextUtils.editor
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
@@ -247,7 +246,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   }
 
   private fun createInvertedImage(content: ByteArray, globalScheme: EditorColorsScheme): ByteArray {
-    val inverter = ImageInverter(globalScheme.defaultForeground, globalScheme.defaultBackground)
+    val inverter = RImageInverter(globalScheme.defaultForeground, globalScheme.defaultBackground)
     return inverter.invert(content)
   }
 
