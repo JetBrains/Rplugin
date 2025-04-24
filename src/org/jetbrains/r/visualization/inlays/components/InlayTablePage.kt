@@ -7,7 +7,6 @@ package org.jetbrains.r.visualization.inlays.components
 import com.intellij.icons.AllIcons
 import com.intellij.ide.CopyProvider
 import com.intellij.ide.DataManager
-import com.intellij.notebooks.visualization.r.inlays.ClipboardUtils
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
@@ -22,6 +21,7 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.visualization.inlays.RClipboardUtils
 import org.jetbrains.r.visualization.inlays.dataframe.DataFrame
 import org.jetbrains.r.visualization.inlays.dataframe.columns.DoubleType
 import org.jetbrains.r.visualization.inlays.dataframe.columns.IntType
@@ -65,7 +65,7 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
 
     override fun performCopy(dataContext: DataContext) {
-      val copySelectedToString: CharSequence = ClipboardUtils.copySelectedToString(table)
+      val copySelectedToString: CharSequence = RClipboardUtils.copySelectedToString(table)
       CopyPasteManager.getInstance().setContents(TextTransferable(copySelectedToString))
     }
 
@@ -106,10 +106,10 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
 
   private fun setupTablePopupMenu(table: JTable) {
     val copyAll = JMenuItem(RBundle.message("inlay.table.copy.all"))
-    copyAll.addActionListener { ClipboardUtils.copyAllToClipboard(table) }
+    copyAll.addActionListener { RClipboardUtils.copyAllToClipboard(table) }
 
     val copySelected = JMenuItem(RBundle.message("inlay.table.copy.selected"))
-    copySelected.addActionListener { ClipboardUtils.copySelectedToClipboard(table) }
+    copySelected.addActionListener { RClipboardUtils.copySelectedToClipboard(table) }
 
     val popupMenu = JPopupMenu()
     popupMenu.add(copyAll)
@@ -245,14 +245,14 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
 
       for (i in 0 until selectedRowCount) {
         for (j in 0 until selectedColumnCount) {
-          out.write(ClipboardUtils.escape(table.getValueAt(selectedRows[i], selectedColumns[j])))
+          out.write(RClipboardUtils.escape(table.getValueAt(selectedRows[i], selectedColumns[j])))
 
           if (j < selectedColumnCount - 1) {
             out.write(cellBreak)
           }
         }
         if (i < table.rowCount - 1) {
-          out.append(ClipboardUtils.LINE_BREAK)
+          out.append(RClipboardUtils.LINE_BREAK)
         }
       }
     }
@@ -260,14 +260,14 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
     fun saveAll(out: BufferedWriter, cellBreak: String) {
       for (i in 0 until table.rowCount) {
         for (j in 0 until table.columnCount) {
-          out.write(ClipboardUtils.escape(table.getValueAt(i, j)))
+          out.write(RClipboardUtils.escape(table.getValueAt(i, j)))
 
           if (j < table.columnCount - 1) {
             out.write(cellBreak)
           }
         }
         if (i < table.rowCount - 1) {
-          out.append(ClipboardUtils.LINE_BREAK)
+          out.append(RClipboardUtils.LINE_BREAK)
         }
       }
     }

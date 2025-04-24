@@ -5,7 +5,6 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.Messages
 import org.jetbrains.annotations.Nls
-import com.intellij.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RPlotUtil
@@ -14,6 +13,7 @@ import org.jetbrains.r.run.graphics.ui.RChunkGraphicsSettingsDialog
 import org.jetbrains.r.run.graphics.ui.RGraphicsExportDialog
 import org.jetbrains.r.run.graphics.ui.RGraphicsPanelWrapper
 import org.jetbrains.r.run.graphics.ui.RGraphicsZoomDialog
+import org.jetbrains.r.visualization.inlays.RClipboardUtils
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.inlays.components.CopyImageToClipboardAction
 import org.jetbrains.r.visualization.inlays.components.InlayOutput
@@ -125,7 +125,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor) :
 
   override fun copyImageToClipboard() {
     wrapper.image?.let { image ->
-      ClipboardUtils.copyImageToClipboard(image)
+      RClipboardUtils.copyImageToClipboard(image)
     }
   }
 
