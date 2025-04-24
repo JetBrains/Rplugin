@@ -4,8 +4,6 @@ import com.intellij.ide.DataManager
 import com.intellij.ide.ui.LafManagerListener
 import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.notebooks.visualization.context.NotebookDataContext
-import com.intellij.notebooks.visualization.mergeAndJoinIntersections
-import com.intellij.notebooks.visualization.use
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
@@ -34,6 +32,8 @@ import com.intellij.util.containers.SmartHashSet
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.jetbrains.r.editor.rNotebookAppearance
+import org.jetbrains.r.visualization.ui.mergeAndJoinIntersections
+import org.jetbrains.r.visualization.ui.use
 import java.awt.Graphics
 import javax.swing.JComponent
 import kotlin.math.max
