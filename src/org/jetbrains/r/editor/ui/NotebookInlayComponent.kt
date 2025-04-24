@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.editor.ui
 
-import com.intellij.notebooks.visualization.r.inlays.InlayDimensions
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorImpl
@@ -61,9 +60,9 @@ class NotebookInlayComponent(
 
   init {
     cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
-    border = JBUI.Borders.empty(InlayDimensions.topBorderUnscaled,
+    border = JBUI.Borders.empty(RInlayDimensions.topBorderUnscaled,
                                 RInlayDimensions.leftBorderUnscaled,
-                                InlayDimensions.bottomBorderUnscaled,
+                                RInlayDimensions.bottomBorderUnscaled,
                                 RInlayDimensions.rightBorderUnscaled)
     Disposer.register(editor.disposable, disposable)
     addMouseListener(this)
@@ -199,7 +198,7 @@ class NotebookInlayComponent(
   private fun adjustSize(height: Int) {
     beforeHeightChanged()
 
-    var desiredHeight = height + InlayDimensions.topBorder + InlayDimensions.bottomBorder
+    var desiredHeight = height + RInlayDimensions.topBorder + RInlayDimensions.bottomBorder
     if (shouldLimitMaxHeight) {
       desiredHeight = min(RInlayDimensions.defaultHeight, desiredHeight)
     }
