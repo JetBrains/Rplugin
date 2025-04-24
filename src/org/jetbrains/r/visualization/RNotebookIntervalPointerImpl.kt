@@ -19,7 +19,7 @@ import org.jetbrains.r.visualization.RNotebookIntervalPointersEvent.*
 
 object RNotebookIntervalPointerFactoryImplProvider {
   fun create(project: Project, document: Document): RNotebookIntervalPointerFactory {
-    val notebookCellLines = NotebookCellLines.get(document)
+    val notebookCellLines = RNotebookCellLines.get(document)
     val factory = RNotebookIntervalPointerFactoryImpl(notebookCellLines,
                                                       DocumentReferenceManager.getInstance().create(document),
                                                       UndoManager.getInstance(project),

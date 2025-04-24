@@ -4,6 +4,10 @@ import com.intellij.lang.Language
 import com.intellij.lexer.Lexer
 import com.intellij.lexer.MergeFunction
 import com.intellij.lexer.MergingLexerAdapterBase
+import com.intellij.notebooks.visualization.IntervalsGenerator
+import com.intellij.notebooks.visualization.NonIncrementalCellLinesProvider
+import com.intellij.notebooks.visualization.NotebookCellLines
+import com.intellij.notebooks.visualization.NotebookCellLinesLexer
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.fileTypes.PlainTextLanguage
@@ -12,12 +16,9 @@ import com.intellij.util.keyFMap.KeyFMap
 import org.intellij.plugins.markdown.lang.MarkdownLanguage
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.lexer.MarkdownLexerAdapter
-import com.intellij.notebooks.visualization.IntervalsGenerator
-import com.intellij.notebooks.visualization.NonIncrementalCellLinesProvider
-import com.intellij.notebooks.visualization.NotebookCellLines
-import com.intellij.notebooks.visualization.NotebookCellLinesLexer
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 import org.jetbrains.r.rmarkdown.RmdCellLanguageProvider
+import org.jetbrains.r.visualization.RNotebookCellLines
 
 class RMarkdownCellLinesProvider : NonIncrementalCellLinesProvider(RMarkdownIntervalsGenerator())
 
@@ -37,7 +38,7 @@ private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLine
       val maxLangSize: Int = langMap.keys.maxOfOrNull { it.length } ?: 0
 
       val markdownDataPair = Pair(NotebookCellLines.CellType.MARKDOWN,
-                                  KeyFMap.EMPTY_MAP.plus(NotebookCellLines.INTERVAL_LANGUAGE_KEY, MarkdownLanguage.INSTANCE))
+                                  KeyFMap.EMPTY_MAP.plus(RNotebookCellLines.INTERVAL_LANGUAGE_KEY, MarkdownLanguage.INSTANCE))
       val codeDataCache = mutableMapOf<Language, Pair<NotebookCellLines.CellType, KeyFMap>>()
 
       val seq = NotebookCellLinesLexer.defaultMarkerSequence(
@@ -50,7 +51,7 @@ private class RMarkdownIntervalsGenerator : IntervalsGenerator, NotebookCellLine
               val cellLanguageText = parseLanguage(cellText, maxLangSize)
               val language = langMap.getOrDefault(cellLanguageText, defaultLanguage)
               codeDataCache.getOrPut(language) {
-                Pair(NotebookCellLines.CellType.CODE, KeyFMap.EMPTY_MAP.plus(NotebookCellLines.INTERVAL_LANGUAGE_KEY, language))
+                Pair(NotebookCellLines.CellType.CODE, KeyFMap.EMPTY_MAP.plus(RNotebookCellLines.INTERVAL_LANGUAGE_KEY, language))
               }
             }
             else -> null
