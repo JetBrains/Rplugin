@@ -42,7 +42,7 @@ import kotlin.math.min
 class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
   private val disposable = Disposer.newCheckedDisposable(editor.disposable)
   private val inlays: MutableMap<Inlay<*>, RNotebookCellInlayController> = HashMap()
-  private val notebookCellLines = NotebookCellLines.get(editor)
+  private val notebookCellLines = RNotebookCellLines.get(editor.document)
   private val viewportQueue = MergingUpdateQueue("RNotebookCellInlayManager Viewport Update", 100, true, null, disposable, null, true)
 
   /** 20 is 1000 / 50, two times faster than the eye refresh rate. Actually, the value has been chosen randomly, without experiments. */
