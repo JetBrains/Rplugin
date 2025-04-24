@@ -5,20 +5,30 @@ import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
-import com.intellij.notebooks.visualization.r.inlays.InlayDimensions
-import com.intellij.notebooks.visualization.r.inlays.InlayDimensions.bottomBorder
-import com.intellij.notebooks.visualization.r.inlays.InlayDimensions.topBorder
 import java.awt.Dimension
 import java.awt.Font
 import kotlin.math.max
 
 object RInlayDimensions {
-
-  val topOffset = JBUI.scale(InlayDimensions.topOffsetUnscaled)
-  val bottomOffset = JBUI.scale(InlayDimensions.bottomOffsetUnscaled)
-
   const val leftBorderUnscaled = 0
   const val rightBorderUnscaled = 0
+
+  /**
+   * Offset for inlay painted round-rect background.
+   * We need it to draw visual offsets from surrounding text.
+   */
+  const val topOffsetUnscaled = 10
+  const val bottomOffsetUnscaled = 24
+
+  const val topBorderUnscaled = topOffsetUnscaled + 3
+  const val bottomBorderUnscaled = bottomOffsetUnscaled + 5
+
+  /** Real borders for inner inlay component */
+  val topBorder = JBUI.scale(topBorderUnscaled)
+  val bottomBorder = JBUI.scale(bottomBorderUnscaled)
+
+  val topOffset = JBUI.scale(topOffsetUnscaled)
+  val bottomOffset = JBUI.scale(bottomOffsetUnscaled)
 
   val cornerRadius = JBUI.scale(10)
 
