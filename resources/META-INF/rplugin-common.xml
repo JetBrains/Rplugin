@@ -388,10 +388,6 @@ You can find the source code in the following repositories:
                                  implementationClass="org.jetbrains.r.editor.RMarkdownCellLinesProvider"/>
       <notebookCellLinesProvider language="Quarto"
                                  implementationClass="org.jetbrains.r.editor.RMarkdownCellLinesProvider"/>
-      <notebookIntervalPointerFactoryProvider language="RMarkdown"
-                                              implementationClass="com.intellij.notebooks.visualization.NotebookIntervalPointerFactoryImplProvider"/>
-      <notebookIntervalPointerFactoryProvider language="Quarto"
-                                              implementationClass="com.intellij.notebooks.visualization.NotebookIntervalPointerFactoryImplProvider"/>
       <editor.outputs.notebookOutputDataKeyExtractor implementation="org.jetbrains.r.editor.ui.RMarkdownOutputDataKeyExtractor"/>
 
     </extensions>
