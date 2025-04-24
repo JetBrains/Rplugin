@@ -5,7 +5,6 @@
 package org.jetbrains.r.rendering.chunk
 
 import com.intellij.notebooks.visualization.NotebookCellLines
-import com.intellij.notebooks.visualization.getCell
 import com.intellij.openapi.actionSystem.ActionManager.getInstance
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -38,6 +37,7 @@ import org.jetbrains.r.rinterop.RInteropCoroutineScope
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
 import org.jetbrains.r.rmarkdown.RmdFenceProvider
+import org.jetbrains.r.visualization.ui.getCell
 import java.util.concurrent.atomic.AtomicReference
 
 

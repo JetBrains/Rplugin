@@ -4,12 +4,12 @@
 
 package org.jetbrains.r.rendering.chunk
 
+import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiElement
-import com.intellij.notebooks.visualization.NotebookCellLines
-import com.intellij.notebooks.visualization.getText
 import org.jetbrains.r.editor.ui.psiFile
+import org.jetbrains.r.visualization.ui.getText
 import java.lang.Integer.toHexString
 import java.nio.file.Paths
 
