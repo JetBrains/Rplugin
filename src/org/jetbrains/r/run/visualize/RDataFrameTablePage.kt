@@ -9,7 +9,6 @@ import com.intellij.codeInsight.hints.presentation.mouseButton
 import com.intellij.icons.AllIcons
 import com.intellij.ide.CopyProvider
 import com.intellij.ide.DataManager
-import com.intellij.notebooks.visualization.r.inlays.ClipboardUtils
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.*
@@ -33,6 +32,7 @@ import com.intellij.util.ui.TextTransferable
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
+import org.jetbrains.r.visualization.inlays.RClipboardUtils
 import org.jetbrains.r.visualization.inlays.table.filters.gui.TableFilterHeader
 import org.jetbrains.r.visualization.ui.MaterialTableUtils
 import java.awt.BorderLayout
@@ -66,7 +66,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
 
     override fun performCopy(dataContext: DataContext) {
-      val copySelectedToString: CharSequence = ClipboardUtils.copySelectedToString(table)
+      val copySelectedToString: CharSequence = RClipboardUtils.copySelectedToString(table)
       CopyPasteManager.getInstance().setContents(TextTransferable(copySelectedToString))
     }
 
@@ -123,10 +123,10 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
     }
 
     val copyAll = JMenuItem(RBundle.message("dataframe.viewer.menu.copy.all"))
-    copyAll.addActionListener { ClipboardUtils.copyAllToClipboard(table) }
+    copyAll.addActionListener { RClipboardUtils.copyAllToClipboard(table) }
 
     val copySelected = JMenuItem(RBundle.message("dataframe.viewer.menu.copy.selected"))
-    copySelected.addActionListener { ClipboardUtils.copySelectedToClipboard(table) }
+    copySelected.addActionListener { RClipboardUtils.copySelectedToClipboard(table) }
 
     val popupMenu = JPopupMenu()
     popupMenu.add(filterByValue)
@@ -301,7 +301,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
         pi.checkCanceled()
       }
       rows.forEachIndexed { i, row ->
-        out.append(ClipboardUtils.LINE_BREAK)
+        out.append(RClipboardUtils.LINE_BREAK)
         columns.forEachIndexed { j, column ->
           tableModel.viewer.ensureLoaded(row, column).blockingGet(Int.MAX_VALUE)
           tableModel.viewer.getValueAt(row, column)?.let { out.write(escaper(it.toString())) }

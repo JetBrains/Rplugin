@@ -16,12 +16,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
-import com.intellij.notebooks.visualization.r.inlays.ClipboardUtils
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.run.graphics.*
 import org.jetbrains.r.settings.RGraphicsSettings
+import org.jetbrains.r.visualization.inlays.RClipboardUtils
 import org.jetbrains.r.visualization.inlays.components.CHANGE_DARK_MODE_TOPIC
 import org.jetbrains.r.visualization.inlays.components.GraphicsPanel
 import org.jetbrains.r.visualization.ui.ToolbarUtil
@@ -213,7 +213,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     lastOutput?.let {
       val image = if (usesPlotViewer) plotViewer.image else graphicsPanel.image
       if (image != null) {
-        ClipboardUtils.copyImageToClipboard(image)
+        RClipboardUtils.copyImageToClipboard(image)
       }
     }
   }
