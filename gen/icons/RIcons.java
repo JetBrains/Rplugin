@@ -30,6 +30,10 @@ public final class RIcons {
     /** 16x16 */ public static final @NotNull Icon Shiny = load("icons/fileTypes/shiny.svg", -2101833744, 0);
   }
 
+  public static final class Graphics {
+    /** 16x16 */ public static final @NotNull Icon ConstraintProportions = load("icons/graphics/constraintProportions.svg", -501427623, 2);
+  }
+
   /** 16x16 */ public static final @NotNull Icon MachineLearning = load("icons/machineLearning.svg", 667706227, 0);
 
   public static final class Packages {
@@ -51,6 +55,10 @@ public final class RIcons {
     /** 16x16 */ public static final @NotNull Icon RunBelow = load("icons/run/runBelow.svg", -1826950222, 2);
     /** 16x16 */ public static final @NotNull Icon RunCurrent = load("icons/expui/runCursor.svg", "icons/run/runCurrent.svg", 1194380704, 2);
     /** 16x16 */ public static final @NotNull Icon RunJob = load("icons/expui/runRJob.svg", "icons/run/runJob.svg", -1705121289, 2);
+  }
+
+  public static final class Table {
+    /** 16x16 */ public static final @NotNull Icon Pagination = load("icons/table/pagination.svg", -1428227815, 2);
   }
 
   public static final class ToolWindow {
