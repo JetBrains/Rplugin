@@ -1,6 +1,5 @@
 package org.jetbrains.r.visualization.inlays
 
-import com.intellij.notebooks.visualization.r.VisualizationBundle
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
@@ -8,6 +7,7 @@ import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
+import org.jetbrains.r.RBundle
 import java.awt.Image
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
@@ -29,8 +29,8 @@ object RClipboardUtils {
     if (table.rowCount == 0 || table.columnCount == 0) {
       // The code should be compatible with 193 and 201 so, so we cannot use NotificationGroup.createIdWithTitle yet
       Notifications.Bus.notify(Notification("Notebook Table",
-                                            VisualizationBundle.message("clipboard.utils.error"),
-                                            VisualizationBundle.message("clipboard.utils.no.columns.or.rows"),
+                                            RBundle.message("clipboard.utils.error"),
+                                            RBundle.message("clipboard.utils.no.columns.or.rows"),
                                             NotificationType.ERROR))
       return ""
     }
@@ -38,7 +38,7 @@ object RClipboardUtils {
     val builder = StringBuilder()
     for (i in 0 until table.rowCount) {
       if (i >= limit) {
-        builder.append("\n").append(VisualizationBundle.message("clipboard.utils.copy.load.limit", limit))
+        builder.append("\n").append(RBundle.message("clipboard.utils.copy.load.limit", limit))
         break
       }
       for (j in 0 until table.columnCount) {
@@ -70,8 +70,8 @@ object RClipboardUtils {
 
     if (selectedColumnCount == 0 || selectedRowCount == 0) {
       Notifications.Bus.notify(Notification("Notebook Table",
-                                            VisualizationBundle.message("clipboard.utils.error"),
-                                            VisualizationBundle.message("clipboard.utils.no.selection"),
+                                            RBundle.message("clipboard.utils.error"),
+                                            RBundle.message("clipboard.utils.no.selection"),
                                             NotificationType.ERROR))
       return ""
     }
