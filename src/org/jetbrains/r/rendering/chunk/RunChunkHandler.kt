@@ -17,7 +17,6 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.util.EditorUtil
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.progress.blockingContext
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.io.FileUtil
@@ -160,18 +159,7 @@ class RunChunkHandler(
 
     if (console == null) return false
 
-    if (isNewMode) {
-      return runHandlersAndExecuteChunk(console, element, editor, isDebug, isBatchMode, isFirstChunk, textRange)
-    }
-    else {
-      return withContext(Dispatchers.IO) {
-        blockingContext {
-          ReadAction.compute<Promise<Boolean>, Throwable> {
-            runHandlersAndExecuteChunkAsync(console, element, editor, isDebug, isBatchMode, isFirstChunk, textRange)
-          }
-        }.await()
-      }
-    }
+    return runHandlersAndExecuteChunk(console, element, editor, isDebug, isBatchMode, isFirstChunk, textRange)
   }
 
   private data class PsiElementWithContext(
@@ -255,13 +243,11 @@ class RunChunkHandler(
         pullOutputs(console.rInterop, cacheDirectory)
       }
       catch (t: Throwable) {
-        afterRunChunk(element, console.rInterop, result, AsyncPromise<Boolean>(), console, editor, elementWithContext.inlayElement, isBatchMode)
+        afterRunChunk(element, console.rInterop, result, console, editor, elementWithContext.inlayElement, isBatchMode)
         throw t
       }
 
-      val afterRunChunkResult = AsyncPromise<Boolean>()
-      afterRunChunk(element, console.rInterop, result, afterRunChunkResult, console, editor, elementWithContext.inlayElement, isBatchMode)
-      return@withContext afterRunChunkResult.await()
+      return@withContext afterRunChunk(element, console.rInterop, result, console, editor, elementWithContext.inlayElement, isBatchMode)
     }
   }
 
@@ -320,7 +306,8 @@ class RunChunkHandler(
         }.onProcessed { result ->
           dumpAndShutdownAsync(graphicsDeviceRef.get()).onProcessed {
             pullOutputsWithLogAsync(console.rInterop, cacheDirectory).onProcessed {
-              afterRunChunk(element, console.rInterop, result, promise, console, editor, elementWithContext.inlayElement, isBatchMode)
+              val result = afterRunChunk(element, console.rInterop, result, console, editor, elementWithContext.inlayElement, isBatchMode)
+              promise.setResult(result)
             }
           }
         }
@@ -331,9 +318,6 @@ class RunChunkHandler(
   }
 
   companion object {
-    /** In case of critical bugs in RunChunkHandler it could be switched off */
-    private const val isNewMode: Boolean = true
-
     fun getInstance(project: Project): RunChunkHandler =
       project.service()
 
@@ -471,12 +455,11 @@ class RunChunkHandler(
       element: PsiElement,
       rInterop: RInterop,
       result: ExecutionResult?,
-      promise: AsyncPromise<Boolean>,
       console: RConsoleView,
       editor: EditorEx,
       inlayElement: PsiElement,
       isBatchMode: Boolean,
-    ) {
+    ): Boolean {
       logNonEmptyError(rInterop.runAfterChunk())
       val outputs = result?.output
       if (outputs != null) {
@@ -487,11 +470,10 @@ class RunChunkHandler(
           .notify(element.project)
       }
       val success = result != null && result.exception == null
-      promise.setResult(success)
       if (!isBatchMode) {
         console.resetHandler()
       }
-      if (ApplicationManager.getApplication().isUnitTestMode) return
+      if (ApplicationManager.getApplication().isUnitTestMode) return success
       @Suppress("HardCodedStringLiteral") val status = when {
         result == null -> InlayProgressStatus(RProgressStatus.STOPPED_ERROR)
         result.exception != null -> InlayProgressStatus(RProgressStatus.STOPPED_ERROR, result.exception)
@@ -503,7 +485,11 @@ class RunChunkHandler(
       }
       cleanupOutdatedOutputs(element)
 
-      ApplicationManager.getApplication().invokeLater { editor.gutterComponentEx.revalidateMarkup() }
+      ApplicationManager.getApplication().invokeLater {
+        editor.gutterComponentEx.revalidateMarkup()
+      }
+
+      return success
     }
 
     private data class ExecutionResult(val output: List<ProcessOutput>, val exception: String? = null)
