@@ -9,7 +9,7 @@ import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.util.Disposer
-import com.intellij.notebooks.visualization.r.inlays.ResizeController
+import org.jetbrains.r.visualization.inlays.components.RResizeController
 import java.awt.*
 import javax.swing.JPanel
 
@@ -19,7 +19,7 @@ open class InlayComponent : JPanel(BorderLayout()), EditorCustomElementRenderer 
   /** Inlay, associated with this component. Our swing component positioned and sized according inlay. */
   var inlay: Inlay<*>? = null
 
-  private var resizeController: ResizeController? = null
+  private var resizeController: RResizeController? = null
 
   override fun paint(g: Graphics) {
     // We need this fix with AlphaComposite.SrcOver to resolve problem of black background on transparent images such as icons.
@@ -38,7 +38,7 @@ open class InlayComponent : JPanel(BorderLayout()), EditorCustomElementRenderer 
     }
     set(value) {
       if (value && resizeController == null) {
-        resizeController = ResizeController(
+        resizeController = RResizeController(
           component = this,
           editor = inlay!!.editor,
           deltaSize = ::deltaSize,
