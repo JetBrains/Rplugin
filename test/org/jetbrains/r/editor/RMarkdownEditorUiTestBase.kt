@@ -8,7 +8,6 @@ import com.intellij.psi.PsiManager
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.testFramework.fixtures.impl.TempDirTestFixtureImpl
-import com.intellij.notebooks.visualization.extractTextAndCaretOffset
 import org.junit.After
 import org.junit.Before
 import org.junit.runner.RunWith
@@ -56,4 +55,16 @@ internal fun CodeInsightTestFixture.openNotebookTextInEditor(text: String) {
   openFileInEditor(localFile)
 
   caretOffset?.let { editor.caretModel.moveToOffset(it) }
+}
+
+private const val caretToken = "<caret>"
+
+private fun extractTextAndCaretOffset(text: String): Pair<String, Int?> {
+  val caretOffset = text.indexOf(caretToken)
+  if (caretOffset != -1) {
+    return Pair(text.substring(0, caretOffset) + text.substring(caretOffset + caretToken.length), caretOffset)
+  }
+  else {
+    return Pair(text, null)
+  }
 }
