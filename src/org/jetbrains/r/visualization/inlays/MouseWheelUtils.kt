@@ -10,12 +10,12 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.openapi.util.Key
 import com.intellij.ui.ComponentUtil
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.MouseEventAdapter
-import com.intellij.notebooks.visualization.r.inlays.components.NOTEBOOKS_CONSOLE_OUTPUT_KEY
-import com.intellij.notebooks.visualization.r.inlays.components.updateOutputTextConsoleUI
+import org.jetbrains.r.visualization.ui.updateOutputTextConsoleUI
 import java.awt.Component
 import java.awt.event.MouseWheelEvent
 import java.awt.event.MouseWheelListener
@@ -110,9 +110,11 @@ object MouseWheelUtils {
       isRendererMode = true
       scrollPane.border = IdeBorderFactory.createEmptyBorder(JBUI.insetsTop(scrollPaneTopBorderHeight))
       wrapMouseWheelListeners(scrollPane, parent)
-      putUserData(NOTEBOOKS_CONSOLE_OUTPUT_KEY, true)
+      putUserData(R_NOTEBOOKS_CONSOLE_OUTPUT_KEY, true)
     }
 
     consoleEditor.settings.isUseSoftWraps = true
   }
 }
+
+val R_NOTEBOOKS_CONSOLE_OUTPUT_KEY = Key.create<Boolean>("R_NOTEBOOKS_CONSOLE_OUTPUT")
