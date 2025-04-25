@@ -1,7 +1,6 @@
 package org.jetbrains.r.visualization.inlays.components
 
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.notebooks.visualization.outputs.NotebookOutputNonStickyScrollPane
 import javax.swing.JComponent
 
 object InlayStateScrollPaneCustomizer : InlayStateCustomizer {
@@ -22,7 +21,7 @@ object InlayStateScrollPaneCustomizer : InlayStateCustomizer {
         if (parent != null) {
           val view = scrollPane.viewport.view
           if (view != null) { // maybe something is broken, previously there weren't nulls
-            val jupyterOutputScrollPane = NotebookOutputNonStickyScrollPane(view)
+            val jupyterOutputScrollPane = RNotebookOutputNonStickyScrollPane(view)
 
             parent.remove(scrollPane)
             parent.add(jupyterOutputScrollPane)
