@@ -4,6 +4,7 @@ import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentListener
+import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.TextRange
 import com.intellij.util.containers.ContainerUtil
@@ -51,5 +52,15 @@ internal fun MutableList<IntRange>.mergeAndJoinIntersections(other: List<IntRang
         add(current)
       }
     }
+  }
+}
+
+/**
+ * Changes the color scheme of consoleEditor to the color scheme of the main editor, if required.
+ * [editor] is a main notebook editor, [consoleEditor] editor of particular console output.
+ */
+internal fun updateOutputTextConsoleUI(consoleEditor: EditorEx, editor: Editor) {
+  if (consoleEditor.colorsScheme != editor.colorsScheme) {
+    consoleEditor.colorsScheme = editor.colorsScheme
   }
 }

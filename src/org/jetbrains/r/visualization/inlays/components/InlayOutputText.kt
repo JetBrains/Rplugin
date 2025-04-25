@@ -3,7 +3,6 @@ package org.jetbrains.r.visualization.inlays.components
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.intellij.execution.process.ProcessOutputType
-import com.intellij.notebooks.visualization.r.inlays.components.updateOutputTextConsoleUI
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
@@ -18,6 +17,7 @@ import com.intellij.openapi.util.Key
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.visualization.inlays.MouseWheelUtils
 import org.jetbrains.r.visualization.inlays.runAsyncInlay
+import org.jetbrains.r.visualization.ui.updateOutputTextConsoleUI
 import java.awt.Dimension
 import java.io.File
 import javax.swing.SwingUtilities

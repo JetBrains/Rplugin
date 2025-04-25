@@ -3,8 +3,8 @@ package org.jetbrains.r.visualization
 import com.intellij.ide.DataManager
 import com.intellij.ide.ui.LafManagerListener
 import com.intellij.notebooks.visualization.NotebookCellLines
-import com.intellij.notebooks.visualization.context.NotebookDataContext
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
@@ -262,7 +262,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
   ) : DataProvider {
     override fun getData(key: String): Any? =
       when (key) {
-        NotebookDataContext.NOTEBOOK_CELL_LINES_INTERVAL.name -> interval
+        R_NOTEBOOK_CELL_LINES_INTERVAL.name -> interval
         PlatformCoreDataKeys.CONTEXT_COMPONENT.name -> component
         PlatformDataKeys.EDITOR.name -> editor
         else -> null
@@ -376,6 +376,8 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
 
   companion object {
     private val LOG = logger<RNotebookCellInlayManager>()
+
+    val R_NOTEBOOK_CELL_LINES_INTERVAL: DataKey<NotebookCellLines.Interval> = DataKey.create("R_NOTEBOOK_CELL_LINES_INTERVAL")
 
     @JvmStatic
     fun install(editor: EditorImpl) {
