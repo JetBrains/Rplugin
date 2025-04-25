@@ -29,6 +29,7 @@ import com.intellij.ui.SideBorder
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
+import icons.RIcons
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
@@ -227,7 +228,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
 
     val paginateTable = object : RDumbAwareBgtToggleAction(RBundle.message("action.dataframe.viewer.pagination.name"),
                                                            RBundle.message("action.dataframe.viewer.pagination.description"),
-                                                           com.intellij.notebooks.visualization.NotebooksVisualizationIcons.Table.Pagination) {
+                                                           RIcons.Table.Pagination) {
       override fun isSelected(e: AnActionEvent): Boolean {
         return paginator != null
       }

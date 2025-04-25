@@ -20,6 +20,7 @@ import com.intellij.ui.SideBorder
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
+import icons.RIcons
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.visualization.inlays.RClipboardUtils
 import org.jetbrains.r.visualization.inlays.dataframe.DataFrame
@@ -205,7 +206,7 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
 
     val paginateTable = object : DumbAwareToggleAction(RBundle.message("inlay.table.pagination.text"),
                                                        null,
-                                                       com.intellij.notebooks.visualization.NotebooksVisualizationIcons.Table.Pagination) {
+                                                       RIcons.Table.Pagination) {
       override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
 
       override fun isSelected(e: AnActionEvent): Boolean {
