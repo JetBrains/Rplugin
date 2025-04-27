@@ -5,6 +5,8 @@ import com.google.gson.reflect.TypeToken
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
@@ -14,13 +16,15 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.impl.softwrap.EmptySoftWrapPainter
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.visualization.inlays.MouseWheelUtils
 import org.jetbrains.r.visualization.inlays.runAsyncInlay
 import org.jetbrains.r.visualization.ui.updateOutputTextConsoleUI
 import java.awt.Dimension
 import java.io.File
-import javax.swing.SwingUtilities
 import kotlin.math.max
 import kotlin.math.min
 
@@ -53,27 +57,29 @@ class InlayOutputText(parent: Disposable, editor: Editor)
       File(data).takeIf { it.exists() && it.extension == "json" }?.let { file ->
         Gson().fromJson<List<ProcessOutput>>(file.readText(), object : TypeToken<List<ProcessOutput>>() {}.type)
       }.let { outputs ->
-        SwingUtilities.invokeLater {
-          if (outputs == null) {
-            // DS-763 "\r\n" patterns would trim the whole last line.
-            console.addData(data.replace("\r\n", "\n").trimEnd('\n'), ProcessOutputType.STDOUT)
-          }
-          else {
-            outputs.forEach { console.addData(it.text, it.kind) }
-          }
-          console.flushDeferredText()
+        RPluginCoroutineScope.getInstance(project).coroutineScope.launch(Dispatchers.EDT) {
+          writeAction {
+            if (outputs == null) {
+              // DS-763 "\r\n" patterns would trim the whole last line.
+              console.addData(data.replace("\r\n", "\n").trimEnd('\n'), ProcessOutputType.STDOUT)
+            }
+            else {
+              outputs.forEach { console.addData(it.text, it.kind) }
+            }
+            console.flushDeferredText()
 
-          (console.editor as? EditorImpl)?.apply {
-            updateSize(this)
+            (console.editor as? EditorImpl)?.apply {
+              updateSize(this)
 
-            softWrapModel.setSoftWrapPainter(EmptySoftWrapPainter)
-            softWrapModel.addSoftWrapChangeListener(
-              object : SoftWrapChangeListener {
-                override fun recalculationEnds() = updateSize(this@apply)
+              softWrapModel.setSoftWrapPainter(EmptySoftWrapPainter)
+              softWrapModel.addSoftWrapChangeListener(
+                object : SoftWrapChangeListener {
+                  override fun recalculationEnds() = updateSize(this@apply)
 
-                override fun softWrapsChanged() {}
-              }
-            )
+                  override fun softWrapsChanged() {}
+                }
+              )
+            }
           }
         }
       }
