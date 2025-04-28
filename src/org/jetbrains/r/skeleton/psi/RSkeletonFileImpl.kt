@@ -11,6 +11,7 @@ import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiInvalidElementAccessException
+import com.intellij.psi.impl.PsiManagerEx
 import com.intellij.psi.impl.PsiManagerImpl
 import com.intellij.psi.impl.file.PsiBinaryFileImpl
 import com.intellij.psi.impl.source.PsiFileWithStubSupport
@@ -26,7 +27,7 @@ import java.lang.ref.SoftReference
 
 
 class RSkeletonFileImpl(viewProvider: FileViewProvider)
-  : PsiBinaryFileImpl(viewProvider.manager as PsiManagerImpl, viewProvider), PsiFileWithStubSupport {
+  : PsiBinaryFileImpl(viewProvider.manager as PsiManagerEx, viewProvider), PsiFileWithStubSupport {
   @Volatile
   private var stub: Reference<StubTree>? = null
   private val stubLock = Object()
