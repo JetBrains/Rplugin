@@ -1,7 +1,6 @@
 package org.jetbrains.r.visualization
 
-import com.intellij.notebooks.visualization.NotebookCellLines
-import com.intellij.notebooks.visualization.NotebookCellLinesEvent
+import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 
 /**
  * passed to [NotebookIntervalPointerFactory.ChangeListener] in next cases:
@@ -14,7 +13,7 @@ import com.intellij.notebooks.visualization.NotebookCellLinesEvent
  */
 data class RNotebookIntervalPointersEvent(
   val changes: List<Change>,
-  val cellLinesEvent: NotebookCellLinesEvent?,
+  val cellLinesEvent: RNotebookCellLinesEvent?,
   val source: EventSource,
 ) {
   enum class EventSource {
@@ -22,7 +21,7 @@ data class RNotebookIntervalPointersEvent(
   }
 
 
-  data class PointerSnapshot(val pointer: RNotebookIntervalPointer, val interval: NotebookCellLines.Interval)
+  data class PointerSnapshot(val pointer: RNotebookIntervalPointer, val interval: Interval)
 
   /**
    * any change contains enough information to be inverted. It simplifies undo/redo actions.
@@ -40,8 +39,8 @@ data class RNotebookIntervalPointersEvent(
 
   data class OnEdited(
     val pointer: RNotebookIntervalPointer,
-    val intervalBefore: NotebookCellLines.Interval,
-    val intervalAfter: NotebookCellLines.Interval,
+    val intervalBefore: Interval,
+    val intervalAfter: Interval,
   ) : Change {
     val ordinal: Int
       get() = intervalAfter.ordinal

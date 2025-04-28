@@ -383,14 +383,6 @@ You can find the source code in the following repositories:
       </action>
     </actions>
 
-    <extensions defaultExtensionNs="org.jetbrains.plugins.notebooks">
-      <notebookCellLinesProvider language="RMarkdown"
-                                 implementationClass="org.jetbrains.r.editor.RMarkdownCellLinesProvider"/>
-      <notebookCellLinesProvider language="Quarto"
-                                 implementationClass="org.jetbrains.r.editor.RMarkdownCellLinesProvider"/>
-
-    </extensions>
-
     <extensions defaultExtensionNs="com.intellij">
         <lang.elementManipulator forClass="org.jetbrains.r.psi.api.RStringLiteralExpression"
                                  implementationClass="org.jetbrains.r.psi.impl.RStringLiteralManipulator"/>
@@ -457,12 +449,12 @@ You can find the source code in the following repositories:
         <lang.formatter language="RMarkdown" implementationClass="org.jetbrains.r.editor.formatting.RMarkdownFormattingModelBuilder"/>
 
         <rmdFenceProvider implementation="org.jetbrains.r.rmarkdown.RmdFenceProviderForR"/>
-        <qmdFenceProvider implementation="org.jetbrains.r.rmarkdown.RmdFenceProviderForR"/>
+        <rmdFenceProvider implementation="org.jetbrains.r.rmarkdown.RmdFenceProviderForPython"/>
 
         <rmdCellLanguageProvider implementation="org.jetbrains.r.rmarkdown.RmdCellLanguageProviderForR"/>
         <rmdCellLanguageProvider implementation="org.jetbrains.r.rmarkdown.RmdCellLanguageProviderForPython"/>
 
-       <lang.tokenSeparatorGenerator language="R" implementationClass="org.jetbrains.r.RTokenSeparatorGenerator"/>
+        <lang.tokenSeparatorGenerator language="R" implementationClass="org.jetbrains.r.RTokenSeparatorGenerator"/>
 
         <fileEditorProvider implementation="org.jetbrains.r.rendering.editor.RFileEditorProvider"/>
         <fileEditorProvider implementation="org.jetbrains.r.run.visualize.RTableEditorProvider"/>

@@ -9,7 +9,8 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
-import com.intellij.notebooks.visualization.NotebookCellLines
+import org.jetbrains.r.visualization.RNotebookCellLines
+import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 import org.jetbrains.r.visualization.inlays.EditorInlaysManager
 import org.jetbrains.r.visualization.inlays.InlayComponent
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
@@ -50,7 +51,7 @@ internal object RMarkdownOutputInlayControllerUtil {
   internal fun getCodeFenceEnd(psiElement: PsiElement): PsiElement? =
     psiElement.let { it.parent.children.find { it.elementType == MarkdownTokenTypes.CODE_FENCE_END } }
 
-  internal fun getCodeFenceEnd(editor: EditorImpl, interval: NotebookCellLines.Interval): PsiElement? {
+  internal fun getCodeFenceEnd(editor: EditorImpl, interval: RNotebookCellLines.Interval): PsiElement? {
     val offset = extractOffset(editor.document, interval)
     val psiElement = getPsiElement(editor, offset) ?: return null
     return getCodeFenceEnd(psiElement)
@@ -62,7 +63,7 @@ internal object RMarkdownOutputInlayControllerUtil {
     component.dispose()
   }
 
-  internal fun extractOffset(document: Document, interval: NotebookCellLines.Interval): Int =
+  internal fun extractOffset(document: Document, interval: Interval): Int =
     Integer.max(document.getLineEndOffset(interval.lines.last) - 1, 0)
 
   internal fun isInViewportByY(editor: EditorEx, rect: Rectangle): Boolean {

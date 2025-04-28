@@ -1,7 +1,6 @@
 package org.jetbrains.r.visualization
 
 import com.intellij.lang.Language
-import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.util.Key
 import com.intellij.util.EventDispatcher
@@ -69,13 +68,12 @@ interface RNotebookCellLines {
   val modificationStamp: Long
 
   companion object {
-    // TODO val INTERVAL_LANGUAGE_KEY = Key.create<Language>("org.jetbrains.r.visualization.RNotebookCellLines.Interval.language")
-    val INTERVAL_LANGUAGE_KEY = NotebookCellLines.INTERVAL_LANGUAGE_KEY
+    val INTERVAL_LANGUAGE_KEY = Key.create<Language>("org.jetbrains.r.visualization.RNotebookCellLines.Interval.language")
 
     /**
      * TODO return RNotebookCellLines instead if NotebookCellLines
      */
-    fun get(document: Document): NotebookCellLines =
-      NotebookCellLines.get(document)
+    fun get(document: Document): RNotebookCellLines =
+      RNotebookCellLinesProvider.get(document)
   }
 }

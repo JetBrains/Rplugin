@@ -3,9 +3,9 @@ package org.jetbrains.r.visualization
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.notebooks.visualization.NotebookCellLines
 import org.jetbrains.r.editor.ui.RMarkdownCellToolbarControllerStable
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerStable
+import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 
 interface RNotebookCellInlayController {
   interface Factory {
@@ -23,7 +23,7 @@ interface RNotebookCellInlayController {
     fun compute(
       editor: EditorImpl,
       currentControllers: Collection<RNotebookCellInlayController>,
-      interval: NotebookCellLines.Interval,
+      interval: Interval,
     ): RNotebookCellInlayController?
 
     companion object {
@@ -43,5 +43,5 @@ interface RNotebookCellInlayController {
   /**
    * [RNotebookGutterLineMarkerManager] assumes that renderer is subclass of [NotebookLineMarkerRenderer]
    */
-  fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval)
+  fun createGutterRendererLineMarker(editor: EditorEx, interval: Interval)
 }

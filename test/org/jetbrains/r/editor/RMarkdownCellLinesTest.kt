@@ -8,12 +8,11 @@ import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.testFramework.common.ThreadLeakTracker
 import com.jetbrains.python.PythonLanguage
 import org.intellij.plugins.markdown.lang.MarkdownLanguage
-import com.intellij.notebooks.visualization.CodeCellLinesChecker
-import com.intellij.notebooks.visualization.NotebookCellLines
-import com.intellij.notebooks.visualization.NotebookCellLines.CellType.CODE
-import com.intellij.notebooks.visualization.NotebookCellLines.CellType.MARKDOWN
-import com.intellij.notebooks.visualization.edt
 import org.jetbrains.r.RLanguage
+import org.jetbrains.r.visualization.RNotebookCellLines
+import org.jetbrains.r.visualization.RNotebookCellLines.CellType.CODE
+import org.jetbrains.r.visualization.RNotebookCellLines.CellType.MARKDOWN
+import org.jetbrains.r.visualization.RNotebookCellLines.MarkersAtLines
 import org.junit.Before
 import org.junit.Test
 
@@ -638,8 +637,8 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     }
   }
 
-  private fun assertCodeCells(description: String = "", handler: CodeCellLinesChecker.() -> Unit) {
-    CodeCellLinesChecker(description) { fixture.editor as EditorImpl }.invoke(handler)
+  private fun assertCodeCells(description: String = "", handler: RCodeCellLinesChecker.() -> Unit) {
+    RCodeCellLinesChecker(description) { fixture.editor as EditorImpl }.invoke(handler)
   }
 
   @Before
@@ -648,12 +647,14 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
   }
 }
 
-private fun CodeCellLinesChecker.IntervalsSetter.rmdInterval(cellType: NotebookCellLines.CellType,
-                                                             lines: IntRange,
-                                                             language: Language) {
+private fun RCodeCellLinesChecker.IntervalsSetter.rmdInterval(
+  cellType: RNotebookCellLines.CellType,
+  lines: IntRange,
+  language: Language,
+) {
   val markersAtLines = when (cellType) {
-    CODE -> NotebookCellLines.MarkersAtLines.TOP_AND_BOTTOM
-    else -> NotebookCellLines.MarkersAtLines.NO
+    CODE -> MarkersAtLines.TOP_AND_BOTTOM
+    else -> MarkersAtLines.NO
   }
 
   interval(cellType, lines, markersAtLines, language)
