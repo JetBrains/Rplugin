@@ -2,7 +2,6 @@ package org.jetbrains.r.visualization
 
 import com.intellij.ide.DataManager
 import com.intellij.ide.ui.LafManagerListener
-import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.actionSystem.DataProvider
@@ -32,6 +31,8 @@ import com.intellij.util.containers.SmartHashSet
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.jetbrains.r.editor.rNotebookAppearance
+import org.jetbrains.r.visualization.RNotebookCellLines.CellType
+import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 import org.jetbrains.r.visualization.ui.mergeAndJoinIntersections
 import org.jetbrains.r.visualization.ui.use
 import java.awt.Graphics
@@ -49,7 +50,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
   private val updateQueue = MergingUpdateQueue("RNotebookCellInlayManager Interval Update", 20, true, null, disposable, null, true)
   private var initialized = false
 
-  fun inlaysForInterval(interval: NotebookCellLines.Interval): Iterable<RNotebookCellInlayController> =
+  fun inlaysForInterval(interval: Interval): Iterable<RNotebookCellInlayController> =
     getMatchingInlaysForLines(interval.lines)
 
   /** It's public, but think twice before using it. Called many times in a row, it can freeze UI. Consider using [update] instead. */
@@ -146,7 +147,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
 
   private fun addDocumentListener() {
     val documentListener = object : DocumentListener {
-      private var matchingCellsBeforeChange: List<NotebookCellLines.Interval> = emptyList()
+      private var matchingCellsBeforeChange: List<Interval> = emptyList()
       private var isBulkModeEnabled = false
 
       private fun interestingLogicalLines(document: Document, startOffset: Int, length: Int): IntRange {
@@ -186,7 +187,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
     editor.document.addDocumentListener(documentListener, disposable)
   }
 
-  private fun ensureInlaysAndHighlightersExist(matchingCellsBeforeChange: List<NotebookCellLines.Interval>, logicalLines: IntRange) {
+  private fun ensureInlaysAndHighlightersExist(matchingCellsBeforeChange: List<Interval>, logicalLines: IntRange) {
     val interestingRange =
       matchingCellsBeforeChange
         .map { it.lines }
@@ -258,7 +259,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
   private data class NotebookCellDataProvider(
     val editor: EditorImpl,
     val component: JComponent,
-    val interval: NotebookCellLines.Interval,
+    val interval: Interval,
   ) : DataProvider {
     override fun getData(key: String): Any? =
       when (key) {
@@ -269,7 +270,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
       }
   }
 
-  private fun rememberController(controller: RNotebookCellInlayController, interval: NotebookCellLines.Interval) {
+  private fun rememberController(controller: RNotebookCellInlayController, interval: Interval) {
     val inlay = controller.inlay
     inlay.renderer.asSafely<JComponent>()?.let { component ->
       val oldProvider = DataManager.getDataProvider(component)
@@ -319,10 +320,10 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
       .getBlockElementsInRange(startOffset, endOffset)
       .mapNotNull(inlays::get)
 
-  private val NotebookCellLines.Interval.shouldHaveHighlighter: Boolean
-    get() = type == NotebookCellLines.CellType.CODE
+  private val Interval.shouldHaveHighlighter: Boolean
+    get() = type == CellType.CODE
 
-  private fun addHighlighters(intervals: Collection<NotebookCellLines.Interval>) {
+  private fun addHighlighters(intervals: Collection<Interval>) {
     val document = editor.document
     for (interval in intervals) {
       if (interval.shouldHaveHighlighter) {
@@ -343,8 +344,8 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
     backgroundColor = editor.rNotebookAppearance.codeCellBackgroundColor.get()
   }
 
-  private fun NotebookCellLines.getMatchingCells(logicalLines: IntRange): List<NotebookCellLines.Interval> =
-    mutableListOf<NotebookCellLines.Interval>().also { result ->
+  private fun RNotebookCellLines.getMatchingCells(logicalLines: IntRange): List<Interval> =
+    mutableListOf<Interval>().also { result ->
       // Since inlay appearance may depend from neighbour cells, adding one more cell at the start and at the end.
       val iterator = intervalsIterator(logicalLines.first)
       if (iterator.hasPrevious()) iterator.previous()
@@ -357,7 +358,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
   private fun failSafeCompute(
     factory: RNotebookCellInlayController.Factory,
     controllers: Collection<RNotebookCellInlayController>,
-    interval: NotebookCellLines.Interval,
+    interval: Interval,
   ): RNotebookCellInlayController? {
     try {
       return factory.compute(editor, controllers, interval)
@@ -377,7 +378,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
   companion object {
     private val LOG = logger<RNotebookCellInlayManager>()
 
-    val R_NOTEBOOK_CELL_LINES_INTERVAL: DataKey<NotebookCellLines.Interval> = DataKey.create("R_NOTEBOOK_CELL_LINES_INTERVAL")
+    val R_NOTEBOOK_CELL_LINES_INTERVAL: DataKey<Interval> = DataKey.create("R_NOTEBOOK_CELL_LINES_INTERVAL")
 
     @JvmStatic
     fun install(editor: EditorImpl) {

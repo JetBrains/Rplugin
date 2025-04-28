@@ -1,6 +1,5 @@
 package org.jetbrains.r.editor.ui
 
-import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Inlay
@@ -21,6 +20,8 @@ import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.updateInlayW
 import org.jetbrains.r.rendering.chunk.ChunkPath
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
 import org.jetbrains.r.visualization.RNotebookCellInlayController
+import org.jetbrains.r.visualization.RNotebookCellLines.CellType
+import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 import org.jetbrains.r.visualization.RNotebookIntervalPointer
 import org.jetbrains.r.visualization.RNotebookIntervalPointerFactory
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
@@ -43,7 +44,7 @@ class RMarkdownOutputInlayControllerStable private constructor(
     Disposer.register(inlayComponent.inlay!!, Disposable { dispose() })
   }
 
-  override fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval) {
+  override fun createGutterRendererLineMarker(editor: EditorEx, interval: Interval) {
     val startOffset = editor.document.getLineStartOffset(interval.lines.first)
     val endOffset = editor.document.getLineEndOffset(interval.lines.last)
 
@@ -154,11 +155,11 @@ class RMarkdownOutputInlayControllerStable private constructor(
     override fun compute(
       editor: EditorImpl,
       currentControllers: Collection<RNotebookCellInlayController>,
-      interval: NotebookCellLines.Interval,
+      interval: Interval,
     ): RNotebookCellInlayController? {
 
       return when (interval.type) {
-        NotebookCellLines.CellType.CODE -> {
+        CellType.CODE -> {
           val offset = extractOffset(editor.document, interval)
           val pointer = RNotebookIntervalPointerFactory.get(editor).create(interval)
           currentControllers.asSequence()
@@ -169,8 +170,8 @@ class RMarkdownOutputInlayControllerStable private constructor(
             }
           ?: RMarkdownOutputInlayControllerStable(editor, this, pointer, offset)
         }
-        NotebookCellLines.CellType.MARKDOWN,
-        NotebookCellLines.CellType.RAW,
+        CellType.MARKDOWN,
+        CellType.RAW,
           -> null
       }
     }

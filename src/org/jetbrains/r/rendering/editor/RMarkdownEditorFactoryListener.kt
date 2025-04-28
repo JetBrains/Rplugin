@@ -1,6 +1,5 @@
 package org.jetbrains.r.rendering.editor
 
-import com.intellij.notebooks.visualization.NotebookCellLinesProvider
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.editor.impl.EditorImpl
@@ -17,7 +16,6 @@ class RMarkdownEditorFactoryListener : EditorFactoryListener {
     if (!RMarkdownVirtualFile.hasVirtualFile(editor)) return
 
     RInlayDimensions.init(editor)
-    NotebookCellLinesProvider.install(editor)
     RNotebookEditorAppearanceProvider.install(editor)
 
     RNotebookCellInlayManager.install(editor)

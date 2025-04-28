@@ -1,6 +1,5 @@
 package org.jetbrains.r.editor.ui
 
-import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
@@ -13,6 +12,8 @@ import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.editor.markup.TextAttributes
 import org.jetbrains.r.editor.rNotebookAppearance
 import org.jetbrains.r.visualization.RNotebookCellInlayController
+import org.jetbrains.r.visualization.RNotebookCellLines.CellType
+import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 import org.jetbrains.r.visualization.RNotebookIntervalPointer
 import org.jetbrains.r.visualization.RNotebookIntervalPointerFactory
 import java.awt.Graphics
@@ -49,7 +50,7 @@ internal class RMarkdownCellToolbarControllerStable private constructor(
       )
     )!!
 
-  override fun createGutterRendererLineMarker(editor: EditorEx, interval: NotebookCellLines.Interval) {
+  override fun createGutterRendererLineMarker(editor: EditorEx, interval: Interval) {
     val startOffset = editor.document.getLineStartOffset(interval.lines.first)
     val endOffset = editor.document.getLineEndOffset(interval.lines.last)
 
@@ -61,11 +62,11 @@ internal class RMarkdownCellToolbarControllerStable private constructor(
     override fun compute(
       editor: EditorImpl,
       currentControllers: Collection<RNotebookCellInlayController>,
-      interval: NotebookCellLines.Interval,
+      interval: Interval,
     ): RNotebookCellInlayController? {
 
       return when (interval.type) {
-        NotebookCellLines.CellType.CODE -> {
+        CellType.CODE -> {
           val offset = getOffset(editor.document, RNotebookIntervalPointerFactory.get(editor).create(interval))
           val intervalPointer = RNotebookIntervalPointerFactory.get(editor).create(interval)
           currentControllers.asSequence()
@@ -76,8 +77,8 @@ internal class RMarkdownCellToolbarControllerStable private constructor(
             }
           ?: RMarkdownCellToolbarControllerStable(editor, this, intervalPointer, offset)
         }
-        NotebookCellLines.CellType.MARKDOWN,
-        NotebookCellLines.CellType.RAW,
+        CellType.MARKDOWN,
+        CellType.RAW,
           -> null
       }
     }

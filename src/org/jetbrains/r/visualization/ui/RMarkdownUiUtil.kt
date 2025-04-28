@@ -1,6 +1,5 @@
 package org.jetbrains.r.visualization.ui
 
-import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentListener
@@ -9,6 +8,7 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.TextRange
 import com.intellij.util.containers.ContainerUtil
 import org.jetbrains.r.visualization.RNotebookCellLines
+import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 import java.awt.Graphics
 import kotlin.math.max
 
@@ -30,13 +30,13 @@ internal fun Editor.addEditorDocumentListener(listener: DocumentListener) {
   }
 }
 
-internal fun Document.getText(interval: NotebookCellLines.Interval): String =
+internal fun Document.getText(interval: Interval): String =
   getText(TextRange(
     getLineStartOffset(interval.lines.first),
     getLineEndOffset(interval.lines.last)
   ))
 
-internal fun Editor.getCell(line: Int): NotebookCellLines.Interval =
+internal fun Editor.getCell(line: Int): Interval =
   RNotebookCellLines.get(document).intervalsIterator(line).next()
 
 internal fun MutableList<IntRange>.mergeAndJoinIntersections(other: List<IntRange>) {

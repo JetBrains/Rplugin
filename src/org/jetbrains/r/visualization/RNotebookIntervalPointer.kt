@@ -1,7 +1,6 @@
 package org.jetbrains.r.visualization
 
 import com.intellij.lang.Language
-import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
@@ -12,6 +11,7 @@ import com.intellij.util.concurrency.annotations.RequiresReadLock
 import com.intellij.util.concurrency.annotations.RequiresWriteLock
 import com.intellij.util.messages.Topic
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
+import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 import java.util.*
 
 /**
@@ -21,7 +21,7 @@ import java.util.*
  */
 interface RNotebookIntervalPointer {
   /** thread-safe */
-  fun get(): NotebookCellLines.Interval?
+  fun get(): Interval?
 }
 
 interface RNotebookIntervalPointerFactory {
@@ -29,7 +29,7 @@ interface RNotebookIntervalPointerFactory {
    * Interval should be valid, return pointer to it.
    */
   @RequiresReadLock
-  fun create(interval: NotebookCellLines.Interval): RNotebookIntervalPointer
+  fun create(interval: Interval): RNotebookIntervalPointer
 
   /**
    * Undo and redo will be added automatically.
@@ -86,7 +86,7 @@ interface RNotebookIntervalPointerFactory {
   sealed interface Change
 
   /** invalidate pointer to interval, create new pointer */
-  data class Invalidate(val interval: NotebookCellLines.Interval) : Change
+  data class Invalidate(val interval: Interval) : Change
 
   /** swap two pointers */
   data class Swap(val firstOrdinal: Int, val secondOrdinal: Int) : Change

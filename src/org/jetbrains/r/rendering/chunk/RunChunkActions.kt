@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.rendering.chunk
 
-import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.openapi.actionSystem.ActionManager.getInstance
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -37,6 +36,7 @@ import org.jetbrains.r.rinterop.RInteropCoroutineScope
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
 import org.jetbrains.r.rmarkdown.RmdFenceProvider
+import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 import org.jetbrains.r.visualization.ui.getCell
 import java.util.concurrent.atomic.AtomicReference
 
@@ -130,7 +130,7 @@ private fun isConsoleReady(project: Project): Boolean {
   } ?: true
 }
 
-private fun getStartOffset(editor: Editor, interval: NotebookCellLines.Interval): Int =
+private fun getStartOffset(editor: Editor, interval: Interval): Int =
   editor.document.getLineStartOffset(interval.lines.first)
 
 private fun getCodeFenceByEvent(e: AnActionEvent, editor: Editor): PsiElement? {
@@ -160,7 +160,7 @@ private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
   }
 }
 
-private fun getCurrentInterval(e: AnActionEvent, editor: Editor): NotebookCellLines.Interval =
+private fun getCurrentInterval(e: AnActionEvent, editor: Editor): Interval =
   e.rMarkdownCellToolbarPanel?.pointer?.get()
   ?: editor.getCell(editor.document.getLineNumber(editor.caretModel.offset))
 

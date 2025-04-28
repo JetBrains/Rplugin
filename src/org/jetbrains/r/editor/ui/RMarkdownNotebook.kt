@@ -1,6 +1,5 @@
 package org.jetbrains.r.editor.ui
 
-import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.impl.EditorImpl
@@ -10,6 +9,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.getCodeFenceEnd
+import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 import org.jetbrains.r.visualization.RNotebookIntervalPointer
 import org.jetbrains.r.visualization.RNotebookIntervalPointerFactory
 
@@ -21,7 +21,7 @@ class RMarkdownNotebook(project: Project, editor: EditorImpl) {
   private val pointerFactory = RNotebookIntervalPointerFactory.get(editor)
   private val psiToInterval = PsiToInterval(project, editor) { interval -> getCodeFenceEnd(editor, interval) }
 
-  operator fun get(cell: NotebookCellLines.Interval?): RMarkdownNotebookOutput? {
+  operator fun get(cell: Interval?): RMarkdownNotebookOutput? {
     if (cell == null) return null
     val intervalPointer = ReadAction.compute<RNotebookIntervalPointer, Throwable> {
       pointerFactory.create(cell)

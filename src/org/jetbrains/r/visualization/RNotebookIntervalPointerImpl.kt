@@ -1,8 +1,5 @@
 package org.jetbrains.r.visualization
 
-import com.intellij.notebooks.visualization.NotebookCellLines
-import com.intellij.notebooks.visualization.NotebookCellLinesEvent
-import com.intellij.notebooks.visualization.NotebookCellLinesEventBeforeChange
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.undo.BasicUndoableAction
 import com.intellij.openapi.command.undo.DocumentReference
@@ -15,6 +12,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.ThreadingAssertions
 import org.jetbrains.annotations.TestOnly
+import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 import org.jetbrains.r.visualization.RNotebookIntervalPointersEvent.*
 
 object RNotebookIntervalPointerFactoryImplProvider {
@@ -36,8 +34,8 @@ object RNotebookIntervalPointerFactoryImplProvider {
 }
 
 
-private class RNotebookIntervalPointerImpl(@Volatile var interval: NotebookCellLines.Interval?) : RNotebookIntervalPointer {
-  override fun get(): NotebookCellLines.Interval? = interval
+private class RNotebookIntervalPointerImpl(@Volatile var interval: Interval?) : RNotebookIntervalPointer {
+  override fun get(): Interval? = interval
 
   override fun toString(): String = "NotebookIntervalPointerImpl($interval)"
 }
@@ -61,11 +59,11 @@ private data class RedoContext(val changes: List<Change>) : ChangesContext
  * You can store interval-related data into WeakHashMap<NotebookIntervalPointer, Data> and this data will outlive undo/redo actions.
  */
 class RNotebookIntervalPointerFactoryImpl(
-  private val notebookCellLines: NotebookCellLines,
+  private val notebookCellLines: RNotebookCellLines,
   private val documentReference: DocumentReference,
   undoManager: UndoManager?,
   private val project: Project,
-) : RNotebookIntervalPointerFactory, NotebookCellLines.IntervalListener {
+) : RNotebookIntervalPointerFactory, RNotebookCellLines.IntervalListener {
   private val pointers = ArrayList<RNotebookIntervalPointerImpl>()
   private var changesContext: ChangesContext? = null
   override val changeListeners: EventDispatcher<RNotebookIntervalPointerFactory.ChangeListener> =
@@ -78,7 +76,7 @@ class RNotebookIntervalPointerFactoryImpl(
   private val validUndoManager: UndoManager? = undoManager
     get() = field?.takeIf { !project.isDisposed }
 
-  override fun create(interval: NotebookCellLines.Interval): RNotebookIntervalPointer {
+  override fun create(interval: Interval): RNotebookIntervalPointer {
     ThreadingAssertions.assertReadAccess()
     return pointers[interval.ordinal].also {
       require(it.interval == interval)
@@ -111,7 +109,7 @@ class RNotebookIntervalPointerFactoryImpl(
     onUpdated(pointerEvent)
   }
 
-  override fun documentChanged(event: NotebookCellLinesEvent) {
+  override fun documentChanged(event: RNotebookCellLinesEvent) {
     ThreadingAssertions.assertWriteAccess()
     try {
       val pointersEvent = when (val context = changesContext) {
@@ -131,7 +129,7 @@ class RNotebookIntervalPointerFactoryImpl(
     }
   }
 
-  override fun beforeDocumentChange(event: NotebookCellLinesEventBeforeChange) {
+  override fun beforeDocumentChange(event: RNotebookCellLinesEventBeforeChange) {
     ThreadingAssertions.assertWriteAccess()
     val undoManager = validUndoManager
     if (undoManager == null || undoManager.isUndoOrRedoInProgress) return
@@ -153,7 +151,7 @@ class RNotebookIntervalPointerFactoryImpl(
   }
 
   private fun documentChangedByAction(
-    event: NotebookCellLinesEvent,
+    event: RNotebookCellLinesEvent,
     documentChangedContext: DocumentChangedContext?,
   ): RNotebookIntervalPointersEvent {
     val eventChanges = NotebookIntervalPointersEventChanges()
@@ -176,14 +174,14 @@ class RNotebookIntervalPointerFactoryImpl(
     return RNotebookIntervalPointersEvent(eventChanges, event, EventSource.ACTION)
   }
 
-  private fun documentChangedByUndo(event: NotebookCellLinesEvent, context: UndoContext): RNotebookIntervalPointersEvent {
+  private fun documentChangedByUndo(event: RNotebookCellLinesEvent, context: UndoContext): RNotebookIntervalPointersEvent {
     val invertedChanges = invertChanges(context.changes)
     updatePointersByChanges(invertedChanges)
     updateShiftedIntervals(event)
     return RNotebookIntervalPointersEvent(invertedChanges, event, EventSource.UNDO_ACTION)
   }
 
-  private fun documentChangedByRedo(event: NotebookCellLinesEvent, context: RedoContext): RNotebookIntervalPointersEvent {
+  private fun documentChangedByRedo(event: RNotebookCellLinesEvent, context: RedoContext): RNotebookIntervalPointersEvent {
     updatePointersByChanges(context.changes)
     updateShiftedIntervals(event)
     return RNotebookIntervalPointersEvent(context.changes, event, EventSource.REDO_ACTION)
@@ -212,19 +210,19 @@ class RNotebookIntervalPointerFactoryImpl(
     }
   }
 
-  private fun makeSnapshot(interval: NotebookCellLines.Interval) =
+  private fun makeSnapshot(interval: Interval) =
     PointerSnapshot(pointers[interval.ordinal], interval)
 
   private fun hasSingleIntervalsWithSameTypeAndLanguage(
-    oldIntervals: List<NotebookCellLines.Interval>,
-    newIntervals: List<NotebookCellLines.Interval>,
+    oldIntervals: List<Interval>,
+    newIntervals: List<Interval>,
   ): Boolean {
     val old = oldIntervals.singleOrNull() ?: return false
     val new = newIntervals.singleOrNull() ?: return false
     return old.type == new.type && old.language == new.language
   }
 
-  private fun updateChangedIntervals(e: NotebookCellLinesEvent, eventChanges: NotebookIntervalPointersEventChanges) {
+  private fun updateChangedIntervals(e: RNotebookCellLinesEvent, eventChanges: NotebookIntervalPointersEventChanges) {
     when {
       !e.isIntervalsChanged() -> {
         // content edited without affecting intervals values
@@ -268,7 +266,7 @@ class RNotebookIntervalPointerFactoryImpl(
     }
   }
 
-  private fun updateShiftedIntervals(event: NotebookCellLinesEvent) {
+  private fun updateShiftedIntervals(event: RNotebookCellLinesEvent) {
     val invalidPointersStart =
       event.newIntervals.firstOrNull()?.let { it.ordinal + event.newIntervals.size }
       ?: event.oldIntervals.firstOrNull()?.ordinal

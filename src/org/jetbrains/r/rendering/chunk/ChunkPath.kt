@@ -4,11 +4,11 @@
 
 package org.jetbrains.r.rendering.chunk
 
-import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiElement
 import org.jetbrains.r.editor.ui.psiFile
+import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 import org.jetbrains.r.visualization.ui.getText
 import java.lang.Integer.toHexString
 import java.nio.file.Paths
@@ -50,7 +50,7 @@ data class ChunkPath(val path: String, val chunkText: String) {
     fun getDirectoryForPath(path: String): String =
       Paths.get(PathManager.getSystemPath(), "rplugin", "cache", "chunk-output", toHexString(path.hashCode())).toString()
 
-    fun create(editor: Editor, interval: NotebookCellLines.Interval): ChunkPath? {
+    fun create(editor: Editor, interval: Interval): ChunkPath? {
       val path = editor.psiFile?.virtualFile?.path ?: return null
       val chunkText = editor.document.getText(interval)
       return ChunkPath(path, chunkText)

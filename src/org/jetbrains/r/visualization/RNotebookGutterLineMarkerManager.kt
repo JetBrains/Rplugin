@@ -1,6 +1,5 @@
 package org.jetbrains.r.visualization
 
-import com.intellij.notebooks.visualization.NotebookCellLines
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorKind
@@ -17,6 +16,7 @@ import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.editor.markup.RangeHighlighter
 import com.intellij.util.Consumer
 import org.jetbrains.r.editor.ui.RMarkdownLineMarkerRenderer
+import org.jetbrains.r.visualization.RNotebookCellLines.CellType
 import org.jetbrains.r.visualization.ui.addEditorDocumentListener
 import java.awt.Graphics
 import java.awt.Rectangle
@@ -47,7 +47,7 @@ object RNotebookGutterLineMarkerManager {
       val startOffset = editor.document.getLineStartOffset(interval.lines.first)
       val endOffset = editor.document.getLineEndOffset(interval.lines.last)
 
-      if (interval.type == NotebookCellLines.CellType.CODE) {
+      if (interval.type == CellType.CODE) {
         val changeAction = Consumer { o: RangeHighlighterEx ->
           o.lineMarkerRenderer = RMarkdownCodeCellBackgroundLineMarkerRenderer(o)
         }
