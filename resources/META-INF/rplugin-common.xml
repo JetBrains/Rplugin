@@ -1,6 +1,5 @@
 <idea-plugin>
     <dependencies>
-        <plugin id="com.intellij.notebooks.core"/>
         <plugin id="org.intellij.plugins.markdown"/>
         <plugin id="org.intellij.intelliLang"/>
     </dependencies>
