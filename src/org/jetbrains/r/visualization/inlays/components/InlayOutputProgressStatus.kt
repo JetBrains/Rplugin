@@ -5,7 +5,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.progress.util.ColorProgressBar
 import com.intellij.ui.JBColor
 import com.intellij.ui.scale.JBUIScale
-import org.jetbrains.r.editor.rNotebookAppearance
+import org.jetbrains.r.editor.RMarkdownEditorAppearance
 import java.awt.BorderLayout
 import java.awt.Color
 import javax.swing.*
@@ -18,7 +18,7 @@ object InlayOutputProgressStatus {
   fun buildProgressStatusComponent(progressStatus: InlayProgressStatus, editor: Editor): JComponent? {
     if (progressStatus.progress == RProgressStatus.STOPPED_OK && progressStatus.statusText.isEmpty()) return null
     val progressPanel = JPanel(BorderLayout()).apply {
-      background = editor.rNotebookAppearance.getTextOutputBackground(editor.colorsScheme)
+      background = RMarkdownEditorAppearance.getTextOutputBackground(editor.colorsScheme)
     }
     val progressBar: JProgressBar? =
       when (progressStatus.progress) {

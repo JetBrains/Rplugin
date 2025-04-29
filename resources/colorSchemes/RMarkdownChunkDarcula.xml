@@ -3,7 +3,10 @@
   <option name="RMARKDOWN_CHUNK">
     <value>
       <option name="FOREGROUND"/>
-      <option name="BACKGROUND" value="373737" />
+      <option name="BACKGROUND" value="373737"/>
     </value>
   </option>
+  <colors>
+    <option name="RMARKDOWN_CODE_BACKGROUND_COLOR" value="3D3F41"/>
+  </colors>
 </list>

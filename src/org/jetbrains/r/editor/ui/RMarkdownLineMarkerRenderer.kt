@@ -5,7 +5,7 @@ import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.RangeMarkerEx
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.LineMarkerRendererEx
-import org.jetbrains.r.editor.rNotebookAppearance
+import org.jetbrains.r.editor.RMarkdownEditorAppearance
 import java.awt.Graphics
 import java.awt.Rectangle
 
@@ -33,12 +33,11 @@ abstract class RMarkdownLineMarkerRenderer(private val inlayId: Long? = null) : 
     height: Int,
   ) {
     val diffViewOffset = 6  // randomly picked a number that fits well
-    val appearance = editor.rNotebookAppearance
-    val borderWidth = appearance.getLeftBorderWidth()
+    val borderWidth = RMarkdownEditorAppearance.getLeftBorderWidth()
 
     val fillX = r.width - borderWidth
     val fillWidth = borderWidth
-    g.color = appearance.codeCellBackgroundColor.get()
+    g.color = RMarkdownEditorAppearance.getCodeCellBackgroundColor(editor.colorsScheme)
 
     if (editor.editorKind == EditorKind.DIFF) {
       g.fillRect(fillX + diffViewOffset, top, fillWidth - diffViewOffset, height)

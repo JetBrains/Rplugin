@@ -1,44 +1,30 @@
 package org.jetbrains.r.editor
 
-import com.intellij.notebooks.ui.editor.DefaultNotebookEditorAppearance
-import com.intellij.notebooks.ui.visualization.NotebookEditorAppearance
-import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.colors.ColorKey
 import com.intellij.openapi.editor.colors.EditorColorsScheme
-import com.intellij.openapi.util.Key
-import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
+import com.intellij.util.ui.JBUI
 import java.awt.Color
 
-object RNotebookEditorAppearanceProvider {
-  fun create(editor: Editor): RMarkdownNotebookEditorAppearance? {
-    if (RMarkdownVirtualFile.hasVirtualFile(editor)) {
-      return RMarkdownNotebookEditorAppearance(editor)
-    }
-    return null
-  }
 
-  internal val R_NOTEBOOK_APPEARANCE_KEY: Key<RMarkdownNotebookEditorAppearance> =
-    Key.create(RMarkdownNotebookEditorAppearance::class.java.name)
+internal object RMarkdownEditorAppearance {
 
-  fun install(editor: Editor) {
-    editor.putUserData(R_NOTEBOOK_APPEARANCE_KEY, create(editor))
-  }
-}
+  // colors
+  val CODE_CELL_BACKGROUND: ColorKey = ColorKey.createColorKey("RMARKDOWN_CODE_BACKGROUND_COLOR")
 
-val Editor.rNotebookAppearance: NotebookEditorAppearance
-  get() = getUserData(RNotebookEditorAppearanceProvider.R_NOTEBOOK_APPEARANCE_KEY)!!
+  fun getInlayBackgroundColor(scheme: EditorColorsScheme): Color = getCodeCellBackgroundColor(scheme)
+  fun getTextOutputBackground(scheme: EditorColorsScheme): Color = scheme.defaultBackground
+  fun getCodeCellBackgroundColor(scheme: EditorColorsScheme): Color = scheme.getColor(CODE_CELL_BACKGROUND) ?: scheme.defaultBackground
 
+  // sizes
 
-// todo remove editor from arguments at all, pass it as parameter where necessary
-// todo convert RMarkdownNotebookEditorAppearance to singleton object, no need to install it at all and make provider for it
-class RMarkdownNotebookEditorAppearance(editor: Editor) : DefaultNotebookEditorAppearance(editor) {
+  // TODO it's hardcoded, but it should be equal to distance between a folding line and an editor.
+  val CODE_CELL_LEFT_LINE_PADDING: Int = 5
 
-  override fun getInlayBackgroundColor(scheme: EditorColorsScheme): Color? = codeCellBackgroundColor.get()
-  override fun shouldShowCellLineNumbers(): Boolean = false
-  override fun shouldShowExecutionCounts(): Boolean = true
+  // TODO Do the pixel constants need JBUI.scale?
+  val INNER_CELL_TOOLBAR_HEIGHT: Int = JBUI.scale(24)
+  val SPACE_BELOW_CELL_TOOLBAR: Int = JBUI.scale(4)
 
-  override fun shouldShowOutExecutionCounts(): Boolean = true
-  override fun shouldShowRunButtonInGutter(): Boolean = false
+  val CELL_SPACERS_INLAY_PRIORITY: Int = 10
 
-  // todo rm this method, it is unused in RMarkdown
-  override fun getCellLeftLineWidth(editor: Editor): Int = 0
+  fun getLeftBorderWidth(): Int = JBUI.scale(4) + CODE_CELL_LEFT_LINE_PADDING
 }
