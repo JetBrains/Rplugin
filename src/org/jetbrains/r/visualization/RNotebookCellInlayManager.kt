@@ -30,7 +30,7 @@ import com.intellij.util.concurrency.ThreadingAssertions
 import com.intellij.util.containers.SmartHashSet
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
-import org.jetbrains.r.editor.rNotebookAppearance
+import org.jetbrains.r.editor.RMarkdownEditorAppearance
 import org.jetbrains.r.visualization.RNotebookCellLines.CellType
 import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 import org.jetbrains.r.visualization.ui.mergeAndJoinIntersections
@@ -341,7 +341,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
   }
 
   private fun textAttributesForHighlighter() = TextAttributes().apply {
-    backgroundColor = editor.rNotebookAppearance.codeCellBackgroundColor.get()
+    backgroundColor = RMarkdownEditorAppearance.getCodeCellBackgroundColor(editor.colorsScheme)
   }
 
   private fun RNotebookCellLines.getMatchingCells(logicalLines: IntRange): List<Interval> =

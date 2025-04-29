@@ -12,7 +12,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
-import org.jetbrains.r.editor.rNotebookAppearance
+import org.jetbrains.r.editor.RMarkdownEditorAppearance
 import org.jetbrains.r.visualization.RNotebookIntervalPointer
 import org.jetbrains.r.visualization.inlays.InlayComponent
 import org.jetbrains.r.visualization.inlays.InlayOutput
@@ -104,7 +104,7 @@ class NotebookInlayComponent(
 
     g2d.color =
       (inlay!!.editor as EditorImpl).let {
-        it.rNotebookAppearance.getInlayBackgroundColor(it.colorsScheme) ?: it.backgroundColor
+        RMarkdownEditorAppearance.getInlayBackgroundColor(it.colorsScheme)
       }
 
     g2d.fillRect(0, 0, width, RInlayDimensions.topOffset + RInlayDimensions.cornerRadius)

@@ -3,7 +3,6 @@ package org.jetbrains.r.rendering.editor
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.editor.impl.EditorImpl
-import org.jetbrains.r.editor.RNotebookEditorAppearanceProvider
 import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
 import org.jetbrains.r.visualization.RNotebookCellInlayManager
 import org.jetbrains.r.visualization.RNotebookGutterLineMarkerManager
@@ -16,7 +15,6 @@ class RMarkdownEditorFactoryListener : EditorFactoryListener {
     if (!RMarkdownVirtualFile.hasVirtualFile(editor)) return
 
     RInlayDimensions.init(editor)
-    RNotebookEditorAppearanceProvider.install(editor)
 
     RNotebookCellInlayManager.install(editor)
     RNotebookGutterLineMarkerManager.install(editor)

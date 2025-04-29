@@ -10,7 +10,7 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.editor.markup.TextAttributes
-import org.jetbrains.r.editor.rNotebookAppearance
+import org.jetbrains.r.editor.RMarkdownEditorAppearance
 import org.jetbrains.r.visualization.RNotebookCellInlayController
 import org.jetbrains.r.visualization.RNotebookCellLines.CellType
 import org.jetbrains.r.visualization.RNotebookCellLines.Interval
@@ -30,7 +30,7 @@ internal class RMarkdownCellToolbarControllerStable private constructor(
 
   override fun calcWidthInPixels(inlay: Inlay<*>): Int = inlay.editor.scrollingModel.visibleArea.width
 
-  override fun calcHeightInPixels(inlay: Inlay<*>): Int = editor.rNotebookAppearance.run {
+  override fun calcHeightInPixels(inlay: Inlay<*>): Int = RMarkdownEditorAppearance.run {
     INNER_CELL_TOOLBAR_HEIGHT + SPACE_BELOW_CELL_TOOLBAR
   }
 
@@ -45,7 +45,7 @@ internal class RMarkdownCellToolbarControllerStable private constructor(
         null,
         isRelatedToPrecedingText,
         true,
-        editor.rNotebookAppearance.JUPYTER_CELL_SPACERS_INLAY_PRIORITY,
+        RMarkdownEditorAppearance.CELL_SPACERS_INLAY_PRIORITY,
         inlayOffset
       )
     )!!
