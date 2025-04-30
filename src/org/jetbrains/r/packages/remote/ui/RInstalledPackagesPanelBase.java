@@ -10,6 +10,7 @@ import com.intellij.ide.ActivityTracker;
 import com.intellij.ide.DataManager;
 import com.intellij.ide.browsers.BrowserLauncher;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ex.ActionManagerEx;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.application.ApplicationManager;
@@ -674,7 +675,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
     if (action == null) throw new AssertionError("'" + actionId + "' action not found");
     DataContext dataContext = DataManager.getInstance().getDataContext(mouseEvent.getComponent());
     AnActionEvent event = AnActionEvent.createFromAnAction(action, mouseEvent, "RInstalledPackagesPanel", dataContext);
-    ActionUtil.performDumbAwareWithCallbacks(action, event, runnable);
+    ActionManagerEx actionManager = (ActionManagerEx)event.getActionManager();
+    actionManager.performWithActionCallbacks(action, event, runnable);
   }
 
   private final class MyTableCellRenderer extends DefaultTableCellRenderer {

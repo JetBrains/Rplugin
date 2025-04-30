@@ -10,7 +10,7 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.actionSystem.ex.ActionUtil
+import com.intellij.openapi.actionSystem.ex.ActionManagerEx
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -151,7 +151,8 @@ class RPackageManagementService(private val project: Project,
     val multiListener = convertToInstallMultiListener(listener)
     val action = ActionManager.getInstance().getAction(if (forceUpgrade) UPGRADE_PACKAGE_ACTION_ID else INSTALL_PACKAGE_ACTION_ID)
     val event = AnActionEvent.createFromAnAction(action, null, ActionPlaces.UNKNOWN, DataContext.EMPTY_CONTEXT)
-    ActionUtil.performDumbAwareWithCallbacks(action, event) {
+    val actionManager = event.actionManager as ActionManagerEx
+    actionManager.performWithActionCallbacks(action, event) {
       installPackages(listOf(repoPackage), forceUpgrade, multiListener)
     }
   }
