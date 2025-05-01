@@ -16,6 +16,7 @@ import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.ide.CommonActionsManager
 import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.WriteIntentReadAction
@@ -34,7 +35,6 @@ import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RFileType
-import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
@@ -223,7 +223,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
       private val action = ActionManager.getInstance().getAction(RConsoleView.INTERRUPT_ACTION_ID).also { copyFrom(it) }
 
       override fun actionPerformed(e: AnActionEvent) {
-        RActionUtil.performDelegatedAction(action, e)
+        ActionUtil.performAction(action, e)
       }
 
       override fun update(e: AnActionEvent) {
@@ -240,7 +240,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
       private val action = ActionManager.getInstance().getAction(RConsoleView.EOF_ACTION_ID).also { copyFrom(it) }
 
       override fun actionPerformed(e: AnActionEvent) {
-        RActionUtil.performDelegatedAction(action, e)
+        ActionUtil.performAction(action, e)
       }
 
       override fun update(e: AnActionEvent) {

@@ -27,7 +27,7 @@ class RPsiCrumb(element: PsiElement, provider: BreadcrumbsProvider, presentation
     invokeLater {
       val dataContext = (editor as? EditorEx)?.dataContext ?: return@invokeLater
       val event = AnActionEvent.createFromAnAction(action, null, ActionPlaces.UNKNOWN, dataContext)
-      ActionUtil.performActionDumbAwareWithCallbacks(action, event)
+      ActionUtil.performAction(action, event)
     }
   }
 

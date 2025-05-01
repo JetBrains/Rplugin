@@ -5,6 +5,7 @@
 package org.jetbrains.r.rendering.editor
 
 import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.TextEditor
@@ -12,7 +13,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.isVirtualFileForTest
 import java.awt.BorderLayout
@@ -57,7 +57,7 @@ class RFileEditor(project: Project, textEditor: TextEditor, virtualFile: Virtual
     private val action = ActionManager.getInstance().getAction(actionId).also { copyFrom(it) }
 
     override fun actionPerformed(e: AnActionEvent) {
-      RActionUtil.performDelegatedAction(action, createEvent(e))
+      ActionUtil.performAction(action, createEvent(e))
     }
 
     override fun update(e: AnActionEvent) {

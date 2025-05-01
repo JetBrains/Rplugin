@@ -12,6 +12,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runInEdt
@@ -36,7 +37,6 @@ import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.components.BorderLayoutPanel
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.configuration.RSettingsProjectConfigurable
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -96,7 +96,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
         }
 
         override fun actionPerformed(e: AnActionEvent) {
-          RActionUtil.performDelegatedAction(addConsoleAction, e)
+          ActionUtil.performAction(addConsoleAction, e)
         }
       })
   }
