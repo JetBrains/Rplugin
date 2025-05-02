@@ -17,7 +17,7 @@ class RHighlightingPassTest : RConsoleBaseTestCase() {
   }
 
   fun testIdentifierHighlighting() {
-    IdentifierHighlighterPassFactory.doWithHighlightingEnabled(project, testRootDisposable, Runnable {
+    IdentifierHighlighterPassFactory.doWithHighlightingEnabled(project, Runnable {
       myFixture.setReadEditorMarkupModel(true)
       myFixture.configureByText("foo.R", """
         library(ggplot2)
