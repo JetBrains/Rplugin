@@ -45,23 +45,14 @@ internal class RCodeCellLinesChecker(
     MarkersSetter().handler()
   }
 
-  class IntervalsSetter(private val list: MutableList<RNotebookCellLines.Interval>, private val startOrdinal: Int) {
+  class IntervalsSetter(private val list: MutableList<Interval>, private val startOrdinal: Int) {
     fun interval(
       cellType: RNotebookCellLines.CellType,
       lines: IntRange,
       markers: RNotebookCellLines.MarkersAtLines,
       language: Language,
     ) {
-      list += RNotebookCellLines.Interval(list.size + startOrdinal, cellType, lines, markers, makeLanguageData(language))
-    }
-
-    fun interval(cellType: RNotebookCellLines.CellType, lines: IntRange, language: Language) {
-      val markers =
-        if (cellType == RNotebookCellLines.CellType.RAW && lines.first == 0)
-          RNotebookCellLines.MarkersAtLines.NO
-        else
-          RNotebookCellLines.MarkersAtLines.TOP
-      interval(cellType, lines, markers, language)
+      list += Interval(list.size + startOrdinal, cellType, lines, markers, makeLanguageData(language))
     }
   }
 

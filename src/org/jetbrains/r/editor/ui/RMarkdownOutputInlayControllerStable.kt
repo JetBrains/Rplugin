@@ -171,7 +171,6 @@ class RMarkdownOutputInlayControllerStable private constructor(
           ?: RMarkdownOutputInlayControllerStable(editor, this, pointer, offset)
         }
         CellType.MARKDOWN,
-        CellType.RAW,
           -> null
       }
     }

@@ -19,7 +19,8 @@ import java.util.*
  */
 interface RNotebookCellLines {
   enum class CellType {
-    CODE, MARKDOWN, RAW
+    CODE,
+    MARKDOWN,
   }
 
   enum class MarkersAtLines(val hasTopLine: Boolean, val hasBottomLine: Boolean) {
