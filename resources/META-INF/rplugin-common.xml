@@ -446,7 +446,6 @@ You can find the source code in the following repositories:
         <lang.formatter language="RMarkdown" implementationClass="org.jetbrains.r.editor.formatting.RMarkdownFormattingModelBuilder"/>
 
         <rmdFenceProvider implementation="org.jetbrains.r.rmarkdown.RmdFenceProviderForR"/>
-        <rmdFenceProvider implementation="org.jetbrains.r.rmarkdown.RmdFenceProviderForPython"/>
 
         <rmdCellLanguageProvider implementation="org.jetbrains.r.rmarkdown.RmdCellLanguageProviderForR"/>
         <rmdCellLanguageProvider implementation="org.jetbrains.r.rmarkdown.RmdCellLanguageProviderForPython"/>
