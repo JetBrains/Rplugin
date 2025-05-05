@@ -132,9 +132,11 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
   }
 
   private fun handleRefreshedDocument() {
-    ThreadingAssertions.softAssertReadAccess()
+    ThreadingAssertions.assertReadAccess()
+    val currentIntervals = notebookCellLines.snapshot.intervals
+
     val factories = RNotebookCellInlayController.Factory.factories
-    for (interval in notebookCellLines.intervals) {
+    for (interval in currentIntervals) {
       for (factory in factories) {
         val controller = failSafeCompute(factory, emptyList(), interval)
         if (controller != null) {
@@ -142,7 +144,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
         }
       }
     }
-    addHighlighters(notebookCellLines.intervals)
+    addHighlighters(currentIntervals)
   }
 
   private fun addDocumentListener() {
@@ -347,7 +349,7 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
   private fun RNotebookCellLines.getMatchingCells(logicalLines: IntRange): List<Interval> =
     mutableListOf<Interval>().also { result ->
       // Since inlay appearance may depend from neighbour cells, adding one more cell at the start and at the end.
-      val iterator = intervalsIterator(logicalLines.first)
+      val iterator = snapshot.intervalsIteratorByLine(logicalLines.first)
       if (iterator.hasPrevious()) iterator.previous()
       for (interval in iterator) {
         result.add(interval)

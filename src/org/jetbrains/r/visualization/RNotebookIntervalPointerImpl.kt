@@ -70,7 +70,7 @@ class RNotebookIntervalPointerFactoryImpl(
     EventDispatcher.create(RNotebookIntervalPointerFactory.ChangeListener::class.java)
 
   init {
-    pointers.addAll(notebookCellLines.intervals.asSequence().map { RNotebookIntervalPointerImpl(it) })
+    pointers.addAll(notebookCellLines.snapshot.intervals.asSequence().map { RNotebookIntervalPointerImpl(it) })
   }
 
   private val validUndoManager: UndoManager? = undoManager
@@ -272,8 +272,9 @@ class RNotebookIntervalPointerFactoryImpl(
       ?: event.oldIntervals.firstOrNull()?.ordinal
       ?: pointers.size
 
+    val currentIntervals = notebookCellLines.snapshot.intervals
     for (i in invalidPointersStart until pointers.size) {
-      pointers[i].interval = notebookCellLines.intervals[i]
+      pointers[i].interval = currentIntervals[i]
     }
   }
 

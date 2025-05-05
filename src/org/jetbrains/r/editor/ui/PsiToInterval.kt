@@ -25,7 +25,7 @@ class PsiToInterval(project: Project, editor: EditorImpl, extractPsi: (Interval)
       PsiDocumentManager.getInstance(project).performForCommittedDocument(editor.document) {
         psiToInterval.clear()
         if (!editor.isDisposed) {
-          for (interval in RNotebookCellLines.get(editor.document).intervals) {
+          for (interval in RNotebookCellLines.getSnapshot(editor.document).intervals) {
             extractPsi(interval)?.let { psi ->
               psiToInterval[psi] = pointerFactory.create(interval)
             }

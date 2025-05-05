@@ -7,7 +7,6 @@ import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.TextRange
 import com.intellij.util.containers.ContainerUtil
-import org.jetbrains.r.visualization.RNotebookCellLines
 import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 import java.awt.Graphics
 import kotlin.math.max
@@ -35,9 +34,6 @@ internal fun Document.getText(interval: Interval): String =
     getLineStartOffset(interval.lines.first),
     getLineEndOffset(interval.lines.last)
   ))
-
-internal fun Editor.getCell(line: Int): Interval =
-  RNotebookCellLines.get(document).intervalsIterator(line).next()
 
 internal fun MutableList<IntRange>.mergeAndJoinIntersections(other: List<IntRange>) {
   val merged = ContainerUtil.mergeSortedLists(this, other, Comparator { o1, o2 -> o1.first - o2.first }, false)

@@ -134,13 +134,13 @@ internal class RCodeCellLinesChecker(
         """.trimMargin("|||")
 
       markers.let { markers ->
-        assertThatCollection(makeMarkersFromIntervals(editor.document, codeCellLines.intervals).filter { it.offset >= markersStartOffset })
+        assertThatCollection(makeMarkersFromIntervals(editor.document, codeCellLines.snapshot.intervals).filter { it.offset >= markersStartOffset })
           .describedAs("Markers: $descr")
           .usingElementComparator(markersComparator.toJavaComparatorNonNullable())
           .isEqualTo(markers)
       }
       intervals?.let { intervals ->
-        assertThatCollection(codeCellLines.intervalsIterator(intervalsStartLine).asSequence().toList())
+        assertThatCollection(codeCellLines.snapshot.intervalsIteratorByLine(intervalsStartLine).asSequence().toList())
           .describedAs("Intervals: $descr")
           .usingElementComparator(intervalsComparator.toJavaComparatorNonNullable())
           .isEqualTo(intervals)
