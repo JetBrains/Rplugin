@@ -12,11 +12,9 @@ import kotlin.math.max
 internal class RMarkdownCellToolbarPanelUI(private val editor: EditorImpl) : PanelUI() {
   override fun getPreferredSize(c: JComponent): Dimension {
     val preferredSize = super.getPreferredSize(c)
-    with(RMarkdownEditorAppearance) {
-      val height = max(preferredSize?.height ?: 0, INNER_CELL_TOOLBAR_HEIGHT + SPACE_BELOW_CELL_TOOLBAR)
-      val width = max(preferredSize?.width ?: 0, editor.scrollingModel.visibleArea.width)
-      return Dimension(width, height)
-    }
+    val height = max(preferredSize?.height ?: 0, RMarkdownEditorAppearance.getToolbarHeight())
+    val width = max(preferredSize?.width ?: 0, editor.scrollingModel.visibleArea.width)
+    return Dimension(width, height)
   }
 
   override fun paint(g: Graphics, c: JComponent) {
