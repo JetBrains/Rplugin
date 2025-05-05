@@ -9,17 +9,17 @@ import org.jetbrains.r.visualization.RNotebookCellLines
 import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 import org.jetbrains.r.visualization.RNotebookCellLinesEvent
 
-import org.jetbrains.r.visualization.RNotebookCellLinesLexer
+import org.jetbrains.r.visualization.RNotebookCellLinesLexerMarker
 import kotlin.reflect.KProperty1
 
 internal class RCodeCellLinesChecker(
   private val description: String,
   private val intervalsComparator: Comparator<Interval> = makeIntervalComparatorIgnoringData(),
-  private val markersComparator: Comparator<RNotebookCellLinesLexer.Marker> = makeMarkerComparatorIgnoringData(),
+  private val markersComparator: Comparator<RNotebookCellLinesLexerMarker> = makeMarkerComparatorIgnoringData(),
   private val editorGetter: () -> EditorImpl,
 ) : (RCodeCellLinesChecker.() -> Unit) -> Unit {
 
-  private var markers: MutableList<RNotebookCellLinesLexer.Marker>? = null
+  private var markers: MutableList<RNotebookCellLinesLexerMarker>? = null
   private var intervals: MutableList<RNotebookCellLines.Interval>? = null
   private var markersStartOffset: Int = 0
   private var markersStartOrdinal: Int = 0
@@ -33,8 +33,8 @@ internal class RCodeCellLinesChecker(
 
     fun marker(cellType: RNotebookCellLines.CellType, offset: Int, length: Int, language: Language) {
       markers!!.add(
-        RNotebookCellLinesLexer.Marker(ordinal = markers!!.size + markersStartOrdinal, type = cellType, offset = offset, length = length,
-                                       data = makeLanguageData(language)))
+        RNotebookCellLinesLexerMarker(ordinal = markers!!.size + markersStartOrdinal, type = cellType, offset = offset, length = length,
+                                      data = makeLanguageData(language)))
     }
   }
 
@@ -190,8 +190,8 @@ internal class RCodeCellLinesChecker(
         .thenBy { it.markers }
         .thenBy { it.language.id }
 
-    fun makeMarkerComparatorIgnoringData(): Comparator<RNotebookCellLinesLexer.Marker> =
-      compareBy<RNotebookCellLinesLexer.Marker> { it.ordinal }
+    fun makeMarkerComparatorIgnoringData(): Comparator<RNotebookCellLinesLexerMarker> =
+      compareBy<RNotebookCellLinesLexerMarker> { it.ordinal }
         .thenBy { it.type }
         .thenBy { it.offset }
         .thenBy { it.length }

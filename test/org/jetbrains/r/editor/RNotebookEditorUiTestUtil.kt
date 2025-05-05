@@ -8,7 +8,7 @@ import com.intellij.testFramework.runInEdtAndWait
 import com.intellij.util.SmartList
 import com.intellij.util.keyFMap.KeyFMap
 import org.jetbrains.r.visualization.RNotebookCellLines
-import org.jetbrains.r.visualization.RNotebookCellLinesLexer
+import org.jetbrains.r.visualization.RNotebookCellLinesLexerMarker
 import java.util.regex.Pattern
 
 
@@ -214,8 +214,8 @@ private fun parseFoldings(tags: List<Pair<String, Int>>): List<TextRange> {
 }
 
 
-internal fun makeMarkersFromIntervals(document: Document, intervals: Iterable<RNotebookCellLines.Interval>): List<RNotebookCellLinesLexer.Marker> {
-  val markers = ArrayList<RNotebookCellLinesLexer.Marker>()
+internal fun makeMarkersFromIntervals(document: Document, intervals: Iterable<RNotebookCellLines.Interval>): List<RNotebookCellLinesLexerMarker> {
+  val markers = ArrayList<RNotebookCellLinesLexerMarker>()
 
   fun addMarker(line: Int, type: RNotebookCellLines.CellType, data: KeyFMap) {
     val startOffset = document.getLineStartOffset(line)
@@ -223,7 +223,7 @@ internal fun makeMarkersFromIntervals(document: Document, intervals: Iterable<RN
       if (line + 1 < document.lineCount) document.getLineStartOffset(line + 1)
       else document.getLineEndOffset(line)
     val length = endOffset - startOffset
-    markers.add(RNotebookCellLinesLexer.Marker(markers.size, type, startOffset, length, data))
+    markers.add(RNotebookCellLinesLexerMarker(markers.size, type, startOffset, length, data))
   }
 
   for (interval in intervals) {
