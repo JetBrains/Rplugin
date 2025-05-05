@@ -78,7 +78,6 @@ internal class RMarkdownCellToolbarControllerStable private constructor(
           ?: RMarkdownCellToolbarControllerStable(editor, this, intervalPointer, offset)
         }
         CellType.MARKDOWN,
-        CellType.RAW,
           -> null
       }
     }
