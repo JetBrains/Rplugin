@@ -17,23 +17,18 @@ import org.jetbrains.r.rmarkdown.RmdCellLanguageProvider
 import org.jetbrains.r.visualization.RIntervalsGenerator
 import org.jetbrains.r.visualization.RNotebookCellLines
 import org.jetbrains.r.visualization.RNotebookCellLines.*
-import org.jetbrains.r.visualization.RNotebookCellLinesLexer
-import org.jetbrains.r.visualization.RNotebookCellLinesLexer.Marker
+import org.jetbrains.r.visualization.RNotebookCellLinesLexerMarker
 
 
-internal object RMarkdownIntervalsGenerator : RIntervalsGenerator, RNotebookCellLinesLexer {
-  override fun makeIntervals(document: Document, event: DocumentEvent?): List<RNotebookCellLines.Interval> {
-    val markers = markerSequence(document.charsSequence, 0, 0, PlainTextLanguage.INSTANCE).toList()
+internal object RMarkdownIntervalsGenerator : RIntervalsGenerator {
+  override fun makeIntervals(document: Document, event: DocumentEvent?): List<Interval> {
+    val markers = markerSequence(document.charsSequence).toList()
     return markers.map { toInterval(document, it) }
   }
 
-  override fun markerSequence(
-    chars: CharSequence,
-    ordinalIncrement: Int,
-    offsetIncrement: Int,
-    defaultLanguage: Language,
-  ): Sequence<Marker> =
+  private fun markerSequence(chars: CharSequence): Sequence<RNotebookCellLinesLexerMarker> =
     sequence {
+      val defaultLanguage: Language = PlainTextLanguage.INSTANCE
       val langMap = RmdCellLanguageProvider.getAllLanguages()
       val maxLangSize: Int = langMap.keys.maxOfOrNull { it.length } ?: 0
 
@@ -57,27 +52,27 @@ internal object RMarkdownIntervalsGenerator : RIntervalsGenerator, RNotebookCell
             else -> null
           }
         },
-        chars, ordinalIncrement, offsetIncrement
+        chars
       )
 
-      var lastMarker: Marker? = null
+      var lastMarker: RNotebookCellLinesLexerMarker? = null
       for (marker in seq) {
         lastMarker = marker
         yield(marker)
       }
 
       if (lastMarker?.type == CellType.CODE && chars.endsWith('\n')) {
-        yield(Marker(
+        yield(RNotebookCellLinesLexerMarker(
           ordinal = lastMarker.ordinal + 1,
           type = CellType.MARKDOWN,
-          offset = chars.length + offsetIncrement,
+          offset = chars.length,
           length = 0,
           data = markdownDataPair.second
         ))
       }
 
       if (lastMarker == null) {
-        yield(Marker(
+        yield(RNotebookCellLinesLexerMarker(
           ordinal = 0,
           type = CellType.MARKDOWN,
           offset = 0,
@@ -195,7 +190,7 @@ private fun consumeToEndOfLine(lexer: Lexer) {
   consumeEndOfLine(lexer)
 }
 
-private fun toInterval(document: Document, marker: Marker): Interval {
+private fun toInterval(document: Document, marker: RNotebookCellLinesLexerMarker): Interval {
   // for RMarkdown markers offset + length == nextMarker.offset, actually markers are intervals
   val startLine = document.getLineNumber(marker.offset)
 
@@ -220,18 +215,16 @@ private fun <Lex : Lexer> defaultMarkerSequence(
   underlyingLexerFactory: () -> Lex,
   getCellTypeAndData: (lexer: Lex) -> Pair<CellType, KeyFMap>?,
   chars: CharSequence,
-  ordinalIncrement: Int,
-  offsetIncrement: Int,
-): Sequence<Marker> = sequence {
+): Sequence<RNotebookCellLinesLexerMarker> = sequence {
   val lexer = underlyingLexerFactory()
   lexer.start(chars, 0, chars.length)
   var ordinal = 0
   while (lexer.tokenType != null) {
     getCellTypeAndData(lexer)?.let { (type, data) ->
-      yield(Marker(
-        ordinal = ordinal++ + ordinalIncrement,
+      yield(RNotebookCellLinesLexerMarker(
+        ordinal = ordinal++,
         type = type,
-        offset = lexer.currentPosition.offset + offsetIncrement,
+        offset = lexer.currentPosition.offset,
         length = lexer.tokenText.length,
         data = data,
       ))
