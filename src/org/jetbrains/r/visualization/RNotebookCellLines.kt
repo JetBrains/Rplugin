@@ -70,9 +70,6 @@ interface RNotebookCellLines {
   companion object {
     val INTERVAL_LANGUAGE_KEY = Key.create<Language>("org.jetbrains.r.visualization.RNotebookCellLines.Interval.language")
 
-    /**
-     * TODO return RNotebookCellLines instead if NotebookCellLines
-     */
     fun get(document: Document): RNotebookCellLines =
       RNotebookCellLinesProvider.get(document)
   }

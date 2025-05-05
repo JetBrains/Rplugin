@@ -31,7 +31,7 @@ class RNonIncrementalCellLines private constructor(
   }
 
   override fun intervalsIterator(startLine: Int): ListIterator<RNotebookCellLines.Interval> {
-    ThreadingAssertions.softAssertReadAccess()
+    ThreadingAssertions.assertReadAccess()
     val ordinal = intervals.find { startLine <= it.lines.last }?.ordinal ?: intervals.size
     return intervals.listIterator(ordinal)
   }
@@ -50,12 +50,12 @@ class RNonIncrementalCellLines private constructor(
       else {
         ++modificationStamp
 
-        val trimAtBegin = oldCells.zip(newCells).takeWhile { (oldCell, newCell) ->
+        val trimAtBegin = oldCells.asSequence().zip(newCells.asSequence()).takeWhile { (oldCell, newCell) ->
           oldCell == newCell &&
           oldCell != oldAffectedCells.firstOrNull() && newCell != newAffectedCells.firstOrNull()
         }.count()
 
-        val trimAtEnd = oldCells.asReversed().zip(newCells.asReversed()).takeWhile { (oldCell, newCell) ->
+        val trimAtEnd = oldCells.asReversed().asSequence().zip(newCells.asReversed().asSequence()).takeWhile { (oldCell, newCell) ->
           oldCell.type == newCell.type &&
           oldCell.language == newCell.language &&
           oldCell.size == newCell.size &&
@@ -150,9 +150,9 @@ private fun getAffectedCells(
     if (isAtStartOfLine && !isAtTheDocumentEnd) line - 1 else line
   }
 
-  return intervals.dropWhile {
+  return intervals.asSequence().dropWhile {
     it.lines.last < firstLine
   }.takeWhile {
     it.lines.first <= endLine
-  }
+  }.toList()
 }
