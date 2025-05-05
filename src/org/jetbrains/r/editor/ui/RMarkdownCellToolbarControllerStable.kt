@@ -30,9 +30,7 @@ internal class RMarkdownCellToolbarControllerStable private constructor(
 
   override fun calcWidthInPixels(inlay: Inlay<*>): Int = inlay.editor.scrollingModel.visibleArea.width
 
-  override fun calcHeightInPixels(inlay: Inlay<*>): Int = RMarkdownEditorAppearance.run {
-    INNER_CELL_TOOLBAR_HEIGHT + SPACE_BELOW_CELL_TOOLBAR
-  }
+  override fun calcHeightInPixels(inlay: Inlay<*>): Int = RMarkdownEditorAppearance.getToolbarHeight()
 
   override fun paint(inlay: Inlay<*>, g: Graphics, targetRegion: Rectangle, textAttributes: TextAttributes): Unit = Unit
 
