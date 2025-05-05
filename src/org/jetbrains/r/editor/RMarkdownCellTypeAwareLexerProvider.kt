@@ -41,7 +41,7 @@ internal object RMarkdownIntervalsGenerator : RIntervalsGenerator, RNotebookCell
                                   KeyFMap.EMPTY_MAP.plus(RNotebookCellLines.INTERVAL_LANGUAGE_KEY, MarkdownLanguage.INSTANCE))
       val codeDataCache = mutableMapOf<Language, Pair<CellType, KeyFMap>>()
 
-      val seq = RNotebookCellLinesLexer.defaultMarkerSequence(
+      val seq = defaultMarkerSequence(
         { RMarkdownMergingLangLexer() },
         getCellTypeAndData = { lexer ->
           when (lexer.tokenType) {
@@ -95,7 +95,7 @@ internal object RMarkdownIntervalsGenerator : RIntervalsGenerator, RNotebookCell
 }
 
 
-internal enum class RMarkdownCellType(private val debugName: String) {
+private enum class RMarkdownCellType(private val debugName: String) {
   MARKDOWN_CELL("MARKDOWN_CELL"),
   CODE_CELL("CODE_CELL");
 
@@ -103,7 +103,7 @@ internal enum class RMarkdownCellType(private val debugName: String) {
 }
 
 
-internal enum class RMarkdownCodeMarkers(debugName: String) {
+private enum class RMarkdownCodeMarkers(debugName: String) {
   BACKTICK_WITH_LANG("BACKTICK_WITH_LANG"),
   BACKTICK_NO_LANG("BACKTICK_NO_LANG");
 
@@ -115,7 +115,7 @@ internal enum class RMarkdownCodeMarkers(debugName: String) {
  * merge ```{r} to BACKTICK_WITH_LANG and ``` to BACKTICK_NO_LANG
  * ```{ and ``` should be at the start of line, otherwise they are ignored
  */
-internal class RMarkdownMapBackticks : MergingLexerAdapterBase(MarkdownLexerAdapter()) {
+private class RMarkdownMapBackticks : MergingLexerAdapterBase(MarkdownLexerAdapter()) {
   override fun getMergeFunction(): MergeFunction = mergeFunction
 
   private val mergeFunction: MergeFunction = MergeFunction { type, originalLexer ->
@@ -136,7 +136,7 @@ internal class RMarkdownMapBackticks : MergingLexerAdapterBase(MarkdownLexerAdap
 }
 
 
-internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(RMarkdownMapBackticks()) {
+private class RMarkdownMergingLangLexer : MergingLexerAdapterBase(RMarkdownMapBackticks()) {
 
   override fun getMergeFunction(): MergeFunction = mergeFunction
 
@@ -214,4 +214,28 @@ private fun toInterval(document: Document, marker: Marker): Interval {
     markers = markersAtLines,
     data = marker.data,
   )
+}
+
+private fun <Lex : Lexer> defaultMarkerSequence(
+  underlyingLexerFactory: () -> Lex,
+  getCellTypeAndData: (lexer: Lex) -> Pair<CellType, KeyFMap>?,
+  chars: CharSequence,
+  ordinalIncrement: Int,
+  offsetIncrement: Int,
+): Sequence<Marker> = sequence {
+  val lexer = underlyingLexerFactory()
+  lexer.start(chars, 0, chars.length)
+  var ordinal = 0
+  while (lexer.tokenType != null) {
+    getCellTypeAndData(lexer)?.let { (type, data) ->
+      yield(Marker(
+        ordinal = ordinal++ + ordinalIncrement,
+        type = type,
+        offset = lexer.currentPosition.offset + offsetIncrement,
+        length = lexer.tokenText.length,
+        data = data,
+      ))
+    }
+    lexer.advance()
+  }
 }
