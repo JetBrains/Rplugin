@@ -36,8 +36,8 @@ import org.jetbrains.r.rinterop.RInteropCoroutineScope
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
 import org.jetbrains.r.rmarkdown.RmdFenceProvider
+import org.jetbrains.r.visualization.RNotebookCellLines
 import org.jetbrains.r.visualization.RNotebookCellLines.Interval
-import org.jetbrains.r.visualization.ui.getCell
 import java.util.concurrent.atomic.AtomicReference
 
 
@@ -162,7 +162,7 @@ private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
 
 private fun getCurrentInterval(e: AnActionEvent, editor: Editor): Interval =
   e.rMarkdownCellToolbarPanel?.pointer?.get()
-  ?: editor.getCell(editor.document.getLineNumber(editor.caretModel.offset))
+  ?: RNotebookCellLines.getSnapshot(editor.document).intervalByLine(editor.document.getLineNumber(editor.caretModel.offset))
 
 private fun showConsoleAndRun(e: AnActionEvent, action: () -> Unit) {
   val editor = e.editor ?: return

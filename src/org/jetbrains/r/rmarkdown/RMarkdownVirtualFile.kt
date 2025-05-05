@@ -1,5 +1,6 @@
 package org.jetbrains.r.rmarkdown
 
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileTypes.FileTypeRegistry
@@ -7,10 +8,17 @@ import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.r.quarto.QuartoFileType
 
 object RMarkdownVirtualFile {
-  fun isRMarkdownOrQuarto(virtualFile: VirtualFile): Boolean {
-    val fileTypeRegistryInstance = FileTypeRegistry.getInstance()
+  fun isRMarkdownOrQuarto(virtualFile: VirtualFile): Boolean =
+    isRMarkdownOrQuarto(FileTypeRegistry.getInstance(), virtualFile)
+
+  fun isRMarkdownOrQuarto(fileTypeRegistryInstance: FileTypeRegistry, virtualFile: VirtualFile): Boolean {
     return fileTypeRegistryInstance.isFileOfType(virtualFile, RMarkdownFileType) ||
            fileTypeRegistryInstance.isFileOfType(virtualFile, QuartoFileType)
+  }
+
+  fun isRMarkdownOrQuarto(document: Document): Boolean {
+    val virtualFile = FileDocumentManager.getInstance().getFile(document) ?: return false
+    return isRMarkdownOrQuarto(virtualFile)
   }
 
   fun hasVirtualFile(editor: Editor): Boolean {

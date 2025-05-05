@@ -41,9 +41,9 @@ object RNotebookGutterLineMarkerManager {
     val highlighters = editor.markupModel.allHighlighters.filter { it.lineMarkerRenderer is RMarkdownLineMarkerRenderer }
     highlighters.forEach { editor.markupModel.removeHighlighter(it) }
 
-    val notebookCellLines = RNotebookCellLines.get(editor.document)
+    val snapshot = RNotebookCellLines.getSnapshot(editor.document)
 
-    for (interval in notebookCellLines.intervals) {
+    for (interval in snapshot.intervals) {
       val startOffset = editor.document.getLineStartOffset(interval.lines.first)
       val endOffset = editor.document.getLineEndOffset(interval.lines.last)
 

@@ -26,7 +26,7 @@ interface RNotebookCellLines {
     NO(false, false),
     TOP(true, false),
     BOTTOM(false, true),
-    TOP_AND_BOTTOM(true, true)
+    TOP_AND_BOTTOM(true, true),
   }
 
   data class Interval(
@@ -41,6 +41,19 @@ interface RNotebookCellLines {
     operator fun <V> get(key: Key<V>): V? = data.get(key)
 
     override fun compareTo(other: Interval): Int = lines.first - other.lines.first
+  }
+
+  data class Snapshot(
+    val modificationStamp: Long,
+    val intervals: List<Interval>,
+  ) {
+    fun intervalByLine(line: Int): Interval =
+      intervals.find { line <= it.lines.last }!!
+
+    fun intervalsIteratorByLine(startLine: Int = 0): ListIterator<Interval> {
+      val ordinal = intervals.find { startLine <= it.lines.last }?.ordinal ?: intervals.size
+      return intervals.listIterator(ordinal)
+    }
   }
 
   interface IntervalListener : EventListener {
@@ -59,18 +72,17 @@ interface RNotebookCellLines {
     fun beforeDocumentChange(event: RNotebookCellLinesEventBeforeChange) {}
   }
 
-  fun intervalsIterator(startLine: Int = 0): ListIterator<Interval>
-
-  val intervals: List<Interval>
+  val snapshot: Snapshot
 
   val intervalListeners: EventDispatcher<IntervalListener>
-
-  val modificationStamp: Long
 
   companion object {
     val INTERVAL_LANGUAGE_KEY = Key.create<Language>("org.jetbrains.r.visualization.RNotebookCellLines.Interval.language")
 
     fun get(document: Document): RNotebookCellLines =
       RNotebookCellLinesProvider.get(document)
+
+    fun getSnapshot(document: Document): Snapshot =
+      get(document).snapshot
   }
 }

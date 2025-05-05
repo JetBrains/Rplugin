@@ -12,14 +12,16 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.wm.ToolWindowManager
 import org.jetbrains.r.RFileType
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
+import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
 
 class RConsoleEditorFactoryListener : EditorFactoryListener {
 
   override fun editorCreated(event: EditorFactoryEvent) {
     val project = event.editor.project ?: return
     val file = FileDocumentManager.getInstance().getFile(event.editor.document) ?: return
-    if (FileTypeRegistry.getInstance().isFileOfType(file, RFileType) || FileTypeRegistry.getInstance().isFileOfType(file, RMarkdownFileType)) {
+    val fileTypeRegistry = FileTypeRegistry.getInstance()
+
+    if (fileTypeRegistry.isFileOfType(file, RFileType) || RMarkdownVirtualFile.isRMarkdownOrQuarto(fileTypeRegistry, file)) {
       val toolWindowManager = ToolWindowManager.getInstance(project)
 
       val outerModalityState = ModalityState.defaultModalityState()

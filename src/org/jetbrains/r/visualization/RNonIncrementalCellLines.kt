@@ -17,53 +17,58 @@ class RNonIncrementalCellLines private constructor(
   private val intervalsGenerator: RIntervalsGenerator,
 ) : RNotebookCellLines {
 
-  override var intervals: List<RNotebookCellLines.Interval> = intervalsGenerator.makeIntervals(document)
+  @Volatile
+  override var snapshot = RNotebookCellLines.Snapshot(0, intervalsGenerator.makeIntervals(document))
     private set
 
   private val documentListener = createDocumentListener()
   override val intervalListeners = EventDispatcher.create(RNotebookCellLines.IntervalListener::class.java)
 
-  override var modificationStamp: Long = 0
-    private set
-
   init {
     document.addDocumentListener(documentListener)
   }
 
-  override fun intervalsIterator(startLine: Int): ListIterator<RNotebookCellLines.Interval> {
-    ThreadingAssertions.assertReadAccess()
-    val ordinal = intervals.find { startLine <= it.lines.last }?.ordinal ?: intervals.size
-    return intervals.listIterator(ordinal)
-  }
-
-  private fun notifyChanged(
-    oldCells: List<RNotebookCellLines.Interval>,
+  private fun makeNewSnapshotAndEvent(
+    oldSnapshot: RNotebookCellLines.Snapshot,
     oldAffectedCells: List<RNotebookCellLines.Interval>,
     newCells: List<RNotebookCellLines.Interval>,
     newAffectedCells: List<RNotebookCellLines.Interval>,
     documentEvent: DocumentEvent,
-  ) {
-    val (trimmedOldCells, trimmedNewCells) =
-      if (oldCells == newCells) {
-        Pair(emptyList(), emptyList())
-      }
-      else {
-        ++modificationStamp
+  ): Pair<RNotebookCellLines.Snapshot, RNotebookCellLinesEvent> {
+    val oldCells = oldSnapshot.intervals
 
-        val trimAtBegin = oldCells.asSequence().zip(newCells.asSequence()).takeWhile { (oldCell, newCell) ->
-          oldCell == newCell &&
-          oldCell != oldAffectedCells.firstOrNull() && newCell != newAffectedCells.firstOrNull()
-        }.count()
+    if (oldCells == newCells) {
+      val newSnapshot = RNotebookCellLines.Snapshot(modificationStamp = oldSnapshot.modificationStamp, intervals = newCells)
+      // intervals are the same, don't update modificationStamp
 
-        val trimAtEnd = oldCells.asReversed().asSequence().zip(newCells.asReversed().asSequence()).takeWhile { (oldCell, newCell) ->
-          oldCell.type == newCell.type &&
-          oldCell.language == newCell.language &&
-          oldCell.size == newCell.size &&
-          oldCell != oldAffectedCells.lastOrNull() && newCell != newAffectedCells.lastOrNull()
-        }.count()
+      val event = RNotebookCellLinesEvent(
+        documentEvent = documentEvent,
+        oldIntervals = emptyList(),
+        oldAffectedIntervals = oldAffectedCells,
+        newIntervals = emptyList(),
+        newAffectedIntervals = newAffectedCells,
+        modificationStamp = newSnapshot.modificationStamp,
+      )
 
-        Pair(trimmed(oldCells, trimAtBegin, trimAtEnd), trimmed(newCells, trimAtBegin, trimAtEnd))
-      }
+      return Pair(newSnapshot, event)
+    }
+
+    val trimAtBegin = oldCells.asSequence().zip(newCells.asSequence()).takeWhile { (oldCell, newCell) ->
+      oldCell == newCell &&
+      oldCell != oldAffectedCells.firstOrNull() && newCell != newAffectedCells.firstOrNull()
+    }.count()
+
+    val trimAtEnd = oldCells.asReversed().asSequence().zip(newCells.asReversed().asSequence()).takeWhile { (oldCell, newCell) ->
+      oldCell.type == newCell.type &&
+      oldCell.language == newCell.language &&
+      oldCell.size == newCell.size &&
+      oldCell != oldAffectedCells.lastOrNull() && newCell != newAffectedCells.lastOrNull()
+    }.count()
+
+    val newSnapshot = RNotebookCellLines.Snapshot(oldSnapshot.modificationStamp + 1, newCells)
+
+    val trimmedOldCells = trimmed(oldCells, trimAtBegin, trimAtEnd)
+    val trimmedNewCells = trimmed(newCells, trimAtBegin, trimAtEnd)
 
     val event = RNotebookCellLinesEvent(
       documentEvent = documentEvent,
@@ -71,26 +76,25 @@ class RNonIncrementalCellLines private constructor(
       oldAffectedIntervals = oldAffectedCells,
       newIntervals = trimmedNewCells,
       newAffectedIntervals = newAffectedCells,
-      modificationStamp = modificationStamp,
+      modificationStamp = newSnapshot.modificationStamp,
     )
 
-    catchThrowableAndLog {
-      intervalListeners.multicaster.documentChanged(event)
-    }
+    return Pair(newSnapshot, event)
   }
 
   private fun createDocumentListener() = object : DocumentListener {
     private var oldAffectedCells: List<RNotebookCellLines.Interval> = emptyList()
 
     override fun beforeDocumentChange(event: DocumentEvent) {
-      oldAffectedCells = getAffectedCells(intervals, document, TextRange(event.offset, event.offset + event.oldLength))
+      val currentSnapshot = snapshot
+      oldAffectedCells = getAffectedCells(currentSnapshot.intervals, document, TextRange(event.offset, event.offset + event.oldLength))
 
       catchThrowableAndLog {
         intervalListeners.multicaster.beforeDocumentChange(
           RNotebookCellLinesEventBeforeChange(
             documentEvent = event,
             oldAffectedIntervals = oldAffectedCells,
-            modificationStamp = modificationStamp
+            modificationStamp = currentSnapshot.modificationStamp
           )
         )
       }
@@ -98,11 +102,15 @@ class RNonIncrementalCellLines private constructor(
 
     override fun documentChanged(event: DocumentEvent) {
       ThreadingAssertions.assertWriteAccess()
-      val oldIntervals = intervals
-      intervals = intervalsGenerator.makeIntervals(document)
+      val newIntervals = intervalsGenerator.makeIntervals(document)
+      val newAffectedCells = getAffectedCells(newIntervals, document, TextRange(event.offset, event.offset + event.newLength))
 
-      val newAffectedCells = getAffectedCells(intervals, document, TextRange(event.offset, event.offset + event.newLength))
-      notifyChanged(oldIntervals, oldAffectedCells, intervals, newAffectedCells, event)
+      val (newSnapshot, event) = makeNewSnapshotAndEvent(snapshot, oldAffectedCells, newIntervals, newAffectedCells, event)
+      snapshot = newSnapshot
+
+      catchThrowableAndLog {
+        intervalListeners.multicaster.documentChanged(event)
+      }
     }
   }
 
