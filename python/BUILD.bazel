@@ -2,13 +2,13 @@
 load("@rules_jvm//:jvm.bzl", "jvm_library", "jvm_resources", "jvm_test")
 
 jvm_resources(
-  name = "r-python_resources",
+  name = "python_resources",
   files = glob(["resources/**/*"]),
   strip_prefix = "resources"
 )
 
 jvm_library(
-  name = "r-python",
+  name = "python",
   module_name = "intellij.r.python",
   visibility = ["//visibility:public"],
   srcs = glob(["src/**/*.kt", "src/**/*.java"], allow_empty = True),
@@ -19,14 +19,14 @@ jvm_library(
     "@community//python/openapi:community",
     "@community//python:python-community-impl",
   ],
-  runtime_deps = [":r-python_resources"]
+  runtime_deps = [":python_resources"]
 )
 
 jvm_library(
-  name = "r-python_test_lib",
+  name = "python_test_lib",
   visibility = ["//visibility:public"],
   srcs = glob(["test/**/*.kt", "test/**/*.java"], allow_empty = True),
-  associates = [":r-python"],
+  associates = [":python"],
   deps = [
     "//rplugin:r",
     "//rplugin:r_test_lib",
@@ -37,13 +37,13 @@ jvm_library(
     "@community//python/openapi:community",
     "@community//python/openapi:community_test_lib",
     "@community//python:python-community-impl",
-    "@community//python/testFramework:community-testFramework",
+    "@community//python/testFramework",
   ],
-  runtime_deps = [":r-python_resources"]
+  runtime_deps = [":python_resources"]
 )
 
 jvm_test(
-  name = "r-python_test",
-  runtime_deps = [":r-python_test_lib"]
+  name = "python_test",
+  runtime_deps = [":python_test_lib"]
 )
 ### auto-generated section `build intellij.r.python` end
