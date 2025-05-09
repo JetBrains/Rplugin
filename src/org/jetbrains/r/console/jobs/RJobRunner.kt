@@ -5,9 +5,9 @@
 package org.jetbrains.r.console.jobs
 
 import com.intellij.execution.impl.ConsoleViewImpl
-import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.process.ProcessListener
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
@@ -81,7 +81,7 @@ class RJobRunner(
                                      exportEnvName: String? = null) {
     console?.rInterop?.let { rInterop ->
       processHandler.addProcessListener(
-        object : ProcessAdapter() {
+        object : ProcessListener {
           override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
             if (rInterop.isAlive) {
               val variableName = if (task.exportGlobalEnv == ExportGlobalEnvPolicy.EXPORT_TO_VARIABLE)

@@ -4,9 +4,9 @@
 
 package org.jetbrains.r.console.jobs
 
-import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
@@ -105,7 +105,7 @@ class RJobRunnerTests : RConsoleBaseTestCase() {
   }
 
   private fun ProcessHandler.installListener() {
-    addProcessListener(object : ProcessAdapter() {
+    addProcessListener(object : ProcessListener {
       val filter = RSourceProgressInputFilter { rJobProgressProvider.onProgressAvailable(it) }
       override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
         val consoleViewType = ConsoleViewContentType.getConsoleViewType(outputType)

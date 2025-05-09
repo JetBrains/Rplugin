@@ -8,8 +8,8 @@ package org.jetbrains.r.console
 import com.google.common.annotations.VisibleForTesting
 import com.intellij.execution.console.ConsoleExecuteAction
 import com.intellij.execution.console.ConsoleHistoryController
-import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.ui.ConsoleViewContentType
@@ -92,7 +92,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
         consoleView = RConsoleView(rInterop, consoleTitle)
       }
       ProcessTerminatedListener.attach(rInterop.processHandler)
-      rInterop.processHandler.addProcessListener(object : ProcessAdapter() {
+      rInterop.processHandler.addProcessListener(object : ProcessListener {
         override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
           if (outputType == ProcessOutputType.SYSTEM) {
             consoleView.print(event.text, ConsoleViewContentType.SYSTEM_OUTPUT)

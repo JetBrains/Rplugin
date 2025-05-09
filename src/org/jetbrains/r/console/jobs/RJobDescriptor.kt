@@ -4,9 +4,9 @@
 
 package org.jetbrains.r.console.jobs
 
-import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -65,7 +65,7 @@ class RJobDescriptorImpl(
   }
 
   override fun onProcessTerminated(lambda: () -> Unit) {
-    processHandler.addProcessListener(object : ProcessAdapter() {
+    processHandler.addProcessListener(object : ProcessListener {
       override fun processTerminated(event: ProcessEvent) {
         lambda()
       }

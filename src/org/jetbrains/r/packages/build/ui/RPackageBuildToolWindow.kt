@@ -6,8 +6,8 @@ package org.jetbrains.r.packages.build.ui
 
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.process.BaseProcessHandler
-import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
@@ -171,7 +171,7 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
     }
   }
 
-  private fun createProcessListener(promise: AsyncPromise<Unit>) = object : ProcessAdapter() {
+  private fun createProcessListener(promise: AsyncPromise<Unit>) = object : ProcessListener {
     override fun processTerminated(event: ProcessEvent) {
       if (!isInterrupted) {
         if (event.exitCode == 0) {

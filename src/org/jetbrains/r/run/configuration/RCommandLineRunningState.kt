@@ -2,9 +2,9 @@ package org.jetbrains.r.run.configuration
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.CommandLineState
-import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.vfs.VirtualFileManager
@@ -41,7 +41,7 @@ class RCommandLineRunningState(environment: ExecutionEnvironment?) : CommandLine
                                                       workingDirectory = configuration.workingDirectory,
                                                       environment = configuration.environmentVariablesData.envs,
                                                       interpreterArgs = configuration.interpreterArgs.split(" "))
-    processHandler.addProcessListener(object : ProcessAdapter() {
+    processHandler.addProcessListener(object : ProcessListener {
       override fun processTerminated(event: ProcessEvent) {
         processHandler.notifyTextAvailable(RBundle.message("r.run.exit.message", event.exitCode), ProcessOutputTypes.SYSTEM)
       }
