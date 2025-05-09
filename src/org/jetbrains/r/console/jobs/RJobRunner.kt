@@ -111,7 +111,7 @@ class RJobRunner(
     if (task.exportGlobalEnv != ExportGlobalEnvPolicy.DO_NO_EXPORT) {
       exportFile = interpreter.createTempFileOnHost("export.RData")
     }
-    var text = RPluginUtil.findFileInRHelpers("R/SourceWithProgress.template.R").readText()
+    var text = RPluginUtil.findTextInRHelpersOrNull("R/SourceWithProgress.template.R")!!
     text = text.replace("<file-path>", interpreter.uploadFileToHostIfNeeded(task.script).toRString())
                .replace("<rdata-import>", importFile?.toRString() ?: "NULL")
                .replace("<rdata-export>", exportFile?.toRString() ?: "NULL")

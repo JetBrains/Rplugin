@@ -7,7 +7,9 @@ import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.ide.plugins.cl.PluginAwareClassLoader
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.extensions.PluginDescriptor
+import org.jetbrains.r.RPluginUtil.findPathInRHelpers
 import java.io.File
+import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.exists
 
@@ -19,8 +21,18 @@ object RPluginUtil {
     (RPluginUtil::class.java.classLoader as? PluginAwareClassLoader)?.pluginDescriptor
     ?: PluginManagerCore.getPlugin(PluginManagerCore.CORE_ID)!!  // Happens when running an IDE from sources
 
-  fun findFileInRHelpers(relativePath: String): File {
-    return Path.of(helpersPath, relativePath).toFile()
+  /** better to use [findPathInRHelpers] instead */
+  fun findFileInRHelpers(relativePath: String): File =
+    findPathInRHelpers(relativePath).toFile()
+
+  fun findPathInRHelpers(relativePath: String): Path {
+    return Path.of(helpersPath, relativePath)
+  }
+
+  fun findTextInRHelpersOrNull(relativePath: String): String? {
+    val path = findPathInRHelpers(relativePath)
+    if (!path.exists()) return null
+    return Files.readString(path)
   }
 
   val helpersPath: String
