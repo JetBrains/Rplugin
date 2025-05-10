@@ -28,6 +28,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.configuration.RSettingsProjectConfigurable
 import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.interpreter.RInterpreterUtil.runHelper
 import org.jetbrains.r.lexer.SingleStringTokenLexer
 import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.rinterop.RCondaUtil
@@ -261,20 +262,22 @@ object RInterpreterUtil {
                            processor: RMultiOutputProcessor,
                            project: Project? = null) {
     runHelperBase(interpreterLocation, helper, workingDirectory, args, project) {
-      RMultiOutputProcessAdapter.createProcessAdapter(it, processor)
+      RMultiOutputProcessListener.createProcessListener(it, processor)
     }
   }
 
-  private fun runHelperBase(interpreterLocation: RInterpreterLocation,
-                            helper: File,
-                            workingDirectory: String?,
-                            args: List<String>,
-                            project: Project? = null,
-                            processAdapterProducer: (ProcessOutput) -> ProcessAdapter): ProcessOutput {
+  private fun runHelperBase(
+    interpreterLocation: RInterpreterLocation,
+    helper: File,
+    workingDirectory: String?,
+    args: List<String>,
+    project: Project? = null,
+    processListenerProducer: (ProcessOutput) -> ProcessListener,
+  ): ProcessOutput {
     val scriptName = helper.name
     val time = System.currentTimeMillis()
     try {
-      val result = runAsync { runHelperWithArgs(interpreterLocation, helper, workingDirectory, args, processAdapterProducer, project) }
+      val result = runAsync { runHelperWithArgs(interpreterLocation, helper, workingDirectory, args, processListenerProducer, project) }
                      .onError { RInterpreterBase.LOG.error(it) }
                      .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Timeout for helper '$scriptName'")
       if (project != null && result.exitCode != 0) {
@@ -295,15 +298,17 @@ object RInterpreterUtil {
     return lines.substring(start + RPLUGIN_OUTPUT_BEGIN.length, end)
   }
 
-  private fun runHelperWithArgs(interpreterLocation: RInterpreterLocation,
-                                helper: File,
-                                workingDirectory: String?,
-                                args: List<String>,
-                                processAdapterProducer: (ProcessOutput) -> ProcessAdapter,
-                                project: Project? = null): ProcessOutput {
+  private fun runHelperWithArgs(
+    interpreterLocation: RInterpreterLocation,
+    helper: File,
+    workingDirectory: String?,
+    args: List<String>,
+    processListenerProducer: (ProcessOutput) -> ProcessListener,
+    project: Project? = null,
+  ): ProcessOutput {
     val helperOnHost = interpreterLocation.uploadFileToHost(helper)
     val interpreterArgs = getRunHelperArgs(helperOnHost, args, project)
-    return runRInterpreter(interpreterLocation, interpreterArgs, workingDirectory, processAdapterProducer)
+    return runRInterpreter(interpreterLocation, interpreterArgs, workingDirectory, processListenerProducer)
   }
 
   fun getDefaultInterpreterOptions(project: Project?): MutableList<String> {
@@ -326,9 +331,10 @@ object RInterpreterUtil {
   private fun runRInterpreter(interpreterLocation: RInterpreterLocation,
                               args: List<String>,
                               workingDirectory: String?,
-                              processAdapterProducer: (ProcessOutput) -> ProcessAdapter = { CapturingProcessAdapter(it) }): ProcessOutput {
+                              processListenerProducer: (ProcessOutput) -> ProcessListener = { CapturingProcessAdapter(it) }
+  ): ProcessOutput {
     val processHandler = interpreterLocation.runInterpreterOnHost(args, workingDirectory)
-    val processRunner = CapturingProcessRunner(processHandler, processAdapterProducer)
+    val processRunner = CapturingProcessRunner(processHandler, processListenerProducer)
     val output = processRunner.runProcess(DEFAULT_TIMEOUT)
     if (output.exitCode != 0) {
       RInterpreterBase.LOG.warn("Failed to run script. Exit code: " + output.exitCode)
@@ -412,8 +418,10 @@ object RInterpreterUtil {
 
   private data class CondaPath(val path: String, val environment: String)
 
-  private class RMultiOutputProcessAdapter private constructor(private val output: ProcessOutput,
-                                                               private val processor: RMultiOutputProcessor) : ProcessAdapter() {
+  private class RMultiOutputProcessListener private constructor(
+    private val output: ProcessOutput,
+    private val processor: RMultiOutputProcessor
+  ) : ProcessListener {
 
     private val stdoutBuffer = StringBuffer()
     private val beginLexer = SingleStringTokenLexer(RPLUGIN_OUTPUT_BEGIN, stdoutBuffer)
@@ -460,9 +468,9 @@ object RInterpreterUtil {
       /**
        * Not pass stdout to the [output]. Process it using [processor]
        */
-      fun createProcessAdapter(output: ProcessOutput, processor: RMultiOutputProcessor): RMultiOutputProcessAdapter {
+      fun createProcessListener(output: ProcessOutput, processor: RMultiOutputProcessor): RMultiOutputProcessListener {
         processor.beforeStart()
-        return RMultiOutputProcessAdapter(output, processor)
+        return RMultiOutputProcessListener(output, processor)
       }
     }
   }

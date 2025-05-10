@@ -6,7 +6,10 @@ package org.jetbrains.r.rmarkdown
 
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.impl.ConsoleViewImpl
-import com.intellij.execution.process.*
+import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.process.ProcessListener
+import com.intellij.execution.process.ScriptRunnerUtil
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.execution.ui.RunContentManager
@@ -120,7 +123,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
 
   private fun makeKnitListener(interpreter: RInterpreter, file: VirtualFile, promise: AsyncPromise<Unit>, resultTmpFileOnHost: String,
                                outputDir: VirtualFile, isShiny: Boolean): ProcessListener {
-    return object : ProcessAdapter() {
+    return object : ProcessListener {
       override fun processTerminated(event: ProcessEvent) {
         val exitCode = event.exitCode
         if (isInterrupted || currentConsoleView?.let { Disposer.isDisposed(it) } == true) {
