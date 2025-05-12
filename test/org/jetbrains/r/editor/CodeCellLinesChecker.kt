@@ -7,41 +7,18 @@ import org.assertj.core.api.Assertions.assertThatCollection
 import org.jetbrains.r.visualization.RNotebookCellLines
 import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 import org.jetbrains.r.visualization.RNotebookCellLinesEvent
-import org.jetbrains.r.visualization.RNotebookCellLinesLexerMarker
 import kotlin.reflect.KProperty1
 
 internal class RCodeCellLinesChecker(
   private val description: String,
   private val intervalsComparator: Comparator<Interval> = makeIntervalComparatorIgnoringData(),
-  private val markersComparator: Comparator<RNotebookCellLinesLexerMarker> = makeMarkerComparatorIgnoringData(),
   private val editorGetter: () -> EditorImpl,
 ) : (RCodeCellLinesChecker.() -> Unit) -> Unit {
 
-  private var markers: MutableList<RNotebookCellLinesLexerMarker>? = null
-  private var intervals: MutableList<RNotebookCellLines.Interval>? = null
-  private var markersStartOffset: Int = 0
-  private var markersStartOrdinal: Int = 0
+  private var intervals: MutableList<Interval>? = null
   private var intervalsStartLine: Int = 0
   private val expectedIntervalListenerCalls = mutableListOf<Pair<List<Interval>, List<Interval>>>()
 
-  inner class MarkersSetter {
-    init {
-      markers = mutableListOf()
-    }
-
-    fun marker(cellType: RNotebookCellLines.CellType, offset: Int, length: Int, language: Language) {
-      markers!!.add(
-        RNotebookCellLinesLexerMarker(ordinal = markers!!.size + markersStartOrdinal, type = cellType, offset = offset, length = length,
-                                      language = language))
-    }
-  }
-
-  fun markers(startOffset: Int = 0, startOrdinal: Int = 0, handler: MarkersSetter.() -> Unit) {
-    markersStartOffset = startOffset
-    markersStartOrdinal = startOrdinal
-    check(markers == null) { "markers{} section defined twice" }
-    MarkersSetter().handler()
-  }
 
   class IntervalsSetter(private val list: MutableList<Interval>, private val startOrdinal: Int) {
     fun interval(
@@ -122,12 +99,6 @@ internal class RCodeCellLinesChecker(
         |||Document after: $prettyDocumentTextAfter
         """.trimMargin("|||")
 
-      markers.let { markers ->
-        assertThatCollection(makeMarkersFromIntervals(editor.document, codeCellLines.snapshot.intervals).filter { it.offset >= markersStartOffset })
-          .describedAs("Markers: $descr")
-          .usingElementComparator(markersComparator.toJavaComparatorNonNullable())
-          .isEqualTo(markers)
-      }
       intervals?.let { intervals ->
         assertThatCollection(codeCellLines.snapshot.intervalsIteratorByLine(intervalsStartLine).asSequence().toList())
           .describedAs("Intervals: $descr")
@@ -178,12 +149,6 @@ internal class RCodeCellLinesChecker(
         .thenBy { it.lines.last }
         .thenBy { it.markers }
         .thenBy { it.language.id }
-
-    fun makeMarkerComparatorIgnoringData(): Comparator<RNotebookCellLinesLexerMarker> =
-      compareBy<RNotebookCellLinesLexerMarker> { it.ordinal }
-        .thenBy { it.type }
-        .thenBy { it.offset }
-        .thenBy { it.length }
 
     // workaround for kotlin type system
     private fun <T> Comparator<T>.toJavaComparatorNonNullable(): java.util.Comparator<Any?> =

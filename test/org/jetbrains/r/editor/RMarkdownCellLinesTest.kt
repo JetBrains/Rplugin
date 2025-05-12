@@ -26,8 +26,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..2, MarkdownLanguage.INSTANCE)
       }
@@ -43,10 +41,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-        marker(CODE, 0, 7, RLanguage.INSTANCE)
-        marker(CODE, 17, 3, RLanguage.INSTANCE)
-      }
       intervals {
         rmdInterval(CODE, 0..2, RLanguage.INSTANCE)
       }
@@ -65,14 +59,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-        marker(CODE, 0, 13, RLanguage.INSTANCE)
-        marker(CODE, 13, 4, RLanguage.INSTANCE)
-        marker(CODE, 17, 12, PythonLanguage.INSTANCE)
-        marker(CODE, 29, 4, PythonLanguage.INSTANCE)
-        marker(CODE, 33, 17, RLanguage.INSTANCE)
-        marker(CODE, 50, 3, RLanguage.INSTANCE)
-      }
       intervals {
         rmdInterval(CODE, 0..1, RLanguage.INSTANCE)
         rmdInterval(CODE, 2..3, PythonLanguage.INSTANCE)
@@ -90,8 +76,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..2, MarkdownLanguage.INSTANCE)
       }
@@ -109,8 +93,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
         rmdInterval(MARKDOWN, 1..4, MarkdownLanguage.INSTANCE)
@@ -122,8 +104,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
   fun `add code cell after text`(): Unit = edt {
     fixture.openNotebookTextInEditor("text<caret>")
     assertCodeCells {
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
       }
@@ -132,10 +112,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     assertCodeCells {
       fixture.performEditorAction("RMarkdownNewChunk")
 
-      markers {
-        marker(CODE, 5, 7, RLanguage.INSTANCE)
-        marker(CODE, 13, 4, RLanguage.INSTANCE)
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
         rmdInterval(CODE, 1..3, RLanguage.INSTANCE)
@@ -164,12 +140,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-        marker(CODE, 0, 7, RLanguage.INSTANCE)
-        marker(CODE, 19, 4, RLanguage.INSTANCE)
-        marker(CODE, 23, 7, RLanguage.INSTANCE)
-        marker(CODE, 42, 3, RLanguage.INSTANCE)
-      }
       intervals {
         rmdInterval(CODE, 0..2, RLanguage.INSTANCE)
         rmdInterval(CODE, 3..5, RLanguage.INSTANCE)
@@ -187,11 +157,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-        marker(CODE, 0, 7, RLanguage.INSTANCE)
-        marker(CODE, 12, 4, RLanguage.INSTANCE)
-        // last line has zero symbols
-      }
       intervals {
         rmdInterval(CODE, 0..2, RLanguage.INSTANCE)
         rmdInterval(MARKDOWN, 3..3, MarkdownLanguage.INSTANCE)
@@ -215,8 +180,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..9, MarkdownLanguage.INSTANCE)
       }
@@ -231,8 +194,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
         rmdInterval(MARKDOWN, 1..1, MarkdownLanguage.INSTANCE)
@@ -250,8 +211,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..3, MarkdownLanguage.INSTANCE)
       }
@@ -269,8 +228,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..4, MarkdownLanguage.INSTANCE)
       }
@@ -288,8 +245,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..4, MarkdownLanguage.INSTANCE)
       }
@@ -306,8 +261,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..1, MarkdownLanguage.INSTANCE)
         rmdInterval(MARKDOWN, 2..3, MarkdownLanguage.INSTANCE)
@@ -321,8 +274,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells("add text") {
       fixture.type("add\nmultiline text")
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..1, MarkdownLanguage.INSTANCE)
       }
@@ -339,8 +290,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     assertCodeCells("remove all text") {
       fixture.performEditorAction(IdeActions.ACTION_SELECT_ALL)
       fixture.performEditorAction(IdeActions.ACTION_EDITOR_DELETE)
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
       }
@@ -366,10 +315,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
         code
         ``
       """.trimIndent())
-      markers {
-        marker(CODE, 0, 7, RLanguage.INSTANCE)
-        marker(CODE, 12, 3, RLanguage.INSTANCE)
-      }
       intervals {
         rmdInterval(CODE, 0..2, RLanguage.INSTANCE)
       }
@@ -402,8 +347,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     assertCodeCells("remove code") {
       fixture.performEditorAction(IdeActions.ACTION_SELECT_ALL)
       fixture.performEditorAction(IdeActions.ACTION_EDITOR_DELETE)
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
       }
@@ -427,8 +370,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..2, MarkdownLanguage.INSTANCE)
       }
@@ -438,8 +379,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       fixture.type("```")
       // actually it types ```<caret>`,
       // ``` is valid start of cell, but ```` is invalid and ignored
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..2, MarkdownLanguage.INSTANCE)
       }
@@ -447,8 +386,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells("complete start of the cell to ```{r}") {
       fixture.type("{r}")
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
         rmdInterval(MARKDOWN, 1..2, MarkdownLanguage.INSTANCE)
@@ -468,8 +405,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       // one ` was already typed and placed after caret.
       // line with ```{r}``` isn't a chunk
       fixture.type("``")
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
         rmdInterval(MARKDOWN, 1..2, MarkdownLanguage.INSTANCE)
@@ -487,10 +422,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
 
     assertCodeCells("make valid code chunk") {
       fixture.type("\n")
-      markers {
-        marker(CODE, 16, 7, RLanguage.INSTANCE)
-        marker(CODE, 23, 4, RLanguage.INSTANCE)
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
         rmdInterval(CODE, 1..2, RLanguage.INSTANCE)
@@ -519,10 +450,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-        marker(CODE, 7, 7, RLanguage.INSTANCE)
-        marker(CODE, 19, 4, RLanguage.INSTANCE)
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..0, MarkdownLanguage.INSTANCE)
         rmdInterval(CODE, 1..3, RLanguage.INSTANCE)
@@ -533,8 +460,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     assertCodeCells {
       fixture.performEditorAction(IdeActions.ACTION_EDITOR_DELETE_LINE)
 
-      markers {
-      }
       intervals {
         rmdInterval(MARKDOWN, 0..3, MarkdownLanguage.INSTANCE)
       }
@@ -560,10 +485,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-        marker(CODE, 0, 7, RLanguage.INSTANCE)
-        marker(CODE, 7, 4, RLanguage.INSTANCE)
-      }
       intervals {
         rmdInterval(CODE, 0..1, RLanguage.INSTANCE)
         rmdInterval(MARKDOWN, 2..2, MarkdownLanguage.INSTANCE)
@@ -575,10 +496,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       assertCodeCells("add new code line: attempt ${attempt} of ${attemptsCount}") {
         fixture.type("\n")
 
-        markers {
-          marker(CODE, 0, 7, RLanguage.INSTANCE)
-          marker(CODE, 8, 4, RLanguage.INSTANCE)
-        }
         intervals {
           rmdInterval(CODE, 0..2, RLanguage.INSTANCE)
           rmdInterval(MARKDOWN, 3..3, MarkdownLanguage.INSTANCE)
@@ -597,10 +514,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
       assertCodeCells("remove code line: attempt ${attempt} of ${attemptsCount}") {
         fixture.type("\b")
 
-        markers {
-          marker(CODE, 0, 7, RLanguage.INSTANCE)
-          marker(CODE, 7, 4, RLanguage.INSTANCE)
-        }
         intervals {
           rmdInterval(CODE, 0..1, RLanguage.INSTANCE)
           rmdInterval(MARKDOWN, 2..2, MarkdownLanguage.INSTANCE)
@@ -627,10 +540,6 @@ class RMarkdownCellLinesTest : RMarkdownEditorUiTestBase() {
     """.trimIndent())
 
     assertCodeCells {
-      markers {
-        marker(CODE, 0, 9, PlainTextLanguage.INSTANCE)
-        marker(CODE, 20, 3, PlainTextLanguage.INSTANCE)
-      }
       intervals {
         rmdInterval(CODE, 0..2, PlainTextLanguage.INSTANCE)
       }

@@ -15,72 +15,91 @@ import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 import org.jetbrains.r.rmarkdown.RmdCellLanguageProvider
 import org.jetbrains.r.visualization.RIntervalsGenerator
 import org.jetbrains.r.visualization.RNotebookCellLines.*
-import org.jetbrains.r.visualization.RNotebookCellLinesLexerMarker
+import kotlin.math.max
 
 
 internal object RMarkdownIntervalsGenerator : RIntervalsGenerator {
   override fun makeIntervals(document: Document, event: DocumentEvent?): List<Interval> {
-    val markers = markerSequence(document.getImmutableCharSequence())
-    return markers.map { toInterval(document, it) }.toList()
-  }
+    val resultIntervals = mutableListOf<Interval>()
 
-  private fun markerSequence(chars: CharSequence): Sequence<RNotebookCellLinesLexerMarker> =
-    sequence {
-      val defaultLanguage: Language = PlainTextLanguage.INSTANCE
-      val langMap = RmdCellLanguageProvider.getAllLanguages()
-      val maxLangSize: Int = langMap.keys.maxOfOrNull { it.length } ?: 0
+    val chars = document.charsSequence
+    val defaultLanguage: Language = PlainTextLanguage.INSTANCE
+    val langMap = RmdCellLanguageProvider.getAllLanguages()
+    val maxLangSize: Int = langMap.keys.maxOfOrNull { it.length } ?: 0
 
-      val markdownLanguage = MarkdownLanguage.INSTANCE
-      val markdownDataPair = Pair(CellType.MARKDOWN, markdownLanguage)
+    val markdownLanguage = MarkdownLanguage.INSTANCE
 
-      val seq = defaultMarkerSequence(
-        getCellTypeAndData = { lexer ->
-          when (lexer.tokenType) {
-            RMarkdownCellType.MARKDOWN_CELL.elementType -> markdownDataPair
-            RMarkdownCellType.CODE_CELL.elementType -> {
-              val cellText = lexer.tokenText
-              val cellLanguageText = parseLanguage(cellText, maxLangSize)
-              val language = langMap.getOrDefault(cellLanguageText, defaultLanguage)
-              Pair(CellType.CODE, language)
-            }
-            else -> null
-          }
-        },
-        chars
-      )
+    val lexer = RMarkdownMergingLangLexer()
+    lexer.start(chars)
 
-      var lastMarker: RNotebookCellLinesLexerMarker? = null
-      for (marker in seq) {
-        lastMarker = marker
-        yield(marker)
+    while (lexer.tokenType != null) {
+      when (lexer.tokenType) {
+        RMarkdownCellType.MARKDOWN_CELL.elementType -> {
+          resultIntervals += Interval(
+            ordinal = resultIntervals.size,
+            type = CellType.MARKDOWN,
+            lines = lexer.getCurrentLinesIn(document),
+            markers = MarkersAtLines.NO,
+            language = markdownLanguage
+          )
+        }
+        RMarkdownCellType.CODE_CELL.elementType -> {
+          val cellText = lexer.tokenText
+          val cellLanguageText = parseLanguage(cellText, maxLangSize)
+          val language = langMap.getOrDefault(cellLanguageText, defaultLanguage)
+
+          resultIntervals += Interval(
+            ordinal = resultIntervals.size,
+            type = CellType.CODE,
+            lines = lexer.getCurrentLinesIn(document),
+            markers = MarkersAtLines.TOP_AND_BOTTOM,
+            language = language
+          )
+        }
+        else -> null
       }
 
-      if (lastMarker?.type == CellType.CODE && chars.endsWith('\n')) {
-        yield(RNotebookCellLinesLexerMarker(
-          ordinal = lastMarker.ordinal + 1,
-          type = CellType.MARKDOWN,
-          offset = chars.length,
-          length = 0,
-          language = markdownLanguage
-        ))
-      }
-
-      if (lastMarker == null) {
-        yield(RNotebookCellLinesLexerMarker(
-          ordinal = 0,
-          type = CellType.MARKDOWN,
-          offset = 0,
-          length = 0,
-          language = markdownLanguage,
-        ))
-      }
+      lexer.advance()
     }
 
-  private fun parseLanguage(cellText: CharSequence, maxLangSize: Int): String? {
-    val prefix = "```{"
-    if (!cellText.startsWith(prefix)) return null
-    return cellText.drop(prefix.length).take(maxLangSize + 1).takeWhile { it.isLetterOrDigit() }.toString()
+    if (resultIntervals.lastOrNull()?.type == CellType.CODE && chars.endsWith('\n')) {
+      val line = document.getLineNumber(chars.length)
+
+      resultIntervals += Interval(
+        ordinal = resultIntervals.last().ordinal + 1,
+        type = CellType.MARKDOWN,
+        lines = line..line,
+        markers = MarkersAtLines.NO,
+        language = markdownLanguage,
+      )
+    }
+
+    if (resultIntervals.isEmpty()) {
+      resultIntervals += Interval(
+        ordinal = 0,
+        type = CellType.MARKDOWN,
+        lines = 0..max(0, document.lineCount - 1),
+        markers = MarkersAtLines.NO,
+        language = markdownLanguage,
+      )
+    }
+
+    return resultIntervals
   }
+}
+
+private fun RMarkdownMergingLangLexer.getCurrentLinesIn(document: Document): IntRange {
+  val offset = currentPosition.offset
+  val length = tokenText.length
+  val startLine = document.getLineNumber(offset)
+  val endLine = document.getLineNumber(offset + length - 1)
+  return startLine..endLine
+}
+
+private fun parseLanguage(cellText: CharSequence, maxLangSize: Int): String? {
+  val prefix = "```{"
+  if (!cellText.startsWith(prefix)) return null
+  return cellText.drop(prefix.length).take(maxLangSize + 1).takeWhile { it.isLetterOrDigit() }.toString()
 }
 
 
@@ -182,46 +201,4 @@ private fun consumeToEndOfLine(lexer: Lexer) {
     lexer.advance()
   }
   consumeEndOfLine(lexer)
-}
-
-private fun toInterval(document: Document, marker: RNotebookCellLinesLexerMarker): Interval {
-  // for RMarkdown markers offset + length == nextMarker.offset, actually markers are intervals
-  val startLine = document.getLineNumber(marker.offset)
-
-  val endLine =
-    if (marker.length == 0) startLine
-    else document.getLineNumber(marker.offset + marker.length - 1)
-
-  val markersAtLines =
-    if (marker.type == CellType.CODE) MarkersAtLines.TOP_AND_BOTTOM
-    else MarkersAtLines.NO
-
-  return Interval(
-    ordinal = marker.ordinal,
-    type = marker.type,
-    lines = startLine..endLine,
-    markers = markersAtLines,
-    language = marker.language,
-  )
-}
-
-private fun defaultMarkerSequence(
-  getCellTypeAndData: (lexer: RMarkdownMergingLangLexer) -> Pair<CellType, Language>?,
-  chars: CharSequence,
-): Sequence<RNotebookCellLinesLexerMarker> = sequence {
-  val lexer = RMarkdownMergingLangLexer()
-  lexer.start(chars, 0, chars.length)
-  var ordinal = 0
-  while (lexer.tokenType != null) {
-    getCellTypeAndData(lexer)?.let { (type, language) ->
-      yield(RNotebookCellLinesLexerMarker(
-        ordinal = ordinal++,
-        type = type,
-        offset = lexer.currentPosition.offset,
-        length = lexer.tokenText.length,
-        language = language,
-      ))
-    }
-    lexer.advance()
-  }
 }
