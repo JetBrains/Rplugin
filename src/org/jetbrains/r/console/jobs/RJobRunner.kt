@@ -9,8 +9,6 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessListener
 import com.intellij.openapi.application.EDT
-import com.intellij.openapi.application.ModalityState
-import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.application.edtWriteAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
@@ -43,12 +41,12 @@ class RJobRunner(
 ) {
   internal val eventDispatcher = EventDispatcher.create(Listener::class.java)
 
-  fun canRun(): Boolean = RInterpreterManager.getInstance(project).hasInterpreter()
+  fun canRun(): Boolean = RInterpreterManager.getInstance(project).hasInterpreterLocation()
 
   @TestOnly
-  internal fun run(task: RJobTask, exportEnvName: String? = null): Promise<ProcessHandler> {
+  internal fun run(task: RJobTask): Promise<ProcessHandler> {
     return coroutineScope.async {
-      suspendableRun(task, exportEnvName)
+      suspendableRun(task)
     }.asCompletableFuture().asPromise()
   }
 
@@ -74,11 +72,13 @@ class RJobRunner(
     return processHandler
   }
 
-  private fun installProcessListener(processHandler: ProcessHandler,
-                                     exportRDataFile: String,
-                                     console: RConsoleView?,
-                                     task: RJobTask,
-                                     exportEnvName: String? = null) {
+  private fun installProcessListener(
+    processHandler: ProcessHandler,
+    exportRDataFile: String,
+    console: RConsoleView?,
+    task: RJobTask,
+    exportEnvName: String? = null,
+  ) {
     console?.rInterop?.let { rInterop ->
       processHandler.addProcessListener(
         object : ProcessListener {
@@ -119,7 +119,7 @@ class RJobRunner(
     return Pair(interpreter.createTempFileOnHost("rjob.R", text.toByteArray()), exportFile)
   }
 
-  suspend fun suspendableRunRJob(task: RJobTask, exportEnvName: String? = null, name: String? = null): RJobDescriptor {
+  suspend fun runRJob(task: RJobTask, exportEnvName: String? = null, name: String? = null): RJobDescriptor {
     return withContext(Dispatchers.Default) {
       val processHandler = suspendableRun(task, exportEnvName)
       val consoleView = ConsoleViewImpl(project, true)
@@ -139,12 +139,6 @@ class RJobRunner(
 
       return@withContext rJobDescriptor
     }
-  }
-
-  fun runRJob(task: RJobTask, exportEnvName: String? = null, name: String? = null): Promise<RJobDescriptor> {
-    return coroutineScope.async(ModalityState.defaultModalityState().asContextElement()) {
-      suspendableRunRJob(task, exportEnvName, name)
-    }.asCompletableFuture().asPromise()
   }
 
   companion object {

@@ -19,7 +19,7 @@ class MockInterpreterManager(project: Project) : RInterpreterManager {
 
   override fun getInterpreterDeferred(force: Boolean) = CompletableDeferred(Result.success(interpreterOrNull))
 
-  override fun hasInterpreter(): Boolean = true
+  override fun hasInterpreterLocation(): Boolean = true
 
   init {
     LOG.warn("List of settings providers: ${RInterpreterSettingsProvider.getProviders().toList()}")

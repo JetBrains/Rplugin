@@ -4,9 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.EDT
-import com.intellij.openapi.application.writeAction
+import com.intellij.openapi.application.*
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
@@ -57,7 +55,7 @@ class InlayOutputText(parent: Disposable, editor: Editor)
       File(data).takeIf { it.exists() && it.extension == "json" }?.let { file ->
         Gson().fromJson<List<ProcessOutput>>(file.readText(), object : TypeToken<List<ProcessOutput>>() {}.type)
       }.let { outputs ->
-        RPluginCoroutineScope.getInstance(project).coroutineScope.launch(Dispatchers.EDT) {
+        RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
           writeAction {
             if (outputs == null) {
               // DS-763 "\r\n" patterns would trim the whole last line.

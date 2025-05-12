@@ -50,7 +50,7 @@ interface RInterpreterManager {
   suspend fun awaitInterpreter(force: Boolean = false): Result<RInterpreter> =
     getInterpreterDeferred(force).await()
 
-  fun hasInterpreter(): Boolean
+  fun hasInterpreterLocation(): Boolean
 
   companion object {
     fun getInstance(project: Project): RInterpreterManager = project.service()
@@ -58,15 +58,15 @@ interface RInterpreterManager {
 
     @Deprecated("use RInterpreterManager.getInstance(project).getInterpreterDeferred(force) instead")
     @JvmOverloads
-    fun getInterpreterAsync(project: Project, force: Boolean = false): Promise<RInterpreter> =
-      getInstance(project).getInterpreterDeferred(force).asCompletableFuture().asPromise().then<RInterpreter>{ it.getOrThrow() }
+    fun getInterpreterAsync(project: Project): Promise<RInterpreter> =
+      getInstance(project).getInterpreterDeferred().asCompletableFuture().asPromise().then<RInterpreter>{ it.getOrThrow() }
 
     fun getInterpreterOrNull(project: Project): RInterpreter? = getInstanceIfCreated(project)?.interpreterOrNull
 
     fun getInterpreterBlocking(project: Project, timeout: Int): RInterpreter? =
       runBlockingCancellable {
         withTimeoutOrNull(timeout.toLong()) {
-          getInstance(project).awaitInterpreter(force = false).getOrNull()
+          getInstance(project).awaitInterpreter().getOrNull()
         }
       }
 
@@ -155,7 +155,7 @@ internal class RInterpreterManagerImpl(
     }
   }
 
-  override fun hasInterpreter() = RSettings.getInstance(project).interpreterLocation != null
+  override fun hasInterpreterLocation() = RSettings.getInstance(project).interpreterLocation != null
 
   private fun fetchInterpreterLocation(): RInterpreterLocation? {
     return if (ApplicationManager.getApplication().isUnitTestMode) {

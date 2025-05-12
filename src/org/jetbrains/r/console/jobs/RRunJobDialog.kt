@@ -4,7 +4,9 @@
 
 package org.jetbrains.r.console.jobs
 
-import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.DialogWrapper
@@ -14,16 +16,21 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.dsl.builder.*
-import org.jetbrains.concurrency.runAsync
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.isLocal
 import javax.swing.JComponent
 import javax.swing.event.DocumentEvent
 import kotlin.reflect.KMutableProperty0
 
-class RRunJobDialog(private val interpreter: RInterpreter, defaultScript: VirtualFile?,
-                    private val defaultWorkingDirectory: String) :
+class RRunJobDialog(
+  private val interpreter: RInterpreter, defaultScript: VirtualFile?,
+  private val defaultWorkingDirectory: String,
+) :
   DialogWrapper(interpreter.project, null, true, IdeModalityType.IDE) {
   private val project = interpreter.project
   private val panel: DialogPanel
@@ -36,6 +43,7 @@ class RRunJobDialog(private val interpreter: RInterpreter, defaultScript: Virtua
       override fun toString() = "Remote R Script"
     }
   }
+
   private var scriptPathType = PathType.LOCAL
   private var scriptPathLocal: String = ""
   private var scriptPathRemote: String = ""
@@ -47,7 +55,8 @@ class RRunJobDialog(private val interpreter: RInterpreter, defaultScript: Virtua
   init {
     if (defaultScript?.isInLocalFileSystem == true) {
       scriptPathLocal = defaultScript.path
-    } else if (!interpreter.isLocal() && defaultScript != null) {
+    }
+    else if (!interpreter.isLocal() && defaultScript != null) {
       interpreter.getFilePathAtHost(defaultScript)?.let {
         scriptPathType = PathType.REMOTE
         scriptPathRemote = it
@@ -129,17 +138,18 @@ class RRunJobDialog(private val interpreter: RInterpreter, defaultScript: Virtua
 
   override fun doOKAction() {
     panel.apply()
-    runAsync {
+    RPluginCoroutineScope.getScope(project).launch(Dispatchers.IO + ModalityState.defaultModalityState().asContextElement()) {
       val (script, scriptPath) = when (scriptPathType) {
         PathType.LOCAL -> LocalFileSystem.getInstance().findFileByPath(scriptPathLocal) to scriptPathLocal
         PathType.REMOTE -> interpreter.findFileByPathAtHost(scriptPathRemote) to scriptPathRemote
       }
       if (script == null) {
-        invokeLater {
+        withContext(Dispatchers.EDT) {
           Messages.showErrorDialog(project, RBundle.message("jobs.dialog.file.not.found.message", scriptPath),
                                    RBundle.message("jobs.dialog.file.not.found.title"))
         }
-      } else {
+      }
+      else {
         val task = RJobTask(script, workingDirectory, runWithGlobalEnvironment, exportGlobalEnvPolicy)
         RJobRunner.getInstance(project).runRJob(task)
       }

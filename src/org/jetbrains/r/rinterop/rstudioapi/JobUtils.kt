@@ -1,6 +1,9 @@
 package org.jetbrains.r.rinterop.rstudioapi
 
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.util.PathUtil
+import kotlinx.coroutines.launch
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.console.jobs.ExportGlobalEnvPolicy
@@ -31,10 +34,17 @@ object JobUtils {
     val promise = AsyncPromise<RObject>()
     filePromise.then {
       if (it != null) {
-        RJobRunner.getInstance(rInterop.project)
-          .runRJob(RJobTask(it, workingDir, importEnv, exportEnv), exportEnvName, name).then {
-            promise.setResult("${it.hashCode()}".toRString())
+        val runner = RJobRunner.getInstance(rInterop.project)
+        runner.coroutineScope.launch(ModalityState.defaultModalityState().asContextElement()) {
+          try {
+            val descriptor = runner.runRJob(RJobTask(it, workingDir, importEnv, exportEnv), exportEnvName, name)
+            promise.setResult("${descriptor.hashCode()}".toRString())
           }
+          catch (e: Throwable) {
+            promise.setError(e)
+            throw e
+          }
+        }
       }
       else {
         promise.setResult(getRNull())

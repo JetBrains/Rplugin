@@ -14,6 +14,7 @@ private val inlayExecutor = AppExecutorUtil.createBoundedApplicationPoolExecutor
 /**
  * run [runnable] on bounded inlay thread pool backed by application thread pool
  */
+@Deprecated("use coroutines instead")
 fun <T> runAsyncInlay(runnable: () -> T): Promise<T> {
   val promise = AsyncPromise<T>()
   inlayExecutor.execute {

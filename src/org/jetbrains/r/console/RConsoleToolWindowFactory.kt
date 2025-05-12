@@ -240,7 +240,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
 
     private fun tryAddContent(toolWindow: ToolWindow, project: Project) {
       if (toolWindow.contentManager.contents.count { isConsole(it) } == 0) {
-        if (!RInterpreterManager.getInstance(project).hasInterpreter()) {
+        if (!RInterpreterManager.getInstance(project).hasInterpreterLocation()) {
           val contentFactory = ContentFactory.getInstance()
           val console = contentFactory.createContent(createNoInterpreterConsoleView(project).component,
                                                      NO_INTERPRETER_FOUND_DISPLAY_NAME,

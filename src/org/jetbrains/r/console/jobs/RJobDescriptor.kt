@@ -8,8 +8,11 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.ui.ConsoleView
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.swing.JComponent
 
@@ -35,8 +38,8 @@ class RJobDescriptorImpl(
   private val progressProvider: RJobProgressProvider,
   private val processHandler: ProcessHandler,
   private val consoleView: ConsoleView,
-  override val name: String? = null
-): RJobDescriptor {
+  override val name: String? = null,
+) : RJobDescriptor {
 
   @Volatile
   private var progressChanged: ((current: Int, total: Int) -> Unit)? = null
@@ -77,6 +80,9 @@ class RJobDescriptorImpl(
   }
 
   override fun rerun() {
-    RJobRunner.getInstance(project).runRJob(task)
+    val runner = RJobRunner.getInstance(project)
+    runner.coroutineScope.launch(ModalityState.defaultModalityState().asContextElement()) {
+      runner.runRJob(task)
+    }
   }
 }
