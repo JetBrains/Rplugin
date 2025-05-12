@@ -8,22 +8,20 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.psi.tree.IElementType
-import com.intellij.util.keyFMap.KeyFMap
 import org.intellij.plugins.markdown.lang.MarkdownLanguage
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.lexer.MarkdownLexerAdapter
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 import org.jetbrains.r.rmarkdown.RmdCellLanguageProvider
 import org.jetbrains.r.visualization.RIntervalsGenerator
-import org.jetbrains.r.visualization.RNotebookCellLines
 import org.jetbrains.r.visualization.RNotebookCellLines.*
 import org.jetbrains.r.visualization.RNotebookCellLinesLexerMarker
 
 
 internal object RMarkdownIntervalsGenerator : RIntervalsGenerator {
   override fun makeIntervals(document: Document, event: DocumentEvent?): List<Interval> {
-    val markers = markerSequence(document.charsSequence).toList()
-    return markers.map { toInterval(document, it) }
+    val markers = markerSequence(document.getImmutableCharSequence())
+    return markers.map { toInterval(document, it) }.toList()
   }
 
   private fun markerSequence(chars: CharSequence): Sequence<RNotebookCellLinesLexerMarker> =
@@ -32,9 +30,8 @@ internal object RMarkdownIntervalsGenerator : RIntervalsGenerator {
       val langMap = RmdCellLanguageProvider.getAllLanguages()
       val maxLangSize: Int = langMap.keys.maxOfOrNull { it.length } ?: 0
 
-      val markdownDataPair = Pair(CellType.MARKDOWN,
-                                  KeyFMap.EMPTY_MAP.plus(RNotebookCellLines.INTERVAL_LANGUAGE_KEY, MarkdownLanguage.INSTANCE))
-      val codeDataCache = mutableMapOf<Language, Pair<CellType, KeyFMap>>()
+      val markdownLanguage = MarkdownLanguage.INSTANCE
+      val markdownDataPair = Pair(CellType.MARKDOWN, markdownLanguage)
 
       val seq = defaultMarkerSequence(
         getCellTypeAndData = { lexer ->
@@ -44,9 +41,7 @@ internal object RMarkdownIntervalsGenerator : RIntervalsGenerator {
               val cellText = lexer.tokenText
               val cellLanguageText = parseLanguage(cellText, maxLangSize)
               val language = langMap.getOrDefault(cellLanguageText, defaultLanguage)
-              codeDataCache.getOrPut(language) {
-                Pair(CellType.CODE, KeyFMap.EMPTY_MAP.plus(RNotebookCellLines.INTERVAL_LANGUAGE_KEY, language))
-              }
+              Pair(CellType.CODE, language)
             }
             else -> null
           }
@@ -66,7 +61,7 @@ internal object RMarkdownIntervalsGenerator : RIntervalsGenerator {
           type = CellType.MARKDOWN,
           offset = chars.length,
           length = 0,
-          data = markdownDataPair.second
+          language = markdownLanguage
         ))
       }
 
@@ -76,7 +71,7 @@ internal object RMarkdownIntervalsGenerator : RIntervalsGenerator {
           type = CellType.MARKDOWN,
           offset = 0,
           length = 0,
-          data = markdownDataPair.second,
+          language = markdownLanguage,
         ))
       }
     }
@@ -206,25 +201,25 @@ private fun toInterval(document: Document, marker: RNotebookCellLinesLexerMarker
     type = marker.type,
     lines = startLine..endLine,
     markers = markersAtLines,
-    data = marker.data,
+    language = marker.language,
   )
 }
 
 private fun defaultMarkerSequence(
-  getCellTypeAndData: (lexer: RMarkdownMergingLangLexer) -> Pair<CellType, KeyFMap>?,
+  getCellTypeAndData: (lexer: RMarkdownMergingLangLexer) -> Pair<CellType, Language>?,
   chars: CharSequence,
 ): Sequence<RNotebookCellLinesLexerMarker> = sequence {
   val lexer = RMarkdownMergingLangLexer()
   lexer.start(chars, 0, chars.length)
   var ordinal = 0
   while (lexer.tokenType != null) {
-    getCellTypeAndData(lexer)?.let { (type, data) ->
+    getCellTypeAndData(lexer)?.let { (type, language) ->
       yield(RNotebookCellLinesLexerMarker(
         ordinal = ordinal++,
         type = type,
         offset = lexer.currentPosition.offset,
         length = lexer.tokenText.length,
-        data = data,
+        language = language,
       ))
     }
     lexer.advance()

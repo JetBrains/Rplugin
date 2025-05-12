@@ -2,13 +2,11 @@ package org.jetbrains.r.editor
 
 import com.intellij.lang.Language
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.util.keyFMap.KeyFMap
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatCollection
 import org.jetbrains.r.visualization.RNotebookCellLines
 import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 import org.jetbrains.r.visualization.RNotebookCellLinesEvent
-
 import org.jetbrains.r.visualization.RNotebookCellLinesLexerMarker
 import kotlin.reflect.KProperty1
 
@@ -34,7 +32,7 @@ internal class RCodeCellLinesChecker(
     fun marker(cellType: RNotebookCellLines.CellType, offset: Int, length: Int, language: Language) {
       markers!!.add(
         RNotebookCellLinesLexerMarker(ordinal = markers!!.size + markersStartOrdinal, type = cellType, offset = offset, length = length,
-                                      data = makeLanguageData(language)))
+                                      language = language))
     }
   }
 
@@ -52,7 +50,7 @@ internal class RCodeCellLinesChecker(
       markers: RNotebookCellLines.MarkersAtLines,
       language: Language,
     ) {
-      list += Interval(list.size + startOrdinal, cellType, lines, markers, makeLanguageData(language))
+      list += Interval(list.size + startOrdinal, cellType, lines, markers, language)
     }
   }
 
@@ -194,9 +192,6 @@ internal class RCodeCellLinesChecker(
           return this@toJavaComparatorNonNullable.compare(o1 as T, o2 as T)
         }
       }
-
-    private fun makeLanguageData(language: Language) =
-      KeyFMap.EMPTY_MAP.plus(RNotebookCellLines.INTERVAL_LANGUAGE_KEY, language)
   }
 }
 

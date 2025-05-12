@@ -2,9 +2,7 @@ package org.jetbrains.r.visualization
 
 import com.intellij.lang.Language
 import com.intellij.openapi.editor.Document
-import com.intellij.openapi.util.Key
 import com.intellij.util.EventDispatcher
-import com.intellij.util.keyFMap.KeyFMap
 import java.util.*
 
 /**
@@ -35,12 +33,8 @@ interface RNotebookCellLines {
     val type: CellType,
     val lines: IntRange,
     val markers: MarkersAtLines,
-    val data: KeyFMap, // different notebook implementations could store their own values in this map
+    val language: Language,
   ) : Comparable<Interval> {
-    val language: Language = data.get(INTERVAL_LANGUAGE_KEY)!!
-
-    operator fun <V> get(key: Key<V>): V? = data.get(key)
-
     override fun compareTo(other: Interval): Int = lines.first - other.lines.first
   }
 
@@ -78,8 +72,6 @@ interface RNotebookCellLines {
   val intervalListeners: EventDispatcher<IntervalListener>
 
   companion object {
-    val INTERVAL_LANGUAGE_KEY = Key.create<Language>("org.jetbrains.r.visualization.RNotebookCellLines.Interval.language")
-
     fun get(document: Document): RNotebookCellLines =
       RNotebookCellLinesProvider.get(document)
 
