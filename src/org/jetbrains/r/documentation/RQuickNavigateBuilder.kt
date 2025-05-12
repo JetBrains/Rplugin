@@ -27,8 +27,6 @@ import org.jetbrains.r.rinterop.RValueDataFrame
 
 object RQuickNavigateBuilder {
 
-  fun getQuickNavigationInfo(element: PsiElement?): String? = getQuickNavigationInfo(element, null)
-
   fun getQuickNavigationInfo(element: PsiElement?, originalElement: PsiElement?): String? {
     if (element == null || element !is RPsiElement) return null
     val project = element.project
