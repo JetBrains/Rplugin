@@ -37,7 +37,6 @@ internal object RMarkdownIntervalsGenerator : RIntervalsGenerator {
       val codeDataCache = mutableMapOf<Language, Pair<CellType, KeyFMap>>()
 
       val seq = defaultMarkerSequence(
-        { RMarkdownMergingLangLexer() },
         getCellTypeAndData = { lexer ->
           when (lexer.tokenType) {
             RMarkdownCellType.MARKDOWN_CELL.elementType -> markdownDataPair
@@ -211,12 +210,11 @@ private fun toInterval(document: Document, marker: RNotebookCellLinesLexerMarker
   )
 }
 
-private fun <Lex : Lexer> defaultMarkerSequence(
-  underlyingLexerFactory: () -> Lex,
-  getCellTypeAndData: (lexer: Lex) -> Pair<CellType, KeyFMap>?,
+private fun defaultMarkerSequence(
+  getCellTypeAndData: (lexer: RMarkdownMergingLangLexer) -> Pair<CellType, KeyFMap>?,
   chars: CharSequence,
 ): Sequence<RNotebookCellLinesLexerMarker> = sequence {
-  val lexer = underlyingLexerFactory()
+  val lexer = RMarkdownMergingLangLexer()
   lexer.start(chars, 0, chars.length)
   var ordinal = 0
   while (lexer.tokenType != null) {
