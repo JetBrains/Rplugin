@@ -4,6 +4,7 @@ import com.intellij.lang.Language
 import com.intellij.lexer.Lexer
 import com.intellij.lexer.MergeFunction
 import com.intellij.lexer.MergingLexerAdapterBase
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.fileTypes.PlainTextLanguage
@@ -22,12 +23,10 @@ internal object RMarkdownIntervalsGenerator : RIntervalsGenerator {
   override fun makeIntervals(document: Document, event: DocumentEvent?): List<Interval> {
     val resultIntervals = mutableListOf<Interval>()
 
-    val chars = document.charsSequence
-    val defaultLanguage: Language = PlainTextLanguage.INSTANCE
-    val langMap = RmdCellLanguageProvider.getAllLanguages()
-    val maxLangSize: Int = langMap.keys.maxOfOrNull { it.length } ?: 0
-
     val markdownLanguage = MarkdownLanguage.INSTANCE
+    val documentTimestamp = document.modificationStamp
+    val chars = document.charsSequence
+    val codeIntervalLanguageParser = CodeIntervalLanguageParser()
 
     val lexer = RMarkdownMergingLangLexer()
     lexer.start(chars)
@@ -44,19 +43,15 @@ internal object RMarkdownIntervalsGenerator : RIntervalsGenerator {
           )
         }
         RMarkdownCellType.CODE_CELL.elementType -> {
-          val cellText = lexer.tokenText
-          val cellLanguageText = parseLanguage(cellText, maxLangSize)
-          val language = langMap.getOrDefault(cellLanguageText, defaultLanguage)
-
           resultIntervals += Interval(
             ordinal = resultIntervals.size,
             type = CellType.CODE,
             lines = lexer.getCurrentLinesIn(document),
             markers = MarkersAtLines.TOP_AND_BOTTOM,
-            language = language
+            language = codeIntervalLanguageParser.parse(cellText = lexer.tokenSequence) ?: PlainTextLanguage.INSTANCE
           )
         }
-        else -> null
+        else -> Unit
       }
 
       lexer.advance()
@@ -66,7 +61,7 @@ internal object RMarkdownIntervalsGenerator : RIntervalsGenerator {
       val line = document.getLineNumber(chars.length)
 
       resultIntervals += Interval(
-        ordinal = resultIntervals.last().ordinal + 1,
+        ordinal = resultIntervals.size,
         type = CellType.MARKDOWN,
         lines = line..line,
         markers = MarkersAtLines.NO,
@@ -84,6 +79,11 @@ internal object RMarkdownIntervalsGenerator : RIntervalsGenerator {
       )
     }
 
+    if (documentTimestamp != document.modificationStamp) {
+      thisLogger().error("Document was modified during intervals creation")
+      return makeIntervals(document, event)
+    }
+
     return resultIntervals
   }
 }
@@ -96,10 +96,21 @@ private fun RMarkdownMergingLangLexer.getCurrentLinesIn(document: Document): Int
   return startLine..endLine
 }
 
-private fun parseLanguage(cellText: CharSequence, maxLangSize: Int): String? {
-  val prefix = "```{"
-  if (!cellText.startsWith(prefix)) return null
-  return cellText.drop(prefix.length).take(maxLangSize + 1).takeWhile { it.isLetterOrDigit() }.toString()
+
+private class CodeIntervalLanguageParser {
+  private val langMap = RmdCellLanguageProvider.getAllLanguages()
+  private val maxLangSize: Int = langMap.keys.maxOfOrNull { it.length } ?: 0
+
+  private fun parse(cellText: CharSequence, maxLangSize: Int): String? {
+    val prefix = "```{"
+    if (!cellText.startsWith(prefix)) return null
+    return cellText.drop(prefix.length).take(maxLangSize + 1).takeWhile { it.isLetterOrDigit() }.toString()
+  }
+
+  fun parse(cellText: CharSequence): Language? {
+    val cellLanguageText = parse(cellText, maxLangSize)
+    return langMap.get(cellLanguageText)
+  }
 }
 
 
