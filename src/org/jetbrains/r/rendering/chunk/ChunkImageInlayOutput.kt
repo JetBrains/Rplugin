@@ -1,11 +1,19 @@
 package org.jetbrains.r.rendering.chunk
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.Messages
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RPlotUtil
 import org.jetbrains.r.run.graphics.RSnapshot
@@ -13,15 +21,14 @@ import org.jetbrains.r.run.graphics.ui.RChunkGraphicsSettingsDialog
 import org.jetbrains.r.run.graphics.ui.RGraphicsExportDialog
 import org.jetbrains.r.run.graphics.ui.RGraphicsPanelWrapper
 import org.jetbrains.r.run.graphics.ui.RGraphicsZoomDialog
+import org.jetbrains.r.visualization.inlays.InlayExecutor
 import org.jetbrains.r.visualization.inlays.RClipboardUtils
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.inlays.components.CopyImageToClipboardAction
 import org.jetbrains.r.visualization.inlays.components.InlayOutput
 import org.jetbrains.r.visualization.inlays.components.InlayOutputUtil
-import org.jetbrains.r.visualization.inlays.runAsyncInlay
 import java.awt.Dimension
 import java.io.File
-import javax.swing.SwingUtilities
 
 class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor) :
   InlayOutput(editor, loadActions()), InlayOutput.WithCopyImageToClipboard, InlayOutput.WithSaveAs {
@@ -56,9 +63,11 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor) :
   }
 
   override fun addData(data: String, type: String) {
-    runAsyncInlay {
-      val maxSize = addGraphics(File(data))
-      SwingUtilities.invokeLater {
+    RPluginCoroutineScope.getScope(project).launch(ModalityState.defaultModalityState().asContextElement() + Dispatchers.IO) {
+      val maxSize = InlayExecutor.mutex.withLock {
+        addGraphics(File(data))
+      }
+      withContext(Dispatchers.EDT) {
         val height = maxSize?.let { calculateHeight(it) }
         onHeightCalculated?.invoke(height ?: RInlayDimensions.defaultHeight)
       }

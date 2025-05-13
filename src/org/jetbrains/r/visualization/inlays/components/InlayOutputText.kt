@@ -4,7 +4,10 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.*
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
+import com.intellij.openapi.application.edtWriteAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
@@ -16,10 +19,11 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.withLock
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginCoroutineScope
+import org.jetbrains.r.visualization.inlays.InlayExecutor
 import org.jetbrains.r.visualization.inlays.MouseWheelUtils
-import org.jetbrains.r.visualization.inlays.runAsyncInlay
 import org.jetbrains.r.visualization.ui.updateOutputTextConsoleUI
 import java.awt.Dimension
 import java.io.File
@@ -51,34 +55,34 @@ class InlayOutputText(parent: Disposable, editor: Editor)
   }
 
   override fun addData(data: String, type: String) {
-    runAsyncInlay {
-      File(data).takeIf { it.exists() && it.extension == "json" }?.let { file ->
-        Gson().fromJson<List<ProcessOutput>>(file.readText(), object : TypeToken<List<ProcessOutput>>() {}.type)
-      }.let { outputs ->
-        RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
-          writeAction {
-            if (outputs == null) {
-              // DS-763 "\r\n" patterns would trim the whole last line.
-              console.addData(data.replace("\r\n", "\n").trimEnd('\n'), ProcessOutputType.STDOUT)
-            }
-            else {
-              outputs.forEach { console.addData(it.text, it.kind) }
-            }
-            console.flushDeferredText()
+    RPluginCoroutineScope.getScope(project).launch(ModalityState.defaultModalityState().asContextElement() + Dispatchers.IO) {
+      val outputs = InlayExecutor.mutex.withLock {
+        File(data).takeIf { it.exists() && it.extension == "json" }?.let { file ->
+          Gson().fromJson<List<ProcessOutput>>(file.readText(), object : TypeToken<List<ProcessOutput>>() {}.type)
+        }
+      }
 
-            (console.editor as? EditorImpl)?.apply {
-              updateSize(this)
+      edtWriteAction {
+        if (outputs == null) {
+          // DS-763 "\r\n" patterns would trim the whole last line.
+          console.addData(data.replace("\r\n", "\n").trimEnd('\n'), ProcessOutputType.STDOUT)
+        }
+        else {
+          outputs.forEach { console.addData(it.text, it.kind) }
+        }
+        console.flushDeferredText()
 
-              softWrapModel.setSoftWrapPainter(EmptySoftWrapPainter)
-              softWrapModel.addSoftWrapChangeListener(
-                object : SoftWrapChangeListener {
-                  override fun recalculationEnds() = updateSize(this@apply)
+        (console.editor as? EditorImpl)?.apply {
+          updateSize(this)
 
-                  override fun softWrapsChanged() {}
-                }
-              )
+          softWrapModel.setSoftWrapPainter(EmptySoftWrapPainter)
+          softWrapModel.addSoftWrapChangeListener(
+            object : SoftWrapChangeListener {
+              override fun recalculationEnds() = updateSize(this@apply)
+
+              override fun softWrapsChanged() {}
             }
-          }
+          )
         }
       }
     }

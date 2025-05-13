@@ -1,14 +1,20 @@
 package org.jetbrains.r.visualization.inlays.components
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.editor.Editor
-import org.jetbrains.concurrency.Promise
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import org.jetbrains.r.RPluginCoroutineScope
+import org.jetbrains.r.visualization.inlays.InlayExecutor
 import org.jetbrains.r.visualization.inlays.RClipboardUtils
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
-import org.jetbrains.r.visualization.inlays.runAsyncInlay
 import java.io.File
 import javax.swing.JComponent
-import javax.swing.SwingUtilities
 
 class InlayOutputImg(parent: Disposable, editor: Editor)
   : InlayOutput(editor, loadActions(CopyImageToClipboardAction.ID, SaveOutputAction.ID)), InlayOutput.WithCopyImageToClipboard, InlayOutput.WithSaveAs {
@@ -28,23 +34,21 @@ class InlayOutputImg(parent: Disposable, editor: Editor)
   }
 
   override fun addData(data: String, type: String) {
-    showImageAsync(data, type).onSuccess {
-      SwingUtilities.invokeLater {
+    RPluginCoroutineScope.getScope(project).launch( ModalityState.defaultModalityState().asContextElement() + Dispatchers.IO) {
+      InlayExecutor.mutex.withLock {
+        when (type) {
+          "IMGBase64" -> graphicsPanel.showImageBase64(data)
+          "IMGSVG" -> graphicsPanel.showSvgImage(data)
+          "IMG" -> graphicsPanel.showImage(File(data))
+          else -> Unit
+        }
+      }
+
+      withContext(Dispatchers.EDT) {
         val maxHeight = graphicsPanel.maximumSize?.height ?: 0
         val maxWidth = graphicsPanel.maximumSize?.width ?: 0
         val height = RInlayDimensions.calculateInlayHeight(maxWidth, maxHeight, editor)
         onHeightCalculated?.invoke(height)
-      }
-    }
-  }
-
-  private fun showImageAsync(data: String, type: String): Promise<Unit> {
-    return runAsyncInlay {
-      when (type) {
-        "IMGBase64" -> graphicsPanel.showImageBase64(data)
-        "IMGSVG" -> graphicsPanel.showSvgImage(data)
-        "IMG" -> graphicsPanel.showImage(File(data))
-        else -> Unit
       }
     }
   }

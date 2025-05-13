@@ -4,28 +4,19 @@
 
 package org.jetbrains.r.visualization.inlays
 
-import com.intellij.util.concurrency.AppExecutorUtil
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.Promise
+import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
+import kotlinx.coroutines.sync.Mutex
 
 
-private val inlayExecutor = AppExecutorUtil.createBoundedApplicationPoolExecutor("Inlay output data loader", 1)
+@Service(Service.Level.APP)
+internal class InlayExecutor {
+  private val mutex = Mutex()
 
-/**
- * run [runnable] on bounded inlay thread pool backed by application thread pool
- */
-@Deprecated("use coroutines instead")
-fun <T> runAsyncInlay(runnable: () -> T): Promise<T> {
-  val promise = AsyncPromise<T>()
-  inlayExecutor.execute {
-    val result = try {
-      runnable()
-    }
-    catch (e: Throwable) {
-      promise.setError(e)
-      return@execute
-    }
-    promise.setResult(result)
+  companion object {
+    fun getInstance(): InlayExecutor = service()
+
+    val mutex: Mutex
+      get() = getInstance().mutex
   }
-  return promise
 }
