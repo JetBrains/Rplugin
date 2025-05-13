@@ -3,9 +3,11 @@ package org.jetbrains.r.rinterop.rstudioapi
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
 import com.intellij.util.PathUtil
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
+import kotlinx.coroutines.future.asCompletableFuture
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.asPromise
 import org.jetbrains.r.console.jobs.ExportGlobalEnvPolicy
 import org.jetbrains.r.console.jobs.RJobRunner
 import org.jetbrains.r.console.jobs.RJobTask
@@ -35,16 +37,10 @@ object JobUtils {
     filePromise.then {
       if (it != null) {
         val runner = RJobRunner.getInstance(rInterop.project)
-        runner.coroutineScope.launch(ModalityState.defaultModalityState().asContextElement()) {
-          try {
-            val descriptor = runner.runRJob(RJobTask(it, workingDir, importEnv, exportEnv), exportEnvName, name)
-            promise.setResult("${descriptor.hashCode()}".toRString())
-          }
-          catch (e: Throwable) {
-            promise.setError(e)
-            throw e
-          }
-        }
+        runner.coroutineScope.async(ModalityState.defaultModalityState().asContextElement()) {
+          val descriptor = runner.runRJob(RJobTask(it, workingDir, importEnv, exportEnv), exportEnvName, name)
+          "${descriptor.hashCode()}".toRString()
+        }.asCompletableFuture().asPromise().processed(promise)
       }
       else {
         promise.setResult(getRNull())
