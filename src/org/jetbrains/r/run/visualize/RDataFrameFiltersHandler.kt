@@ -14,7 +14,7 @@ import org.jetbrains.r.visualization.inlays.table.filters.gui.editor.FilterEdito
 import javax.swing.RowFilter
 import javax.swing.table.TableModel
 
-class RDataFrameFiltersHandler : org.jetbrains.r.visualization.inlays.table.filters.gui.AbstractFiltersHandler() {
+internal class RDataFrameFiltersHandler : org.jetbrains.r.visualization.inlays.table.filters.gui.AbstractFiltersHandler() {
   override var currentFilter: RowFilter<*, *>? = null
     set(value) {
       field = value

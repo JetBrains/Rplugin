@@ -49,7 +49,7 @@ import java.io.IOException
 import javax.swing.*
 import kotlin.math.min
 
-class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout()) {
+internal class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout()) {
   private val table = RVisualizeTableUtil.createMaterialTableFromViewer(viewer)
   private val tableModel = table.model as RDataFrameTableModel
 
@@ -63,7 +63,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
     get() = table.preferredSize.height
   var autoRefresh = viewer.canRefresh
 
-  class TableCopyProvider(private val table: JBTable) : CopyProvider {
+  private class TableCopyProvider(private val table: JBTable) : CopyProvider {
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
 
     override fun performCopy(dataContext: DataContext) {

@@ -487,11 +487,11 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     execute(asyncStub::sendEof, Empty.getDefaultInstance())
   }
 
-  fun addAsyncEventsListener(listener: AsyncEventsListener) {
+  internal fun addAsyncEventsListener(listener: AsyncEventsListener) {
     asyncEventsListeners.add(listener)
   }
 
-  fun removeAsyncEventsListener(listener: AsyncEventsListener) {
+  internal fun removeAsyncEventsListener(listener: AsyncEventsListener) {
     asyncEventsListeners.remove(listener)
   }
 
@@ -791,7 +791,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     }
   }
 
-  fun dataFrameGetViewer(ref: RReference): Promise<RDataFrameViewer> {
+  internal fun dataFrameGetViewer(ref: RReference): Promise<RDataFrameViewer> {
     try {
       RDataFrameViewerImpl.ensureDplyrInstalled(project)
     } catch (e: RequiredPackageException) {
@@ -1394,7 +1394,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     }
   }
 
-  interface AsyncEventsListener {
+  internal interface AsyncEventsListener {
     fun onText(text: String, type: ProcessOutputType) {}
     fun onBusy() {}
     fun onRequestReadLn(prompt: String) {}

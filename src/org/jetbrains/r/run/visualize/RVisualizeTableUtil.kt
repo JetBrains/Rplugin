@@ -16,7 +16,7 @@ import javax.swing.table.DefaultTableColumnModel
 import javax.swing.table.TableColumn
 import kotlin.math.max
 
-object RVisualizeTableUtil {
+internal object RVisualizeTableUtil {
   private const val MAX_ITEMS_FOR_SIZE_CALCULATION = 256
   private val DEFAULT_ROW_HEIGHT = JBUI.scale(22)
 

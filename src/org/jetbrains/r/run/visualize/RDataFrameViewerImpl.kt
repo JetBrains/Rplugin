@@ -21,7 +21,7 @@ import javax.swing.RowSorter
 import kotlin.math.min
 import kotlin.reflect.KClass
 
-class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
+internal class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
   private val rInterop: RInterop = ref.rInterop
   override val nColumns: Int get() = columns.size
   override var nRows: Int = 0
@@ -111,7 +111,7 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
       return RDataFrameViewerImpl(rInterop.dataFrameSort(ref, sortKeys)).also { newDataFrame ->
         disposableParent?.let { newDataFrame.registerDisposable(it, virtualFile) }
       }
-    } catch (e: RInteropTerminated) {
+    } catch (_: RInteropTerminated) {
       throw RDataFrameException(RBundle.message("rinterop.terminated"))
     }
   }
@@ -121,7 +121,7 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
       return RDataFrameViewerImpl(rInterop.dataFrameFilter(ref, f)).also { newDataFrame ->
         disposableParent?.let { newDataFrame.registerDisposable(it, virtualFile) }
       }
-    } catch (e: RInteropTerminated) {
+    } catch (_: RInteropTerminated) {
       throw RDataFrameException(RBundle.message("rinterop.terminated"))
     }
   }

@@ -32,7 +32,7 @@ private object TableFileType : FakeFileType() {
   override fun getIcon(): Icon = AllIcons.Nodes.DataTables
 }
 
-class RTableVirtualFile(val table: RDataFrameTablePage, name: String) : LightVirtualFile(name) {
+internal class RTableVirtualFile(val table: RDataFrameTablePage, name: String) : LightVirtualFile(name) {
   init {
     putUserData(SplitAction.FORBID_TAB_SPLIT, true)
   }
@@ -40,7 +40,7 @@ class RTableVirtualFile(val table: RDataFrameTablePage, name: String) : LightVir
   override fun getFileType(): FileType = TableFileType
 }
 
-class RTableEditorProvider : FileEditorProvider, DumbAware {
+private class RTableEditorProvider : FileEditorProvider, DumbAware {
   override fun getEditorTypeId(): String = EDITOR_TYPE_ID
 
   override fun accept(project: Project, file: VirtualFile): Boolean = file is RTableVirtualFile

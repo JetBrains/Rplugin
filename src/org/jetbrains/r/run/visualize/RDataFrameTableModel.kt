@@ -7,7 +7,7 @@ package org.jetbrains.r.run.visualize
 import org.jetbrains.concurrency.isRejected
 import javax.swing.table.AbstractTableModel
 
-class RDataFrameTableModel(var viewer: RDataFrameViewer) : AbstractTableModel() {
+internal class RDataFrameTableModel(var viewer: RDataFrameViewer) : AbstractTableModel() {
   override fun getRowCount() = viewer.nRows
 
   override fun getColumnCount() = viewer.nColumns

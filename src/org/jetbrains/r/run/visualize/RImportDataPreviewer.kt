@@ -24,7 +24,7 @@ import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-class RImportDataPreviewer(private val parent: Disposable, emptyComponent: JComponent, private val statusComponent: JComponent) {
+internal class RImportDataPreviewer(private val parent: Disposable, emptyComponent: JComponent, private val statusComponent: JComponent) {
   private val loadingPanel = JBLoadingPanel(BorderLayout(), parent).apply {
     startLoading()
   }
@@ -90,22 +90,20 @@ class RImportDataPreviewer(private val parent: Disposable, emptyComponent: JComp
       rowSorter = null
     }
   }
+}
 
-  companion object {
-    private val ERROR_LABEL_INSETS = JBInsets(6, 8, 6, 8)
+private val ERROR_LABEL_INSETS = JBInsets(6, 8, 6, 8)
 
-    private fun JPanel.addWithYWeight(component: JComponent, yWeight: Double) {
-      val constraints = GridBagConstraints().apply {
-        fill = GridBagConstraints.BOTH
-        gridy = componentCount
-        weighty = yWeight
-        weightx = 1.0
-      }
-      add(component, constraints)
-    }
-
-    private fun createParsingErrorsMessage(errorCount: Int): String {
-      return RBundle.message("import.data.dialog.preview.parsing.errors", errorCount)
-    }
+private fun JPanel.addWithYWeight(component: JComponent, yWeight: Double) {
+  val constraints = GridBagConstraints().apply {
+    fill = GridBagConstraints.BOTH
+    gridy = componentCount
+    weighty = yWeight
+    weightx = 1.0
   }
+  add(component, constraints)
+}
+
+private fun createParsingErrorsMessage(errorCount: Int): String {
+  return RBundle.message("import.data.dialog.preview.parsing.errors", errorCount)
 }

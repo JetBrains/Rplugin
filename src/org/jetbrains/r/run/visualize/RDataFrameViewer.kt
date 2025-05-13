@@ -11,7 +11,7 @@ import org.jetbrains.r.rinterop.DataFrameFilterRequest
 import javax.swing.RowSorter
 import kotlin.reflect.KClass
 
-interface RDataFrameViewer : Disposable {
+internal interface RDataFrameViewer : Disposable {
   val nColumns: Int
 
   val nRows: Int

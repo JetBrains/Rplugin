@@ -17,7 +17,7 @@ import javax.swing.JTable
 import javax.swing.RowSorter
 import javax.swing.SortOrder
 
-class RDataFrameRowSorter(private var model: RDataFrameTableModel, private val jTable: JTable) : RowSorter<RDataFrameTableModel>() {
+internal class RDataFrameRowSorter(private var model: RDataFrameTableModel, private val jTable: JTable) : RowSorter<RDataFrameTableModel>() {
   private var sortKeys: List<SortKey> = emptyList()
   private val initialViewer = model.viewer
   private var currentViewer = model.viewer
