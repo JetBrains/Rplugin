@@ -15,9 +15,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CustomShortcutSet
 import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.actionSystem.ex.ActionUtil
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.application.*
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.command.undo.DocumentReferenceManager
@@ -39,16 +37,18 @@ import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
-import com.intellij.ui.AppUIUtil
 import com.intellij.ui.JBSplitter
 import com.intellij.util.IJSwingUtilities
 import com.intellij.util.PathUtil
 import com.intellij.util.ui.FontInfo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.annotator.RAnnotatorVisitor
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.interpreter.RInterpreter
@@ -119,17 +119,17 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
     set(directory) {
       if (field != directory) {
         field = directory
-        invokeLater {
-          val content = RConsoleToolWindowFactory.getConsoleContent(this) ?: return@invokeLater
+        RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
+          val content = RConsoleToolWindowFactory.getConsoleContent(this@RConsoleView) ?: return@launch
           content.displayName = interpreter.suggestConsoleName(directory)
         }
       }
     }
 
   fun appendCommandText(text: String) {
-    AppUIUtil.invokeOnEdt {
+    RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
       flushDeferredText()
-      runWriteAction {
+      writeAction {
         consoleEditor.document.setText(text)
         PsiDocumentManager.getInstance(project).commitDocument(consoleEditor.document)
       }
@@ -326,7 +326,7 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
 
   override fun flushDeferredText() {
     super.flushDeferredText()
-    invokeLater {
+    RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.any().asContextElement()) {
       if (!hasDeferredOutput()) {
         postFlushActions.forEach { it() }
         postFlushActions.clear()

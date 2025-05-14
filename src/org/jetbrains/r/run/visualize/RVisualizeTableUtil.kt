@@ -5,12 +5,17 @@
 package org.jetbrains.r.run.visualize
 
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.util.ui.JBUI
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.visualization.ui.MaterialTable
 import javax.swing.table.DefaultTableColumnModel
 import javax.swing.table.TableColumn
@@ -22,11 +27,11 @@ internal object RVisualizeTableUtil {
 
   @JvmStatic
   fun showTable(project: Project, viewer: RDataFrameViewer, name: String) {
-    invokeLater {
+    RPluginCoroutineScope.getScope(project ).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
       val fileEditorManager = FileEditorManager.getInstance(project)
       fileEditorManager.openFiles.filterIsInstance<RTableVirtualFile>().firstOrNull { it.table.viewer === viewer }?.let {
         fileEditorManager.openFile(it, true)
-        return@invokeLater
+        return@launch
       }
       val page = RDataFrameTablePage(viewer)
       val rTableVirtualFile = RTableVirtualFile(page, name)
@@ -59,7 +64,7 @@ internal object RVisualizeTableUtil {
   }
 
   fun refreshTables(project: Project) {
-    invokeLater {
+    RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT) {
       FileEditorManager.getInstance(project).openFiles.filterIsInstance<RTableVirtualFile>().forEach {
         val table = it.table
         if (table.autoRefresh) {

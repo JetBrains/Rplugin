@@ -9,14 +9,19 @@ import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.CheckboxAction
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.run.graphics.*
@@ -70,7 +75,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     }
 
     repository.addUpdateListener { update ->
-      ApplicationManager.getApplication().invokeLater {
+      RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
         refresh(update)
       }
     }
@@ -360,8 +365,6 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     private const val TUNE_GRAPHICS_DEVICE_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RTuneGraphicsDeviceAction"
 
     private val RESCALING_HINT = RBundle.message("graphics.panel.rescaling.hint")
-
-    private val SWITCH_TO_BUILTIN_TEXT = RBundle.message("plot.viewer.switch.to.builtin")
 
     private val ENGINE_TOOLTIP = RBundle.message("graphics.panel.engine.tooltip")
     private val ENGINE_CORRUPTED_TOOLTIP = RBundle.message("graphics.panel.engine.corrupted.tooltip")

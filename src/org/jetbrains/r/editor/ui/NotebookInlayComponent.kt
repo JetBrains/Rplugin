@@ -5,6 +5,7 @@
 package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.RangeHighlighter
@@ -12,6 +13,9 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.editor.RMarkdownEditorAppearance
 import org.jetbrains.r.visualization.RNotebookIntervalPointer
 import org.jetbrains.r.visualization.inlays.InlayComponent
@@ -164,7 +168,7 @@ class NotebookInlayComponent(
       state = NotebookInlayOutput(editor, disposable).apply {
         addToolbar()
         onHeightCalculated = { height ->
-          ApplicationManager.getApplication().invokeLater {
+          RPluginCoroutineScope.getApplicationScope().launch(Dispatchers.EDT) {
             adjustSize(height)
           }
         }

@@ -10,6 +10,7 @@ import com.intellij.ide.projectView.ProjectView
 import com.intellij.ide.ui.AntialiasingType
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionButton
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.colors.EditorColorsUtil
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -34,9 +35,12 @@ import com.intellij.util.ui.NamedColorUtil
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.components.BorderLayoutPanel
 import icons.RIcons
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import net.miginfocom.swing.MigLayout
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.interpreter.RInterpreterManager
 import java.awt.*
@@ -370,8 +374,8 @@ internal class JobEntity(val jobDescriptor: RJobDescriptor,
 
     background = backgroundColor()
     jobDescriptor.onProgressChanged { current, total ->
-      invokeLater {
-        if (deleted) return@invokeLater
+      RPluginCoroutineScope.getScope(jobDescriptor.project).launch(Dispatchers.EDT) {
+        if (deleted) return@launch
         progressBar.value = current
         progressBar.maximum = total
         revalidate()

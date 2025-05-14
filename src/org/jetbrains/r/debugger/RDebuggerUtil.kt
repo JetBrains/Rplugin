@@ -9,9 +9,7 @@ import com.google.protobuf.Empty
 import com.google.protobuf.Int32Value
 import com.intellij.codeInsight.hint.HintManager
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.application.*
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
@@ -25,7 +23,10 @@ import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.*
 import com.intellij.xdebugger.impl.breakpoints.XBreakpointManagerImpl
 import com.intellij.xdebugger.impl.breakpoints.XDependentBreakpointListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.rinterop.*
 import org.jetbrains.r.run.debug.RLineBreakpointType
 import kotlin.math.max
@@ -113,8 +114,8 @@ object RDebuggerUtil {
 
     rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
       override fun onRemoveBreakpointByIdRequest(id: Int) {
-        invokeLater {
-          val breakpoint = breakpointsById.remove(id) ?: return@invokeLater
+        RPluginCoroutineScope.getScope(rInterop.project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
+          val breakpoint = breakpointsById.remove(id) ?: return@launch
           breakpointToId.remove(breakpoint)
           breakpointManager.removeBreakpoint(breakpoint)
         }

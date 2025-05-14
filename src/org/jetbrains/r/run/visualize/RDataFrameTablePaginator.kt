@@ -10,9 +10,14 @@ import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.impl.ActionButton
-import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.ui.ComboBox
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginCoroutineScope
 import java.awt.BorderLayout
 import java.awt.FlowLayout
 import javax.swing.*
@@ -109,7 +114,7 @@ internal class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSort
 
   private fun getPagesCount() = max(1, (rowSorter.modelRowCount + currentPageSize - 1) / currentPageSize)
 
-  fun updateShownRange() = invokeLater {
+  fun updateShownRange() = RPluginCoroutineScope.getApplicationScope().launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
     currentPageChanging = true
     val rowCount = rowSorter.modelRowCount
     val pagesCount = getPagesCount()

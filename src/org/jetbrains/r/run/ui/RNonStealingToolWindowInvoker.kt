@@ -4,10 +4,15 @@
 
 package org.jetbrains.r.run.ui
 
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 
@@ -20,7 +25,7 @@ class RNonStealingToolWindowInvoker(private val project: Project, private val di
   }
 
   fun showWindow() {
-    ApplicationManager.getApplication().invokeLater {
+    RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
       val contentComponent = RConsoleManager.getInstance(project).currentConsoleOrNull?.currentEditor?.contentComponent
       val hasFocus = contentComponent?.hasFocus()
       toolWindow.show(null)

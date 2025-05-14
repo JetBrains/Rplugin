@@ -8,6 +8,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.idea.ActionsBundle
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -33,8 +34,11 @@ import com.intellij.xdebugger.impl.actions.handlers.XDebuggerCustomMuteBreakpoin
 import com.intellij.xdebugger.impl.frame.XDebuggerFramesList
 import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
 import icons.RIcons
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
 import org.jetbrains.r.debugger.RSourcePosition
@@ -61,10 +65,11 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     set(value) {
       if (field != value) {
         field = value
-        invokeLater {
+        RPluginCoroutineScope.getScope(console.project).launch(Dispatchers.EDT) {
           if (value) {
             add(actionToolbar.component, BorderLayout.NORTH)
-          } else {
+          }
+          else {
             remove(actionToolbar.component)
           }
           validate()
@@ -84,8 +89,8 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
 
   private var isFrameViewShown: Boolean = false
     set(value) {
-      invokeLater {
-        if (value == field) return@invokeLater
+      RPluginCoroutineScope.getScope(console.project).launch(Dispatchers.EDT) {
+        if (value == field) return@launch
         field = value
         if (value) {
           remove(variablesView.panel)
@@ -94,7 +99,8 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
             it.secondComponent = framesViewScrollPane
             add(it, BorderLayout.CENTER)
           }
-        } else {
+        }
+        else {
           variablesAndFramesView?.let { remove(it) }
           add(variablesView.panel, BorderLayout.CENTER)
         }
@@ -294,7 +300,9 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       isFrameViewShown = true
       isActionToolbarShown = true
       updateStack(createRXStackFrames(rInterop.debugStack))
-      invokeLater { shouldUpdateHighlighter = true }
+      RPluginCoroutineScope.getScope(console.project).launch(Dispatchers.EDT) {
+        shouldUpdateHighlighter = true
+      }
     } else {
       wasCommandExecuted = false
       shouldUpdateHighlighter = false
@@ -342,7 +350,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
 
   private fun updateStack(stack: List<RXStackFrame>) {
     stack.forEach { tryRegisterDisposable(it) }
-    invokeLater {
+    RPluginCoroutineScope.getScope(console.project).launch(Dispatchers.EDT) {
       bottomComponent?.let {
         bottomComponent = null
         remove(it)

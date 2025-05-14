@@ -7,15 +7,20 @@ package org.jetbrains.r.run.visualize
 import com.intellij.codeInsight.CodeInsightActionHandler
 import com.intellij.codeInsight.actions.BaseCodeInsightAction
 import com.intellij.codeInsight.hint.HintManager
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.packages.RequiredPackageException
@@ -68,7 +73,7 @@ class VisualizeTableHandler : CodeInsightActionHandler {
       return rInterop.dataFrameGetViewer(ref).then {
         RVisualizeTableUtil.showTable(project, it, expr)
       }.onError {
-        ApplicationManager.getApplication().invokeLater {
+        RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
           when (it) {
             is RDataFrameException -> {
               if (editor != null) {

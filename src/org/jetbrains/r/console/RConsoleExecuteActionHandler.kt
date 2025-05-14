@@ -23,10 +23,13 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.xdebugger.XSourcePosition
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.documentation.RDocumentationProvider
 import org.jetbrains.r.intentions.DependencyManagementFix
@@ -201,7 +204,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     }
 
     override fun onShowHelpRequest(httpdResponse: RInterop.HttpdResponse) {
-      invokeLater {
+      RPluginCoroutineScope.getScope(consoleView.project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
         RToolWindowFactory.showDocumentation(RDocumentationProvider.makeElementForText(rInterop, httpdResponse))
       }
     }
@@ -370,7 +373,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     }
 
     override fun onDebugPrintSourcePositionRequest(position: RSourcePosition) {
-      invokeLater {
+      RPluginCoroutineScope.getScope(consoleView.project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
         consoleView.printHyperlink("${position.file.name}:${position.line + 1}") {
           position.xSourcePosition.createNavigatable(it).navigate(true)
         }
