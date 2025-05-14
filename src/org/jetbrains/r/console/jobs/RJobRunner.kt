@@ -144,6 +144,7 @@ class RJobRunner(
   companion object {
     fun getInstance(project: Project): RJobRunner = project.service()
 
+    // todo get rid of this
     private fun setFinalStatic(o: Any, field: Field, newValue: Any) {
       field.isAccessible = true
       val modifiersField: Field = Field::class.java.getDeclaredField("modifiers")

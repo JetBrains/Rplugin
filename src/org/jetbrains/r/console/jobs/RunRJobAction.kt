@@ -15,7 +15,6 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.console.RConsoleManager
@@ -36,19 +35,16 @@ class RunRJobAction : DumbAwareAction() {
 
   companion object {
     fun showDialog(project: Project) {
-      RPluginCoroutineScope.getScope(project)
-        .launch(Dispatchers.Default + ModalityState.defaultModalityState().asContextElement()) {
-          val interpreter = RInterpreterManager.getInstance(project).awaitInterpreter().getOrNull() ?: return@launch
+      RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
+        val interpreter = RInterpreterManager.getInstance(project).awaitInterpreter().getOrNull() ?: return@launch
 
-          withContext(Dispatchers.EDT) {
-            val selectedFile = FileEditorManager.getInstance(project).selectedFiles.firstOrNull()
-            val script = selectedFile?.takeIf { FileTypeRegistry.getInstance().isFileOfType(it, RFileType) }
-            val workingDirectory =
-              RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.workingDir?.takeIf { it.isNotEmpty() }
-              ?: interpreter.basePath
-            RRunJobDialog(interpreter, script, workingDirectory).show()
-          }
-        }
+        val selectedFile = FileEditorManager.getInstance(project).selectedFiles.firstOrNull()
+        val script = selectedFile?.takeIf { FileTypeRegistry.getInstance().isFileOfType(it, RFileType) }
+        val workingDirectory =
+          RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.workingDir?.takeIf { it.isNotEmpty() }
+          ?: interpreter.basePath
+        RRunJobDialog(interpreter, script, workingDirectory).show()
+      }
     }
   }
 }

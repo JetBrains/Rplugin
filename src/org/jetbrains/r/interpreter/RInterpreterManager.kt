@@ -48,7 +48,9 @@ interface RInterpreterManager {
   }
 
   suspend fun awaitInterpreter(force: Boolean = false): Result<RInterpreter> =
-    getInterpreterDeferred(force).await()
+    withContext(Dispatchers.IO) {
+      getInterpreterDeferred(force).await()
+    }
 
   fun hasInterpreterLocation(): Boolean
 
