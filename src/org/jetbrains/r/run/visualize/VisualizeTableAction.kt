@@ -35,17 +35,17 @@ import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 class VisualizeTableAction : BaseCodeInsightAction() {
   override fun getHandler() = VisualizeTableHandler()
 
-  override fun isValidForFile(project: Project, editor: Editor, file: PsiFile): Boolean {
-    return file.language == RLanguage.INSTANCE || file.language == RMarkdownLanguage
+  override fun isValidForFile(project: Project, editor: Editor, psiFile: PsiFile): Boolean {
+    return psiFile.language == RLanguage.INSTANCE || psiFile.language == RMarkdownLanguage
   }
 }
 
 class VisualizeTableHandler : CodeInsightActionHandler {
-  override fun invoke(project: Project, editor: Editor, file: PsiFile) {
-    if (file !is RFile) return
-    val expr = getSelectedExpression(editor, file)?.text ?: return
+  override fun invoke(project: Project, editor: Editor, psiFile: PsiFile) {
+    if (psiFile !is RFile) return
+    val expr = getSelectedExpression(editor, psiFile)?.text ?: return
 
-    val rInterop = file.runtimeInfo?.rInterop ?: return
+    val rInterop = psiFile.runtimeInfo?.rInterop ?: return
     val ref = RReference.expressionRef(expr, rInterop)
     visualizeTable(rInterop, ref, project, expr, editor)
   }

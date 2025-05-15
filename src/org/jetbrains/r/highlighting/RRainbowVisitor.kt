@@ -20,7 +20,7 @@ import org.jetbrains.r.psi.isDependantIdentifier
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 class RRainbowVisitor : RainbowVisitor() {
-  override fun suitableForFile(file: PsiFile): Boolean = file is RFile || file.virtualFile?.fileType == RMarkdownFileType
+  override fun suitableForFile(psiFile: PsiFile): Boolean = psiFile is RFile || psiFile.virtualFile?.fileType == RMarkdownFileType
 
   override fun clone(): HighlightVisitor = RRainbowVisitor()
 

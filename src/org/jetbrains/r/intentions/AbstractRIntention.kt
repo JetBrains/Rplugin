@@ -24,8 +24,8 @@ abstract class AbstractRIntention protected constructor() : IntentionAction {
 
 
   @Throws(IncorrectOperationException::class)
-  override fun invoke(project: Project, editor: Editor, file: PsiFile) {
-    val element = findMatchingElement(file, editor) ?: return
+  override fun invoke(project: Project, editor: Editor, psiFile: PsiFile) {
+    val element = findMatchingElement(psiFile, editor) ?: return
     assert(element.isValid) { element }
     processIntention(element, project, editor)
   }
@@ -74,8 +74,8 @@ abstract class AbstractRIntention protected constructor() : IntentionAction {
     return element is PsiFile
   }
 
-  override fun isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean {
-    return findMatchingElement(file, editor) != null
+  override fun isAvailable(project: Project, editor: Editor, psiFile: PsiFile): Boolean {
+    return findMatchingElement(psiFile, editor) != null
   }
 
   override fun startInWriteAction(): Boolean {
