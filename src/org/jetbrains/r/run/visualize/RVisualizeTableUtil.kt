@@ -27,7 +27,7 @@ internal object RVisualizeTableUtil {
 
   @JvmStatic
   fun showTable(project: Project, viewer: RDataFrameViewer, name: String) {
-    RPluginCoroutineScope.getScope(project ).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
+    RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
       val fileEditorManager = FileEditorManager.getInstance(project)
       fileEditorManager.openFiles.filterIsInstance<RTableVirtualFile>().firstOrNull { it.table.viewer === viewer }?.let {
         fileEditorManager.openFile(it, true)

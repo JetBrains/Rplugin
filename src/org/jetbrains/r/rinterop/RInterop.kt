@@ -1096,8 +1096,11 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         }
       }
       AsyncEvent.EventCase.VIEWTABLEREQUEST -> {
-        val viewer = dataFrameIndexToViewer(event.viewTableRequest.persistentRefIndex)
-        fireListenersAsync({ it.onViewTableRequest(viewer, event.viewTableRequest.title) }) {
+        try {
+          val viewer = dataFrameIndexToViewer(event.viewTableRequest.persistentRefIndex)
+          fireListeners({ it.onViewTableRequest(viewer, event.viewTableRequest.title) })
+        }
+        finally {
           executeAsync(asyncStub::clientRequestFinished, Empty.getDefaultInstance())
         }
       }
@@ -1160,6 +1163,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       return
     }
     val remaining = AtomicInteger(asyncEventsListeners.size)
+    // todo fix race condition, in theory asyncEventsListeners size may change during iteration and we will not call end
     asyncEventsListeners.forEach { listener ->
       val promise = try {
         f(listener)
@@ -1402,7 +1406,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     fun onException(exception: RExceptionInfo) {}
     fun onTermination() {}
     fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> = resolvedPromise()
-    fun onViewTableRequest(viewer: RDataFrameViewer, title: String): Promise<Unit> = resolvedPromise()
+    fun onViewTableRequest(viewer: RDataFrameViewer, title: String) {}
     fun onShowHelpRequest(httpdResponse: HttpdResponse) {}
     fun onShowFileRequest(filePath: String, title: String): Promise<Unit> = resolvedPromise()
     fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject>? = null

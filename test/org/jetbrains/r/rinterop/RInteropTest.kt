@@ -14,6 +14,8 @@ import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 import org.jetbrains.r.run.visualize.RDataFrameViewer
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
 
 class RInteropTest : RProcessHandlerBaseTestCase() {
   fun testExecuteCode() {
@@ -138,18 +140,17 @@ fun testExecuteMultilineWithFor() {
   }
 
   fun testViewTableRequest() {
-    val promise = AsyncPromise<Pair<RDataFrameViewer, String>>()
+    val promise = CompletableFuture<Pair<RDataFrameViewer, String>>()
     rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
-      override fun onViewTableRequest(viewer: RDataFrameViewer, title: String): Promise<Unit> {
+      override fun onViewTableRequest(viewer: RDataFrameViewer, title: String) {
         Disposer.register(rInterop, viewer)
-        promise.setResult(viewer to title)
-        return resolvedPromise()
+        promise.complete(viewer to title)
       }
     })
     rInterop.asyncEventsStartProcessing()
     rInterop.replExecute("tt = data.frame(x = 1:9, y = 2:10)")
     rInterop.replExecute("View(tt, 'abcdd')")
-    val (viewer, title) = promise.blockingGet(DEFAULT_TIMEOUT)!!
+    val (viewer, title) = promise.get(DEFAULT_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)
     TestCase.assertEquals("abcdd", title)
     TestCase.assertEquals(9, viewer.nRows)
   }

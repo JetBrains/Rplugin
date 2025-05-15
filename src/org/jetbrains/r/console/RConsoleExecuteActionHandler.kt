@@ -148,9 +148,8 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       }.asCompletableFuture().asPromise()
     }
 
-    override fun onViewTableRequest(viewer: RDataFrameViewer, title: String): Promise<Unit> {
+    override fun onViewTableRequest(viewer: RDataFrameViewer, title: String) {
       RVisualizeTableUtil.showTable(consoleView.project, viewer, title)
-      return resolvedPromise()
     }
 
     override fun onException(exception: RExceptionInfo) {
