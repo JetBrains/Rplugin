@@ -9,8 +9,8 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.util.ui.JBUI
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.run.viewer.RViewerUtils
 import org.jetbrains.r.visualization.inlays.components.EmptyComponentPanel
@@ -33,38 +33,40 @@ class RViewerPanel(disposable: Disposable) {
 
   val component = rootPanel.component
 
-  fun loadFile(filePath: String): Promise<Unit> {
-    val qualifiedUrl = RViewerUtils.getQualifiedUrl(filePath)
-    val path = URI.create(qualifiedUrl).path
-    val file = File(path)
-    return if (file.exists()) {
-      closeViewer(LOADING)
-      loadHtmlOrText(file, qualifiedUrl)
-    } else {
-      closeViewer(makeNoSuchFileText(filePath))
-      resolvedPromise()
+  suspend fun loadFile(filePath: String) {
+    withContext(Dispatchers.IO) {
+      val qualifiedUrl = RViewerUtils.getQualifiedUrl(filePath)
+      val path = URI.create(qualifiedUrl).path
+      val file = File(path)
+      if (file.exists()) {
+        closeViewer(LOADING)
+        loadHtmlOrText(file, qualifiedUrl)
+      }
+      else {
+        closeViewer(makeNoSuchFileText(filePath))
+      }
     }
   }
 
-  fun loadUrl(url: String): Promise<Unit> {
-    jbBrowser.loadURL(url)
-    if (rootPanel.contentComponent != jbBrowser.component) {
-      rootPanel.contentComponent = jbBrowser.component
+  suspend fun loadUrl(url: String) {
+    withContext(Dispatchers.IO) {
+      jbBrowser.loadURL(url)
+      if (rootPanel.contentComponent != jbBrowser.component) {
+        rootPanel.contentComponent = jbBrowser.component
+      }
     }
-    return resolvedPromise()
   }
 
-  private fun loadHtmlOrText(file: File, qualifiedUrl: String): Promise<Unit> {
-    return if (file.extension.isNotEmpty()) {
+  private fun loadHtmlOrText(file: File, qualifiedUrl: String) {
+    if (file.extension.isNotEmpty()) {
       jbBrowser.loadURL(qualifiedUrl)
       if (rootPanel.contentComponent != jbBrowser.component) {
         rootPanel.contentComponent = jbBrowser.component
       }
-      resolvedPromise()
-    } else {
+    }
+    else {
       multilineLabel.text = file.readText()
       rootPanel.contentComponent = multilineScrollPane
-      resolvedPromise()
     }
   }
 

@@ -5,9 +5,10 @@
 package org.jetbrains.r.run.viewer.ui
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.ui.SimpleToolWindowPanel
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class RViewerToolWindow(parentDisposable: Disposable) : SimpleToolWindowPanel(true, true) {
   private val viewerPanel = RViewerPanel(parentDisposable)
@@ -16,21 +17,25 @@ class RViewerToolWindow(parentDisposable: Disposable) : SimpleToolWindowPanel(tr
     setContent(viewerPanel.component)
   }
 
-  fun refreshFile(file: String?): Promise<Unit> {
-    return if (file != null) {
-      viewerPanel.loadFile(file)
-    } else {
-      viewerPanel.reset()
-      resolvedPromise()
+  suspend fun refreshFile(file: String?) {
+    withContext(Dispatchers.EDT) {
+      if (file != null) {
+        viewerPanel.loadFile(file)
+      }
+      else {
+        viewerPanel.reset()
+      }
     }
   }
 
-  fun refreshUrl(url: String?): Promise<Unit> {
-    return if (url != null) {
-      viewerPanel.loadUrl(url)
-    } else {
-      viewerPanel.reset()
-      resolvedPromise()
+  suspend fun refreshUrl(url: String?) {
+    withContext(Dispatchers.EDT) {
+      if (url != null) {
+        viewerPanel.loadUrl(url)
+      }
+      else {
+        viewerPanel.reset()
+      }
     }
   }
 }

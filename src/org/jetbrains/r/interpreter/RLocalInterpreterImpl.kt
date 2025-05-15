@@ -5,7 +5,8 @@
 package org.jetbrains.r.interpreter
 
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -19,9 +20,12 @@ import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.system.CpuArch
-import org.jetbrains.concurrency.AsyncPromise
+import kotlinx.coroutines.async
+import kotlinx.coroutines.future.asCompletableFuture
+import kotlinx.coroutines.launch
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.compute
+import org.jetbrains.concurrency.asPromise
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
@@ -113,17 +117,13 @@ class RLocalInterpreterImpl(location: RLocalInterpreterLocation, project: Projec
   }
 
   override fun showFileInViewer(rInterop: RInterop, pathOnHost: String): Promise<Unit> {
-    val promise = AsyncPromise<Unit>()
-    invokeLater {
-      promise.compute {
-        RToolWindowFactory.showFile(project, pathOnHost)
-      }
-    }
-    return promise
+    return RPluginCoroutineScope.getScope(project).async(ModalityState.defaultModalityState().asContextElement()) {
+      RToolWindowFactory.showFile(project, pathOnHost)
+    }.asCompletableFuture().asPromise()
   }
 
   override fun showUrlInViewer(rInterop: RInterop, url: String) {
-    invokeLater {
+    RPluginCoroutineScope.getScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
       RToolWindowFactory.showUrl(project, url)
     }
   }

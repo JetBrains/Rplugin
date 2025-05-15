@@ -8,6 +8,7 @@ import com.intellij.codeInsight.documentation.DocumentationComponent
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
@@ -19,7 +20,8 @@ import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
 import com.intellij.webcore.packaging.PackagesNotificationPanel
 import icons.RIcons
-import org.jetbrains.concurrency.Promise
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.packages.build.RPackageBuildUtil
@@ -92,15 +94,19 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
     fun findContent(project: Project, displayName: String): Content =
       ToolWindowManager.getInstance(project).getToolWindow(ID)!!.contentManager.findContent(displayName)
 
-    fun showFile(project: Project, path: String): Promise<Unit> {
-      return getViewerComponent(project).refreshFile(path).also {
-        RNonStealingToolWindowInvoker(project, VIEWER).showWindow()
+    suspend fun showFile(project: Project, path: String) {
+      withContext(Dispatchers.EDT) {
+        getViewerComponent(project).refreshFile(path).also {
+          RNonStealingToolWindowInvoker(project, VIEWER).showWindow()
+        }
       }
     }
 
-    fun showUrl(project: Project, url: String): Promise<Unit> {
-      return getViewerComponent(project).refreshUrl(url).also {
-        RNonStealingToolWindowInvoker(project, VIEWER).showWindow()
+    suspend fun showUrl(project: Project, url: String) {
+      withContext(Dispatchers.EDT) {
+        getViewerComponent(project).refreshUrl(url).also {
+          RNonStealingToolWindowInvoker(project, VIEWER).showWindow()
+        }
       }
     }
 
