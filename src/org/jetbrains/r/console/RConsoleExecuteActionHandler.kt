@@ -24,9 +24,12 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.xdebugger.XSourcePosition
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.coroutines.launch
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.asPromise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginCoroutineScope
@@ -140,7 +143,9 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     }
 
     override fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> {
-      return RPomTarget.createPomTarget(RVar(title, ref, value)).navigateAsync(true)
+      return RPluginCoroutineScope.getApplicationScope().async(ModalityState.defaultModalityState().asContextElement()) {
+        RPomTarget.createPomTarget(RVar(title, ref, value)).navigateAsync(true)
+      }.asCompletableFuture().asPromise()
     }
 
     override fun onViewTableRequest(viewer: RDataFrameViewer, title: String): Promise<Unit> {

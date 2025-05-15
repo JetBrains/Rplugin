@@ -11,7 +11,6 @@ import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.fileLogger
-import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.content.Content
@@ -57,25 +56,6 @@ class RConsoleManager(
     runCatching {
       currentConsoleAsync.await()
     }
-
-  private fun run(lambda: (RConsoleView) -> Unit): Promise<Unit> {
-    return currentConsoleAsync.onError {
-      throw IllegalStateException("Cannot run console", it)
-    }.then {
-      lambda(it)
-    }.onError { e ->
-      if (e is ProcessCanceledException || e is InterruptedException) {
-        return@onError
-      }
-      LOG.error(e)
-    }
-  }
-
-  fun runAsync(lambda: (RConsoleView) -> Unit): Promise<Unit> {
-    val result = AsyncPromise<Unit>()
-    run { org.jetbrains.concurrency.runAsync { lambda(it) }.processed(result) }
-    return result
-  }
 
   @Synchronized
   private fun runConsole(): Promise<RConsoleView> {

@@ -9,7 +9,10 @@ import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.stubs.StubElement
 import com.intellij.util.IncorrectOperationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.classes.s4.methods.RS4MethodsUtil.associatedS4MethodInfo
 import org.jetbrains.r.classes.s4.methods.RS4RawMethodInfo
 import org.jetbrains.r.console.RConsoleManager
@@ -68,7 +71,7 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
   private val parameterNameListValue: List<String> by lazy l@{
     if (!isFunctionDeclaration()) return@l emptyList<String>()
     return@l (RElementFactory.createRPsiElementFromText(project, "function $functionParameters") as? RFunctionExpression)
-      ?.parameterList?.parameterList?.map{ it.name } ?: emptyList<String>()
+               ?.parameterList?.parameterList?.map { it.name } ?: emptyList<String>()
   }
 
   override fun getParameterNameList(): List<String> {
@@ -88,7 +91,8 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
   }
 
   override fun navigate(requestFocus: Boolean) {
-    RConsoleManager.getInstance(project).runAsync { console ->
+    RPluginCoroutineScope.getScope(project).launch(Dispatchers.IO) {
+      val console = RConsoleManager.getInstance(project).awaitCurrentConsole().getOrThrow()
       val createPsiElementByRValue = RPomTarget.createPsiElementByRValue(createRVar(console))
       createPsiElementByRValue.navigate(requestFocus)
     }
@@ -111,7 +115,8 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
     )
     val rValue = try {
       expressionRef.getValueInfo()
-    } catch (e: RInteropTerminated) {
+    }
+    catch (e: RInteropTerminated) {
       RValueError(RBundle.message("rinterop.terminated"))
     }
     return RVar(name, expressionRef, rValue)

@@ -5,9 +5,7 @@
 package org.jetbrains.r.psi
 
 import com.intellij.lang.Language
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.*
 import com.intellij.openapi.project.Project
 import com.intellij.pom.PomNamedTarget
 import com.intellij.pom.PomTarget
@@ -15,9 +13,12 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.PomTargetPsiElementImpl
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.Promise
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.jetbrains.concurrency.await
 import org.jetbrains.r.RLanguage
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.classes.s4.classInfo.*
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.debugger.RDebuggerUtil
@@ -43,10 +44,12 @@ abstract class RPomTarget: PomNamedTarget {
 
   override fun isValid(): Boolean = true
 
-  abstract fun navigateAsync(requestFocus: Boolean): Promise<Unit>
+  abstract suspend fun navigateAsync(requestFocus: Boolean)
 
   override fun navigate(requestFocus: Boolean) {
-    navigateAsync(requestFocus)
+    RPluginCoroutineScope.getApplicationScope().launch(ModalityState.defaultModalityState().asContextElement()) {
+      navigateAsync(requestFocus)
+    }
   }
 
   companion object {
@@ -100,7 +103,7 @@ private fun createVariablePomTarget(rVar: RVar): RPomTarget = VariablePomTarget(
 private fun createFunctionPomTarget(rVar: RVar): RPomTarget = FunctionPomTarget(rVar)
 
 internal class FunctionPomTarget(private val rVar: RVar) : RPomTarget() {
-  override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
+  override suspend fun navigateAsync(requestFocus: Boolean) {
     return rVar.ref.rInterop.executeTask {
       rVar.ref.functionSourcePositionWithText()?.let {
         ApplicationManager.getApplication().invokeLater {
@@ -108,36 +111,33 @@ internal class FunctionPomTarget(private val rVar: RVar) : RPomTarget() {
         }
       }
       Unit
-    }
+    }.await()
   }
 
   override fun getName(): String = rVar.name
 }
 
 internal class VariablePomTarget(private val rVar: RVar) : RPomTarget() {
-  override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
-    val promise = AsyncPromise<Unit>()
-    ApplicationManager.getApplication().invokeLater {
+  override suspend fun navigateAsync(requestFocus: Boolean) {
+    withContext(Dispatchers.EDT) {
       RConsoleManager.getInstance(rVar.project).currentConsoleOrNull?.debuggerPanel?.navigate(rVar)
-      promise.setResult(Unit)
     }
-    return promise
   }
 
   override fun getName(): String = rVar.name
 }
 
 internal class DataFramePomTarget(private val rVar: RVar) : RPomTarget() {
-  override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
-    return VisualizeTableHandler.visualizeTable(rVar.ref.rInterop, rVar.ref, rVar.project, rVar.name)
+  override suspend fun navigateAsync(requestFocus: Boolean) {
+    VisualizeTableHandler.visualizeTable(rVar.ref.rInterop, rVar.ref, rVar.project, rVar.name).await()
   }
 
   override fun getName(): String = rVar.name
 }
 
 internal class GraphPomTarget(private val rVar: RVar) : RPomTarget() {
-  override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
-    return rVar.ref.evaluateAsTextAsync().then { Unit }
+  override suspend fun navigateAsync(requestFocus: Boolean) {
+    rVar.ref.evaluateAsTextAsync().await()
   }
 
   override fun getName(): String = rVar.name
@@ -146,16 +146,23 @@ internal class GraphPomTarget(private val rVar: RVar) : RPomTarget() {
 internal class RSkeletonParameterPomTarget(val assignment: RSkeletonAssignmentStatement,
                                            val parameterName: String) : RPomTarget() {
 
-  override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
-    return RConsoleManager.getInstance(assignment.project).runAsync { console ->
+  override suspend fun navigateAsync(requestFocus: Boolean) {
+    val console = RConsoleManager.getInstance(assignment.project).awaitCurrentConsole().getOrThrow()
+
+    withContext(Dispatchers.IO) {
       val rVar = assignment.createRVar(console)
-      val virtualFile = rVar.ref.functionSourcePosition()?.file ?: return@runAsync
-      runReadAction {
+      val virtualFile = rVar.ref.functionSourcePosition()?.file ?: return@withContext
+
+      val parameter: RParameter? = readAction {
         val psiFile = PsiManager.getInstance(assignment.project).findFile(virtualFile)
-        if (psiFile !is RFile) return@runReadAction
-        val rFunctionExpression = PsiTreeUtil.findChildOfAnyType(psiFile, RFunctionExpression::class.java) ?: return@runReadAction
-        val parameter = rFunctionExpression.parameterList?.parameterList?.firstOrNull { it.name == parameterName } ?: return@runReadAction
-        invokeLater {
+        if (psiFile !is RFile) return@readAction null
+        val rFunctionExpression = PsiTreeUtil.findChildOfAnyType(psiFile, RFunctionExpression::class.java) ?: return@readAction null
+        val parameter = rFunctionExpression.parameterList?.parameterList?.firstOrNull { it.name == parameterName } ?: return@readAction null
+        return@readAction parameter
+      }
+
+      if (parameter != null) {
+        withContext(Dispatchers.EDT) {
           parameter.navigate(true)
         }
       }
