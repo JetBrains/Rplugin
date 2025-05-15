@@ -4,15 +4,18 @@
 
 package org.jetbrains.r.run
 
+import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.util.use
 import junit.framework.TestCase
-import org.jetbrains.r.blockingGetAndDispatchEvents
+import kotlinx.coroutines.time.withTimeout
 import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RDataFrameViewer
 import org.jetbrains.r.run.visualize.RFilterParser
 import javax.swing.RowSorter
 import javax.swing.SortOrder
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.toJavaDuration
 
 class RDataFrameViewerTest : RProcessHandlerBaseTestCase() {
   override fun setUp() {
@@ -200,7 +203,7 @@ class RDataFrameViewerTest : RProcessHandlerBaseTestCase() {
     createViewer("aaa").use { viewer ->
       TestCase.assertTrue(viewer.canRefresh)
 
-      TestCase.assertFalse(viewer.refresh().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)!!)
+      TestCase.assertFalse(viewer.awaitRefresh())
       rInterop.executeCode("aaa <- dplyr::tibble(xx = (1:4)^3.0, yy = c('AA', 'BB', 'CC', 'DD'))")
 
       TestCase.assertTrue(viewer.canRefresh)
@@ -209,7 +212,7 @@ class RDataFrameViewerTest : RProcessHandlerBaseTestCase() {
       TestCase.assertEquals("xx", viewer.getColumnName(1))
       TestCase.assertEquals(listOf(1.0, 4.0, 9.0, 16.0, 25.0), List(5) { viewer.getValueAt(it, 1) })
 
-      TestCase.assertTrue(viewer.refresh().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)!!)
+      TestCase.assertTrue(viewer.awaitRefresh())
 
       TestCase.assertTrue(viewer.canRefresh)
       TestCase.assertEquals(3, viewer.nColumns)
@@ -224,19 +227,29 @@ class RDataFrameViewerTest : RProcessHandlerBaseTestCase() {
   fun testRefreshDataTable() {
     rInterop.executeCode("aaa <- data.table::data.table(a = c(10.0, 20.0, 40.0), b = c(2.0, 4.0, 6.0))")
     createViewer("aaa").use { viewer ->
-      TestCase.assertFalse(viewer.refresh().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)!!)
+      TestCase.assertFalse(viewer.awaitRefresh())
 
       rInterop.executeCode("aaa[, z := a + b]")
-      TestCase.assertTrue(viewer.refresh().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)!!)
+      TestCase.assertTrue(viewer.awaitRefresh())
       TestCase.assertEquals(4, viewer.nColumns)
       TestCase.assertEquals(3, viewer.nRows)
       TestCase.assertEquals("a", viewer.getColumnName(1))
       TestCase.assertEquals("b", viewer.getColumnName(2))
       TestCase.assertEquals("z", viewer.getColumnName(3))
       TestCase.assertEquals(listOf(12.0, 24.0, 46.0), List(3) { viewer.getValueAt(it, 3) })
-      TestCase.assertFalse(viewer.refresh().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)!!)
+      TestCase.assertFalse(viewer.awaitRefresh())
     }
   }
+
+  private fun RDataFrameViewer.awaitRefresh(): Boolean {
+    val viewer = this
+    return runBlockingCancellable {
+      withTimeout(DEFAULT_TIMEOUT.milliseconds.toJavaDuration()) {
+        viewer.refresh()
+      }
+    }
+  }
+
 
   private fun createViewer(expr: String): RDataFrameViewer {
     return rInterop.dataFrameGetViewer(RReference.expressionRef(expr, rInterop)).blockingGet(DEFAULT_TIMEOUT)!!

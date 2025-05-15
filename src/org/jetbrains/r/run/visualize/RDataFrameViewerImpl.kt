@@ -5,11 +5,15 @@
 package org.jetbrains.r.run.visualize
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.fileEditor.impl.FileEditorManagerImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import org.jetbrains.concurrency.*
+import kotlinx.coroutines.Dispatchers
+import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.await
+import org.jetbrains.concurrency.rejectedPromise
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageException
@@ -33,9 +37,11 @@ internal class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFram
   private var virtualFile: RTableVirtualFile? = null
   override var canRefresh: Boolean = false
 
-  private data class ColumnInfo(val name: String, val type: KClass<*>, val sortable: Boolean = true,
-                                val isRowNames: Boolean = false,
-                                val parseValue: (DataFrameGetDataResponse.Value) -> Any?)
+  private data class ColumnInfo(
+    val name: String, val type: KClass<*>, val sortable: Boolean = true,
+    val isRowNames: Boolean = false,
+    val parseValue: (DataFrameGetDataResponse.Value) -> Any?,
+  )
 
   private var currentProxyDisposable: Disposable? = null
 
@@ -111,7 +117,8 @@ internal class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFram
       return RDataFrameViewerImpl(rInterop.dataFrameSort(ref, sortKeys)).also { newDataFrame ->
         disposableParent?.let { newDataFrame.registerDisposable(it, virtualFile) }
       }
-    } catch (_: RInteropTerminated) {
+    }
+    catch (_: RInteropTerminated) {
       throw RDataFrameException(RBundle.message("rinterop.terminated"))
     }
   }
@@ -121,26 +128,25 @@ internal class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFram
       return RDataFrameViewerImpl(rInterop.dataFrameFilter(ref, f)).also { newDataFrame ->
         disposableParent?.let { newDataFrame.registerDisposable(it, virtualFile) }
       }
-    } catch (_: RInteropTerminated) {
+    }
+    catch (_: RInteropTerminated) {
       throw RDataFrameException(RBundle.message("rinterop.terminated"))
     }
   }
 
-  override fun refresh(): Promise<Boolean> {
-    if (!canRefresh) return resolvedPromise(false)
-    return rInterop.dataFrameRefresh(ref).thenAsync {
-      if (!it) return@thenAsync resolvedPromise(false)
-      rInterop.dataFrameGetInfo(ref).thenAsync { info ->
-        AsyncPromise<Boolean>().also { promise ->
-          invokeLater {
-            promise.compute {
-              initInfo(info)
-              true
-            }
-          }
-        }
-      }
+  override suspend fun refresh(): Boolean {
+    if (!canRefresh) return false
+
+    val refreshSuccess = rInterop.dataFrameRefresh(ref).await()
+    if (!refreshSuccess) return false
+
+    val info = rInterop.dataFrameGetInfo(ref).await()
+
+    with(Dispatchers.EDT) {
+      initInfo(info)
     }
+
+    return true
   }
 
   override fun registerDisposable(parent: Disposable, virtualFile: RTableVirtualFile?) {

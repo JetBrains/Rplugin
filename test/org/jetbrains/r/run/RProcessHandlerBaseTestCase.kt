@@ -17,6 +17,7 @@ import com.intellij.xdebugger.breakpoints.SuspendPolicy
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.intellij.xdebugger.impl.breakpoints.XExpressionImpl
 import junit.framework.TestCase
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RUsefulTestCase
@@ -31,6 +32,7 @@ import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 import org.jetbrains.r.run.debug.RLineBreakpointType
 import java.nio.file.Files
+import kotlin.coroutines.EmptyCoroutineContext
 
 abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
   protected lateinit var rInterop: RInterop
@@ -45,7 +47,11 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
     project.putUserData(RInterop.DEADLINE_TEST_KEY, customDeadline)
     setupMockInterpreterManager()
     setupMockInterpreterStateManager()
-    interpreter = RInterpreterManager.getInterpreterBlocking(project, DEFAULT_TIMEOUT)!!
+
+    interpreter = runBlocking(EmptyCoroutineContext) {
+      RInterpreterManager.getInstance(project).awaitInterpreter().getOrThrow()
+    }
+
     rInterop = if (alwaysCreateNewInterop()) createRInterop(interpreter) else getRInterop(interpreter)
     // we want be sure that the interpreter is initialized
     rInterop.executeCode("1")

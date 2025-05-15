@@ -36,7 +36,7 @@ internal interface RDataFrameViewer : Disposable {
 
   fun filter(f: DataFrameFilterRequest.Filter): RDataFrameViewer
 
-  fun refresh(): Promise<Boolean>
+  suspend fun refresh(): Boolean
 
   override fun dispose() {
   }

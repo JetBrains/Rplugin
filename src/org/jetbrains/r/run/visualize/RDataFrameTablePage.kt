@@ -13,6 +13,9 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionButton
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
@@ -30,8 +33,11 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
 import icons.RIcons
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
 import org.jetbrains.r.visualization.inlays.RClipboardUtils
 import org.jetbrains.r.visualization.inlays.table.filters.gui.TableFilterHeader
@@ -357,8 +363,11 @@ internal class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(Border
 
   fun refreshTable() {
     val oldColumns = List(viewer.nColumns) { viewer.getColumnName(it) }
-    viewer.refresh().onSuccess { refreshed ->
-      if (!refreshed) return@onSuccess
+
+    RPluginCoroutineScope.getApplicationScope().launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
+      val refreshed = viewer.refresh()
+
+      if (!refreshed) return@launch
       val rowSorter = table.rowSorter as RDataFrameRowSorter
       rowSorter.updatesSuspended = true
       try {
