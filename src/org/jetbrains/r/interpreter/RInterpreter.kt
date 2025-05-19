@@ -45,7 +45,7 @@ interface RInterpreter : RInterpreterInfo {
   fun getFilePathAtHost(file: VirtualFile): String? {
     return if (file.isInLocalFileSystem) file.canonicalPath else null
   }
-  
+
   fun findFileByPathAtHost(path: String): VirtualFile? {
     return VfsUtil.findFile(Paths.get(path), true)
   }
@@ -74,8 +74,10 @@ interface RInterpreter : RInterpreterInfo {
 
   fun createTempDirOnHost(name: String = "a"): String
 
-  // Note: returns pair of writable path and indicator whether new library path was created
-  fun getGuaranteedWritableLibraryPath(libraryPaths: List<RInterpreterState.LibraryPath>, userPath: String): Pair<String, Boolean>
+  // Note: returns writable path and indicator whether new library path was created
+  fun getGuaranteedWritableLibraryPath(libraryPaths: List<RInterpreterState.LibraryPath>, userPath: String): PathWithInfo
+
+  data class PathWithInfo(val path: String, val isUserDirectoryCreated: Boolean)
 
   @Deprecated("use prepareForExecution() instead")
   fun prepareForExecutionAsync(): Promise<Unit> {

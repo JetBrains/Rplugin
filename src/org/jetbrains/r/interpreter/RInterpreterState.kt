@@ -266,8 +266,8 @@ interface RInterpreterState {
   private fun loadPaths(): Pair<List<RInterpreterState.LibraryPath>, String> {
     val libraryPaths = loadLibraryPaths().toMutableList()
     val userPath = getUserPath()
-    val (_, isUserDirectoryCreated) = rInterop.interpreter.getGuaranteedWritableLibraryPath(libraryPaths, userPath)
-    if (isUserDirectoryCreated) {
+    val pathWithInfo = rInterop.interpreter.getGuaranteedWritableLibraryPath(libraryPaths, userPath)
+    if (pathWithInfo.isUserDirectoryCreated) {
       rInterop.repoAddLibraryPath(userPath)
       libraryPaths.add(RInterpreterState.LibraryPath(userPath, true))
     }
