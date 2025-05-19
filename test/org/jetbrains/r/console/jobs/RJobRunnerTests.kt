@@ -12,6 +12,9 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import kotlinx.coroutines.async
+import kotlinx.coroutines.future.asCompletableFuture
+import org.jetbrains.concurrency.asPromise
 import org.jetbrains.r.blockingGetAndDispatchEvents
 import org.jetbrains.r.console.RConsoleBaseTestCase
 
@@ -89,7 +92,10 @@ class RJobRunnerTests : RConsoleBaseTestCase() {
   }
 
   private fun createProcessHandler(task: RJobTask): ProcessHandler {
-    val processHandler = RJobRunner.getInstance(project).run(task).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)!!
+    val jobRunner = RJobRunner.getInstance(project)
+    val processHandler = jobRunner.coroutineScope.async {
+      jobRunner.runForTest(task)
+    }.asCompletableFuture().asPromise().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)!!
     processHandler.installListener()
     processHandler.startNotify()
     return processHandler

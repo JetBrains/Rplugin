@@ -15,11 +15,11 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.util.EventDispatcher
-import kotlinx.coroutines.*
-import kotlinx.coroutines.future.asCompletableFuture
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.asPromise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
@@ -44,11 +44,7 @@ class RJobRunner(
   fun canRun(): Boolean = RInterpreterManager.getInstance(project).hasInterpreterLocation()
 
   @TestOnly
-  internal fun run(task: RJobTask): Promise<ProcessHandler> {
-    return coroutineScope.async {
-      suspendableRun(task)
-    }.asCompletableFuture().asPromise()
-  }
+  internal suspend fun runForTest(task: RJobTask): ProcessHandler = suspendableRun(task)
 
   private suspend fun suspendableRun(task: RJobTask, exportEnvName: String? = null): ProcessHandler {
     check(canRun())
