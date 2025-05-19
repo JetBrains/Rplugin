@@ -149,7 +149,7 @@ internal object RXPresentationUtils {
       override fun startEvaluation(callback: XFullValueEvaluationCallback) {
         val ref = rxVar.rVar.ref
         ref.rInterop.dataFrameGetViewer(ref).onSuccess {
-          RVisualizeTableUtil.showTable(ref.rInterop.project, it, rxVar.name)
+          RVisualizeTableUtil.showTableAsync(ref.rInterop.project, it, rxVar.name)
         }.onError {
           when (it) {
             is RDataFrameException -> callback.errorOccurred(it.message.orEmpty())

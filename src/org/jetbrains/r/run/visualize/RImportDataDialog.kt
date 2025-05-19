@@ -7,6 +7,7 @@ package org.jetbrains.r.run.visualize
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -21,13 +22,15 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.ui.*
+import com.intellij.ui.EditorNotifications.getInstance
 import com.intellij.ui.components.ActionLink
 import com.intellij.util.PathUtil
 import com.intellij.util.ui.JBUI
+import kotlinx.coroutines.launch
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.interpreter.LocalOrRemotePath
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.findFile
@@ -182,17 +185,14 @@ abstract class RImportDataDialog(
     variableName?.let { name ->
       collectImportConfiguration()?.let { configuration ->
         val ref = importer.importData(name, configuration.path, configuration.options)
-        updateEditorNotifications()
-        if (viewAfterImport) {
-          VisualizeTableHandler.visualizeTable(interop, ref, project, name)
+
+        RPluginCoroutineScope.getScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
+          filePath?.findFile(interpreter)?.let { getInstance(project).updateNotifications(it) }
+          if (viewAfterImport) {
+            VisualizeTableHandler.visualizeTable(interop, ref, project, name)
+          }
         }
       }
-    }
-  }
-
-  private fun updateEditorNotifications() {
-    runAsync {
-      filePath?.findFile(interpreter)?.let { EditorNotifications.getInstance(project).updateNotifications(it) }
     }
   }
 

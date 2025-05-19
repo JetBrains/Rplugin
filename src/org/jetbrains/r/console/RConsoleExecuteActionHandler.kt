@@ -149,7 +149,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     }
 
     override fun onViewTableRequest(viewer: RDataFrameViewer, title: String) {
-      RVisualizeTableUtil.showTable(consoleView.project, viewer, title)
+      RVisualizeTableUtil.showTableAsync(consoleView.project, viewer, title)
     }
 
     override fun onException(exception: RExceptionInfo) {

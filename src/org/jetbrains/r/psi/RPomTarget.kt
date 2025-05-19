@@ -129,7 +129,7 @@ internal class VariablePomTarget(private val rVar: RVar) : RPomTarget() {
 
 internal class DataFramePomTarget(private val rVar: RVar) : RPomTarget() {
   override suspend fun navigateAsync(requestFocus: Boolean) {
-    VisualizeTableHandler.visualizeTable(rVar.ref.rInterop, rVar.ref, rVar.project, rVar.name).await()
+    VisualizeTableHandler.visualizeTable(rVar.ref.rInterop, rVar.ref, rVar.project, rVar.name)
   }
 
   override fun getName(): String = rVar.name

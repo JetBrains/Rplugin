@@ -26,7 +26,7 @@ internal object RVisualizeTableUtil {
   private val DEFAULT_ROW_HEIGHT = JBUI.scale(22)
 
   @JvmStatic
-  fun showTable(project: Project, viewer: RDataFrameViewer, name: String) {
+  fun showTableAsync(project: Project, viewer: RDataFrameViewer, name: String) {
     RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
       val fileEditorManager = FileEditorManager.getInstance(project)
       fileEditorManager.openFiles.filterIsInstance<RTableVirtualFile>().firstOrNull { it.table.viewer === viewer }?.let {

@@ -7,17 +7,16 @@ package org.jetbrains.r.run.visualize
 import com.intellij.codeInsight.CodeInsightActionHandler
 import com.intellij.codeInsight.actions.BaseCodeInsightAction
 import com.intellij.codeInsight.hint.HintManager
-import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.await
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.RPluginCoroutineScope
@@ -47,7 +46,10 @@ class VisualizeTableHandler : CodeInsightActionHandler {
 
     val rInterop = psiFile.runtimeInfo?.rInterop ?: return
     val ref = RReference.expressionRef(expr, rInterop)
-    visualizeTable(rInterop, ref, project, expr, editor)
+
+    RPluginCoroutineScope.getScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
+      visualizeTable(rInterop, ref, project, expr, editor)
+    }
   }
 
   private fun getSelectedExpression(editor: Editor, file: RFile): RExpression? {
@@ -56,11 +58,11 @@ class VisualizeTableHandler : CodeInsightActionHandler {
 
     var selectionStart = file.findElementAt(selectionModel.selectionStart) ?: return null
     var selectionEnd = file.findElementAt(selectionModel.selectionEnd - 1) ?: return null
-    while (StringUtil.isEmptyOrSpaces(selectionStart.text) || selectionStart.text == ";") {
+    while (selectionStart.text.isNullOrBlank() || selectionStart.text == ";") {
       if (selectionStart == selectionEnd) return null
       selectionStart = PsiTreeUtil.nextLeaf(selectionStart) ?: return null
     }
-    while (StringUtil.isEmptyOrSpaces(selectionEnd.text) || selectionEnd.text == ";") {
+    while (selectionEnd.text.isNullOrBlank() || selectionEnd.text == ";") {
       selectionEnd = PsiTreeUtil.prevLeaf(selectionEnd) ?: return null
     }
 
@@ -69,38 +71,34 @@ class VisualizeTableHandler : CodeInsightActionHandler {
   }
 
   companion object {
-    fun visualizeTable(rInterop: RInterop, ref: RReference, project: Project, expr: String, editor: Editor? = null): Promise<Unit> {
-      return rInterop.dataFrameGetViewer(ref).then {
-        RVisualizeTableUtil.showTable(project, it, expr)
-      }.onError {
-        RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
-          when (it) {
-            is RDataFrameException -> {
-              if (editor != null) {
-                HintManager.getInstance()
-                  .showErrorHint(editor, RBundle.message("visualize.table.action.error.hint", it.message.orEmpty()))
-              } else {
-                RNotificationUtil.notifyExecutionError(
-                  project, RBundle.message("visualize.table.action.error.hint", it.message.orEmpty()))
-              }
-            }
-            is RInteropTerminated -> {
-              if (editor != null) {
-                HintManager.getInstance()
-                  .showErrorHint(editor, RBundle.message("rinterop.terminated"))
-              } else {
-                RNotificationUtil.notifyExecutionError(
-                  project, RBundle.message("rinterop.terminated"))
-              }
-            }
-            is RequiredPackageException -> {
-              RequiredPackageInstaller.getInstance(project).installPackagesWithUserPermission(
-                RBundle.message("visualize.table.action.error.utility.name"), it.missingPackages)
-            }
-          }
-        }
+    suspend fun visualizeTable(rInterop: RInterop, ref: RReference, project: Project, expr: String, editor: Editor? = null) {
+      val viewer = try {
+        rInterop.dataFrameGetViewer(ref).await()
+      }
+      catch (exception: RDataFrameException) {
+        notifyError(project, editor, RBundle.message("visualize.table.action.error.hint", exception.message.orEmpty()))
+        logger<VisualizeTableAction>().warn(exception)
+        null
+      }
+      catch (exception: RInteropTerminated) {
+        notifyError(project, editor, RBundle.message("rinterop.terminated"))
+        logger<VisualizeTableAction>().warn(exception)
+        null
+      }
+      catch (exception: RequiredPackageException) {
+        RequiredPackageInstaller.getInstance(project).installPackagesWithUserPermission(RBundle.message("visualize.table.action.error.utility.name"), exception.missingPackages)
+        logger<VisualizeTableAction>().warn(exception)
+        null
+      }
+
+      if (viewer != null) {
+        RVisualizeTableUtil.showTableAsync(project, viewer, expr)
       }
     }
 
+    private fun notifyError(project: Project, editor: Editor?, @NlsSafe errorMsg: String) {
+      if (editor != null) HintManager.getInstance().showErrorHint(editor, errorMsg)
+      else RNotificationUtil.notifyExecutionError(project, errorMsg)
+    }
   }
 }
