@@ -63,24 +63,19 @@ private class RInterpreterStatusBarWidget(project: Project,
   @Volatile
   private var fetchInterpreterPromise: CancellablePromise<RInterpreterInfo?>? = null
 
-  @Synchronized
-  private fun fetchInterpreterAndUpdateWidgetState() {
-    fetchInterpreterPromise?.cancel()
-    fetchInterpreterPromise = runAsync {
-      val projectInterpreterLocation = settings.interpreterLocation
-      RInterpreterUtil.suggestAllInterpreters(true).firstOrNull { it.interpreterLocation == projectInterpreterLocation }
-    }.onProcessed { update() } as CancellablePromise
-  }
-
   override fun getWidgetState(file: VirtualFile?): WidgetState {
-    val projectInterpreterInfo: RInterpreterInfo?
-    synchronized(this) {
+    val projectInterpreterInfo: RInterpreterInfo? = synchronized(this) {
       val fetchPromise = fetchInterpreterPromise
-      if (fetchPromise == null || fetchPromise.isPending) {
-        fetchInterpreterAndUpdateWidgetState()
-        return WidgetState.NO_CHANGE
-      }
-      projectInterpreterInfo = when {
+
+      when {
+        (fetchPromise == null || fetchPromise.isPending) -> {
+          fetchInterpreterPromise?.cancel()
+          fetchInterpreterPromise = runAsync {
+            val projectInterpreterLocation = settings.interpreterLocation
+            RInterpreterUtil.suggestAllInterpreters(true).firstOrNull { it.interpreterLocation == projectInterpreterLocation }
+          }.onProcessed { update() } as CancellablePromise
+          return WidgetState.NO_CHANGE
+        }
         fetchPromise.isSucceeded -> {
           fetchInterpreterPromise = null
           fetchPromise.blockingGet(1)
