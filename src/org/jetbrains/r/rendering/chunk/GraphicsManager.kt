@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.rendering.chunk
 
-import java.io.File
+import java.nio.file.Path
 
 interface GraphicsManager {
   /**
@@ -15,5 +15,5 @@ interface GraphicsManager {
   /**
    * Test whether the color palette of this [image] can be inverted by a [GraphicsPanel]
    */
-  fun isInvertible(image: File): Boolean
+  fun isInvertible(image: Path): Boolean
 }

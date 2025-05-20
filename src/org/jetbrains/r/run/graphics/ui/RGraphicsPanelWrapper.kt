@@ -22,7 +22,7 @@ import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import java.awt.image.BufferedImage
-import java.io.File
+import java.nio.file.Path
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -182,7 +182,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     }
   }
 
-  fun addImage(file: File) {
+  fun addImage(file: Path) {
     snapshot = null
     plot = null
     isStandalone = false
@@ -293,8 +293,8 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
 
   private fun rescale(snapshot: RSnapshot, newSize: Dimension, newResolution: Int?) {
     if (!manager.isBusy) {
-      manager.rescaleImage(snapshot.file.absolutePath, newSize, newResolution) { imageFile ->
-        localResolution = manager.getImageResolution(imageFile.absolutePath)
+      manager.rescaleImage(snapshot.file, newSize, newResolution) { imageFile ->
+        localResolution = manager.getImageResolution(imageFile)
         this.snapshot = RSnapshot.from(imageFile)
         oldStandalone = isStandalone
         graphicsPanel.showImage(imageFile)

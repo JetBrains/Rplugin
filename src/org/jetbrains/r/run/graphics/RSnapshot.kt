@@ -4,17 +4,16 @@
 
 package org.jetbrains.r.run.graphics
 
-import java.io.File
-import java.nio.file.Paths
+import java.nio.file.Path
+import kotlin.io.path.nameWithoutExtension
 
 enum class RSnapshotType {
   NORMAL,
   SKETCH,
 }
 
-// todo use Path instead of File
 data class RSnapshot(
-  val file: File,
+  val file: Path,
   val type: RSnapshotType,
 
   /**
@@ -36,13 +35,13 @@ data class RSnapshot(
    * 1) the graphics device is outdated and doesn't specify a snapshot's resolution at all
    * 2) a resolution wasn't specified explicitly before a snapshot's rescale
    */
-  val resolution: Int?
+  val resolution: Int?,
 ) {
   private val recordedFileName: String
     get() = createRecordedFileName(number)
 
-  val recordedFile: File
-    get() = Paths.get(file.parent, recordedFileName).toFile()
+  val recordedFile: Path
+    get() = file.parent.resolve(recordedFileName)
 
   companion object {
     // Note: for goodness' sake, don't move these literals to bundle!
@@ -50,7 +49,7 @@ data class RSnapshot(
     private const val NORMAL_SUFFIX = "normal"
     private const val SKETCH_SUFFIX = "sketch"
 
-    fun from(file: File): RSnapshot? {
+    fun from(file: Path): RSnapshot? {
       val parts = file.nameWithoutExtension.split('_')
       if (parts.isEmpty() || parts[0] != SNAPSHOT_MAGIC) {
         return null

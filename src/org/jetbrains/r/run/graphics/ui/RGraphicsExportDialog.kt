@@ -556,7 +556,7 @@ class RGraphicsExportDialog(
       wrapper.targetResolution = snapshot.resolution
       val manager = ChunkGraphicsManager(project)
       var zoomGroup: Disposable? = null
-      manager.createImageGroup(snapshot.file.absolutePath)?.let { (copyFile, group) ->
+      manager.createImageGroup(snapshot.file.toAbsolutePath())?.let { (copyFile, group) ->
         RSnapshot.from(copyFile)?.let { copySnapshot ->
           wrapper.addSnapshot(copySnapshot)
         }

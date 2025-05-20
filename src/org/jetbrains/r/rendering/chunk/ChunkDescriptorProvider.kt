@@ -6,7 +6,6 @@ package org.jetbrains.r.rendering.chunk
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
-import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -30,7 +29,6 @@ import java.awt.Image
 import java.awt.Rectangle
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
-import java.io.File
 import java.nio.file.Path
 import java.util.concurrent.Future
 import javax.imageio.ImageIO
@@ -71,9 +69,8 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       getImages(chunkPath, isDarkModeEnabled) + getUrls(chunkPath) + getTables(chunkPath) + getTextOutputs(chunkPath)
 
     private fun getImages(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutputData.Image> {
-      return getImageFilesOrdered(chunkPath).map { imageFile ->
-        val path = Path.of(imageFile.absolutePath)
-        val preview = ImageIO.read(imageFile)?.let { image ->
+      return getImageFilesOrdered(chunkPath).map { path ->
+        val preview = ImageIO.read(path.toFile())?.let { image ->
           IconUtil.createImageIcon(RPlotUtil.fitTheme(createPreview(image), isDarkModeEnabled))
         }
         InlayOutputData.Image(path, preview = preview)
@@ -91,9 +88,9 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       }
     }
 
-    private fun getImageFilesOrdered(chunkPath: ChunkPath): List<File> {
+    private fun getImageFilesOrdered(chunkPath: ChunkPath): List<Path> {
       val snapshots = getSnapshots(chunkPath)?.map { ExternalImage(it.file, it.number, 0) } ?: emptyList()
-      val external = getExternalImages(chunkPath) ?: emptyList()
+      val external = getExternalImages(chunkPath)
       val triples = snapshots + external
       val sorted = triples.sortedWith(compareBy(ExternalImage::major, ExternalImage::minor))
       return sorted.map { it.file }
@@ -101,12 +98,12 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
 
     private fun getSnapshots(chunkPath: ChunkPath): List<RSnapshot>? {
       val directory = chunkPath.getImagesDirectory()
-      return RGraphicsDevice.fetchLatestNormalSnapshots(directory.toFile())
+      return RGraphicsDevice.fetchLatestNormalSnapshots(directory)
     }
 
-    private fun getExternalImages(chunkPath: ChunkPath): List<ExternalImage>? {
+    private fun getExternalImages(chunkPath: ChunkPath): List<ExternalImage> {
       val directory = chunkPath.getExternalImagesDirectory()
-      return directory.toFile().listFiles()?.mapNotNull { file ->
+      return directory.listDirectoryEntries().mapNotNull { file ->
         ExternalImage.from(file)
       }
     }
@@ -147,16 +144,15 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
   }
 }
 
-// todo replace File with Path
 private data class ExternalImage(
-  val file: File,
+  val file: Path,
   val major: Int,
-  val minor: Int
+  val minor: Int,
 ) {
   companion object {
     private const val IMAGE_MAGIC = "image"
 
-    fun from(file: File): ExternalImage? {
+    fun from(file: Path): ExternalImage? {
       val parts = file.nameWithoutExtension.split('_')
       if (parts.size != 3 || parts[0] != IMAGE_MAGIC) {
         return null
@@ -182,5 +178,3 @@ private fun createIconWithText(text: String): Icon {
 
 private val PREVIEW_ICON_WIDTH = JBUIScale.scale(150)
 private val PREVIEW_ICON_HEIGHT = JBUIScale.scale(100)
-
-private val RMARKDOWN_CHUNK = TextAttributesKey.createTextAttributesKey("RMARKDOWN_CHUNK")

@@ -236,7 +236,7 @@ class RunChunkHandler(
       var result: ExecutionResult? = null
 
       try {
-        val graphicsDevice = RGraphicsDevice(console.rInterop, imagesDirectory.toFile(), elementWithContext.screenParameters, inMemory = false)
+        val graphicsDevice = RGraphicsDevice(console.rInterop, imagesDirectory, elementWithContext.screenParameters, inMemory = false)
 
         graphicsDevice.dumpAndShutdownAsyncAfterAction {
           result = executeCode(project, request, console) {
@@ -286,7 +286,7 @@ class RunChunkHandler(
     // run before chunk handler without read action
     val beforeChunkPromise = runAsync {
       beforeRunChunk(console.rInterop, elementWithContext.rMarkdownParameters, elementWithContext.chunkText)
-      val device = RGraphicsDevice(console.rInterop, imagesDirectory.toFile(), elementWithContext.screenParameters, inMemory = false)
+      val device = RGraphicsDevice(console.rInterop, imagesDirectory, elementWithContext.screenParameters, inMemory = false)
       graphicsDeviceRef.set(device)
     }
 

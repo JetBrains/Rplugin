@@ -29,7 +29,7 @@ import org.jetbrains.r.visualization.inlays.components.CopyImageToClipboardActio
 import org.jetbrains.r.visualization.inlays.components.InlayOutput
 import org.jetbrains.r.visualization.inlays.components.InlayOutputUtil
 import java.awt.Dimension
-import java.io.File
+import java.nio.file.Path
 
 class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor) :
   InlayOutput(editor, loadActions()), InlayOutput.WithCopyImageToClipboard, InlayOutput.WithSaveAs {
@@ -66,7 +66,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor) :
   fun addData(data: InlayOutputData.Image) {
     RPluginCoroutineScope.getScope(project).launch(ModalityState.defaultModalityState().asContextElement() + Dispatchers.IO) {
       val maxSize = InlayExecutor.mutex.withLock {
-        addGraphics(data.path.toFile())
+        addGraphics(data.path)
       }
       withContext(Dispatchers.EDT) {
         val height = maxSize?.let { calculateHeight(it) }
@@ -79,7 +79,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor) :
     return RInlayDimensions.calculateInlayHeight(maxSize.width, maxSize.height, editor)
   }
 
-  private fun addGraphics(file: File): Dimension? {
+  private fun addGraphics(file: Path): Dimension? {
     val snapshot = RSnapshot.from(file)
     return if (snapshot != null) {
       val plot = findPlotFor(snapshot)
@@ -92,7 +92,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor) :
   }
 
   private fun findPlotFor(snapshot: RSnapshot): RPlot? {
-    return RPlotUtil.readFrom(snapshot.file.parentFile, snapshot.number)?.let { plot ->
+    return RPlotUtil.readFrom(snapshot.file.parent, snapshot.number)?.let { plot ->
       RPlotUtil.convert(plot, snapshot.number)
     }
   }

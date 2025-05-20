@@ -14,9 +14,9 @@ import org.jetbrains.r.run.graphics.RSnapshot
 import org.jetbrains.r.settings.RGraphicsSettings
 import org.jetbrains.r.settings.RMarkdownGraphicsSettings
 import java.awt.Dimension
-import java.io.File
 import java.nio.file.Files
-import java.nio.file.Paths
+import java.nio.file.Path
+import kotlin.io.path.name
 
 class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
   private val repository: RGraphicsRepository
@@ -58,15 +58,11 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
       RGraphicsSettings.setDarkMode(project, isEnabled)
     }
 
-  override fun isInvertible(image: File): Boolean {
+  override fun isInvertible(image: Path): Boolean {
     return RSnapshot.from(image) != null
   }
 
-  fun canRescale(imagePath: String): Boolean {
-    return imagePath.toSnapshot()?.recordedFile?.takeIf { it.exists() } != null
-  }
-
-  fun getImageResolution(imagePath: String): Int? {
+  fun getImageResolution(imagePath: Path): Int? {
     return imagePath.toSnapshot()?.resolution
   }
 
@@ -75,14 +71,14 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
     return "Rplot%02d".format(number)
   }
 
-  fun createImageGroup(imagePath: String): Pair<File, Disposable>? {
+  fun createImageGroup(imagePath: Path): Pair<Path, Disposable>? {
     return imagePath.toSnapshot()?.let { snapshot ->
       val directory = createLocalGroupDirectory(snapshot)
       copyFileTo(snapshot.recordedFile, directory)
       val copy = copyFileTo(snapshot.file, directory)
       val groupPromise = repository.createDeviceGroupAsync(directory)
       val disposable = Disposable {
-        directory.deleteRecursively()
+        directory.toFile().deleteRecursively()
         groupPromise.onSuccess {
           it.dispose()
         }
@@ -99,7 +95,7 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
     RGraphicsSettings.addStandaloneListener(project, parent, listener)
   }
 
-  fun rescaleImage(imagePath: String, newSize: Dimension, newResolution: Int? = null, onResize: (File) -> Unit) {
+  fun rescaleImage(imagePath: Path, newSize: Dimension, newResolution: Int? = null, onResize: (Path) -> Unit) {
     imagePath.toSnapshot()?.let { snapshot ->
       val resolution = newResolution ?: snapshot.resolutionOrDefault
       val newParameters = RGraphicsUtils.ScreenParameters(newSize, resolution)
@@ -118,19 +114,19 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
     private val RSnapshot.resolutionOrDefault: Int?
       get() = resolution ?: defaultResolution  // NOT `settings.globalResolution`!
 
-    private fun String.toSnapshot() = RSnapshot.from(File(this))
+    private fun Path.toSnapshot() = RSnapshot.from(this)
 
-    private fun createLocalGroupDirectory(snapshot: RSnapshot): File {
-      val parentPath = snapshot.file.parentFile.toPath()
-      return Files.createTempDirectory(parentPath, "group").toFile().also { temp ->
-        temp.deleteOnExit()
+    private fun createLocalGroupDirectory(snapshot: RSnapshot): Path {
+      val parentPath = snapshot.file.parent
+      return Files.createTempDirectory(parentPath, "group").also { temp ->
+        temp.toFile().deleteOnExit()
       }
     }
 
-    private fun copyFileTo(file: File, directory: File): File {
-      val copyPath = Paths.get(directory.absolutePath, file.name)
-      Files.copy(file.toPath(), copyPath)
-      return copyPath.toFile()
+    private fun copyFileTo(file: Path, directory: Path): Path {
+      val copyPath = directory.toAbsolutePath().resolve(file.name)
+      Files.copy(file, copyPath)
+      return copyPath
     }
   }
 }

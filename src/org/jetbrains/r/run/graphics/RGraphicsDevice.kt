@@ -7,17 +7,21 @@ package org.jetbrains.r.run.graphics
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.util.io.delete
 import org.jetbrains.concurrency.*
 import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.settings.RGraphicsSettings
-import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.exists
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.name
 
 class RGraphicsDevice(
   private val rInterop: RInterop,
-  private val shadowDirectory: File,
+  private val shadowDirectory: Path,
   initialParameters: RGraphicsUtils.ScreenParameters,
-  private val inMemory: Boolean
+  private val inMemory: Boolean,
 ) {
 
   private var lastOutputs = emptyList<RGraphicsOutput>()
@@ -116,11 +120,7 @@ class RGraphicsDevice(
     listener(lastUpdate)
   }
 
-  fun removeListener(listener: (RGraphicsUpdate) -> Unit) {
-    listeners.remove(listener)
-  }
-
-  fun createDeviceGroupAsync(directory: File): Promise<Disposable> {
+  fun createDeviceGroupAsync(directory: Path): Promise<Disposable> {
     return createDeviceGroupIfNeededAsync(directory).then { group ->
       Disposable {
         if (rInterop.isAlive) {  // Note: the group is removed automatically on interop termination
@@ -158,7 +158,7 @@ class RGraphicsDevice(
   }
 
   fun rescaleStoredAsync(snapshot: RSnapshot, parameters: RGraphicsUtils.ScreenParameters): Promise<RSnapshot?> {
-    return createDeviceGroupIfNeededAsync(snapshot.file.parentFile).thenAsync { group ->
+    return createDeviceGroupIfNeededAsync(snapshot.file.parent).thenAsync { group ->
       val hint = createHintForStored(snapshot.number)
       val promise = executeWithLogAsync(hint) {
         pushStoredSnapshotIfNeeded(snapshot, group)
@@ -172,8 +172,8 @@ class RGraphicsDevice(
   }
 
   @Synchronized
-  private fun createDeviceGroupIfNeededAsync(directory: File): Promise<DeviceGroup> {
-    return directory2GroupPromises.getOrPut(directory.absolutePath) {
+  private fun createDeviceGroupIfNeededAsync(directory: Path): Promise<DeviceGroup> {
+    return directory2GroupPromises.getOrPut(directory.toAbsolutePath().toString()) {
       createEmptyGroupAsync()
     }
   }
@@ -181,7 +181,7 @@ class RGraphicsDevice(
   @Synchronized
   private fun pushStoredSnapshotIfNeeded(snapshot: RSnapshot, group: DeviceGroup) {
     if (group.snapshotNumbers.add(snapshot.number)) {
-      rInterop.interpreter.uploadFileToHost(snapshot.recordedFile, group.id)
+      rInterop.interpreter.uploadFileToHost(snapshot.recordedFile.toFile(), group.id)
     }
   }
 
@@ -304,10 +304,10 @@ class RGraphicsDevice(
   }
 
   private fun pullStoredSnapshot(previous: RSnapshot, groupId: String): RSnapshot? {
-    return pullSnapshotTo(previous.file.parentFile, previous.number, previous, groupId)
+    return pullSnapshotTo(previous.file.parent, previous.number, previous, groupId)
   }
 
-  private fun pullSnapshotTo(directory: File, number: Int, previous: RSnapshot?, groupId: String?): RSnapshot? {
+  private fun pullSnapshotTo(directory: Path, number: Int, previous: RSnapshot?, groupId: String?): RSnapshot? {
     return try {
       rInterop.graphicsGetSnapshotPath(number, groupId)?.let { response ->
         /*
@@ -342,8 +342,8 @@ class RGraphicsDevice(
     }
   }
 
-  private fun pullFile(name: String, remoteDirectory: String, localDirectory: File, deleteRemoteAfterPull: Boolean = false): File? {
-    val localPath = "${localDirectory.absolutePath}/$name"
+  private fun pullFile(name: String, remoteDirectory: String, localDirectory: Path, deleteRemoteAfterPull: Boolean = false): Path? {
+    val localPath = "${localDirectory.toAbsolutePath()}/$name"
     val remotePath = "$remoteDirectory/$name"
     rInterop.interpreter.apply {
       downloadFileFromHost(remotePath, localPath)
@@ -351,7 +351,7 @@ class RGraphicsDevice(
         deleteFileOnHost(remotePath)
       }
     }
-    return File(localPath).takeIf { it.exists() }
+    return Path.of(localPath).takeIf { it.exists() }
   }
 
   private fun postSnapshotNumber(number: Int?) {
@@ -394,12 +394,12 @@ class RGraphicsDevice(
     private val RSnapshot.identity: Pair<Int, Int>
       get() = Pair(number, version)
 
-    fun fetchLatestNormalSnapshots(directory: File): List<RSnapshot>? {
-      return fetchLatestSnapshots(directory)?.get(RSnapshotType.NORMAL)
+    fun fetchLatestNormalSnapshots(directory: Path): List<RSnapshot>? {
+      return fetchLatestSnapshots(directory).get(RSnapshotType.NORMAL)
     }
 
-    private fun fetchLatestSnapshots(directory: File): Map<RSnapshotType, List<RSnapshot>>? {
-      return directory.listFiles { _, name -> name.endsWith("png") }?.let { files ->
+    private fun fetchLatestSnapshots(directory: Path): Map<RSnapshotType, List<RSnapshot>> {
+      return directory.listDirectoryEntries().filter { it.name.endsWith("png") }.let { files ->
         val type2snapshots = files.mapNotNull { RSnapshot.from(it) }.groupBy { it.type }
         val latest = type2snapshots.asSequence().mapNotNull { entry ->
           shrinkOrDeleteSnapshots(entry.key, entry.value)

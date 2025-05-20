@@ -40,10 +40,13 @@ import java.awt.Dimension
 import java.awt.GraphicsConfiguration
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
-import java.io.File
+import java.nio.file.Path
 import java.util.*
 import javax.imageio.ImageIO
 import javax.swing.*
+import kotlin.io.path.exists
+import kotlin.io.path.name
+import kotlin.io.path.readBytes
 
 val CHANGE_DARK_MODE_TOPIC = Topic.create("Graphics Panel Dark Mode Topic", DarkModeNotifier::class.java)
 
@@ -61,7 +64,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   }
 
   @Volatile
-  private var currentFile: File? = null
+  private var currentFile: Path? = null
 
   private val advancedModeComponent: JComponent?
     get() = currentEditor?.component
@@ -134,13 +137,13 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     })
   }
 
-  private fun showImageAsync(imageFile: File) {
+  private fun showImageAsync(imageFile: Path) {
     runAsync {
       showImage(imageFile)
     }
   }
 
-  fun showImage(imageFile: File) {
+  fun showImage(imageFile: Path) {
     if (!tryShowImage(imageFile)) {
       closeEditor(RBundle.message("graphics.could.not.be.loaded"))
     }
@@ -203,7 +206,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     closeEditor(message ?: RBundle.message("graphics.not.available"))
   }
 
-  private fun tryShowImage(imageFile: File): Boolean {
+  private fun tryShowImage(imageFile: Path): Boolean {
     try {
       if (!imageFile.exists()) return false
       val content = readImageContent(imageFile)
@@ -223,18 +226,15 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     return false
   }
 
-  private fun readImageContent(imageFile: File): ByteArray {
+  private fun readImageContent(imageFile: Path): ByteArray {
     val bytes = imageFile.readBytes()
     val editorColorsManager = EditorColorsManager.getInstance()
-    return if (editorColorsManager.isDarkEditor && darkMode && imageFile.isInvertible) {
+    return if (editorColorsManager.isDarkEditor && darkMode && graphicsManager.isInvertible(imageFile)) {
       tryCreateInvertedImage(bytes, editorColorsManager.globalScheme)
     } else {
       bytes
     }
   }
-
-  private val File.isInvertible: Boolean
-    get() = graphicsManager.isInvertible(this)
 
   private fun tryCreateInvertedImage(content: ByteArray, globalScheme: EditorColorsScheme): ByteArray {
     return try {

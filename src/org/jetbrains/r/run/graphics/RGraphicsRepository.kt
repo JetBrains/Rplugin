@@ -10,7 +10,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import java.io.File
+import java.nio.file.Path
 
 @Service(Service.Level.PROJECT)
 class RGraphicsRepository(private val project: Project) {
@@ -77,7 +77,7 @@ class RGraphicsRepository(private val project: Project) {
   }
 
   @Synchronized
-  fun createDeviceGroupAsync(directory: File): Promise<Disposable> {
+  fun createDeviceGroupAsync(directory: Path): Promise<Disposable> {
     return notNullDevicePromise.thenAsync {
       currentDevice?.createDeviceGroupAsync(directory)
     }

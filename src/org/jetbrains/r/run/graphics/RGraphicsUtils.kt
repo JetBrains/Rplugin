@@ -12,8 +12,8 @@ import org.jetbrains.r.rinterop.RInterop
 import java.awt.Dimension
 import java.awt.GraphicsConfiguration
 import java.awt.Toolkit
-import java.io.File
 import java.nio.file.Files
+import java.nio.file.Path
 import kotlin.math.max
 
 object RGraphicsUtils {
@@ -39,10 +39,7 @@ object RGraphicsUtils {
   private const val QUAD_HD_RESOLUTION = 450
   private const val ULTRA_HD_RESOLUTION = 600
 
-  private val DEFAULT_DIMENSION = Dimension(1920, 1080)
-
   const val DEFAULT_RESOLUTION = 72
-  val DEFAULT_PARAMETERS = ScreenParameters(DEFAULT_DIMENSION, DEFAULT_RESOLUTION)
 
   internal val isHiDpi = (JreHiDpiUtil.isJreHiDPI(null as GraphicsConfiguration?) || UIUtil.isRetina()) &&
                          !ApplicationManager.getApplication().isUnitTestMode
@@ -51,20 +48,16 @@ object RGraphicsUtils {
     return createParameters(parameters?.dimension, parameters?.resolution)
   }
 
-  fun createGraphicsDevice(rInterop: RInterop): RGraphicsDevice {
-    return createGraphicsDevice(rInterop, DEFAULT_DIMENSION, DEFAULT_RESOLUTION)
-  }
-
   fun createGraphicsDevice(rInterop: RInterop, screenDimension: Dimension?, resolution: Int?): RGraphicsDevice {
     val tmpDirectory = createTempDeviceDirectory()
     val parameters = createParameters(screenDimension, resolution)
     return RGraphicsDevice(rInterop, tmpDirectory, parameters, true)
   }
 
-  private fun createTempDeviceDirectory(): File {
+  private fun createTempDeviceDirectory(): Path {
     // Note: 'FileUtil.createTempFile()' will break unit-tests
-    return Files.createTempDirectory("rplugin-graphics").toFile().apply {
-      deleteOnExit()
+    return Files.createTempDirectory("rplugin-graphics").apply {
+      toFile().deleteOnExit()
     }
   }
 

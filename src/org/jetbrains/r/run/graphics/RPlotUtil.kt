@@ -12,9 +12,11 @@ import java.awt.Image
 import java.awt.RenderingHints
 import java.awt.geom.Rectangle2D
 import java.awt.image.BufferedImage
-import java.io.File
-import java.nio.file.Paths
+import java.nio.file.Path
 import javax.swing.JLabel
+import kotlin.io.path.exists
+import kotlin.io.path.inputStream
+import kotlin.io.path.outputStream
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -22,12 +24,12 @@ import kotlin.math.min
 object RPlotUtil {
   private const val PROTOCOL_VERSION = 11
 
-  fun writeTo(directory: File, plot: Plot, number: Int) {
+  fun writeTo(directory: Path, plot: Plot, number: Int) {
     val plotFile = getPlotFile(directory, number)
     plot.writeTo(plotFile.outputStream())
   }
 
-  fun readFrom(directory: File, number: Int): Plot? {
+  fun readFrom(directory: Path, number: Int): Plot? {
     val plotFile = getPlotFile(directory, number)
     if (!plotFile.exists()) {
       return null
@@ -42,9 +44,9 @@ object RPlotUtil {
     return if (shouldInvert) RImageInverter(colorScheme.defaultForeground, colorScheme.defaultBackground).invert(image) else image
   }
 
-  private fun getPlotFile(directory: File, number: Int): File {
+  private fun getPlotFile(directory: Path, number: Int): Path {
     val plotFileName = createPlotFileName(number)
-    return Paths.get(directory.absolutePath, plotFileName).toFile()
+    return directory.toAbsolutePath().resolve(plotFileName)
   }
 
   private fun createPlotFileName(number: Int): String {

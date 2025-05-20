@@ -7,6 +7,7 @@ package org.jetbrains.r.run
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.util.io.delete
 import com.intellij.util.ui.UIUtil
 import junit.framework.TestCase
 import org.jetbrains.r.console.UpdateGraphicsHandler
@@ -18,6 +19,7 @@ import java.awt.image.BufferedImage
 import java.awt.image.DataBuffer
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.TimeoutException
 import javax.imageio.ImageIO
@@ -174,14 +176,14 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
     }
   }
 
-  private fun createImageGroup(snapshot: RSnapshot): Pair<File, Disposable> {
-    val result = graphicsManager.createImageGroup(snapshot.file.absolutePath)
+  private fun createImageGroup(snapshot: RSnapshot): Pair<Path, Disposable> {
+    val result = graphicsManager.createImageGroup(snapshot.file)
     TestCase.assertNotNull(result)
     return result!!
   }
 
-  private fun rescaleImage(file: File, dimension: Dimension) {
-    graphicsManager.rescaleImage(file.absolutePath, dimension) { rescaled ->
+  private fun rescaleImage(file: Path, dimension: Dimension) {
+    graphicsManager.rescaleImage(file, dimension) { rescaled ->
       val snapshot = RSnapshot.from(rescaled)
       TestCase.assertNotNull(snapshot)
       currentSnapshots = listOf(snapshot!!)
@@ -201,11 +203,11 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
   }
 
   private fun checkSimilar(actual: RSnapshot, expectedIndex: Int, candidates: List<BufferedImage>, suffix: String) {
-    val actualImage = readImage(actual.file)
+    val actualImage = readImage(actual.file.toFile())
     val actualIndex = actualImage.findMostSimilar(candidates)
     if (actualIndex != expectedIndex) {
       val actualShadowPath = Paths.get(shadowDirectory.absolutePath, "snapshot_${suffix}_actual.png")
-      Files.copy(actual.file.toPath(), actualShadowPath)
+      Files.copy(actual.file, actualShadowPath)
       throw RuntimeException("Not similar '$suffix' plot, actual index = $actualIndex")
     }
   }
