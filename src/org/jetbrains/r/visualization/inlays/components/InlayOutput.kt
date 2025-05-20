@@ -38,7 +38,6 @@ abstract class InlayOutput(
   /** Clears view, removes text/html. */
   abstract fun clear()
 
-  abstract fun addData(data: String, type: String)
   abstract fun scrollToTop()
   abstract fun getCollapsedDescription(): String
 

@@ -33,7 +33,7 @@ class RunChunkTest : RConsoleBaseTestCase() {
       ```
     """.trimIndent())
     TestCase.assertTrue(runChunk.size == 1)
-    TestCase.assertTrue(runChunk.all { it.type == "IMG" })
+    TestCase.assertTrue(runChunk.all { it is InlayOutputData.Image })
   }
 
   fun testDataOutput() {
@@ -43,7 +43,7 @@ class RunChunkTest : RConsoleBaseTestCase() {
       ```
     """.trimIndent())
     assertTrue(runChunk.size == 1)
-    assertTrue(runChunk.first().type == "TABLE")
+    assertTrue(runChunk.first() is InlayOutputData.CsvTable)
   }
 
   fun testTextOutput() {
@@ -53,7 +53,7 @@ class RunChunkTest : RConsoleBaseTestCase() {
       ```
     """.trimIndent())
     assertTrue(runChunk.size == 1)
-    assertTrue(runChunk.first().type == "Output")
+    assertTrue(runChunk.first() is InlayOutputData.TextOutput)
   }
 
   fun testHtmlOutput() {
@@ -122,8 +122,8 @@ class RunChunkTest : RConsoleBaseTestCase() {
     ```
     """.trimIndent())
     assertTrue(
-      "Got wrong number of URL results:\n${result.joinToString("\n") { "${it.type}: ${it.data}" }}",
-      result.filter { it.type == "URL" }.size == 1
+      "Got wrong number of URL results:\n${result.joinToString("\n") { it.toString() }}",
+      result.filterIsInstance<InlayOutputData.HtmlUrl>().size == 1
     )
   }
 
@@ -171,7 +171,7 @@ class RunChunkTest : RConsoleBaseTestCase() {
       ```
     """.trimIndent())
     assertTrue(runChunk.size == 1)
-    assertTrue(runChunk.first().type == "TABLE")
+    assertTrue(runChunk.first() is InlayOutputData.CsvTable)
   }
 
   private fun doRunChunk(text: String, debug: Boolean = false): List<InlayOutputData> {

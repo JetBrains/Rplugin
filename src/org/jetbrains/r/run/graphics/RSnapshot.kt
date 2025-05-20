@@ -12,6 +12,7 @@ enum class RSnapshotType {
   SKETCH,
 }
 
+// todo use Path instead of File
 data class RSnapshot(
   val file: File,
   val type: RSnapshotType,

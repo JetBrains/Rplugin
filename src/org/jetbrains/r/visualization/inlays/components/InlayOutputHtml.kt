@@ -8,6 +8,7 @@ import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.ui.jcef.JBCefBrowserBase
 import com.intellij.ui.jcef.JBCefJSQuery
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.visualization.inlays.InlayOutputData
 import org.jetbrains.r.visualization.inlays.MouseWheelUtils
 import java.util.function.Function
 import javax.swing.SwingUtilities
@@ -54,12 +55,13 @@ class InlayOutputHtml(parent: Disposable, editor: Editor)
     )
   }
 
-  override fun addData(data: String, type: String) {
-    val isUrl = data.startsWith("file://") || data.startsWith("http://") || data.startsWith("https://")
+  fun addData(data: InlayOutputData.HtmlUrl) {
+    val isUrl = data.url.startsWith("file://")
     if (isUrl) {
-      jbBrowser.loadURL(data)
+      jbBrowser.loadURL(data.url)
     }
     else {
+      // this never happens, url is always starts with `file://`
       jbBrowser.loadHTML("<head><style>" + GithubMarkdownCss.getDarkOrBright() + " </style></head><body>" + data + "</body>")
     }
     jbBrowser.jbCefClient.addLoadHandler(object : org.cef.handler.CefLoadHandlerAdapter() {

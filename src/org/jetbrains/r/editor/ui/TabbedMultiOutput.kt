@@ -85,7 +85,7 @@ class TabbedMultiOutput(private val editor: Editor, parent: Disposable) : Notebo
     for (inlayOutput in inlayOutputs) {
       NotebookInlayOutput(editor, disposable).apply {
         setupOnHeightCalculated()
-        addData(inlayOutput.type, inlayOutput.data)
+        addData(inlayOutput)
         tabsOutput.add(this)
         addTab(inlayOutput)
       }

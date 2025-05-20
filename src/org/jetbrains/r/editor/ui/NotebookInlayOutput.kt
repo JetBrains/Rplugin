@@ -4,7 +4,9 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.Key
+import com.intellij.util.asSafely
 import org.jetbrains.r.rendering.chunk.ChunkImageInlayOutput
+import org.jetbrains.r.visualization.inlays.InlayOutputData
 import org.jetbrains.r.visualization.inlays.components.*
 import java.awt.BorderLayout
 import java.awt.Rectangle
@@ -21,8 +23,8 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
 
   private var output: InlayOutput? = null
 
-  private inline fun <reified T: InlayOutput> createOutputAndSetup(constructor: (Disposable, Editor) -> T) =
-    constructor(parent, editor).apply { setupOutput(this) }
+  private inline fun <reified T : InlayOutput> getOrCreateOutput(constructor: (Disposable, Editor) -> T): T =
+    output.asSafely<T>() ?: constructor(parent, editor).apply { setupOutput(this) }
 
   private fun setupOutput(output: InlayOutput) {
     this.output?.let { remove(it.getComponent()) }
@@ -52,24 +54,17 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
     output?.addToolbar()
   }
 
-  private fun getOrAddTextOutput(): InlayOutputText {
-    (output as? InlayOutputText)?.let { return it }
-    return createOutputAndSetup(::InlayOutputText)
-  }
-
-  fun addData(type: String, data: String) {
-    val inlayOutput: InlayOutput = when (type) {
-      "IMG" -> createOutputAndSetup(::ChunkImageInlayOutput)
-      "TABLE" -> output?.takeIf { it is InlayOutputTable } ?: createOutputAndSetup(::InlayOutputTable)
-      "HTML", "URL" -> output?.takeIf { it is InlayOutputHtml } ?: createOutputAndSetup(::InlayOutputHtml)
-      "IMGBase64", "IMGSVG" -> output?.takeIf { it is InlayOutputImg } ?: createOutputAndSetup(::InlayOutputImg)
-      else -> getOrAddTextOutput()
+  fun addData(inlayOutputData: InlayOutputData) {
+    when (inlayOutputData) {
+      is InlayOutputData.Image -> getOrCreateOutput(::ChunkImageInlayOutput).addData(inlayOutputData)
+      is InlayOutputData.CsvTable -> getOrCreateOutput(::InlayOutputTable).addData(inlayOutputData)
+      is InlayOutputData.HtmlUrl -> getOrCreateOutput(::InlayOutputHtml).addData(inlayOutputData)
+      is InlayOutputData.TextOutput -> getOrCreateOutput(::InlayOutputText).addData(inlayOutputData)
     }
-    inlayOutput.addData(data, type)
   }
 
   fun addText(message: String, outputType: Key<*>) {
-    getOrAddTextOutput().addData(message, outputType)
+    getOrCreateOutput(::InlayOutputText).addData(message, outputType)
   }
 
   override fun updateProgressStatus(progressStatus: InlayProgressStatus) {

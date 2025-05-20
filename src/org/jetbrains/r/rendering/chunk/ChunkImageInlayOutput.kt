@@ -22,6 +22,7 @@ import org.jetbrains.r.run.graphics.ui.RGraphicsExportDialog
 import org.jetbrains.r.run.graphics.ui.RGraphicsPanelWrapper
 import org.jetbrains.r.run.graphics.ui.RGraphicsZoomDialog
 import org.jetbrains.r.visualization.inlays.InlayExecutor
+import org.jetbrains.r.visualization.inlays.InlayOutputData
 import org.jetbrains.r.visualization.inlays.RClipboardUtils
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.inlays.components.CopyImageToClipboardAction
@@ -62,10 +63,10 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor) :
     wrapper.overlayComponent = toolbarPane.toolbarComponent
   }
 
-  override fun addData(data: String, type: String) {
+  fun addData(data: InlayOutputData.Image) {
     RPluginCoroutineScope.getScope(project).launch(ModalityState.defaultModalityState().asContextElement() + Dispatchers.IO) {
       val maxSize = InlayExecutor.mutex.withLock {
-        addGraphics(File(data))
+        addGraphics(data.path.toFile())
       }
       withContext(Dispatchers.EDT) {
         val height = maxSize?.let { calculateHeight(it) }

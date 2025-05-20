@@ -23,10 +23,13 @@ import kotlinx.coroutines.sync.withLock
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.visualization.inlays.InlayExecutor
+import org.jetbrains.r.visualization.inlays.InlayOutputData
 import org.jetbrains.r.visualization.inlays.MouseWheelUtils
 import org.jetbrains.r.visualization.ui.updateOutputTextConsoleUI
 import java.awt.Dimension
-import java.io.File
+import kotlin.io.path.exists
+import kotlin.io.path.extension
+import kotlin.io.path.readText
 import kotlin.math.max
 import kotlin.math.min
 
@@ -54,10 +57,10 @@ class InlayOutputText(parent: Disposable, editor: Editor)
     console.clear()
   }
 
-  override fun addData(data: String, type: String) {
+  fun addData(data: InlayOutputData.TextOutput) {
     RPluginCoroutineScope.getScope(project).launch(ModalityState.defaultModalityState().asContextElement() + Dispatchers.IO) {
       val outputs = InlayExecutor.mutex.withLock {
-        File(data).takeIf { it.exists() && it.extension == "json" }?.let { file ->
+        data.path.takeIf { it.exists() && it.extension == "json" }?.let { file ->
           Gson().fromJson<List<ProcessOutput>>(file.readText(), object : TypeToken<List<ProcessOutput>>() {}.type)
         }
       }
@@ -65,7 +68,8 @@ class InlayOutputText(parent: Disposable, editor: Editor)
       edtWriteAction {
         if (outputs == null) {
           // DS-763 "\r\n" patterns would trim the whole last line.
-          console.addData(data.replace("\r\n", "\n").trimEnd('\n'), ProcessOutputType.STDOUT)
+          // todo looks like this an error, because text data contains path instead of text
+          console.addData(data.path.toString().replace("\r\n", "\n").trimEnd('\n'), ProcessOutputType.STDOUT)
         }
         else {
           outputs.forEach { console.addData(it.text, it.kind) }

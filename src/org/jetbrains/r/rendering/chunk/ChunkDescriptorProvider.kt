@@ -31,10 +31,11 @@ import java.awt.Rectangle
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
+import java.nio.file.Path
 import java.util.concurrent.Future
 import javax.imageio.ImageIO
 import javax.swing.Icon
-import kotlin.io.path.exists
+import kotlin.io.path.*
 
 class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDescriptor {
   override fun cleanup(psi: PsiElement): Future<Void> =
@@ -67,15 +68,15 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       } ?: emptyList()
 
     private fun getInlayOutputs(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutputData> =
-      getImages(chunkPath, isDarkModeEnabled) + getUrls(chunkPath) + getTables(chunkPath) + getOutputs(chunkPath)
+      getImages(chunkPath, isDarkModeEnabled) + getUrls(chunkPath) + getTables(chunkPath) + getTextOutputs(chunkPath)
 
-    private fun getImages(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutputData> {
+    private fun getImages(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutputData.Image> {
       return getImageFilesOrdered(chunkPath).map { imageFile ->
-        val text = imageFile.absolutePath
+        val path = Path.of(imageFile.absolutePath)
         val preview = ImageIO.read(imageFile)?.let { image ->
           IconUtil.createImageIcon(RPlotUtil.fitTheme(createPreview(image), isDarkModeEnabled))
         }
-        InlayOutputData(text, "IMG", preview = preview)
+        InlayOutputData.Image(path, preview = preview)
       }
     }
 
@@ -113,39 +114,40 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
     private val preferredWidth
       get() = (RInlayDimensions.lineHeight * 8.0f).toInt()
 
-    private fun getUrls(chunkPath: ChunkPath): List<InlayOutputData> {
-      val imagesDirectory = chunkPath.getHtmlDirectory().toString()
-      return getFilesByExtension(imagesDirectory, ".html")?.map { html ->
-        InlayOutputData("file://" + html.absolutePath.toString(),
-                        "URL",
-                        preview = createIconWithText(RBundle.message("rmarkdown.output.html.title")))
-      } ?: emptyList()
+    private fun getUrls(chunkPath: ChunkPath): List<InlayOutputData.HtmlUrl> {
+      val imagesDirectory = chunkPath.getHtmlDirectory()
+      return getFilesByExtension(imagesDirectory, ".html").map { html ->
+        InlayOutputData.HtmlUrl("file://" + html.toAbsolutePath().toString(),
+                                preview = createIconWithText(RBundle.message("rmarkdown.output.html.title")))
+      }
     }
 
-    private fun getTables(chunkPath: ChunkPath): List<InlayOutputData> {
-      val dataDirectory = chunkPath.getDataDirectory().toString()
-      return getFilesByExtension(dataDirectory, ".csv")?.map { csv ->
-        InlayOutputData(csv.readText(),
-                        "TABLE",
-                        preview = createIconWithText(RBundle.message("rmarkdown.output.table.title")))
-      } ?: emptyList()
+    private fun getTables(chunkPath: ChunkPath): List<InlayOutputData.CsvTable> {
+      val dataDirectory = chunkPath.getDataDirectory()
+      return getFilesByExtension(dataDirectory, ".csv").map { csv ->
+        InlayOutputData.CsvTable(csv.readText(),
+                                 preview = createIconWithText(RBundle.message("rmarkdown.output.table.title")))
+      }
     }
 
-    fun getOutputs(chunkPath: ChunkPath): List<InlayOutputData> {
+    fun getTextOutputs(chunkPath: ChunkPath): List<InlayOutputData.TextOutput> {
       return chunkPath.getOutputFile().takeIf { it.exists() }?.let {
-        listOf(InlayOutputData(it.toAbsolutePath().toString(),
-                               "Output",
-                               preview = createIconWithText(RBundle.message("rmarkdown.output.console.title"))))
+        listOf(InlayOutputData.TextOutput(it.toAbsolutePath(),
+                                          preview = createIconWithText(RBundle.message("rmarkdown.output.console.title"))))
       } ?: emptyList()
     }
 
-    private fun getFilesByExtension(imagesDirectory: String, extension: String): Array<File>? =
-      File(imagesDirectory).takeIf { it.exists() }?.listFiles { _, name ->
-        name.endsWith(extension)
-      }?.apply { sortBy { it.lastModified() } }
+    private fun getFilesByExtension(imagesDirectory: Path, extension: String): List<Path> {
+      if (!imagesDirectory.exists()) return emptyList()
+
+      return imagesDirectory.listDirectoryEntries()
+        .filter { it.name.endsWith(extension) }
+        .sortedBy { it.getLastModifiedTime() }
+    }
   }
 }
 
+// todo replace File with Path
 private data class ExternalImage(
   val file: File,
   val major: Int,
