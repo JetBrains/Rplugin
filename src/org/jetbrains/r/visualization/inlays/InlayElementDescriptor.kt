@@ -6,16 +6,14 @@ package org.jetbrains.r.visualization.inlays
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 import java.util.concurrent.Future
 import javax.swing.Icon
 
-data class InlayOutput(val data: String,
-                       val type: String,
-                       var progressStatus: InlayProgressStatus? = null,
-                       val title: String? = null,
-                       val preview: Icon? = null,
-                       val preferredWidth: Int = 0)
+data class InlayOutput(
+  val data: String,
+  val type: String,
+  val preview: Icon?,
+)
 
 interface InlayElementDescriptor {
   /**

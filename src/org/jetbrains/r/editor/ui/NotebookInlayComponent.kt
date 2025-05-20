@@ -213,11 +213,11 @@ class NotebookInlayComponent(
   }
 
   /** Event from notebook with console output. This output contains intermediate data from console. */
-  private fun onOutput(data: String, type: String, progressStatus: InlayProgressStatus?) {
+  private fun onOutput(data: String, type: String) {
     state?.clear()
 
     val output = getOrCreateOutput()
-    output.addData(type, data, progressStatus)
+    output.addData(type, data)
 
     InlayStateCustomizer.customize(output)
 
@@ -258,7 +258,7 @@ class NotebookInlayComponent(
     }
     else {
       val inlay = inlayOutputs.first()
-      onOutput(inlay.data, inlay.type, inlay.progressStatus)
+      onOutput(inlay.data, inlay.type)
     }
   }
 

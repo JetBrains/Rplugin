@@ -23,7 +23,6 @@ import org.jetbrains.r.visualization.inlays.components.NotebookInlayState
 import org.jetbrains.r.visualization.inlays.components.ToolBarProvider
 import org.jetbrains.r.visualization.ui.ToolbarUtil
 import java.awt.BorderLayout
-import java.awt.Dimension
 import java.awt.Rectangle
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -86,7 +85,7 @@ class TabbedMultiOutput(private val editor: Editor, parent: Disposable) : Notebo
     for (inlayOutput in inlayOutputs) {
       NotebookInlayOutput(editor, disposable).apply {
         setupOnHeightCalculated()
-        addData(inlayOutput.type, inlayOutput.data, inlayOutput.progressStatus)
+        addData(inlayOutput.type, inlayOutput.data)
         tabsOutput.add(this)
         addTab(inlayOutput)
       }
@@ -129,15 +128,7 @@ class TabbedMultiOutput(private val editor: Editor, parent: Disposable) : Notebo
         setIcon(it)
         setText("")
       }
-      inlayOutput.title?.let {
-        setText(it)
-      }
     }).apply {
-      tabs.getTabLabel(this)?.apply {
-        if (inlayOutput.preferredWidth != 0) {
-          preferredSize = Dimension(inlayOutput.preferredWidth, 0)
-        }
-      }
       if (tabs.selectedInfo == null) {
         tabs.select(this, false)
       }

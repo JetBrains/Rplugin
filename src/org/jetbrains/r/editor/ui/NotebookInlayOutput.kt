@@ -57,16 +57,13 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
     return createOutputAndSetup(::InlayOutputText)
   }
 
-  fun addData(type: String, data: String, progressStatus: InlayProgressStatus?) {
+  fun addData(type: String, data: String) {
     val inlayOutput: InlayOutput = when (type) {
       "IMG" -> createOutputAndSetup(::ChunkImageInlayOutput)
       "TABLE" -> output?.takeIf { it is InlayOutputTable } ?: createOutputAndSetup(::InlayOutputTable)
       "HTML", "URL" -> output?.takeIf { it is InlayOutputHtml } ?: createOutputAndSetup(::InlayOutputHtml)
       "IMGBase64", "IMGSVG" -> output?.takeIf { it is InlayOutputImg } ?: createOutputAndSetup(::InlayOutputImg)
       else -> getOrAddTextOutput()
-    }
-    progressStatus?.let {
-      inlayOutput.updateProgressStatus(editor, it)
     }
     inlayOutput.addData(data, type)
   }
