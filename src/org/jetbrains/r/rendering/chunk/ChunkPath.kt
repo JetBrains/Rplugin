@@ -15,36 +15,36 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 data class ChunkPath(val path: String, val chunkText: String) {
-  fun getCacheDirectory(): String =
-    getDirectoryForPath(path).resolve( toHexString(chunkText.hashCode())).toString()
+  fun getCacheDirectory(): Path =
+    getDirectoryForPath(path).resolve( toHexString(chunkText.hashCode()))
 
-  fun getImagesDirectory(): String =
+  fun getImagesDirectory(): Path =
     findInCache("images")
 
-  fun getExternalImagesDirectory(): String =
+  fun getExternalImagesDirectory(): Path =
     findInCache("external-images")
 
-  fun getHtmlDirectory(): String =
+  fun getHtmlDirectory(): Path =
     getCacheDirectory()
 
-  private fun getHtmlLibrariesDirectory(): String =
+  private fun getHtmlLibrariesDirectory(): Path =
     findInCache("lib")
 
-  fun getDataDirectory(): String =
+  fun getDataDirectory(): Path =
     findInCache( "data")
 
-  fun getNestedDirectories(): List<String> = listOf(
+  fun getNestedDirectories(): List<Path> = listOf(
     getImagesDirectory(),
     getExternalImagesDirectory(),
     getHtmlLibrariesDirectory(),
-    getDataDirectory()
+    getDataDirectory(),
   )
 
-  fun getOutputFile(): String =
+  fun getOutputFile(): Path =
     findInCache("output.json")
 
-  private fun findInCache(name: String): String =
-    Paths.get(getCacheDirectory(), name).toString()
+  private fun findInCache(name: String): Path =
+    getCacheDirectory().resolve(name)
 
   companion object {
     fun getDirectoryForPath(path: String): Path =

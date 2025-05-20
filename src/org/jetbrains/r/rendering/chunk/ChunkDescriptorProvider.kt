@@ -34,6 +34,7 @@ import java.io.File
 import java.util.concurrent.Future
 import javax.imageio.ImageIO
 import javax.swing.Icon
+import kotlin.io.path.exists
 
 class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDescriptor {
   override fun cleanup(psi: PsiElement): Future<Void> =
@@ -53,7 +54,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       cleanup(ChunkPath.create(psi)!!)
 
     fun cleanup(chunkPath: ChunkPath): Future<Void> =
-      FileUtil.asyncDelete(File(chunkPath.getCacheDirectory()))
+      FileUtil.asyncDelete(chunkPath.getCacheDirectory().toFile())
 
     fun getInlayOutputs(psi: PsiElement): List<InlayOutput> =
       ChunkPath.create(psi)?.let { key ->
@@ -99,12 +100,12 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
 
     private fun getSnapshots(chunkPath: ChunkPath): List<RSnapshot>? {
       val directory = chunkPath.getImagesDirectory()
-      return RGraphicsDevice.fetchLatestNormalSnapshots(File(directory))
+      return RGraphicsDevice.fetchLatestNormalSnapshots(directory.toFile())
     }
 
     private fun getExternalImages(chunkPath: ChunkPath): List<ExternalImage>? {
       val directory = chunkPath.getExternalImagesDirectory()
-      return File(directory).listFiles()?.mapNotNull { file ->
+      return directory.toFile().listFiles()?.mapNotNull { file ->
         ExternalImage.from(file)
       }
     }
@@ -113,7 +114,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       get() = (RInlayDimensions.lineHeight * 8.0f).toInt()
 
     private fun getUrls(chunkPath: ChunkPath): List<InlayOutput> {
-      val imagesDirectory = chunkPath.getHtmlDirectory()
+      val imagesDirectory = chunkPath.getHtmlDirectory().toString()
       return getFilesByExtension(imagesDirectory, ".html")?.map { html ->
         InlayOutput("file://" + html.absolutePath.toString(),
                     "URL",
@@ -122,7 +123,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
     }
 
     private fun getTables(chunkPath: ChunkPath): List<InlayOutput> {
-      val dataDirectory = chunkPath.getDataDirectory()
+      val dataDirectory = chunkPath.getDataDirectory().toString()
       return getFilesByExtension(dataDirectory, ".csv")?.map { csv ->
         InlayOutput(csv.readText(),
                     "TABLE",
@@ -131,8 +132,8 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
     }
 
     fun getOutputs(chunkPath: ChunkPath): List<InlayOutput> {
-      return File(chunkPath.getOutputFile()).takeIf { it.exists() }?.let {
-        listOf(InlayOutput(it.absolutePath,
+      return chunkPath.getOutputFile().takeIf { it.exists() }?.let {
+        listOf(InlayOutput(it.toAbsolutePath().toString(),
                            "Output",
                            preview = createIconWithText(RBundle.message("rmarkdown.output.console.title"))))
       } ?: emptyList()

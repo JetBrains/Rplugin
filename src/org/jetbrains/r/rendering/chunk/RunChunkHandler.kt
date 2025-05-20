@@ -19,8 +19,8 @@ import com.intellij.openapi.editor.ex.util.EditorUtil
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.io.FileUtilRt
+import com.intellij.openapi.util.io.FileUtilRt.deleteRecursively
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SyntaxTraverser
@@ -29,6 +29,7 @@ import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import com.intellij.util.concurrency.annotations.RequiresReadLock
+import com.intellij.util.io.createDirectories
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -58,12 +59,10 @@ import org.jetbrains.r.visualization.inlays.components.ProcessOutput
 import org.jetbrains.r.visualization.inlays.components.RProgressStatus
 import java.awt.Dimension
 import java.io.File
+import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.io.path.exists
-import kotlin.io.path.isDirectory
-import kotlin.io.path.listDirectoryEntries
-import kotlin.io.path.name
+import kotlin.io.path.*
 
 
 private val LOG = fileLogger()
@@ -237,7 +236,7 @@ class RunChunkHandler(
       var result: ExecutionResult? = null
 
       try {
-        val graphicsDevice = RGraphicsDevice(console.rInterop, File(imagesDirectory), elementWithContext.screenParameters, inMemory = false)
+        val graphicsDevice = RGraphicsDevice(console.rInterop, imagesDirectory.toFile(), elementWithContext.screenParameters, inMemory = false)
 
         graphicsDevice.dumpAndShutdownAsyncAfterAction {
           result = executeCode(project, request, console) {
@@ -245,7 +244,7 @@ class RunChunkHandler(
           }.await()
         }
 
-        pullOutputs(console.rInterop, cacheDirectory)
+        pullOutputs(console.rInterop, cacheDirectory.toString())
       }
       catch (t: Throwable) {
         afterRunChunk(element, console.rInterop, result, console, editor, elementWithContext.inlayElement, isBatchMode)
@@ -287,7 +286,7 @@ class RunChunkHandler(
     // run before chunk handler without read action
     val beforeChunkPromise = runAsync {
       beforeRunChunk(console.rInterop, elementWithContext.rMarkdownParameters, elementWithContext.chunkText)
-      val device = RGraphicsDevice(console.rInterop, File(imagesDirectory), elementWithContext.screenParameters, inMemory = false)
+      val device = RGraphicsDevice(console.rInterop, imagesDirectory.toFile(), elementWithContext.screenParameters, inMemory = false)
       graphicsDeviceRef.set(device)
     }
 
@@ -310,7 +309,7 @@ class RunChunkHandler(
           editor.rMarkdownNotebook?.let { nb -> nb[elementWithContext.inlayElement]?.addText(it.text, it.kind) }
         }.onProcessed { result ->
           dumpAndShutdownAsync(graphicsDeviceRef.get()).onProcessed {
-            pullOutputsWithLogAsync(console.rInterop, cacheDirectory).onProcessed {
+            pullOutputsWithLogAsync(console.rInterop, cacheDirectory.toString()).onProcessed {
               val result = afterRunChunk(element, console.rInterop, result, console, editor, elementWithContext.inlayElement, isBatchMode)
               promise.setResult(result)
             }
@@ -366,16 +365,12 @@ class RunChunkHandler(
     private fun createRMarkdownParameters(file: PsiFile) =
       "---${System.lineSeparator()}${RMarkdownUtil.findMarkdownParagraph(file)?.text ?: ""}${System.lineSeparator()}---"
 
-    private fun createCacheDirectory(chunkPath: ChunkPath): String {
+    private fun createCacheDirectory(chunkPath: ChunkPath): Path {
       return chunkPath.getCacheDirectory().also { cacheDirectoryPath ->
-        createCleanDirectory(File(cacheDirectoryPath))
-        chunkPath.getNestedDirectories().forEach { File(it).mkdir() }
+        deleteRecursively(cacheDirectoryPath)
+        cacheDirectoryPath.createDirectories()
+        chunkPath.getNestedDirectories().forEach { it.createDirectory() }
       }
-    }
-
-    private fun createCleanDirectory(directory: File) {
-      FileUtil.delete(directory)
-      directory.mkdirs()
     }
 
     private data class CodeElement(
@@ -541,11 +536,10 @@ class RunChunkHandler(
 
     private fun saveOutputs(outputs: List<ProcessOutput>, element: PsiElement) {
       if (outputs.any { it.text.isNotEmpty() }) {
-        runReadAction { ChunkPath.create(element)?.getOutputFile() }?.let {
+        runReadAction { ChunkPath.create(element)?.getOutputFile() }?.let { outputPath ->
           val text = Gson().toJson(outputs.filter { output -> output.text.isNotEmpty() })
-          val file = File(it)
-          check(FileUtil.createParentDirs(file)) { "cannot create parent directories" }
-          file.writeText(text)
+          check(FileUtilRt.createParentDirs(outputPath.toFile())) { "cannot create parent directories" }
+          outputPath.writeText(text)
         }
       }
     }
