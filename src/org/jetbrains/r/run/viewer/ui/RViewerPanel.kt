@@ -5,6 +5,7 @@
 package org.jetbrains.r.run.viewer.ui
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.jcef.JBCefBrowser
@@ -34,7 +35,7 @@ class RViewerPanel(disposable: Disposable) {
   val component = rootPanel.component
 
   suspend fun loadFile(filePath: String) {
-    withContext(Dispatchers.IO) {
+    withContext(Dispatchers.EDT) {
       val qualifiedUrl = RViewerUtils.getQualifiedUrl(filePath)
       val path = URI.create(qualifiedUrl).path
       val file = File(path)
@@ -49,7 +50,7 @@ class RViewerPanel(disposable: Disposable) {
   }
 
   suspend fun loadUrl(url: String) {
-    withContext(Dispatchers.IO) {
+    withContext(Dispatchers.EDT) {
       jbBrowser.loadURL(url)
       if (rootPanel.contentComponent != jbBrowser.component) {
         rootPanel.contentComponent = jbBrowser.component
