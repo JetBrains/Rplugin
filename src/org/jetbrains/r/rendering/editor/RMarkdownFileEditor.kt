@@ -43,9 +43,10 @@ import org.jetbrains.r.rmarkdown.RMarkdownRenderingConsoleRunner
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.settings.REditorSettings
 import java.awt.BorderLayout
-import java.io.File
+import java.nio.file.Path
 import javax.swing.Icon
 import javax.swing.JComponent
+import kotlin.io.path.exists
 
 internal class RMarkdownFileEditor(project: Project, textEditor: TextEditor, virtualFile: VirtualFile)
   : AdvancedTextEditor(project, textEditor, virtualFile) {
@@ -219,10 +220,10 @@ private fun createBuildAndShowAction(project: Project, report: VirtualFile, mana
       if (interop != null && !interop.interpreter.isLocal()) {
         interop.interpreter.showFileInViewer(interop, profileLastOutput)
       } else {
-        val file = File(profileLastOutput)
+        val file = Path.of(profileLastOutput)
         if (file.exists()) {
           RPluginCoroutineScope.getScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
-            RToolWindowFactory.showFile(project, file.absolutePath)
+            RToolWindowFactory.showFile(project, file.toAbsolutePath().toString())
           }
         }
       }
