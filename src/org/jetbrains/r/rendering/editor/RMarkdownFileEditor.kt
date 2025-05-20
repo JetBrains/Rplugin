@@ -8,7 +8,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.ide.browsers.WebBrowserManager
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.editor.Editor
@@ -24,8 +24,9 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import icons.RIcons
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.jetbrains.concurrency.runAsync
+import kotlinx.coroutines.withContext
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.actions.RDumbAwareBgtAction
@@ -122,30 +123,33 @@ private class BuildManager(private val project: Project, private val report: Vir
     private set
   private var renderingRunner: RMarkdownRenderingConsoleRunner? = null
 
-  fun toggleBuild(e: AnActionEvent, onRenderSuccess: (() -> Unit)? = null) {
-    runAsync {
-      if (!isRunning) {
-        isRunning = true
-        val editor = e.editor ?: return@runAsync
-        val isShiny = editor.isShiny
-        val document = editor.document
-        ApplicationManager.getApplication().invokeAndWait { FileDocumentManager.getInstance().saveDocument(document) }
-        RMarkdownRenderingConsoleRunner(project).apply {
-          renderingRunner = this
-          render(project, report, isShiny)
-            .onSuccess {
-              if (!isShiny) {
-                onRenderSuccess?.invoke()
-              }
-            }
-            .onProcessed {
-              renderingRunner = null
-              isRunning = false
-            }
-        }
-      } else {
+  fun toggleBuild(e: AnActionEvent, onRenderSuccess: (isShiny: Boolean) -> Unit = {}) {
+    // todo fix race with multiple toggle calls
+    RPluginCoroutineScope.getScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
+      if (isRunning) {
         isRunning = false
         renderingRunner?.interruptRendering()
+        return@launch
+      }
+
+      isRunning = true
+      val editor = e.editor ?: return@launch
+      val isShiny = editor.isShiny
+      val document = editor.document
+      withContext(Dispatchers.EDT) {
+        FileDocumentManager.getInstance().saveDocument(document)
+      }
+      val consoleRunner = RMarkdownRenderingConsoleRunner(project)
+
+      renderingRunner = consoleRunner
+
+      try {
+        consoleRunner.render(project, report, isShiny)
+        onRenderSuccess(isShiny)
+      }
+      finally {
+        renderingRunner = null
+        isRunning = false
       }
     }
   }
@@ -199,8 +203,10 @@ private fun createBuildAndShowAction(project: Project, report: VirtualFile, mana
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-      manager.toggleBuild(e) {
-        openDocument()
+      manager.toggleBuild(e) { isShiny ->
+        if (isShiny) {
+          openDocument()
+        }
       }
     }
 

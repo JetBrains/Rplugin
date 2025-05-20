@@ -16,14 +16,14 @@ import com.intellij.execution.ui.RunContentManager
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PathUtil
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.runAsync
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreter
@@ -35,6 +35,8 @@ import org.jetbrains.r.util.RPathUtil
 import java.awt.BorderLayout
 import java.io.IOException
 import javax.swing.JPanel
+
+class RMarkdownRenderingConsoleRunnerException(message: String) : RuntimeException(message)
 
 class RMarkdownRenderingConsoleRunner(private val project : Project,
                                       private val consoleTitle: String = RBundle.message("rmarkdown.rendering.console.title")) {
@@ -51,19 +53,15 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     currentProcessHandler?.let { ScriptRunnerUtil.terminateProcessHandler(it, 2000, null) }
   }
 
-  fun render(project: Project, file: VirtualFile, isShiny: Boolean = false): Promise<Unit> {
-    return AsyncPromise<Unit>().also { promise ->
-      RMarkdownUtil.checkOrInstallPackagesAsync(project, RBundle.message("rmarkdown.processor.notification.utility.name"))
-        .onSuccess {
-          if (!isInterrupted) {
-            doRender(project, file, promise, isShiny)
-          } else {
-            promise.setError("Rendering was interrupted")
-          }
-        }
-        .onError {
-          promise.setError("Unable to install dependencies for rendering")
-        }
+  @Throws(RMarkdownRenderingConsoleRunnerException::class, IOException::class)
+  suspend fun render(project: Project, file: VirtualFile, isShiny: Boolean = false) {
+    RMarkdownUtil.checkOrInstallPackages(project, RBundle.message("rmarkdown.processor.notification.utility.name"))
+
+    if (!isInterrupted) {
+      doRender(project, file, isShiny)
+    }
+    else {
+      throw RMarkdownRenderingConsoleRunnerException("Rendering was interrupted")
     }
   }
 
@@ -83,37 +81,36 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     return consoleView
   }
 
-  private fun doRender(project: Project, rMarkdownFile: VirtualFile, promise: AsyncPromise<Unit>, isShiny: Boolean) {
-    RInterpreterManager.getInterpreterAsync(project).onSuccess { interpreter ->
-      interpreter.prepareForExecutionAsync().onProcessed {
-        runAsync {
-          val rmdFileOnHost = interpreter.uploadFileToHostIfNeeded(rMarkdownFile, preserveName = true)
-          val knitRootDirectory = PathUtil.getParentPath(rmdFileOnHost)
-          val outputDirectory = RMarkdownSettings.getInstance(project).state.getOutputDirectory(rMarkdownFile)
-                                ?: rMarkdownFile.parent
-          val outputDirOnHost = interpreter.getFilePathAtHost(outputDirectory) ?: knitRootDirectory
-          val libraryPath = RPathUtil.join(interpreter.getHelpersRootOnHost(), "pandoc")
-          val resultTmpFile = interpreter.createTempFileOnHost("rmd-output-path.txt")
+  private suspend fun doRender(project: Project, rMarkdownFile: VirtualFile, isShiny: Boolean) {
+    val interpreter = RInterpreterManager.getInstance(project).awaitInterpreter().getOrThrow()
+    interpreter.prepareForExecution()
 
-          val args = arrayListOf(libraryPath, rmdFileOnHost, knitRootDirectory, outputDirOnHost, resultTmpFile)
-          val processHandler = interpreter.runHelperProcess(interpreter.uploadFileToHost(R_MARKDOWN_HELPER), args,
-                                                            knitRootDirectory)
-          currentProcessHandler = processHandler
-          val knitListener = makeKnitListener(interpreter, rMarkdownFile, promise, resultTmpFile, outputDirectory, isShiny)
-          processHandler.addProcessListener(knitListener)
-          runInEdt {
-            if (!ApplicationManager.getApplication().isUnitTestMode) {
-              val consoleView = createConsoleView(processHandler)
-              consoleView.attachToProcess(processHandler)
-              consoleView.scrollToEnd()
-            }
-            processHandler.startNotify()
-          }
-        }
+    val rmdFileOnHost = interpreter.uploadFileToHostIfNeeded(rMarkdownFile, preserveName = true)
+    val knitRootDirectory = PathUtil.getParentPath(rmdFileOnHost)
+    val outputDirectory = RMarkdownSettings.getInstance(project).state.getOutputDirectory(rMarkdownFile)
+                          ?: rMarkdownFile.parent
+    val outputDirOnHost = interpreter.getFilePathAtHost(outputDirectory) ?: knitRootDirectory
+    val libraryPath = RPathUtil.join(interpreter.getHelpersRootOnHost(), "pandoc")
+    val resultTmpFile = interpreter.createTempFileOnHost("rmd-output-path.txt")
+
+    val args = arrayListOf(libraryPath, rmdFileOnHost, knitRootDirectory, outputDirOnHost, resultTmpFile)
+    val processHandler = interpreter.runHelperProcess(interpreter.uploadFileToHost(R_MARKDOWN_HELPER), args,
+                                                      knitRootDirectory)
+    currentProcessHandler = processHandler
+
+    val (knitListener, onProcessTerminated) = makeKnitListener(interpreter, rMarkdownFile, resultTmpFile, outputDirectory, isShiny)
+    processHandler.addProcessListener(knitListener)
+
+    withContext(Dispatchers.EDT) {
+      if (!ApplicationManager.getApplication().isUnitTestMode) {
+        val consoleView = createConsoleView(processHandler)
+        consoleView.attachToProcess(processHandler)
+        consoleView.scrollToEnd()
       }
-    }.onError {
-      promise.setError(it)
+      processHandler.startNotify()
     }
+
+    return onProcessTerminated.await()
   }
 
   private fun renderingErrorNotification() {
@@ -121,14 +118,16 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
       .notify(project)
   }
 
-  private fun makeKnitListener(interpreter: RInterpreter, file: VirtualFile, promise: AsyncPromise<Unit>, resultTmpFileOnHost: String,
-                               outputDir: VirtualFile, isShiny: Boolean): ProcessListener {
-    return object : ProcessListener {
+  private fun makeKnitListener(interpreter: RInterpreter, file: VirtualFile, resultTmpFileOnHost: String,
+                               outputDir: VirtualFile, isShiny: Boolean): Pair<ProcessListener, CompletableDeferred<Unit>> {
+    val onProcessTerminated = CompletableDeferred<Unit>()
+
+    val processListener =  object : ProcessListener {
       override fun processTerminated(event: ProcessEvent) {
         val exitCode = event.exitCode
         if (isInterrupted || currentConsoleView?.let { Disposer.isDisposed(it) } == true) {
           isInterrupted = false
-          promise.setError("Rendering was interrupted")
+          onProcessTerminated.completeExceptionally(RMarkdownRenderingConsoleRunnerException("Rendering was interrupted"))
         } else {
           if (exitCode == 0) {
             try {
@@ -138,17 +137,20 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
                 RMarkdownSettings.getInstance(project).state.setProfileLastOutput(file, outputPathOnHost)
                 outputDir.refresh(true, false)
               }
-              promise.setResult(Unit)
+              onProcessTerminated.complete(Unit)
             } catch (e: IOException) {
-              promise.setError(e)
+              onProcessTerminated.completeExceptionally(e)
             }
           } else {
             renderingErrorNotification()
-            promise.setError("Rendering has non-zero exit code")
+              // todo make exception for runner
+            onProcessTerminated.completeExceptionally(RMarkdownRenderingConsoleRunnerException("Rendering has non-zero exit code"))
           }
         }
       }
     }
+
+    return processListener to onProcessTerminated
   }
 
   companion object {
