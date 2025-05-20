@@ -20,6 +20,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SyntaxTraverser
@@ -59,6 +60,10 @@ import java.awt.Dimension
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.io.path.exists
+import kotlin.io.path.isDirectory
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.name
 
 
 private val LOG = fileLogger()
@@ -527,9 +532,11 @@ class RunChunkHandler(
           .map { Integer.toHexString(it.parent.text.hashCode()) }
         return@runReadAction Pair(path, presentChunks)
       } ?: return
-      File(ChunkPath.getDirectoryForPath(path)).takeIf { it.exists() && it.isDirectory }?.listFiles()?.filter {
-        !it.isDirectory || !presentChunks.contains(it.name)
-      }?.forEach { FileUtil.delete(it) }
+      ChunkPath.getDirectoryForPath(path)
+        .takeIf { it.exists() && it.isDirectory() }
+        ?.listDirectoryEntries()
+        ?.filter { !it.isDirectory() || !presentChunks.contains(it.name) }
+        ?.forEach { FileUtilRt.deleteRecursively(it) }
     }
 
     private fun saveOutputs(outputs: List<ProcessOutput>, element: PsiElement) {

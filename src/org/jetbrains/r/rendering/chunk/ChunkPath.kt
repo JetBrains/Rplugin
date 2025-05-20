@@ -11,12 +11,12 @@ import org.jetbrains.r.editor.ui.psiFile
 import org.jetbrains.r.visualization.RNotebookCellLines.Interval
 import org.jetbrains.r.visualization.ui.getText
 import java.lang.Integer.toHexString
+import java.nio.file.Path
 import java.nio.file.Paths
 
 data class ChunkPath(val path: String, val chunkText: String) {
-
   fun getCacheDirectory(): String =
-    Paths.get(getDirectoryForPath(path), toHexString(chunkText.hashCode())).toString()
+    getDirectoryForPath(path).resolve( toHexString(chunkText.hashCode())).toString()
 
   fun getImagesDirectory(): String =
     findInCache("images")
@@ -47,8 +47,8 @@ data class ChunkPath(val path: String, val chunkText: String) {
     Paths.get(getCacheDirectory(), name).toString()
 
   companion object {
-    fun getDirectoryForPath(path: String): String =
-      Paths.get(PathManager.getSystemPath(), "rplugin", "cache", "chunk-output", toHexString(path.hashCode())).toString()
+    fun getDirectoryForPath(path: String): Path =
+      Paths.get(PathManager.getSystemPath(), "rplugin", "cache", "chunk-output", toHexString(path.hashCode()))
 
     fun create(editor: Editor, interval: Interval): ChunkPath? {
       val path = editor.psiFile?.virtualFile?.path ?: return null
