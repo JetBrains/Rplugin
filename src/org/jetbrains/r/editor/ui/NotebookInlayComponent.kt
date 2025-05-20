@@ -19,7 +19,7 @@ import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.editor.RMarkdownEditorAppearance
 import org.jetbrains.r.visualization.RNotebookIntervalPointer
 import org.jetbrains.r.visualization.inlays.InlayComponent
-import org.jetbrains.r.visualization.inlays.InlayOutput
+import org.jetbrains.r.visualization.inlays.InlayOutputData
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 import org.jetbrains.r.visualization.inlays.components.InlayStateCustomizer
@@ -226,7 +226,7 @@ class NotebookInlayComponent(
     }
   }
 
-  private fun onMultiOutput(inlayOutputs: List<InlayOutput>) {
+  private fun onMultiOutput(inlayOutputs: List<InlayOutputData>) {
     state?.clear()
 
     shouldLimitMaxHeight = false
@@ -252,7 +252,7 @@ class NotebookInlayComponent(
     }
   }
 
-  fun addInlayOutputs(inlayOutputs: List<InlayOutput>) {
+  fun addInlayOutputs(inlayOutputs: List<InlayOutputData>) {
     if (inlayOutputs.size > 1) {
       onMultiOutput(inlayOutputs)
     }

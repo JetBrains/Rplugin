@@ -15,7 +15,7 @@ import com.intellij.ui.Gray
 import com.intellij.ui.tabs.TabInfo
 import com.intellij.ui.tabs.TabsListener
 import com.intellij.ui.tabs.impl.JBTabsImpl
-import org.jetbrains.r.visualization.inlays.InlayOutput
+import org.jetbrains.r.visualization.inlays.InlayOutputData
 import org.jetbrains.r.visualization.inlays.MouseWheelUtils
 import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 import org.jetbrains.r.visualization.inlays.components.NotebookInlayMultiOutput
@@ -79,7 +79,7 @@ class TabbedMultiOutput(private val editor: Editor, parent: Disposable) : Notebo
     }
   }
 
-  override fun onOutputs(inlayOutputs: List<InlayOutput>) {
+  override fun onOutputs(inlayOutputs: List<InlayOutputData>) {
     tabs.removeAllTabs()
     tabsOutput.clear()
     for (inlayOutput in inlayOutputs) {
@@ -122,7 +122,7 @@ class TabbedMultiOutput(private val editor: Editor, parent: Disposable) : Notebo
     }
   }
 
-  private fun NotebookInlayState.addTab(inlayOutput: InlayOutput) {
+  private fun NotebookInlayState.addTab(inlayOutput: InlayOutputData) {
     addTab(TabInfo(this).apply {
       inlayOutput.preview?.let {
         setIcon(it)

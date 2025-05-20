@@ -10,13 +10,13 @@ import com.intellij.psi.SyntaxTraverser
 import junit.framework.TestCase
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes.FENCE_LANG
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.visualization.inlays.InlayOutput
 import org.jetbrains.r.blockingGetAndDispatchEvents
 import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.rinterop.RDebuggerTestHelper
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsUtils
+import org.jetbrains.r.visualization.inlays.InlayOutputData
 import java.awt.Dimension
 
 class RunChunkTest : RConsoleBaseTestCase() {
@@ -174,7 +174,7 @@ class RunChunkTest : RConsoleBaseTestCase() {
     assertTrue(runChunk.first().type == "TABLE")
   }
 
-  private fun doRunChunk(text: String, debug: Boolean = false): List<InlayOutput> {
+  private fun doRunChunk(text: String, debug: Boolean = false): List<InlayOutputData> {
     loadFileWithBreakpointsFromText(text, name = "foo.Rmd")
     val fenceLang = SyntaxTraverser.psiTraverser(myFixture.file).traverse().filter {
       it.node.elementType == FENCE_LANG &&

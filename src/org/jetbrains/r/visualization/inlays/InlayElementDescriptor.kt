@@ -7,13 +7,6 @@ package org.jetbrains.r.visualization.inlays
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import java.util.concurrent.Future
-import javax.swing.Icon
-
-data class InlayOutput(
-  val data: String,
-  val type: String,
-  val preview: Icon?,
-)
 
 interface InlayElementDescriptor {
   /**
@@ -31,7 +24,7 @@ interface InlayElementDescriptor {
    * store inlay outputs
    * @param inlayElement `isInlayElement(inlayElement)` is true
    */
-  fun getInlayOutputs(inlayElement: PsiElement): List<InlayOutput>? = null
+  fun getInlayOutputs(inlayElement: PsiElement): List<InlayOutputData>? = null
 
   /**
    * the method is called when inlay output of [psi] is intentionally removed by a user.

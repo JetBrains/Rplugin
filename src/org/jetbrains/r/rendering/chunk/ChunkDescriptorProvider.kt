@@ -23,7 +23,7 @@ import org.jetbrains.r.run.graphics.RPlotUtil
 import org.jetbrains.r.run.graphics.RSnapshot
 import org.jetbrains.r.settings.RGraphicsSettings
 import org.jetbrains.r.visualization.inlays.InlayElementDescriptor
-import org.jetbrains.r.visualization.inlays.InlayOutput
+import org.jetbrains.r.visualization.inlays.InlayOutputData
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.ui.use
 import java.awt.Image
@@ -45,7 +45,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
            (psi.prevSibling?.prevSibling?.let { it is LeafPsiElement && it.elementType === R_FENCE_ELEMENT_TYPE } == true)
   }
 
-  override fun getInlayOutputs(psi: PsiElement): List<InlayOutput> =
+  override fun getInlayOutputs(psi: PsiElement): List<InlayOutputData> =
     RMarkdownInlayDescriptor.getInlayOutputs(psi)
 
 
@@ -56,26 +56,26 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
     fun cleanup(chunkPath: ChunkPath): Future<Void> =
       FileUtil.asyncDelete(chunkPath.getCacheDirectory().toFile())
 
-    fun getInlayOutputs(psi: PsiElement): List<InlayOutput> =
+    fun getInlayOutputs(psi: PsiElement): List<InlayOutputData> =
       ChunkPath.create(psi)?.let { key ->
         getInlayOutputs(key, RGraphicsSettings.isDarkModeEnabled(psi.project))
       } ?: emptyList()
 
-    fun getInlayOutputs(chunkPath: ChunkPath, editor: Editor): List<InlayOutput> =
+    fun getInlayOutputs(chunkPath: ChunkPath, editor: Editor): List<InlayOutputData> =
       editor.project?.let { project ->
         getInlayOutputs(chunkPath, RGraphicsSettings.isDarkModeEnabled(project))
       } ?: emptyList()
 
-    private fun getInlayOutputs(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutput> =
+    private fun getInlayOutputs(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutputData> =
       getImages(chunkPath, isDarkModeEnabled) + getUrls(chunkPath) + getTables(chunkPath) + getOutputs(chunkPath)
 
-    private fun getImages(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutput> {
+    private fun getImages(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutputData> {
       return getImageFilesOrdered(chunkPath).map { imageFile ->
         val text = imageFile.absolutePath
         val preview = ImageIO.read(imageFile)?.let { image ->
           IconUtil.createImageIcon(RPlotUtil.fitTheme(createPreview(image), isDarkModeEnabled))
         }
-        InlayOutput(text, "IMG", preview = preview)
+        InlayOutputData(text, "IMG", preview = preview)
       }
     }
 
@@ -113,29 +113,29 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
     private val preferredWidth
       get() = (RInlayDimensions.lineHeight * 8.0f).toInt()
 
-    private fun getUrls(chunkPath: ChunkPath): List<InlayOutput> {
+    private fun getUrls(chunkPath: ChunkPath): List<InlayOutputData> {
       val imagesDirectory = chunkPath.getHtmlDirectory().toString()
       return getFilesByExtension(imagesDirectory, ".html")?.map { html ->
-        InlayOutput("file://" + html.absolutePath.toString(),
-                    "URL",
-                    preview = createIconWithText(RBundle.message("rmarkdown.output.html.title")))
+        InlayOutputData("file://" + html.absolutePath.toString(),
+                        "URL",
+                        preview = createIconWithText(RBundle.message("rmarkdown.output.html.title")))
       } ?: emptyList()
     }
 
-    private fun getTables(chunkPath: ChunkPath): List<InlayOutput> {
+    private fun getTables(chunkPath: ChunkPath): List<InlayOutputData> {
       val dataDirectory = chunkPath.getDataDirectory().toString()
       return getFilesByExtension(dataDirectory, ".csv")?.map { csv ->
-        InlayOutput(csv.readText(),
-                    "TABLE",
-                    preview = createIconWithText(RBundle.message("rmarkdown.output.table.title")))
+        InlayOutputData(csv.readText(),
+                        "TABLE",
+                        preview = createIconWithText(RBundle.message("rmarkdown.output.table.title")))
       } ?: emptyList()
     }
 
-    fun getOutputs(chunkPath: ChunkPath): List<InlayOutput> {
+    fun getOutputs(chunkPath: ChunkPath): List<InlayOutputData> {
       return chunkPath.getOutputFile().takeIf { it.exists() }?.let {
-        listOf(InlayOutput(it.toAbsolutePath().toString(),
-                           "Output",
-                           preview = createIconWithText(RBundle.message("rmarkdown.output.console.title"))))
+        listOf(InlayOutputData(it.toAbsolutePath().toString(),
+                               "Output",
+                               preview = createIconWithText(RBundle.message("rmarkdown.output.console.title"))))
       } ?: emptyList()
     }
 
