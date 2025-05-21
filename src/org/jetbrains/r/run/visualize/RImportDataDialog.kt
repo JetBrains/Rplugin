@@ -6,9 +6,9 @@ package org.jetbrains.r.run.visualize
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.ex.FileChooserDialogImpl
@@ -26,9 +26,11 @@ import com.intellij.ui.EditorNotifications.getInstance
 import com.intellij.ui.components.ActionLink
 import com.intellij.util.PathUtil
 import com.intellij.util.ui.JBUI
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.await
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.interpreter.LocalOrRemotePath
@@ -235,41 +237,38 @@ abstract class RImportDataDialog(
       form.optionPanel.setEnabledRecursively(false)
       previewer.showLoading()
       updateOkAction()
-      prepareViewerAsync(configuration)
-        .onSuccess { (viewer, errorCount) ->
+
+      RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
+        try {
+          val (viewer, errorCount) = prepareViewerAsync(configuration)
           previewer.showPreview(viewer, errorCount)
           currentConfiguration = configuration
         }
-        .onError { e ->
+        catch (e: Exception) {
           LOGGER.warn("Unable to update preview", e)
           previewer.closePreview()
           currentConfiguration = null
           showErrorDialog()
         }
-        .onProcessed {
+        finally {
           form.optionPanel.setEnabledRecursively(true)
           onUpdateFinished()
           updateOkAction()
         }
+      }
     }
   }
 
-  private fun showErrorDialog() {
-    invokeLater(ModalityState.stateForComponent(form.contentPane)) {
+  private suspend fun showErrorDialog() {
+    withContext(ModalityState.stateForComponent(form.contentPane).asContextElement()) {
       Messages.showErrorDialog(PREVIEW_FAILURE_DESCRIPTION, PREVIEW_FAILURE_TITLE)
     }
   }
 
-  private fun prepareViewerAsync(configuration: RImportConfiguration): Promise<Pair<RDataFrameViewer, Int>> {
-    return prepareViewerAsync(configuration.path, configuration.rowCount, configuration.options)
-  }
-
-  private fun prepareViewerAsync(path: LocalOrRemotePath, rowCount: Int, options: RImportOptions): Promise<Pair<RDataFrameViewer, Int>> {
-    return importer.previewDataAsync(path, rowCount, options).thenAsync { (ref, errorCount) ->
-      interop.dataFrameGetViewer(ref).then { viewer ->
-        Pair(viewer, errorCount)
-      }
-    }
+  private suspend fun prepareViewerAsync(configuration: RImportConfiguration): Pair<RDataFrameViewer, Int> {
+    val (ref, errorCount) = importer.previewDataAsync(configuration.path, configuration.rowCount, configuration.options).await()
+    val viewer = interop.dataFrameGetViewer(ref).await()
+    return Pair(viewer, errorCount)
   }
 
   private fun collectImportConfiguration(): RImportConfiguration? {
