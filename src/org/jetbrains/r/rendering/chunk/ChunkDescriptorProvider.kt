@@ -4,24 +4,20 @@
 
 package org.jetbrains.r.rendering.chunk
 
-import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
-import com.intellij.openapi.util.io.FileUtil
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
-import com.intellij.psi.impl.source.tree.LeafPsiElement
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.ui.scale.JBUIScale
 import com.intellij.util.IconUtil
 import com.intellij.util.ui.ImageUtil
 import com.intellij.util.ui.UIUtil
-import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RPlotUtil
 import org.jetbrains.r.run.graphics.RSnapshot
 import org.jetbrains.r.settings.RGraphicsSettings
-import org.jetbrains.r.visualization.inlays.InlayElementDescriptor
 import org.jetbrains.r.visualization.inlays.InlayOutputData
 import org.jetbrains.r.visualization.ui.use
 import java.awt.Image
@@ -29,114 +25,91 @@ import java.awt.Rectangle
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.nio.file.Path
-import java.util.concurrent.Future
 import javax.imageio.ImageIO
 import javax.swing.Icon
 import kotlin.io.path.*
 
-class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDescriptor {
-  override fun cleanup(psi: PsiElement): Future<Void> =
-    RMarkdownInlayDescriptor.cleanup(psi)
+object RMarkdownInlayDescriptor {
+  suspend fun cleanup(chunkPath: ChunkPath): Unit =
+    withContext(Dispatchers.IO) {
+      FileUtilRt.deleteRecursively(chunkPath.getCacheDirectory())
+    }
 
-  override fun isInlayElement(psi: PsiElement): Boolean {
-    return psi is LeafPsiElement && psi.elementType == MarkdownTokenTypes.CODE_FENCE_END &&
-           (psi.prevSibling?.prevSibling?.let { it is LeafPsiElement && it.elementType === R_FENCE_ELEMENT_TYPE } == true)
+  fun getInlayOutputs(chunkPath: ChunkPath, project: Project): List<InlayOutputData> =
+    getInlayOutputs(chunkPath, RGraphicsSettings.isDarkModeEnabled(project))
+
+  private fun getInlayOutputs(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutputData> =
+    getImages(chunkPath, isDarkModeEnabled) + getUrls(chunkPath) + getTables(chunkPath) + getTextOutputs(chunkPath)
+
+  private fun getImages(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutputData.Image> {
+    return getImageFilesOrdered(chunkPath).map { path ->
+      val preview = ImageIO.read(path.toFile())?.let { image ->
+        IconUtil.createImageIcon(RPlotUtil.fitTheme(createPreview(image), isDarkModeEnabled))
+      }
+      InlayOutputData.Image(path, preview = preview)
+    }
   }
 
-  override fun getInlayOutputs(psi: PsiElement): List<InlayOutputData> =
-    RMarkdownInlayDescriptor.getInlayOutputs(psi)
-
-
-  companion object {
-    fun cleanup(psi: PsiElement): Future<Void> =
-      cleanup(ChunkPath.create(psi)!!)
-
-    fun cleanup(chunkPath: ChunkPath): Future<Void> =
-      FileUtil.asyncDelete(chunkPath.getCacheDirectory().toFile())
-
-    fun getInlayOutputs(psi: PsiElement): List<InlayOutputData> =
-      ChunkPath.create(psi)?.let { key ->
-        getInlayOutputs(key, RGraphicsSettings.isDarkModeEnabled(psi.project))
-      } ?: emptyList()
-
-    fun getInlayOutputs(chunkPath: ChunkPath, editor: Editor): List<InlayOutputData> =
-      editor.project?.let { project ->
-        getInlayOutputs(chunkPath, RGraphicsSettings.isDarkModeEnabled(project))
-      } ?: emptyList()
-
-    private fun getInlayOutputs(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutputData> =
-      getImages(chunkPath, isDarkModeEnabled) + getUrls(chunkPath) + getTables(chunkPath) + getTextOutputs(chunkPath)
-
-    private fun getImages(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutputData.Image> {
-      return getImageFilesOrdered(chunkPath).map { path ->
-        val preview = ImageIO.read(path.toFile())?.let { image ->
-          IconUtil.createImageIcon(RPlotUtil.fitTheme(createPreview(image), isDarkModeEnabled))
-        }
-        InlayOutputData.Image(path, preview = preview)
+  private fun createPreview(image: BufferedImage): BufferedImage {
+    val previewHeight = PREVIEW_ICON_HEIGHT
+    val previewWidth = PREVIEW_ICON_WIDTH
+    return ImageUtil.createImage(previewWidth, previewHeight, BufferedImage.TYPE_INT_RGB).also { preview ->
+      preview.createGraphics().use {
+        it.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+        it.drawImage(image, 0, 0, previewWidth, previewHeight, null)
       }
     }
+  }
 
-    private fun createPreview(image: BufferedImage): BufferedImage {
-      val previewHeight = PREVIEW_ICON_HEIGHT
-      val previewWidth = PREVIEW_ICON_WIDTH
-      return ImageUtil.createImage(previewWidth, previewHeight, BufferedImage.TYPE_INT_RGB).also { preview ->
-        preview.createGraphics().use {
-          it.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
-          it.drawImage(image, 0, 0, previewWidth, previewHeight, null)
-        }
-      }
+  private fun getImageFilesOrdered(chunkPath: ChunkPath): List<Path> {
+    val snapshots = getSnapshots(chunkPath)?.map { ExternalImage(it.file, it.number, 0) } ?: emptyList()
+    val external = getExternalImages(chunkPath)
+    val triples = snapshots + external
+    val sorted = triples.sortedWith(compareBy(ExternalImage::major, ExternalImage::minor))
+    return sorted.map { it.file }
+  }
+
+  private fun getSnapshots(chunkPath: ChunkPath): List<RSnapshot>? {
+    val directory = chunkPath.getImagesDirectory()
+    return RGraphicsDevice.fetchLatestNormalSnapshots(directory)
+  }
+
+  private fun getExternalImages(chunkPath: ChunkPath): List<ExternalImage> {
+    val directory = chunkPath.getExternalImagesDirectory()
+    return directory.listDirectoryEntries().mapNotNull { file ->
+      ExternalImage.from(file)
     }
+  }
 
-    private fun getImageFilesOrdered(chunkPath: ChunkPath): List<Path> {
-      val snapshots = getSnapshots(chunkPath)?.map { ExternalImage(it.file, it.number, 0) } ?: emptyList()
-      val external = getExternalImages(chunkPath)
-      val triples = snapshots + external
-      val sorted = triples.sortedWith(compareBy(ExternalImage::major, ExternalImage::minor))
-      return sorted.map { it.file }
+  private fun getUrls(chunkPath: ChunkPath): List<InlayOutputData.HtmlUrl> {
+    val imagesDirectory = chunkPath.getHtmlDirectory()
+    return getFilesByExtension(imagesDirectory, ".html").map { html ->
+      InlayOutputData.HtmlUrl("file://" + html.toAbsolutePath().toString(),
+                              preview = createIconWithText(RBundle.message("rmarkdown.output.html.title")))
     }
+  }
 
-    private fun getSnapshots(chunkPath: ChunkPath): List<RSnapshot>? {
-      val directory = chunkPath.getImagesDirectory()
-      return RGraphicsDevice.fetchLatestNormalSnapshots(directory)
+  private fun getTables(chunkPath: ChunkPath): List<InlayOutputData.CsvTable> {
+    val dataDirectory = chunkPath.getDataDirectory()
+    return getFilesByExtension(dataDirectory, ".csv").map { csv ->
+      InlayOutputData.CsvTable(csv.readText(),
+                               preview = createIconWithText(RBundle.message("rmarkdown.output.table.title")))
     }
+  }
 
-    private fun getExternalImages(chunkPath: ChunkPath): List<ExternalImage> {
-      val directory = chunkPath.getExternalImagesDirectory()
-      return directory.listDirectoryEntries().mapNotNull { file ->
-        ExternalImage.from(file)
-      }
-    }
+  fun getTextOutputs(chunkPath: ChunkPath): List<InlayOutputData.TextOutput> {
+    return chunkPath.getOutputFile().takeIf { it.exists() }?.let {
+      listOf(InlayOutputData.TextOutput(it.toAbsolutePath(),
+                                        preview = createIconWithText(RBundle.message("rmarkdown.output.console.title"))))
+    } ?: emptyList()
+  }
 
-    private fun getUrls(chunkPath: ChunkPath): List<InlayOutputData.HtmlUrl> {
-      val imagesDirectory = chunkPath.getHtmlDirectory()
-      return getFilesByExtension(imagesDirectory, ".html").map { html ->
-        InlayOutputData.HtmlUrl("file://" + html.toAbsolutePath().toString(),
-                                preview = createIconWithText(RBundle.message("rmarkdown.output.html.title")))
-      }
-    }
+  private fun getFilesByExtension(imagesDirectory: Path, extension: String): List<Path> {
+    if (!imagesDirectory.exists()) return emptyList()
 
-    private fun getTables(chunkPath: ChunkPath): List<InlayOutputData.CsvTable> {
-      val dataDirectory = chunkPath.getDataDirectory()
-      return getFilesByExtension(dataDirectory, ".csv").map { csv ->
-        InlayOutputData.CsvTable(csv.readText(),
-                                 preview = createIconWithText(RBundle.message("rmarkdown.output.table.title")))
-      }
-    }
-
-    fun getTextOutputs(chunkPath: ChunkPath): List<InlayOutputData.TextOutput> {
-      return chunkPath.getOutputFile().takeIf { it.exists() }?.let {
-        listOf(InlayOutputData.TextOutput(it.toAbsolutePath(),
-                                          preview = createIconWithText(RBundle.message("rmarkdown.output.console.title"))))
-      } ?: emptyList()
-    }
-
-    private fun getFilesByExtension(imagesDirectory: Path, extension: String): List<Path> {
-      if (!imagesDirectory.exists()) return emptyList()
-
-      return imagesDirectory.listDirectoryEntries()
-        .filter { it.name.endsWith(extension) }
-        .sortedBy { it.getLastModifiedTime() }
-    }
+    return imagesDirectory.listDirectoryEntries()
+      .filter { it.name.endsWith(extension) }
+      .sortedBy { it.getLastModifiedTime() }
   }
 }
 
@@ -161,7 +134,7 @@ private data class ExternalImage(
 }
 
 private fun createIconWithText(text: String): Icon {
-  val image = ImageUtil.createImage( PREVIEW_ICON_WIDTH, PREVIEW_ICON_HEIGHT, BufferedImage.TYPE_INT_RGB)
+  val image = ImageUtil.createImage(PREVIEW_ICON_WIDTH, PREVIEW_ICON_HEIGHT, BufferedImage.TYPE_INT_RGB)
   val rectangle = Rectangle(0, 0, PREVIEW_ICON_WIDTH, PREVIEW_ICON_HEIGHT)
   image.createGraphics().use { graphics ->
     graphics.color = EditorColorsManager.getInstance().globalScheme.defaultBackground

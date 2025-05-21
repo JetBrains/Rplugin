@@ -189,6 +189,8 @@ class RunChunkTest : RConsoleBaseTestCase() {
     val firstPromise = result.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
     TestCase.assertNotNull(firstPromise)
     firstPromise?.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    return RMarkdownInlayDescriptor(myFixture.file).getInlayOutputs(fenceLang!!)
+
+    val chunkPath = ChunkPath.create(fenceLang!!)!!
+    return RMarkdownInlayDescriptor.getInlayOutputs(chunkPath, fenceLang.project)
   }
 }
