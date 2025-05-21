@@ -8,9 +8,9 @@ import com.intellij.icons.AllIcons
 import com.intellij.ide.browsers.WebBrowserManager
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
-import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
+import com.intellij.openapi.application.edtWriteAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
@@ -24,9 +24,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import icons.RIcons
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.actions.RDumbAwareBgtAction
@@ -137,7 +135,7 @@ private class BuildManager(private val project: Project, private val report: Vir
       val editor = e.editor ?: return@launch
       val isShiny = editor.isShiny
       val document = editor.document
-      withContext(Dispatchers.EDT) {
+      edtWriteAction {
         FileDocumentManager.getInstance().saveDocument(document)
       }
       val consoleRunner = RMarkdownRenderingConsoleRunner(project)

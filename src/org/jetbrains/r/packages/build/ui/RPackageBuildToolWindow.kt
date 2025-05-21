@@ -9,13 +9,13 @@ import com.intellij.execution.process.BaseProcessHandler
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.ui.ConsoleViewContentType
-import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.util.Disposer
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.r.execution.ExecuteExpressionUtils.launchScript
 import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -76,28 +76,26 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
     RPackageBuildSettingsDialog(project).show()
   }
 
-  private fun updateExportsAsync(): Promise<Unit> {
-    return if (RPackageBuildUtil.usesRcpp(project)) runHelperAsync(UPDATE_EXPORTS_HELPER_NAME) else resolvedPromise()
+  private suspend fun updateExportsAsync() {
+    if (RPackageBuildUtil.usesRcpp(project))
+      runHelperAsync(UPDATE_EXPORTS_HELPER_NAME)
   }
 
-  private fun installAndReloadPackageAsync(hasDevTools: Boolean): Promise<Unit> {
-    return if (packageName != null) {
-      if (service.isPackageLoaded(packageName)) {
-        service.unloadPackage(packageName, true)
-      } else {
-        resolvedPromise()
-      }
-        .thenAsync { installPackageAsync(hasDevTools) }
-        .thenAsync { service.loadPackage(packageName) }
-    } else {
-      resolvedPromise()
+  private suspend fun installAndReloadPackageAsync(hasDevTools: Boolean) {
+    if (packageName == null) return
+
+    if (service.isPackageLoaded(packageName)) {
+      service.awaitUnloadPackage(packageName, true)
     }
+    installPackageAsync(hasDevTools)
+    service.awaitLoadPackage(packageName)
   }
 
-  private fun installPackageAsync(hasDevTools: Boolean): Promise<Unit> {
+  private suspend fun installPackageAsync(hasDevTools: Boolean) {
     val args = getInstallArguments()
     val useDevTools = hasDevTools && settings.useDevTools
-    return if (useDevTools) runHelperAsync(INSTALL_PACKAGE_HELPER_NAME, args) else runCommandAsync("INSTALL", args)
+    if (useDevTools) runHelperAsync(INSTALL_PACKAGE_HELPER_NAME, args)
+    else runCommandAsync("INSTALL", args)
   }
 
   private fun getInstallArguments(): List<String> {
@@ -116,10 +114,16 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
     }
   }
 
-  private fun checkPackageAsync(hasDevTools: Boolean): Promise<Unit> {
+  private suspend fun checkPackageAsync(hasDevTools: Boolean) {
     val args = getCheckArguments()
     val useDevTools = hasDevTools && settings.useDevTools
-    return if (useDevTools) runHelperAsync(CHECK_PACKAGE_HELPER_NAME, args) else runCommandAsync("check", args)
+
+    if (useDevTools) {
+      runHelperAsync(CHECK_PACKAGE_HELPER_NAME, args)
+    }
+    else {
+      runCommandAsync("check", args)
+    }
   }
 
   private fun getCheckArguments(): List<String> {
@@ -131,59 +135,67 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
     }
   }
 
-  private fun testPackageAsync(hasDevTools: Boolean): Promise<Unit> {
-    return if (hasDevTools) runHelperAsync(TEST_PACKAGE_HELPER_NAME) else resolvedPromise()
+  private suspend fun testPackageAsync(hasDevTools: Boolean) {
+    if (hasDevTools) {
+      runHelperAsync(TEST_PACKAGE_HELPER_NAME)
+    }
   }
 
-  private fun setupTestThatAsync(hasDevTools: Boolean): Promise<Unit> {
-    return if (hasDevTools) runHelperAsync(SETUP_TESTS_HELPER_NAME) else resolvedPromise()
+  private suspend fun setupTestThatAsync(hasDevTools: Boolean) {
+    if (hasDevTools) {
+      runHelperAsync(SETUP_TESTS_HELPER_NAME)
+    }
   }
 
-  private fun runCommandAsync(command: String, args: List<String> = emptyList()): Promise<Unit> {
-    return runProcessAsync { interpreterLocation ->
+  private suspend fun runCommandAsync(command: String, args: List<String> = emptyList()) {
+    runProcessAsync { interpreterLocation ->
       val interpreterArgs = listOf("CMD", command, ".", *args.toTypedArray())
       interpreterLocation.runInterpreterOnHost(interpreterArgs, project.basePath)
     }
   }
 
-  private fun runHelperAsync(helperName: String, args: List<String> = emptyList()): Promise<Unit> {
-    return runProcessAsync { interpreterLocation ->
+  private suspend fun runHelperAsync(helperName: String, args: List<String> = emptyList()) {
+    runProcessAsync { interpreterLocation ->
       val relativeHelperPath = Paths.get("packages", helperName).toString()
       launchScript(interpreterLocation, relativeHelperPath, args, project.basePath, project = project)
     }
   }
 
-  private fun runProcessAsync(processHandlerSupplier: (RInterpreterLocation) -> BaseProcessHandler<*>): Promise<Unit> {
-    return AsyncPromise<Unit>().also { promise ->
-      val interpreterLocation = RInterpreterManager.getInstance(project).interpreterLocation
-      if (interpreterLocation !is RLocalInterpreterLocation) {
-        promise.setError("Remote runProcess unimplemented")
-        return@also
-      }
-      val processHandler = processHandlerSupplier(interpreterLocation)
-      currentProcessHandler = processHandler
-      processHandler.addProcessListener(createProcessListener(promise))
-      runInEdt {
-        consoleView.attachToProcess(processHandler)
-        consoleView.scrollToEnd()
-        processHandler.startNotify()
-      }
+  private suspend fun runProcessAsync(processHandlerSupplier: (RInterpreterLocation) -> BaseProcessHandler<*>) {
+    val interpreterLocation = RInterpreterManager.getInstance(project).interpreterLocation
+    if (interpreterLocation !is RLocalInterpreterLocation) {
+      throw RuntimeException("Remote runProcess is not supported")
     }
-  }
 
-  private fun createProcessListener(promise: AsyncPromise<Unit>) = object : ProcessListener {
-    override fun processTerminated(event: ProcessEvent) {
-      if (!isInterrupted) {
-        if (event.exitCode == 0) {
-          promise.setResult(Unit)
-        } else {
-          promise.setError("Process terminated with non-zero code ${event.exitCode}")
+    val processHandler = processHandlerSupplier(interpreterLocation)
+    currentProcessHandler = processHandler
+
+    val onTerminated = CompletableDeferred<Unit>()
+
+    processHandler.addProcessListener(object : ProcessListener {
+      override fun processTerminated(event: ProcessEvent) {
+        if (!isInterrupted) {
+          if (event.exitCode == 0) {
+            onTerminated.complete(Unit)
+          }
+          else {
+            onTerminated.completeExceptionally(RuntimeException("Process terminated with non-zero code ${event.exitCode}"))
+          }
         }
-      } else {
-        isInterrupted = false
-        promise.setError("Process was interrupted")
+        else {
+          isInterrupted = false
+          onTerminated.completeExceptionally(RuntimeException("Process was interrupted"))
+        }
       }
+    })
+
+    withContext(Dispatchers.EDT) {
+      consoleView.attachToProcess(processHandler)
+      consoleView.scrollToEnd()
+      processHandler.startNotify()
     }
+
+    onTerminated.await()
   }
 
   private fun onInterrupted() {

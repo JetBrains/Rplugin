@@ -5,12 +5,14 @@
 package org.jetbrains.r.packages.build.ui
 
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.application.ModalityState.defaultModalityState
+import com.intellij.openapi.application.asContextElement
+import com.intellij.openapi.application.edtWriteAction
+import com.intellij.openapi.fileEditor.FileDocumentManager.getInstance
 import com.intellij.openapi.project.Project
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.Promise
+import kotlinx.coroutines.launch
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.visualization.ui.ToolbarUtil
@@ -19,8 +21,8 @@ import javax.swing.Icon
 class RPackageBuildTaskManager(
   private val project: Project,
   private val onReset: () -> Unit,
-  private val beforeTask: () -> Promise<Unit>,
-  private val onInterrupted: () -> Unit
+  private val beforeTask: suspend () -> Unit,
+  private val onInterrupted: () -> Unit,
 ) {
   @Volatile
   private var currentActionHolder: ToolbarUtil.ActionHolder? = null
@@ -30,9 +32,9 @@ class RPackageBuildTaskManager(
 
   fun createActionHolder(
     id: String,
-    task: (Boolean) -> Promise<Unit>,
+    task: suspend (Boolean) -> Unit,
     requiredDevTools: Boolean,
-    checkVisible: () -> Boolean = { true }
+    checkVisible: () -> Boolean = { true },
   ) = object : ToolbarUtil.ActionHolder {
     private val missing: List<RequiredPackage>?
       get() = RequiredPackageInstaller.getInstance(project).getMissingPackagesOrNull(REQUIREMENTS)
@@ -80,19 +82,24 @@ class RPackageBuildTaskManager(
       onReset()
       isRunning = true
       currentActionHolder = this
-      beforeTask()
-        .thenAsync {
-          // Note: it's absolutely necessary to flush all the files to a disk
-          // in order to make the latest changes take effect on a build task
-          saveAllDocumentsAsync()
-        }
-        .thenAsync {
+
+      RPluginCoroutineScope.getApplicationScope().launch(defaultModalityState().asContextElement()) {
+        try {
+          beforeTask()
+
+          edtWriteAction {
+            // Note: it's absolutely necessary to flush all the files to a disk
+            // in order to make the latest changes take effect on a build task
+            getInstance().saveAllDocuments()
+          }
+
           task(hasDevTools)
         }
-        .onProcessed {
+        finally {
           currentActionHolder = null
           isRunning = false
         }
+      }
     }
   }
 
@@ -102,15 +109,6 @@ class RPackageBuildTaskManager(
     private fun createMissingPackageMessage(missing: List<RequiredPackage>): String {
       val packageString = missing.joinToString { it.toFormat(false) }
       return RBundle.message("required.package.exception.message", packageString)
-    }
-
-    private fun saveAllDocumentsAsync(): Promise<Unit> {
-      return AsyncPromise<Unit>().also { promise ->
-        ApplicationManager.getApplication().invokeLater {
-          FileDocumentManager.getInstance().saveAllDocuments()
-          promise.setResult(Unit)
-        }
-      }
     }
   }
 }

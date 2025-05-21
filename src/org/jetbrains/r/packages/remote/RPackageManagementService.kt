@@ -21,6 +21,7 @@ import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.await
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.common.ExpiringList
@@ -82,12 +83,22 @@ class RPackageManagementService(private val project: Project,
     return interopIfReady?.isLibraryLoaded(packageName) ?: false
   }
 
+  @Deprecated("Use awaitLoadPackage() instead", ReplaceWith("awaitLoadPackage(packageName)"))
   fun loadPackage(packageName: String): Promise<Unit> {
     return rStateAsync.thenAsync { it.rInterop.loadLibrary(packageName) }
   }
 
+  suspend fun awaitLoadPackage(packageName: String) {
+    return loadPackage(packageName).await()
+  }
+
+  @Deprecated("Use awaitUnloadPackage() instead", ReplaceWith("awaitUnloadPackage(packageName, withDynamicLibrary)"))
   fun unloadPackage(packageName: String, withDynamicLibrary: Boolean): Promise<Unit> {
     return rStateAsync.thenAsync { it.rInterop.unloadLibrary(packageName, withDynamicLibrary) }
+  }
+
+  suspend fun awaitUnloadPackage(packageName: String, withDynamicLibrary: Boolean) {
+    unloadPackage(packageName, withDynamicLibrary).await()
   }
 
   override fun getAllRepositories(): List<String> {

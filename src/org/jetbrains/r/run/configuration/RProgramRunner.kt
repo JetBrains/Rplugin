@@ -11,10 +11,12 @@ import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.util.concurrency.AppExecutorUtil
+import com.intellij.util.concurrency.annotations.RequiresWriteLock
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 
 class RProgramRunner: AsyncProgramRunner<RunnerSettings>() {
+  @RequiresWriteLock
   override fun execute(environment: ExecutionEnvironment, state: RunProfileState): Promise<RunContentDescriptor?> {
     FileDocumentManager.getInstance().saveAllDocuments()
     val result = AsyncPromise<RunContentDescriptor?>()
