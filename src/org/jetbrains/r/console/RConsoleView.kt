@@ -42,9 +42,12 @@ import com.intellij.util.IJSwingUtilities
 import com.intellij.util.PathUtil
 import com.intellij.util.ui.FontInfo
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.coroutines.launch
-import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.asPromise
+import org.jetbrains.concurrency.await
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
@@ -140,19 +143,16 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
     }
   }
 
-  fun executeText(text: String): Promise<Unit> {
-    val promise = AsyncPromise<Unit>()
-    invokeLater {
-      runWriteAction {
+  fun executeText(text: String): Promise<Unit> =
+    RPluginCoroutineScope.getScope(project).async(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
+      writeAction {
         consoleEditor.document.setText(text)
         PsiDocumentManager.getInstance(project).commitDocument(consoleEditor.document)
       }
 
       consoleEditor.caretModel.moveToOffset(consoleEditor.document.textLength)
-      executeActionHandler.runExecuteActionImpl().onProcessed { promise.setResult(Unit) }
-    }
-    return promise
-  }
+      executeActionHandler.runExecuteActionImpl().await()
+    }.asCompletableFuture().asPromise()
 
   fun createDebuggerPanel() {
     debuggerPanel = RDebuggerPanel(this).also {
