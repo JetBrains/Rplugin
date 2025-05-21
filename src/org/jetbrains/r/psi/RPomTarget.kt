@@ -72,18 +72,15 @@ abstract class RPomTarget: PomNamedTarget {
       RStringLiteralPomTargetPsiElementImpl(literal)
 
     fun createPomTarget(rVar: RVar): RPomTarget = when (val value = rVar.value) {
-      is RValueFunction -> createFunctionPomTarget(rVar)
-      is RValueDataFrame -> createDataFramePomTarget(rVar)
-      is RValueGraph -> createGraphPomTarget(rVar)
+      is RValueFunction -> FunctionPomTarget(rVar)
+      is RValueDataFrame -> DataFramePomTarget(rVar)
+      is RValueGraph -> GraphPomTarget(rVar)
       is RValueMatrix -> {
-        if (value.dim.size == 2) {
-          createDataFramePomTarget(rVar)
-        } else {
-          createVariablePomTarget(rVar)
-        }
+        if (value.dim.size == 2) DataFramePomTarget(rVar)
+        else VariablePomTarget(rVar)
       }
       is RValueError -> throw IllegalStateException("Error: ${value.text}")
-      else -> createVariablePomTarget(rVar)
+      else -> VariablePomTarget(rVar)
     }
 
     fun isSkeletonPomTargetPsi(element: PsiElement): Boolean {
@@ -93,14 +90,6 @@ abstract class RPomTarget: PomNamedTarget {
     }
   }
 }
-
-private fun createDataFramePomTarget(rVar: RVar): RPomTarget = DataFramePomTarget(rVar)
-
-private fun createGraphPomTarget(rVar: RVar): RPomTarget = GraphPomTarget(rVar)
-
-private fun createVariablePomTarget(rVar: RVar): RPomTarget = VariablePomTarget(rVar)
-
-private fun createFunctionPomTarget(rVar: RVar): RPomTarget = FunctionPomTarget(rVar)
 
 internal class FunctionPomTarget(private val rVar: RVar) : RPomTarget() {
   override suspend fun navigateAsync(requestFocus: Boolean) {
