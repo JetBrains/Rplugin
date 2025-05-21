@@ -9,8 +9,6 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.SystemInfo
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 import org.jetbrains.r.run.visualize.RDataFrameViewer
@@ -121,9 +119,8 @@ fun testExecuteMultilineWithFor() {
   fun testViewRequest() {
     val promise = AsyncPromise<Pair<RValue, String>>()
     rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
-      override fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> {
+      override suspend fun onViewRequest(ref: RReference, title: String, value: RValue) {
         promise.setResult(value to title)
-        return resolvedPromise()
       }
     })
     rInterop.asyncEventsStartProcessing()

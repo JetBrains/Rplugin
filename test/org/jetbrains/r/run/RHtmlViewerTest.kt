@@ -8,8 +8,6 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.rinterop.RInterop
 
 class RHtmlViewerTest : RProcessHandlerBaseTestCase() {
@@ -59,10 +57,9 @@ class RHtmlViewerTest : RProcessHandlerBaseTestCase() {
     var actualPath: String? = null
     var actualTitle: String? = null
     rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
-      override fun onShowFileRequest(filePath: String, title: String): Promise<Unit> {
+      override suspend fun onShowFileRequest(filePath: String, title: String) {
         actualPath = filePath
         actualTitle = title
-        return resolvedPromise()
       }
     })
     rInterop.asyncEventsStartProcessing()
@@ -75,9 +72,8 @@ class RHtmlViewerTest : RProcessHandlerBaseTestCase() {
   private fun browseLocalUrl(expectedUrl: String) {
     var actualUrl: String? = null
     val listener = object : RInterop.AsyncEventsListener {
-      override fun onShowFileRequest(filePath: String, title: String): Promise<Unit> {
+      override suspend fun onShowFileRequest(filePath: String, title: String) {
         actualUrl = filePath
-        return resolvedPromise()
       }
     }.also { rInterop.addAsyncEventsListener(it) }
     rInterop.executeCode("browseURL('$expectedUrl')")
@@ -89,9 +85,8 @@ class RHtmlViewerTest : RProcessHandlerBaseTestCase() {
     var wasShowFileRequest = false
     val browseUrlRequest = AsyncPromise<String>()
     val listener = object : RInterop.AsyncEventsListener {
-      override fun onShowFileRequest(filePath: String, title: String): Promise<Unit> {
+      override suspend fun onShowFileRequest(filePath: String, title: String) {
         wasShowFileRequest = true
-        return resolvedPromise()
       }
 
       override fun onBrowseURLRequest(url: String) {

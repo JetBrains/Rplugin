@@ -32,9 +32,11 @@ import io.grpc.stub.ClientCalls
 import io.grpc.stub.StreamObserver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.*
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.classes.r6.R6ClassActiveBinding
 import org.jetbrains.r.classes.r6.R6ClassField
 import org.jetbrains.r.classes.r6.R6ClassInfo
@@ -83,8 +85,10 @@ private const val DEADLINE_TEST_DEFAULT = 400L
 val LOADED_LIBRARIES_UPDATED = Topic.create("R Interop loaded libraries updated", LoadedLibrariesListener::class.java)
 const val RINTEROP_THREAD_NAME = "RInterop"
 
-class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler,
-               address: String, port: Int, val project: Project) : UserDataHolderBase(), Disposable {
+class RInterop(
+  val interpreter: RInterpreter, val processHandler: ProcessHandler,
+  address: String, port: Int, val project: Project,
+) : UserDataHolderBase(), Disposable {
   private val channel = ManagedChannelBuilder.forAddress(address, port)
     .executor(AppExecutorUtil.getAppExecutorService())
     .usePlaintext()
@@ -1090,7 +1094,9 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       }
       AsyncEvent.EventCase.VIEWREQUEST -> {
         val ref = RPersistentRef(event.viewRequest.persistentRefIndex, this)
-        fireListenersAsync({ it.onViewRequest(ref, event.viewRequest.title, ProtoUtil.rValueFromProto(event.viewRequest.value)) }) {
+        fireListenersCoroutines({
+                                  it.onViewRequest(ref, event.viewRequest.title, ProtoUtil.rValueFromProto(event.viewRequest.value))
+                                }) {
           Disposer.dispose(ref)
           executeAsync(asyncStub::clientRequestFinished, Empty.getDefaultInstance())
         }
@@ -1106,7 +1112,9 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       }
       AsyncEvent.EventCase.SHOWFILEREQUEST -> {
         val request = event.showFileRequest
-        fireListenersAsync({ it.onShowFileRequest(request.filePath, request.title) }) {
+        fireListenersCoroutines({
+                                  it.onShowFileRequest(request.filePath, request.title)
+                                }) {
           executeAsync(asyncStub::clientRequestFinished, Empty.getDefaultInstance())
         }
       }
@@ -1122,20 +1130,19 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       AsyncEvent.EventCase.RSTUDIOAPIREQUEST -> {
         val request = event.rStudioApiRequest
         lateinit var rStudioApiResponse: RObject
-        fireListenersAsync(
+        fireListenersCoroutines(
           {
             val id = RStudioApiFunctionId.fromInt(request.functionID)
-            if (id != null) {
-              val response = it.onRStudioApiRequest(id, request.args) ?: return@fireListenersAsync resolvedPromise()
-              response.then { result ->
-                rStudioApiResponse = result
-              }.onError {
-                rStudioApiResponse = RObject.newBuilder().setError(it.message).build()
-              }
-            }
-            else {
+            if (id == null) {
               rStudioApiResponse = RObject.newBuilder().setError("Unknown function id").build()
-              resolvedPromise()
+              return@fireListenersCoroutines
+            }
+
+            try {
+              rStudioApiResponse = it.onRStudioApiRequest(id, request.args) ?: return@fireListenersCoroutines
+            }
+            catch (e: Exception) {
+              rStudioApiResponse = RObject.newBuilder().setError(e.message).build()
             }
           }) {
           executeAsync(asyncStub::rStudioApiResponse, rStudioApiResponse)
@@ -1157,23 +1164,21 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     }
   }
 
-  private fun fireListenersAsync(f: (AsyncEventsListener) -> Promise<Unit>, end: () -> Unit) {
-    if (asyncEventsListeners.isEmpty()) {
+  private fun fireListenersCoroutines(f: suspend (AsyncEventsListener) -> Unit, end: () -> Unit) {
+    RPluginCoroutineScope.getScope(project).launch(Dispatchers.Default) {
+      supervisorScope {
+        // fail of listener will not affect others
+        asyncEventsListeners.forEach { listener ->
+          launch {
+            runCatching {
+              f(listener)
+            }.onFailure {
+              LOG.error(it)
+            }
+          }
+        }
+      }
       end()
-      return
-    }
-    val remaining = AtomicInteger(asyncEventsListeners.size)
-    // todo fix race condition, in theory asyncEventsListeners size may change during iteration and we will not call end
-    asyncEventsListeners.forEach { listener ->
-      val promise = try {
-        f(listener)
-      } catch (t: Throwable) {
-        LOG.error(t)
-        resolvedPromise()
-      }
-      promise.onProcessed {
-        if (remaining.decrementAndGet() == 0) end()
-      }
     }
   }
 
@@ -1405,11 +1410,11 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     fun onPrompt(isDebug: Boolean = false) {}
     fun onException(exception: RExceptionInfo) {}
     fun onTermination() {}
-    fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> = resolvedPromise()
+    suspend fun onViewRequest(ref: RReference, title: String, value: RValue) {}
     fun onViewTableRequest(viewer: RDataFrameViewer, title: String) {}
     fun onShowHelpRequest(httpdResponse: HttpdResponse) {}
-    fun onShowFileRequest(filePath: String, title: String): Promise<Unit> = resolvedPromise()
-    fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject>? = null
+    suspend fun onShowFileRequest(filePath: String, title: String) {}
+    suspend fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): RObject? = null
     fun onSubprocessInput() {}
     fun onBrowseURLRequest(url: String) {}
     fun onRemoveBreakpointByIdRequest(id: Int) {}
