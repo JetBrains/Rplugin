@@ -18,7 +18,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.BinaryLightVirtualFile
-import com.intellij.testFramework.LightVirtualFile
 import com.intellij.ui.JreHiDpiUtil
 import com.intellij.ui.components.ActionLink
 import com.intellij.ui.components.JBLoadingPanel
@@ -172,17 +171,6 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
       }
       currentFile = null
       openEditor(BinaryLightVirtualFile("image", Base64.getMimeDecoder().decode(data)))
-    }
-  }
-
-  fun showSvgImage(data: String) {
-    isAdvancedMode = true
-    invokeAndWaitIfNeeded {
-      if (Disposer.isDisposed(disposableParent)) {
-        return@invokeAndWaitIfNeeded
-      }
-      currentFile = null
-      openEditor(LightVirtualFile("image.svg", data))
     }
   }
 
