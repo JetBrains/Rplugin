@@ -29,7 +29,7 @@ import javax.imageio.ImageIO
 import javax.swing.Icon
 import kotlin.io.path.*
 
-object RMarkdownInlayDescriptor {
+object ChunkOutputProvider {
   suspend fun cleanup(chunkPath: ChunkPath): Unit =
     withContext(Dispatchers.IO) {
       FileUtilRt.deleteRecursively(chunkPath.getCacheDirectory())

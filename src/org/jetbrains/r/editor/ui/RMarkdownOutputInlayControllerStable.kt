@@ -19,8 +19,8 @@ import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.extractOffse
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.isInViewportByY
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.setupInlayComponent
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.updateInlayWidth
+import org.jetbrains.r.rendering.chunk.ChunkOutputProvider
 import org.jetbrains.r.rendering.chunk.ChunkPath
-import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
 import org.jetbrains.r.visualization.RNotebookCellInlayController
 import org.jetbrains.r.visualization.RNotebookCellLines.CellType
 import org.jetbrains.r.visualization.RNotebookCellLines.Interval
@@ -65,7 +65,7 @@ class RMarkdownOutputInlayControllerStable private constructor(
       if (removeFiles) {
         makeChunkPath()?.let {
           RPluginCoroutineScope.getApplicationScope().launch {
-            RMarkdownInlayDescriptor.cleanup(it)
+            ChunkOutputProvider.cleanup(it)
           }
         }
       }
@@ -101,7 +101,7 @@ class RMarkdownOutputInlayControllerStable private constructor(
 
 
       val outputs = makeChunkPath()?.let { chunkPath ->
-        editor.project?.let { RMarkdownInlayDescriptor.getInlayOutputs(chunkPath, it) }
+        editor.project?.let { ChunkOutputProvider.getInlayOutputs(chunkPath, it) }
       } ?: emptyList()
 
       if (outputs.isEmpty()) return@invokeLater
