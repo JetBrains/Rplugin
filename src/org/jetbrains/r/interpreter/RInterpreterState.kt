@@ -67,7 +67,7 @@ interface RInterpreterState {
 
   fun markOutdated()
 
-  fun scheduleSkeletonUpdate(): Promise<Unit>
+  fun scheduleSkeletonUpdate()
 
   fun hasPackage(name: String): Boolean {
     return getPackageByName(name) != null
@@ -283,8 +283,8 @@ interface RInterpreterState {
   }
 
   @Synchronized
-  override fun scheduleSkeletonUpdate(): Promise<Unit> {
-    return skeletonPromise ?: createSkeletonPromise().also {
+  override fun scheduleSkeletonUpdate() {
+    skeletonPromise ?: createSkeletonPromise().also {
       skeletonPromise = it
     }
   }
