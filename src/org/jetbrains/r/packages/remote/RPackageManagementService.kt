@@ -11,6 +11,8 @@ import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.ex.ActionManagerEx
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -18,12 +20,14 @@ import com.intellij.util.CatchingConsumer
 import com.intellij.webcore.packaging.InstalledPackage
 import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.RepoPackage
+import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.await
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.common.emptyExpiringList
 import org.jetbrains.r.documentation.RDocumentationProvider
@@ -83,22 +87,24 @@ class RPackageManagementService(private val project: Project,
     return interopIfReady?.isLibraryLoaded(packageName) ?: false
   }
 
-  @Deprecated("Use awaitLoadPackage() instead", ReplaceWith("awaitLoadPackage(packageName)"))
-  fun loadPackage(packageName: String): Promise<Unit> {
-    return rStateAsync.thenAsync { it.rInterop.loadLibrary(packageName) }
+  fun launchLoadPackage(packageName: String) {
+    RPluginCoroutineScope.getScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
+      awaitLoadPackage(packageName)
+    }
   }
 
   suspend fun awaitLoadPackage(packageName: String) {
-    return loadPackage(packageName).await()
+    return rStateAsync.thenAsync { it.rInterop.loadLibrary(packageName) }.await()
   }
 
-  @Deprecated("Use awaitUnloadPackage() instead", ReplaceWith("awaitUnloadPackage(packageName, withDynamicLibrary)"))
-  fun unloadPackage(packageName: String, withDynamicLibrary: Boolean): Promise<Unit> {
-    return rStateAsync.thenAsync { it.rInterop.unloadLibrary(packageName, withDynamicLibrary) }
+  fun launchUnloadPackage(packageName: String, withDynamicLibrary: Boolean) {
+    RPluginCoroutineScope.getScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
+      unloadPackage(packageName, withDynamicLibrary)
+    }
   }
 
-  suspend fun awaitUnloadPackage(packageName: String, withDynamicLibrary: Boolean) {
-    unloadPackage(packageName, withDynamicLibrary).await()
+  suspend fun unloadPackage(packageName: String, withDynamicLibrary: Boolean) {
+    rStateAsync.thenAsync { it.rInterop.unloadLibrary(packageName, withDynamicLibrary) }.await()
   }
 
   override fun getAllRepositories(): List<String> {
@@ -290,8 +296,8 @@ class RPackageManagementService(private val project: Project,
 
     private fun <R> Promise<R>.silentlyBlockingGet(timeout: Int): R? {
       val promise = AsyncPromise<R>()
-      onSuccess { promise.setResult(it) }
-      onError { promise.setResult(null) }
+      this.onSuccess { promise.setResult(it) }
+      this.onError { promise.setResult(null) }
       return promise.blockingGet(timeout)
     }
 

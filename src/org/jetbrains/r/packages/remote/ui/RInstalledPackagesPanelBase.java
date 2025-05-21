@@ -239,9 +239,9 @@ public class RInstalledPackagesPanelBase extends JPanel {
         if (aPackage != null) {
           var packageName = aPackage.getName();
           if (myPackageManagementService.isPackageLoaded(packageName)) {
-            myPackageManagementService.unloadPackage(packageName, false);
+            myPackageManagementService.launchUnloadPackage(packageName, false);
           } else {
-            myPackageManagementService.loadPackage(packageName);
+            myPackageManagementService.launchLoadPackage(packageName);
           }
         }
       }
