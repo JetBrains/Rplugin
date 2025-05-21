@@ -23,7 +23,6 @@ import org.jetbrains.r.run.graphics.RSnapshot
 import org.jetbrains.r.settings.RGraphicsSettings
 import org.jetbrains.r.visualization.inlays.InlayElementDescriptor
 import org.jetbrains.r.visualization.inlays.InlayOutputData
-import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.ui.use
 import java.awt.Image
 import java.awt.Rectangle
@@ -107,9 +106,6 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
         ExternalImage.from(file)
       }
     }
-
-    private val preferredWidth
-      get() = (RInlayDimensions.lineHeight * 8.0f).toInt()
 
     private fun getUrls(chunkPath: ChunkPath): List<InlayOutputData.HtmlUrl> {
       val imagesDirectory = chunkPath.getHtmlDirectory()
