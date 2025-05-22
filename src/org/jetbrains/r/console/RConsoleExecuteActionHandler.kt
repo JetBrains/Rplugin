@@ -24,7 +24,6 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.xdebugger.XSourcePosition
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.concurrency.AsyncPromise
@@ -143,9 +142,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     }
 
     override suspend fun onViewRequest(ref: RReference, title: String, value: RValue) {
-      RPluginCoroutineScope.getApplicationScope().async(ModalityState.defaultModalityState().asContextElement()) {
-        RPomTarget.createPomTarget(RVar(title, ref, value)).navigateAsync(true)
-      }
+      RPomTarget.createPomTarget(RVar(title, ref, value)).navigateAsync(true)
     }
 
     override fun onViewTableRequest(viewer: RDataFrameViewer, title: String) {
