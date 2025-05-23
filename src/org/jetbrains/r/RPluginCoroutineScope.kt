@@ -7,21 +7,16 @@ import kotlinx.coroutines.CoroutineScope
 
 
 object RPluginCoroutineScope {
-  fun getScope(project: Project): CoroutineScope = RPluginProjectCoroutineScope.getInstance(project).coroutineScope
+  fun getScope(project: Project): CoroutineScope = RPluginCoroutineScopeImpl.getInstance(project).coroutineScope
 
-  fun getApplicationScope(): CoroutineScope = RPluginAppCoroutineScope.getInstance().coroutineScope
+  fun getApplicationScope(): CoroutineScope = RPluginCoroutineScopeImpl.getInstance().coroutineScope
 }
 
-@Service(Service.Level.PROJECT)
-private class RPluginProjectCoroutineScope(val coroutineScope: CoroutineScope) {
+@Service(Service.Level.PROJECT, Service.Level.APP)
+private class RPluginCoroutineScopeImpl(val coroutineScope: CoroutineScope) {
   companion object {
-    fun getInstance(project: Project): RPluginProjectCoroutineScope = project.service()
-  }
-}
+    fun getInstance(project: Project): RPluginCoroutineScopeImpl = project.service()
 
-@Service(Service.Level.APP)
-private class RPluginAppCoroutineScope(val coroutineScope: CoroutineScope) {
-  companion object {
-    fun getInstance(): RPluginAppCoroutineScope = service()
+    fun getInstance(): RPluginCoroutineScopeImpl = service()
   }
 }
