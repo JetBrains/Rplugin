@@ -8,9 +8,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.idea.ActionsBundle
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.application.EDT
-import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.*
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.keymap.KeymapManager
@@ -65,7 +63,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     set(value) {
       if (field != value) {
         field = value
-        RPluginCoroutineScope.getScope(console.project).launch(Dispatchers.EDT) {
+        RPluginCoroutineScope.getScope(console.project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
           if (value) {
             add(actionToolbar.component, BorderLayout.NORTH)
           }
@@ -89,7 +87,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
 
   private var isFrameViewShown: Boolean = false
     set(value) {
-      RPluginCoroutineScope.getScope(console.project).launch(Dispatchers.EDT) {
+      RPluginCoroutineScope.getScope(console.project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
         if (value == field) return@launch
         field = value
         if (value) {
@@ -300,7 +298,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       isFrameViewShown = true
       isActionToolbarShown = true
       updateStack(createRXStackFrames(rInterop.debugStack))
-      RPluginCoroutineScope.getScope(console.project).launch(Dispatchers.EDT) {
+      RPluginCoroutineScope.getScope(console.project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
         shouldUpdateHighlighter = true
       }
     } else {
@@ -350,7 +348,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
 
   private fun updateStack(stack: List<RXStackFrame>) {
     stack.forEach { tryRegisterDisposable(it) }
-    RPluginCoroutineScope.getScope(console.project).launch(Dispatchers.EDT) {
+    RPluginCoroutineScope.getScope(console.project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
       bottomComponent?.let {
         bottomComponent = null
         remove(it)

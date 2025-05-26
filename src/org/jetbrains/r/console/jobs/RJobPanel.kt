@@ -11,6 +11,8 @@ import com.intellij.ide.ui.AntialiasingType
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.colors.EditorColorsUtil
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -374,7 +376,7 @@ internal class JobEntity(val jobDescriptor: RJobDescriptor,
 
     background = backgroundColor()
     jobDescriptor.onProgressChanged { current, total ->
-      RPluginCoroutineScope.getScope(jobDescriptor.project).launch(Dispatchers.EDT) {
+      RPluginCoroutineScope.getScope(jobDescriptor.project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
         if (deleted) return@launch
         progressBar.value = current
         progressBar.maximum = total

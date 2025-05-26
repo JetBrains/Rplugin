@@ -6,6 +6,8 @@ package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.RangeHighlighter
@@ -168,7 +170,7 @@ class NotebookInlayComponent(
       state = NotebookInlayOutput(editor, disposable).apply {
         addToolbar()
         onHeightCalculated = { height ->
-          RPluginCoroutineScope.getApplicationScope().launch(Dispatchers.EDT) {
+          RPluginCoroutineScope.getApplicationScope().launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
             adjustSize(height)
           }
         }
