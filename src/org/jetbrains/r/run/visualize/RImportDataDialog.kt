@@ -14,6 +14,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.ex.FileChooserDialogImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.ui.Messages.showErrorDialog
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.ListPopup
@@ -28,7 +29,6 @@ import com.intellij.util.PathUtil
 import com.intellij.util.ui.JBUI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.await
 import org.jetbrains.r.RBundle
@@ -239,7 +239,7 @@ abstract class RImportDataDialog(
       previewer.showLoading()
       updateOkAction()
 
-      RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
+      RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.stateForComponent(form.contentPane).asContextElement()) {
         try {
           val (viewer, errorCount) = prepareViewerAsync(configuration)
           previewer.showPreview(viewer, errorCount)
@@ -252,7 +252,7 @@ abstract class RImportDataDialog(
           LOGGER.warn("Unable to update preview", e)
           previewer.closePreview()
           currentConfiguration = null
-          showErrorDialog()
+          showErrorDialog(PREVIEW_FAILURE_DESCRIPTION, PREVIEW_FAILURE_TITLE)
         }
         finally {
           form.optionPanel.setEnabledRecursively(true)
@@ -260,12 +260,6 @@ abstract class RImportDataDialog(
           updateOkAction()
         }
       }
-    }
-  }
-
-  private suspend fun showErrorDialog() {
-    withContext(ModalityState.stateForComponent(form.contentPane).asContextElement()) {
-      Messages.showErrorDialog(PREVIEW_FAILURE_DESCRIPTION, PREVIEW_FAILURE_TITLE)
     }
   }
 
