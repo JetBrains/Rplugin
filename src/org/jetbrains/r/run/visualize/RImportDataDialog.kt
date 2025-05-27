@@ -9,7 +9,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.ex.FileChooserDialogImpl
 import com.intellij.openapi.project.Project
@@ -56,14 +56,14 @@ abstract class RImportDataDialog(
   protected val interop: RInterop,
   parent: Disposable,
   private val initialPath: LocalOrRemotePath? = null
-) : BorderlessDialogWrapper(project, TITLE, IdeModalityType.IDE) {
+) : BorderlessDialogWrapper(project, RBundle.message("import.data.dialog.title"), IdeModalityType.IDE) {
   private val interpreter get() = interop.interpreter
 
   private val fileInputField = TextFieldWithBrowseButton {
     filePath = chooseFile() ?: filePath
   }
 
-  private val openFileLinkLabel = ActionLink(OPEN_FILE_TEXT) {
+  private val openFileLinkLabel = ActionLink(RBundle.message("import.data.dialog.preview.open.file")) {
     filePath = chooseFile() ?: filePath
   }
 
@@ -174,7 +174,7 @@ abstract class RImportDataDialog(
     form.importOptionPanel.add(importOptionComponent)
     fileInputField.textField.isFocusable = false
     previewRowCount = DEFAULT_PREVIEW_HEAD
-    variableName = DEFAULT_VARIABLE_NAME
+    variableName = RBundle.message("import.data.dialog.default.variable.name")
   }
 
   private fun choosePreviewHead() {
@@ -216,7 +216,7 @@ abstract class RImportDataDialog(
   private fun updateVariableName() {
     var name = filePath?.let { FileUtilRt.getNameWithoutExtension(PathUtil.getFileName(it.path)) }
     if (name.isNullOrBlank()) {
-      name = DEFAULT_VARIABLE_NAME
+      name = RBundle.message("import.data.dialog.default.variable.name")
     } else {
       name = replaceRestrictedCharacters(name)
       if (name.isBlank() || name[0] == '_' || name[0].isDigit() || (name.length >= 2 && name[0] == '.' && name[1].isDigit()))
@@ -249,10 +249,10 @@ abstract class RImportDataDialog(
           throw e
         }
         catch (e: Exception) {
-          LOGGER.warn("Unable to update preview", e)
+          logger<RImportDataDialog>().warn("Unable to update preview", e)
           previewer.closePreview()
           currentConfiguration = null
-          showErrorDialog(PREVIEW_FAILURE_DESCRIPTION, PREVIEW_FAILURE_TITLE)
+          showErrorDialog(RBundle.message("import.data.dialog.preview.failure.description"), RBundle.message("import.data.dialog.preview.failure.title"))
         }
         finally {
           form.optionPanel.setEnabledRecursively(true)
@@ -279,7 +279,7 @@ abstract class RImportDataDialog(
 
   private fun String.beautifyPath(): String {
     val path = Paths.get(this).beautify()
-    return path.takeIf { it.toString().isNotEmpty() }?.toString() ?: PROJECT_DIRECTORY_HINT
+    return path.takeIf { it.toString().isNotEmpty() }?.toString() ?: RBundle.message("import.data.dialog.project.directory.hint")
   }
 
   private fun Path.beautify(): Path {
@@ -302,7 +302,7 @@ abstract class RImportDataDialog(
   private inner class NameFieldDelegate(private val field: JTextField) {
     init {
       field.addTextChangedListener {
-        val errorText = INVALID_NAME_INPUT_MESSAGE.takeIf { tryParse() == null }
+        val errorText = RBundle.message("import.data.dialog.invalid.name.input.message").takeIf { tryParse() == null }
         setErrorText(errorText, field)
         updateOkAction()
       }
@@ -361,7 +361,7 @@ abstract class RImportDataDialog(
   protected inner class IntFieldDelegate(private val field: JTextField, private val isBlankAllowed: Boolean = false) {
     init {
       field.addTextChangedListener {
-        val errorText = INVALID_INTEGER_INPUT_MESSAGE.takeIf { tryParse() == null }
+        val errorText = RBundle.message("import.data.dialog.invalid.integer.input.message").takeIf { tryParse() == null }
         setErrorText(errorText, field)
         updateOkAction()
       }
@@ -447,22 +447,10 @@ abstract class RImportDataDialog(
     private const val DEFAULT_PREVIEW_HEAD = 50
     private val PREVIEW_HEAD_VALUES = (1..10).map { it * 10 }
 
-    private val LOGGER = Logger.getInstance(RImportCsvDataDialog::class.java)
-
-    private val TITLE = RBundle.message("import.data.dialog.title")
-    private val DEFAULT_VARIABLE_NAME = RBundle.message("import.data.dialog.default.variable.name")
-    private val PROJECT_DIRECTORY_HINT = RBundle.message("import.data.dialog.project.directory.hint")
-    private val INVALID_NAME_INPUT_MESSAGE = RBundle.message("import.data.dialog.invalid.name.input.message")
-    private val INVALID_INTEGER_INPUT_MESSAGE = RBundle.message("import.data.dialog.invalid.integer.input.message")
-
-    private val PREVIEW_FAILURE_TITLE = RBundle.message("import.data.dialog.preview.failure.title")
-    private val PREVIEW_FAILURE_DESCRIPTION = RBundle.message("import.data.dialog.preview.failure.description")
-
-    private val OPEN_FILE_TEXT = RBundle.message("import.data.dialog.preview.open.file")
-
     private val COMBO_ICON = AllIcons.Actions.FindAndShowNextMatches
 
     private val HINT_COLOR = JBColor.namedColor("Editor.foreground", JBColor(Gray._80, Gray._160))
+
     private val HINT_FONT = JBUI.Fonts.label().let { font ->
       font.deriveFont(font.size + 8.0f)
     }
