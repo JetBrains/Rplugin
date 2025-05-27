@@ -48,6 +48,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import javax.swing.*
 import javax.swing.event.DocumentEvent
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.reflect.KProperty
 
 abstract class RImportDataDialog(
@@ -243,6 +244,9 @@ abstract class RImportDataDialog(
           val (viewer, errorCount) = prepareViewerAsync(configuration)
           previewer.showPreview(viewer, errorCount)
           currentConfiguration = configuration
+        }
+        catch (e: CancellationException) {
+          throw e
         }
         catch (e: Exception) {
           LOGGER.warn("Unable to update preview", e)
