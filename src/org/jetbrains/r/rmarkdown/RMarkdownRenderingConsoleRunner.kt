@@ -103,17 +103,17 @@ class RMarkdownRenderingConsoleRunner(
     currentProcessHandler = processHandler
 
     coroutineScope {
-      val mutex = Mutex(locked = true)
+      val afterListenerAdded = Mutex(locked = true)
 
       launch {
         suspendCancellableCoroutine { cancellableContinuation ->
           val knitListener = makeKnitListener(interpreter, rMarkdownFile, resultTmpFile, outputDirectory, isShiny, cancellableContinuation)
           processHandler.addProcessListener(knitListener)
-          mutex.unlock()
+          afterListenerAdded.unlock()
         }
       }
 
-      mutex.lock() // wait for adding process listener
+      afterListenerAdded.lock()
 
       withContext(Dispatchers.EDT) {
         if (!ApplicationManager.getApplication().isUnitTestMode) {
@@ -165,7 +165,6 @@ class RMarkdownRenderingConsoleRunner(
           }
           else {
             renderingErrorNotification()
-            // todo make exception for runner
             cancellableContinuation.resumeWithException(RMarkdownRenderingConsoleRunnerException("Rendering has non-zero exit code"))
           }
         }

@@ -13,9 +13,8 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.util.Disposer
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
 import org.jetbrains.r.execution.ExecuteExpressionUtils.launchScript
 import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -29,6 +28,7 @@ import java.awt.BorderLayout
 import java.nio.file.Paths
 import javax.swing.JComponent
 import javax.swing.JPanel
+import kotlin.coroutines.resumeWithException
 
 class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPanel(true, true) {
   private val consoleView = ConsoleViewImpl(project, false).apply {
@@ -77,8 +77,9 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
   }
 
   private suspend fun updateExportsAsync() {
-    if (RPackageBuildUtil.usesRcpp(project))
+    if (RPackageBuildUtil.usesRcpp(project)) {
       runHelperAsync(UPDATE_EXPORTS_HELPER_NAME)
+    }
   }
 
   private suspend fun installAndReloadPackageAsync(hasDevTools: Boolean) {
@@ -170,32 +171,42 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
     val processHandler = processHandlerSupplier(interpreterLocation)
     currentProcessHandler = processHandler
 
-    val onTerminated = CompletableDeferred<Unit>()
+    coroutineScope {
+      val afterListenerAdded = Mutex(locked = true)
 
-    processHandler.addProcessListener(object : ProcessListener {
-      override fun processTerminated(event: ProcessEvent) {
-        if (!isInterrupted) {
-          if (event.exitCode == 0) {
-            onTerminated.complete(Unit)
-          }
-          else {
-            onTerminated.completeExceptionally(RuntimeException("Process terminated with non-zero code ${event.exitCode}"))
-          }
-        }
-        else {
-          isInterrupted = false
-          onTerminated.completeExceptionally(RuntimeException("Process was interrupted"))
+      launch {
+        suspendCancellableCoroutine { cancellableContinuation ->
+          processHandler.addProcessListener(object : ProcessListener {
+            override fun processTerminated(event: ProcessEvent) {
+              if (!isInterrupted) {
+                if (event.exitCode == 0) {
+                  cancellableContinuation.resume(Unit) { _, _, _ -> Unit }
+                }
+                else {
+                  cancellableContinuation.resumeWithException(RuntimeException("Process terminated with non-zero code ${event.exitCode}"))
+                }
+              }
+              else {
+                isInterrupted = false
+                cancellableContinuation.resumeWithException(RuntimeException("Process was interrupted"))
+              }
+            }
+          })
+
+          afterListenerAdded.unlock()
         }
       }
-    })
 
-    withContext(Dispatchers.EDT) {
-      consoleView.attachToProcess(processHandler)
-      consoleView.scrollToEnd()
-      processHandler.startNotify()
+      afterListenerAdded.lock()
+
+      withContext(Dispatchers.EDT) {
+        consoleView.attachToProcess(processHandler)
+        consoleView.scrollToEnd()
+        processHandler.startNotify()
+      }
+
+      // wait for launched block
     }
-
-    onTerminated.await()
   }
 
   private fun onInterrupted() {
