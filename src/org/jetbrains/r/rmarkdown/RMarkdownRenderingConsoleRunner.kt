@@ -21,9 +21,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PathUtil
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreter
@@ -35,15 +34,20 @@ import org.jetbrains.r.util.RPathUtil
 import java.awt.BorderLayout
 import java.io.IOException
 import javax.swing.JPanel
+import kotlin.coroutines.resumeWithException
 
 class RMarkdownRenderingConsoleRunnerException(message: String) : RuntimeException(message)
 
-class RMarkdownRenderingConsoleRunner(private val project : Project,
-                                      private val consoleTitle: String = RBundle.message("rmarkdown.rendering.console.title")) {
+class RMarkdownRenderingConsoleRunner(
+  private val project: Project,
+  private val consoleTitle: String = RBundle.message("rmarkdown.rendering.console.title"),
+) {
   @Volatile
   private var isInterrupted = false
+
   @Volatile
   private var currentProcessHandler: ProcessHandler? = null
+
   @Volatile
   private var currentConsoleView: ConsoleViewImpl? = null
 
@@ -98,19 +102,30 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
                                                       knitRootDirectory)
     currentProcessHandler = processHandler
 
-    val (knitListener, onProcessTerminated) = makeKnitListener(interpreter, rMarkdownFile, resultTmpFile, outputDirectory, isShiny)
-    processHandler.addProcessListener(knitListener)
+    coroutineScope {
+      val mutex = Mutex(locked = true)
 
-    withContext(Dispatchers.EDT) {
-      if (!ApplicationManager.getApplication().isUnitTestMode) {
-        val consoleView = createConsoleView(processHandler)
-        consoleView.attachToProcess(processHandler)
-        consoleView.scrollToEnd()
+      launch {
+        suspendCancellableCoroutine { cancellableContinuation ->
+          val knitListener = makeKnitListener(interpreter, rMarkdownFile, resultTmpFile, outputDirectory, isShiny, cancellableContinuation)
+          processHandler.addProcessListener(knitListener)
+          mutex.unlock()
+        }
       }
-      processHandler.startNotify()
-    }
 
-    return onProcessTerminated.await()
+      mutex.lock() // wait for adding process listener
+
+      withContext(Dispatchers.EDT) {
+        if (!ApplicationManager.getApplication().isUnitTestMode) {
+          val consoleView = createConsoleView(processHandler)
+          consoleView.attachToProcess(processHandler)
+          consoleView.scrollToEnd()
+        }
+        processHandler.startNotify()
+      }
+
+      // wait for launched block
+    }
   }
 
   private fun renderingErrorNotification() {
@@ -118,17 +133,22 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
       .notify(project)
   }
 
-  private fun makeKnitListener(interpreter: RInterpreter, file: VirtualFile, resultTmpFileOnHost: String,
-                               outputDir: VirtualFile, isShiny: Boolean): Pair<ProcessListener, CompletableDeferred<Unit>> {
-    val onProcessTerminated = CompletableDeferred<Unit>()
-
-    val processListener =  object : ProcessListener {
+  private fun makeKnitListener(
+    interpreter: RInterpreter,
+    file: VirtualFile,
+    resultTmpFileOnHost: String,
+    outputDir: VirtualFile,
+    isShiny: Boolean,
+    cancellableContinuation: CancellableContinuation<Unit>,
+  ): ProcessListener =
+    object : ProcessListener {
       override fun processTerminated(event: ProcessEvent) {
         val exitCode = event.exitCode
         if (isInterrupted || currentConsoleView?.let { Disposer.isDisposed(it) } == true) {
           isInterrupted = false
-          onProcessTerminated.completeExceptionally(RMarkdownRenderingConsoleRunnerException("Rendering was interrupted"))
-        } else {
+          cancellableContinuation.resumeWithException(RMarkdownRenderingConsoleRunnerException("Rendering was interrupted"))
+        }
+        else {
           if (exitCode == 0) {
             try {
               if (!isShiny) {
@@ -137,21 +157,20 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
                 RMarkdownSettings.getInstance(project).state.setProfileLastOutput(file, outputPathOnHost)
                 outputDir.refresh(true, false)
               }
-              onProcessTerminated.complete(Unit)
-            } catch (e: IOException) {
-              onProcessTerminated.completeExceptionally(e)
+              cancellableContinuation.resume(Unit) { cause, _, _ -> Unit }
             }
-          } else {
+            catch (e: IOException) {
+              cancellableContinuation.resumeWithException(e)
+            }
+          }
+          else {
             renderingErrorNotification()
-              // todo make exception for runner
-            onProcessTerminated.completeExceptionally(RMarkdownRenderingConsoleRunnerException("Rendering has non-zero exit code"))
+            // todo make exception for runner
+            cancellableContinuation.resumeWithException(RMarkdownRenderingConsoleRunnerException("Rendering has non-zero exit code"))
           }
         }
       }
     }
-
-    return processListener to onProcessTerminated
-  }
 
   companion object {
     private val R_MARKDOWN_HELPER = RPluginUtil.findFileInRHelpers("R/render_markdown.R")
