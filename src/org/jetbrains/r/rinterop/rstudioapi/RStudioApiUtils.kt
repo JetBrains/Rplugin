@@ -18,6 +18,7 @@ import com.intellij.util.PathUtilRt
 import com.intellij.util.containers.ComparatorUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.await
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
@@ -191,14 +192,11 @@ object RStudioApiUtils {
     return mode.toRString()
   }
 
-  fun translateLocalUrl(rInterop: RInterop, args: RObject): Promise<RObject> {
+  suspend fun translateLocalUrl(rInterop: RInterop, args: RObject): RObject {
     val url = args.list.getRObjects(0).rString.getStrings(0)
     val absolute = args.list.getRObjects(1).rBoolean.getBooleans(0)
-    val promise = AsyncPromise<RObject>()
-    rInterop.interpreter.translateLocalUrl(rInterop, url, absolute).then {
-      promise.setResult(it.toRString())
-    }
-    return promise
+    val result = rInterop.interpreter.translateLocalUrl(rInterop, url, absolute).await()
+    return result.toRString()
   }
 
   fun executeCommand(rInterop: RInterop, args: RObject) {

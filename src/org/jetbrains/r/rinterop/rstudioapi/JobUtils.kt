@@ -1,13 +1,7 @@
 package org.jetbrains.r.rinterop.rstudioapi
 
-import com.intellij.openapi.application.ModalityState
-import com.intellij.openapi.application.asContextElement
 import com.intellij.util.PathUtil
-import kotlinx.coroutines.async
-import kotlinx.coroutines.future.asCompletableFuture
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.asPromise
+import org.jetbrains.concurrency.await
 import org.jetbrains.r.console.jobs.ExportGlobalEnvPolicy
 import org.jetbrains.r.console.jobs.RJobRunner
 import org.jetbrains.r.console.jobs.RJobTask
@@ -21,10 +15,12 @@ import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toStringOrNull
 
 object JobUtils {
-  fun jobRunScript(rInterop: RInterop, args: RObject): Promise<RObject> {
+  suspend fun jobRunScript(rInterop: RInterop, args: RObject): RObject {
     val path = args.list.getRObjects(0).rString.getStrings(0)
     val name = args.list.getRObjects(1).toStringOrNull()
-    val filePromise = findFileByPathAtHostHelper(rInterop, path)
+    val file = findFileByPathAtHostHelper(rInterop, path).await()
+    if (file == null) return getRNull()
+
     val workingDir = args.list.getRObjects(3).toStringOrNull() ?: PathUtil.getParentPath(path)
     val importEnv = args.list.getRObjects(4).rBoolean.getBooleans(0)
     val exportEnvName = args.list.getRObjects(5).rString.getStrings(0)
@@ -33,20 +29,10 @@ object JobUtils {
       "R_GlobalEnv" -> ExportGlobalEnvPolicy.EXPORT_TO_GLOBAL_ENV
       else -> ExportGlobalEnvPolicy.EXPORT_TO_VARIABLE
     }
-    val promise = AsyncPromise<RObject>()
-    filePromise.then {
-      if (it != null) {
-        val runner = RJobRunner.getInstance(rInterop.project)
-        runner.coroutineScope.async(ModalityState.defaultModalityState().asContextElement()) {
-          val descriptor = runner.runRJob(RJobTask(it, workingDir, importEnv, exportEnv), exportEnvName, name)
-          "${descriptor.hashCode()}".toRString()
-        }.asCompletableFuture().asPromise().processed(promise)
-      }
-      else {
-        promise.setResult(getRNull())
-      }
-    }
-    return promise
+
+    val runner = RJobRunner.getInstance(rInterop.project)
+    val descriptor = runner.runRJob(RJobTask(file, workingDir, importEnv, exportEnv), exportEnvName, name)
+    return "${descriptor.hashCode()}".toRString()
   }
 
   fun jobRemove(rInterop: RInterop, args: RObject): RObject {

@@ -1,8 +1,6 @@
 package org.jetbrains.r.rinterop.rstudioapi
 
-import com.intellij.openapi.application.invokeAndWaitIfNeeded
-import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.CaretState
 import com.intellij.openapi.editor.Document
@@ -12,16 +10,15 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.fileTypes.ex.FileTypeChooser
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.progress.Task
+import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.psi.PsiManager
 import com.intellij.ui.components.dialog
 import com.intellij.ui.dsl.builder.columns
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.PathUtilRt
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.Promise
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.jetbrains.concurrency.await
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
 import org.jetbrains.r.rendering.editor.chunkExecutionState
@@ -161,101 +158,92 @@ object DocumentUtils {
     return getRNull()
   }
 
-  fun documentNew(rInterop: RInterop, args: RObject): Promise<RObject> {
+  suspend fun documentNew(rInterop: RInterop, args: RObject): RObject {
     val type = args.list.getRObjects(0).rString.getStrings(0)
     val text = args.list.getRObjects(1).rString.getStrings(0)
     val line = args.list.getRObjects(2).rInt.getInts(0).toInt()
     val column = args.list.getRObjects(2).rInt.getInts(1).toInt()
     val execute = args.list.getRObjects(3).rBoolean.getBooleans(0)
-    val fileChooser = rInterop.interpreter.createFileChooserForHost(rInterop.interpreter.basePath, false)
-    val panel = panel {
-      row { label(RBundle.message("rstudioapi.new.document.select.file.message")) }
-      row { cell(fileChooser).columns(40).focused() }
-    }
-    val dialogPromise = AsyncPromise<String?>()
-    runInEdt {
+
+    val filePath = withContext(Dispatchers.EDT) {
+      val fileChooser = rInterop.interpreter.createFileChooserForHost(rInterop.interpreter.basePath, false)
+      val panel = panel {
+        row { label(RBundle.message("rstudioapi.new.document.select.file.message")) }
+        row { cell(fileChooser).columns(40).focused() }
+      }
+
       val dialog = dialog("", panel)
-      val result = if (dialog.showAndGet()) {
+      if (dialog.showAndGet()) {
         fileChooser.text
       }
       else null
-      dialogPromise.setResult(result)
-    }
-    val promise = AsyncPromise<RObject>()
-    dialogPromise.then {
-      if (it != null) {
-        val path = if (PathUtilRt.getFileExtension(it) == null) {
-          it + when (type) {
-            "r" -> ".R"
-            "rmarkdown" -> ".rmd"
-            "sql" -> ".sql"
-            else -> ""
-          }
-        }
-        else {
-          it
-        }
-        val newFilePath = rInterop.interpreter.createFileOnHost(path, text.toByteArray(), "")
-        ProgressManager.getInstance().run(object : Task.Backgroundable(
-          rInterop.project, RBundle.message("rstudioapi.create.new.document")) {
-          override fun run(indicator: ProgressIndicator) {
-            val file = rInterop.interpreter.findFileByPathAtHost(newFilePath) ?: return
-            invokeAndWaitIfNeeded {
-              FileTypeChooser.getKnownFileTypeOrAssociate(newFilePath)
-              val editor = FileEditorManager.getInstance(rInterop.project)
-                .openTextEditor(OpenFileDescriptor(rInterop.project, file, line, column), true)
-              editor?.selectionModel?.setSelection(
-                editor.visualPositionToOffset(VisualPosition(line, column)),
-                editor.visualPositionToOffset(VisualPosition(line, column))
-              )
-              if (execute) {
-                when (type) {
-                  "r" -> rInterop.replSourceFile(file)
-                  "rmarkdown" -> invokeLater {
-                    if (editor != null) {
-                      val psiFile = PsiManager.getInstance(rInterop.project).findFile(file)
-                      psiFile?.let {
-                        val state = editor.chunkExecutionState
-                        if (state == null) {
-                          RunChunkHandler.getInstance(project).runAllChunks(psiFile, editor)
-                        }
-                        else {
-                          state.terminationRequired.set(true)
-                          val element = state.currentPsiElement.get()
-                          RunChunkHandler.getInstance(element.project).interruptChunkExecution()
-                        }
-                      }
-                    }
-                  }
-                  else -> {
-                  }
-                }
-              }
-            }
-            promise.setResult(RObject.getDefaultInstance())
-          }
-        })
+    } ?: return rError("No file selected")
+
+    val path = if (PathUtilRt.getFileExtension(filePath) == null) {
+      filePath + when (type) {
+        "r" -> ".R"
+        "rmarkdown" -> ".rmd"
+        "sql" -> ".sql"
+        else -> ""
       }
-      else promise.setResult(rError("No file selected"))
     }
-    return promise
+    else {
+      filePath
+    }
+
+    val newFilePath = rInterop.interpreter.createFileOnHost(path, text.toByteArray(), "")
+    val file = rInterop.interpreter.findFileByPathAtHost(newFilePath) ?: return rError("Failed to create file")
+
+    withBackgroundProgress(rInterop.project, RBundle.message("rstudioapi.create.new.document")) {
+      withContext(Dispatchers.EDT) {
+
+        FileTypeChooser.getKnownFileTypeOrAssociate(newFilePath)
+        val editor = FileEditorManager.getInstance(rInterop.project)
+          .openTextEditor(OpenFileDescriptor(rInterop.project, file, line, column), true)
+
+        if (editor != null) {
+          val offset = editor.visualPositionToOffset(VisualPosition(line, column))
+          editor.selectionModel.setSelection(offset, offset)
+        }
+
+        if (!execute) return@withContext
+
+        when (type) {
+          "r" -> rInterop.replSourceFile(file)
+          "rmarkdown" -> {
+            if (editor == null) return@withContext
+            val psiFile = PsiManager.getInstance(rInterop.project).findFile(file) ?: return@withContext
+            val state = editor.chunkExecutionState
+            if (state == null) {
+              RunChunkHandler.getInstance(rInterop.project).runAllChunks(psiFile, editor)
+            }
+            else {
+              state.terminationRequired.set(true)
+              val element = state.currentPsiElement.get()
+              RunChunkHandler.getInstance(element.project).interruptChunkExecution()
+            }
+          }
+          else -> {}
+        }
+      }
+    }
+
+    return RObject.getDefaultInstance()
   }
 
-  fun navigateToFile(rInterop: RInterop, args: RObject): Promise<RObject> {
+  suspend fun navigateToFile(rInterop: RInterop, args: RObject): RObject {
     val filePath = args.list.getRObjects(0).rString.getStrings(0)
     val line = args.list.getRObjects(1).rInt.getInts(0).toInt() - 1
     val column = args.list.getRObjects(1).rInt.getInts(1).toInt() - 1
-    val promise = AsyncPromise<RObject>()
-    val filePromise = findFileByPathAtHostHelper(rInterop, filePath)
-    filePromise.then {
-      it ?: promise.setResult(rError("$filePath does not exist."))
-      runInEdt {
-        FileEditorManager.getInstance(rInterop.project)
-          .openTextEditor(OpenFileDescriptor(rInterop.project, it!!, line, column), true)
-        promise.setResult(getRNull())
-      }
+    val file = findFileByPathAtHostHelper(rInterop, filePath).await()
+    if (file == null) return rError("$filePath does not exist.")
+
+    withContext(Dispatchers.EDT) {
+      FileEditorManager.getInstance(rInterop.project)
+        .openTextEditor(OpenFileDescriptor(rInterop.project, file, line, column), true)
     }
-    return promise
+
+    return getRNull()
   }
 
   fun documentClose(rInterop: RInterop, args: RObject): RObject {
@@ -297,6 +285,3 @@ object DocumentUtils {
       RStudioApiUtils.getLineOffset(document, rng[1].first, rng[1].second)
   }
 }
-
-
-
