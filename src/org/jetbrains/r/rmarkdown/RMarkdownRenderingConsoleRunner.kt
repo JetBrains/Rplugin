@@ -22,7 +22,6 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PathUtil
 import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Mutex
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreter
@@ -103,28 +102,19 @@ class RMarkdownRenderingConsoleRunner(
     currentProcessHandler = processHandler
 
     coroutineScope {
-      val afterListenerAdded = Mutex(locked = true)
+      suspendCancellableCoroutine { cancellableContinuation ->
+        val knitListener = makeKnitListener(interpreter, rMarkdownFile, resultTmpFile, outputDirectory, isShiny, cancellableContinuation)
+        processHandler.addProcessListener(knitListener)
 
-      launch {
-        suspendCancellableCoroutine { cancellableContinuation ->
-          val knitListener = makeKnitListener(interpreter, rMarkdownFile, resultTmpFile, outputDirectory, isShiny, cancellableContinuation)
-          processHandler.addProcessListener(knitListener)
-          afterListenerAdded.unlock()
+        launch(Dispatchers.EDT) {
+          if (!ApplicationManager.getApplication().isUnitTestMode) {
+            val consoleView = createConsoleView(processHandler)
+            consoleView.attachToProcess(processHandler)
+            consoleView.scrollToEnd()
+          }
+          processHandler.startNotify()
         }
       }
-
-      afterListenerAdded.lock()
-
-      withContext(Dispatchers.EDT) {
-        if (!ApplicationManager.getApplication().isUnitTestMode) {
-          val consoleView = createConsoleView(processHandler)
-          consoleView.attachToProcess(processHandler)
-          consoleView.scrollToEnd()
-        }
-        processHandler.startNotify()
-      }
-
-      // wait for launched block
     }
   }
 

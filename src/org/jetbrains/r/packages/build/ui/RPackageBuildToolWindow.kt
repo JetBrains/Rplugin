@@ -13,8 +13,10 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.util.Disposer
-import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.jetbrains.r.execution.ExecuteExpressionUtils.launchScript
 import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -172,40 +174,30 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
     currentProcessHandler = processHandler
 
     coroutineScope {
-      val afterListenerAdded = Mutex(locked = true)
-
-      launch {
-        suspendCancellableCoroutine { cancellableContinuation ->
-          processHandler.addProcessListener(object : ProcessListener {
-            override fun processTerminated(event: ProcessEvent) {
-              if (!isInterrupted) {
-                if (event.exitCode == 0) {
-                  cancellableContinuation.resume(Unit) { _, _, _ -> Unit }
-                }
-                else {
-                  cancellableContinuation.resumeWithException(RuntimeException("Process terminated with non-zero code ${event.exitCode}"))
-                }
+      suspendCancellableCoroutine { cancellableContinuation ->
+        processHandler.addProcessListener(object : ProcessListener {
+          override fun processTerminated(event: ProcessEvent) {
+            if (!isInterrupted) {
+              if (event.exitCode == 0) {
+                cancellableContinuation.resume(Unit) { _, _, _ -> Unit }
               }
               else {
-                isInterrupted = false
-                cancellableContinuation.resumeWithException(RuntimeException("Process was interrupted"))
+                cancellableContinuation.resumeWithException(RuntimeException("Process terminated with non-zero code ${event.exitCode}"))
               }
             }
-          })
+            else {
+              isInterrupted = false
+              cancellableContinuation.resumeWithException(RuntimeException("Process was interrupted"))
+            }
+          }
+        })
 
-          afterListenerAdded.unlock()
+        launch(Dispatchers.EDT) {
+          consoleView.attachToProcess(processHandler)
+          consoleView.scrollToEnd()
+          processHandler.startNotify()
         }
       }
-
-      afterListenerAdded.lock()
-
-      withContext(Dispatchers.EDT) {
-        consoleView.attachToProcess(processHandler)
-        consoleView.scrollToEnd()
-        processHandler.startNotify()
-      }
-
-      // wait for launched block
     }
   }
 
