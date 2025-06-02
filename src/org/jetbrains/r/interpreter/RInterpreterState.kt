@@ -28,6 +28,7 @@ import org.jetbrains.r.common.emptyExpiringList
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropAsyncEventsListener
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -161,14 +162,14 @@ interface RInterpreterState {
 
   private fun createUpdatePromise(): Promise<Unit> {
     val promise = AsyncPromise<Unit>()
-    val asyncEventsListener = object : RInterop.AsyncEventsListener {
+    val RInteropAsyncEventsListener = object : RInteropAsyncEventsListener {
       override fun onTermination() {
         promise.setError(IllegalStateException("RInterop had been terminated during state updating"))
       }
     }
 
     promise.onProcessed {
-      rInterop.removeAsyncEventsListener(asyncEventsListener)
+      rInterop.removeAsyncEventsListener(RInteropAsyncEventsListener)
       resetUpdatePromise()
     }.onError { e ->
       if (!promise.isCancelled) {
@@ -176,9 +177,9 @@ interface RInterpreterState {
       }
     }
 
-    rInterop.addAsyncEventsListener(asyncEventsListener)
+    rInterop.addAsyncEventsListener(RInteropAsyncEventsListener)
     if (!rInterop.isAlive) {
-      rInterop.removeAsyncEventsListener(asyncEventsListener)
+      rInterop.removeAsyncEventsListener(RInteropAsyncEventsListener)
       return promise.also {
         it.setError(IllegalStateException("RInterop had been terminated before state updating"))
       }

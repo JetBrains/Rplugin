@@ -16,7 +16,7 @@ class RDebuggerTestHelper(rInterop: RInterop) {
   init {
     rInterop.asyncEventsStartProcessing()
     val textPromise = AsyncPromise<Unit>()
-    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+    rInterop.addAsyncEventsListener(object : RInteropAsyncEventsListener {
       override fun onPrompt(isDebug: Boolean) {
         promise.setResult(isDebug)
       }

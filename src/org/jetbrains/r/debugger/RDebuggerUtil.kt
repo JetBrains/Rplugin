@@ -112,7 +112,7 @@ object RDebuggerUtil {
     rInterop.project.messageBus.connect(parentDisposable ?: rInterop)
       .subscribe(XDependentBreakpointListener.TOPIC, dependantListener)
 
-    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+    rInterop.addAsyncEventsListener(object : RInteropAsyncEventsListener {
       override fun onRemoveBreakpointByIdRequest(id: Int) {
         RPluginCoroutineScope.getScope(rInterop.project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
           val breakpoint = breakpointsById.remove(id) ?: return@launch

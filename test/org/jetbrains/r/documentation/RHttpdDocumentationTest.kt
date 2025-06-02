@@ -7,6 +7,7 @@ package org.jetbrains.r.documentation
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropAsyncEventsListener
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 class RHttpdDocumentationTest : RProcessHandlerBaseTestCase() {
@@ -63,7 +64,7 @@ class RHttpdDocumentationTest : RProcessHandlerBaseTestCase() {
 
   private fun executeHelpCommand(command: String): RInterop.HttpdResponse {
     val result = AsyncPromise<RInterop.HttpdResponse>()
-    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+    rInterop.addAsyncEventsListener(object : RInteropAsyncEventsListener {
       override fun onShowHelpRequest(httpdResponse: RInterop.HttpdResponse) {
         result.setResult(httpdResponse)
         rInterop.removeAsyncEventsListener(this)

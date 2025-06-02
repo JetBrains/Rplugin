@@ -294,7 +294,7 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
 
   fun testEvaluateAndPrintBreakpoint() {
     val buf = StringBuilder()
-    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+    rInterop.addAsyncEventsListener(object : RInteropAsyncEventsListener {
       override fun onText(text: String, type: ProcessOutputType) {
         if (type == ProcessOutputType.STDERR) {
           buf.append(text)
@@ -408,7 +408,7 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
     """.trimIndent())
 
     val promise = AsyncPromise<String>()
-    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+    rInterop.addAsyncEventsListener(object : RInteropAsyncEventsListener {
       override fun onException(exception: RExceptionInfo) {
         promise.setResult(exception.message)
       }

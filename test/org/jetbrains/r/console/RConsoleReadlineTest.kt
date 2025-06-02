@@ -7,12 +7,12 @@ package org.jetbrains.r.console
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.blockingGetAndDispatchEvents
-import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropAsyncEventsListener
 
 class RConsoleReadlineTest : RConsoleBaseTestCase() {
   fun testReadline() {
     val promise1 = AsyncPromise<Unit>()
-    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+    rInterop.addAsyncEventsListener(object : RInteropAsyncEventsListener {
       override fun onRequestReadLn(prompt: String) {
         promise1.setResult(Unit)
       }

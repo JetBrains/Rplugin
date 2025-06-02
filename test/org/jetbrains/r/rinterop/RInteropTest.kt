@@ -98,7 +98,7 @@ fun testExecuteMultilineWithFor() {
   }
 
   fun testReplReadline() {
-    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+    rInterop.addAsyncEventsListener(object : RInteropAsyncEventsListener {
       override fun onRequestReadLn(prompt: String) {
         rInterop.replSendReadLn("100")
         rInterop.replSendReadLn("200")
@@ -118,7 +118,7 @@ fun testExecuteMultilineWithFor() {
 
   fun testViewRequest() {
     val promise = AsyncPromise<Pair<RValue, String>>()
-    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+    rInterop.addAsyncEventsListener(object : RInteropAsyncEventsListener {
       override suspend fun onViewRequest(ref: RReference, title: String, value: RValue) {
         promise.setResult(value to title)
       }
@@ -138,7 +138,7 @@ fun testExecuteMultilineWithFor() {
 
   fun testViewTableRequest() {
     val promise = CompletableFuture<Pair<RDataFrameViewer, String>>()
-    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+    rInterop.addAsyncEventsListener(object : RInteropAsyncEventsListener {
       override fun onViewTableRequest(viewer: RDataFrameViewer, title: String) {
         Disposer.register(rInterop, viewer)
         promise.complete(viewer to title)
@@ -162,7 +162,7 @@ fun testExecuteMultilineWithFor() {
     val stderrPromise = AsyncPromise<String>()
     val expectedStdoutLength = 9
     val expectedStderrLength = 9 * 10 / 2
-    val listener = object : RInterop.AsyncEventsListener {
+    val listener = object : RInteropAsyncEventsListener {
       val stdout = StringBuilder()
       val stderr = StringBuilder()
 
@@ -200,7 +200,7 @@ fun testExecuteMultilineWithFor() {
     fun doTest(command: String, expectOutput: Boolean) {
       var wasOutput = false
       val promise = AsyncPromise<Unit>()
-      val listener = object : RInterop.AsyncEventsListener {
+      val listener = object : RInteropAsyncEventsListener {
         override fun onText(text: String, type: ProcessOutputType) {
           if (type == ProcessOutputType.STDOUT && text.isNotBlank()) {
             wasOutput = true
@@ -296,7 +296,7 @@ fun testExecuteMultilineWithFor() {
   fun testStackOverflow() {
     rInterop.executeCode("f <- function() f()")
     var promptPromise = AsyncPromise<Unit>()
-    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+    rInterop.addAsyncEventsListener(object : RInteropAsyncEventsListener {
       override fun onPrompt(isDebug: Boolean) {
         promptPromise.setResult(Unit)
       }
@@ -312,7 +312,7 @@ fun testExecuteMultilineWithFor() {
   fun testStackOverflowDebug() {
     rInterop.executeCode("f <- function() f()")
     var promptPromise = AsyncPromise<Unit>()
-    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+    rInterop.addAsyncEventsListener(object : RInteropAsyncEventsListener {
       override fun onPrompt(isDebug: Boolean) {
         promptPromise.setResult(Unit)
       }

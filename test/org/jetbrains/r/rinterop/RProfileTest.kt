@@ -31,7 +31,7 @@ class RProfileTest : RUsefulTestCase() {
     """.trimIndent()) { rInterop ->
       val output = StringBuilder()
       val promptPromise = AsyncPromise<Unit>()
-      rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+      rInterop.addAsyncEventsListener(object : RInteropAsyncEventsListener {
         override fun onText(text: String, type: ProcessOutputType) {
           output.append(text)
         }

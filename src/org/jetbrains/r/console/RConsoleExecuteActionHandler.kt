@@ -95,7 +95,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   @Volatile
   var chunkState: ChunkExecutionState? = null
 
-  internal inner class AsyncEventsListener : RInterop.AsyncEventsListener {
+  internal inner class AsyncEventsListener : RInteropAsyncEventsListener {
     private val ansiEscapeDecoder = AnsiEscapeDecoder()
 
     override fun onText(text: String, type: ProcessOutputType) {

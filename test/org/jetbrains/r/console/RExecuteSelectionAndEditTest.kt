@@ -11,7 +11,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.blockingGetAndDispatchEvents
-import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropAsyncEventsListener
 
 class RExecuteSelectionAndEditTest : RConsoleBaseTestCase() {
   fun testExecuteSelectionAndEdit() {
@@ -26,7 +26,7 @@ class RExecuteSelectionAndEditTest : RConsoleBaseTestCase() {
 
     var executedPromise = AsyncPromise<Unit>()
     var remaining = 5
-    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+    rInterop.addAsyncEventsListener(object : RInteropAsyncEventsListener {
       override fun onRequestReadLn(prompt: String) {
         invokeLater {
           runWriteAction {

@@ -53,7 +53,7 @@ class SubprocessTest : RProcessHandlerBaseTestCase() {
     val promptPromise = AsyncPromise<Unit>()
     val stdout = StringBuilder()
     val stderr = StringBuilder()
-    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+    rInterop.addAsyncEventsListener(object : RInteropAsyncEventsListener {
       var done = false
 
       override fun onText(text: String, type: ProcessOutputType) {
@@ -112,7 +112,7 @@ class SubprocessTest : RProcessHandlerBaseTestCase() {
   fun testBackground() {
     val stdoutBuf = StringBuilder()
     val promise = AsyncPromise<Unit>()
-    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+    rInterop.addAsyncEventsListener(object : RInteropAsyncEventsListener {
       var done = false
 
       override fun onText(text: String, type: ProcessOutputType) {

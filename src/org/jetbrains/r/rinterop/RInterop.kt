@@ -106,7 +106,7 @@ class RInterop(
   }
   val executor = ConcurrencyUtil.newSingleThreadExecutor(RINTEROP_THREAD_NAME)
   private val heartbeatTimer: ScheduledFuture<*>
-  private val asyncEventsListeners = ConcurrentCollectionFactory.createConcurrentSet<AsyncEventsListener>()
+  private val myRInteropAsyncEventsListeners = ConcurrentCollectionFactory.createConcurrentSet<RInteropAsyncEventsListener>()
   private var asyncProcessingStarted = false
   private val asyncEventsBeforeStarted = mutableListOf<AsyncEvent>()
   private val cacheIndex = AtomicInteger(0)
@@ -491,12 +491,12 @@ class RInterop(
     execute(asyncStub::sendEof, Empty.getDefaultInstance())
   }
 
-  internal fun addAsyncEventsListener(listener: AsyncEventsListener) {
-    asyncEventsListeners.add(listener)
+  internal fun addAsyncEventsListener(listener: RInteropAsyncEventsListener) {
+    myRInteropAsyncEventsListeners.add(listener)
   }
 
-  internal fun removeAsyncEventsListener(listener: AsyncEventsListener) {
-    asyncEventsListeners.remove(listener)
+  internal fun removeAsyncEventsListener(listener: RInteropAsyncEventsListener) {
+    myRInteropAsyncEventsListeners.remove(listener)
   }
 
   fun debugCommandContinue() = executeTask {
@@ -1164,11 +1164,11 @@ class RInterop(
     }
   }
 
-  private fun fireListenersCoroutines(f: suspend (AsyncEventsListener) -> Unit, end: () -> Unit) {
+  private fun fireListenersCoroutines(f: suspend (RInteropAsyncEventsListener) -> Unit, end: () -> Unit) {
     RPluginCoroutineScope.getScope(project).launch(Dispatchers.Default) {
       supervisorScope {
         // fail of listener will not affect others
-        asyncEventsListeners.forEach { listener ->
+        myRInteropAsyncEventsListeners.forEach { listener ->
           launch {
             runCatching {
               f(listener)
@@ -1182,8 +1182,8 @@ class RInterop(
     }
   }
 
-  private fun fireListeners(f: (AsyncEventsListener) -> Unit) {
-    asyncEventsListeners.forEach {
+  private fun fireListeners(f: (RInteropAsyncEventsListener) -> Unit) {
+    myRInteropAsyncEventsListeners.forEach {
       try {
         f(it)
       } catch (t: Throwable) {
@@ -1401,24 +1401,6 @@ class RInterop(
       currentPromise?.let { return it.getWithCheckCanceled() }
       return result
     }
-  }
-
-  internal interface AsyncEventsListener {
-    fun onText(text: String, type: ProcessOutputType) {}
-    fun onBusy() {}
-    fun onRequestReadLn(prompt: String) {}
-    fun onPrompt(isDebug: Boolean = false) {}
-    fun onException(exception: RExceptionInfo) {}
-    fun onTermination() {}
-    suspend fun onViewRequest(ref: RReference, title: String, value: RValue) {}
-    fun onViewTableRequest(viewer: RDataFrameViewer, title: String) {}
-    fun onShowHelpRequest(httpdResponse: HttpdResponse) {}
-    suspend fun onShowFileRequest(filePath: String, title: String) {}
-    suspend fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): RObject? = null
-    fun onSubprocessInput() {}
-    fun onBrowseURLRequest(url: String) {}
-    fun onRemoveBreakpointByIdRequest(id: Int) {}
-    fun onDebugPrintSourcePositionRequest(position: RSourcePosition) {}
   }
 
   companion object {
