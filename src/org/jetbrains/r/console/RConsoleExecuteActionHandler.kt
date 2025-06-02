@@ -50,8 +50,7 @@ import org.jetbrains.r.run.visualize.RVisualizeTableUtil
 import org.jetbrains.r.util.PromiseUtil
 import java.util.*
 
-class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
-  : BaseConsoleExecuteActionHandler(false), Condition<LanguageConsoleView> {
+class RConsoleExecuteActionHandler(private val consoleView: RConsoleView) : BaseConsoleExecuteActionHandler(false), Condition<LanguageConsoleView> {
   private val rInterop = consoleView.rInterop
   private val listeners = HashSet<Listener>()
   private val consolePromptDecorator
@@ -87,6 +86,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       }
       field = newState
     }
+
   // should be accessed only from RInterop Thread Pool
   private val executeLaterQueue: Queue<() -> Unit> = ArrayDeque()
   val isRunningCommand: Boolean
@@ -156,13 +156,11 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
         onText("\n", ProcessOutputType.STDERR)
         if (exception.call == null) {
           onText(RBundle.message("console.exception.message"), ProcessOutputType.STDERR)
-        } else {
+        }
+        else {
           onText(RBundle.message("console.exception.message.with.call", exception.call.lines().first()), ProcessOutputType.STDERR)
         }
-        rInterop.lastErrorStack
-          .lastOrNull { it.position?.file?.let { file -> RSourceFileManager.isTemporary(file) } == false }
-          ?.position
-          ?.let {
+        rInterop.lastErrorStack.lastOrNull { it.position?.file?.let { file -> RSourceFileManager.isTemporary(file) } == false }?.position?.let {
             onText(" (", ProcessOutputType.STDERR)
             consoleView.printHyperlink("${it.file.name}#${it.line + 1}", SourcePositionHyperlink(it.xSourcePosition))
             onText(")", ProcessOutputType.STDERR)
@@ -170,7 +168,8 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
         onText(": ${exception.message}\n", ProcessOutputType.STDERR)
         if (rInterop.lastErrorStack.isEmpty()) {
           showStackTraceHandler = null
-        } else {
+        }
+        else {
           val handler = object : HyperlinkInfo {
             override fun navigate(project: Project) {
               if (this != showStackTraceHandler) {
@@ -190,9 +189,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
           is RNoSuchPackageError -> {
             consoleView.printHyperlink(RBundle.message("console.install.package.message", details.packageName), object : HyperlinkInfo {
               override fun navigate(project: Project) {
-                RequiredPackageInstaller.getInstance(consoleView.project).installPackagesWithUserPermission(
-                  RBundle.message("console.utility.name"), listOf(RequiredPackage(details.packageName)), false)
-                  .onError { DependencyManagementFix.showErrorNotification(consoleView.project, it) }
+                RequiredPackageInstaller.getInstance(consoleView.project).installPackagesWithUserPermission(RBundle.message("console.utility.name"), listOf(RequiredPackage(details.packageName)), false).onError { DependencyManagementFix.showErrorNotification(consoleView.project, it) }
               }
 
               override fun includeInOccurenceNavigation() = false
@@ -362,15 +359,13 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
           document.setText(document.text.lineSequence().first())
         }
         val text = consoleView.prepareExecuteAction(true, false, true)
-        (UndoManager.getInstance(consoleView.project) as UndoManagerImpl).invalidateActionsFor(
-          DocumentReferenceManager.getInstance().create(consoleView.currentEditor.document))
+        (UndoManager.getInstance(consoleView.project) as UndoManagerImpl).invalidateActionsFor(DocumentReferenceManager.getInstance().create(consoleView.currentEditor.document))
         consoleView.interpreter.prepareForExecutionAsync().onProcessed { rInterop.replSendReadLn(text) }
         fireBusy()
       }
       State.SUBPROCESS_INPUT -> {
         val text = consoleView.prepareExecuteAction(true, false, true)
-        (UndoManager.getInstance(consoleView.project) as UndoManagerImpl).invalidateActionsFor(
-          DocumentReferenceManager.getInstance().create(consoleView.currentEditor.document))
+        (UndoManager.getInstance(consoleView.project) as UndoManagerImpl).invalidateActionsFor(DocumentReferenceManager.getInstance().create(consoleView.currentEditor.document))
         consoleView.interpreter.prepareForExecutionAsync().onProcessed {
           rInterop.replSendReadLn(text + System.lineSeparator())
         }
@@ -387,15 +382,18 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     return resolvedPromise()
   }
 
-  fun splitAndExecute(code: String, isDebug: Boolean = false,
-                      sourceFile: VirtualFile? = null, sourceStartOffset: Int? = null,
-                      firstDebugCommand: ExecuteCodeRequest.DebugCommand = ExecuteCodeRequest.DebugCommand.CONTINUE
+  fun splitAndExecute(
+    code: String,
+    isDebug: Boolean = false,
+    sourceFile: VirtualFile? = null,
+    sourceStartOffset: Int? = null,
+    firstDebugCommand: ExecuteCodeRequest.DebugCommand = ExecuteCodeRequest.DebugCommand.CONTINUE,
   ): Promise<Unit> = runReadAction {
-    splitCodeForExecution(consoleView.project, code)
-      .mapIndexed { index, (text, range) ->
+    splitCodeForExecution(consoleView.project, code).mapIndexed { index, (text, range) ->
         val doExecute = if (sourceFile == null || sourceStartOffset == null) {
           ({ consoleView.rInterop.replExecute(text, setLastValue = true, debug = isDebug) })
-        } else {
+        }
+        else {
           val newRange = TextRange(range.startOffset + sourceStartOffset, range.endOffset + sourceStartOffset)
           val debugCommand = if (index == 0) firstDebugCommand else ExecuteCodeRequest.DebugCommand.KEEP_PREVIOUS
           val request = consoleView.rInterop.prepareReplSourceFileRequest(sourceFile, newRange, isDebug, debugCommand)
@@ -415,8 +413,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
             }
           }.thenAsync { it }
         }
-      }
-      .let {
+      }.let {
         PromiseUtil.runChain(it).then {
           refreshLocalFileSystem()
           Unit
@@ -478,22 +475,27 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   companion object {
     fun splitCodeForExecution(project: Project, text: String): List<Pair<String, TextRange>> {
       val psiFile = RElementFactory.buildRFileFromText(project, text)
-      return psiFile.children.asSequence()
+      return psiFile.children
+        .asSequence()
         .filter { it is PsiWhiteSpace }
         .flatMap {
           it.text.asSequence().mapIndexedNotNull { i, c ->
             if (c == '\n') {
               TextRange(it.textRange.startOffset + i, it.textRange.startOffset + i + 1)
-            } else {
+            }
+            else {
               null
             }
           }
+        }.let {
+          sequenceOf(TextRange(0, 0)).plus(it)
+        }.plus(TextRange(text.length, text.length))
+        .zipWithNext { first, second ->
+          TextRange(first.endOffset, second.startOffset)
         }
-        .let { sequenceOf(TextRange(0, 0)).plus(it) }
-        .plus(TextRange(text.length, text.length))
-        .zipWithNext { first, second -> TextRange(first.endOffset, second.startOffset) }
-        .map { text.substring(it.startOffset, it.endOffset) to it }
-        .toList()
+        .map {
+          text.substring(it.startOffset, it.endOffset) to it
+        }.toList()
     }
 
     private class SourcePositionHyperlink(private val position: XSourcePosition) : HyperlinkInfo {
