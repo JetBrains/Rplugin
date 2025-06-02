@@ -121,11 +121,14 @@ class RInterop(
   val globalEnvEqualityObject = globalEnvRef.getEqualityObject()
   val currentEnvRef = RReference(RRef.newBuilder().setCurrentEnv(Empty.getDefaultInstance()).build(), this)
   val currentEnvLoader = currentEnvRef.createVariableLoader()
-  @Volatile var isDebug = false
+  @Volatile
+  var isDebug = false
     private set
-  @Volatile var debugStack: List<RStackFrame> = emptyList()
+  @Volatile
+  var debugStack: List<RStackFrame> = emptyList()
     private set
-  @Volatile var lastErrorStack: List<RStackFrame> = emptyList()
+  @Volatile
+  var lastErrorStack: List<RStackFrame> = emptyList()
     private set
 
   private val terminationPromise = AsyncPromise<Unit>()
@@ -138,6 +141,7 @@ class RInterop(
     }
   val isAlive: Boolean
     get() = !terminationPromise.isDone
+
   @Volatile
   internal var killedByUsed = false
 
@@ -148,8 +152,8 @@ class RInterop(
 
   internal fun <Request : GeneratedMessageV3, Response : GeneratedMessageV3> executeAsync(
     f: KFunction1<Request, ListenableFuture<Response>>,
-    request: Request
-  ) : CancellablePromise<Response> {
+    request: Request,
+  ): CancellablePromise<Response> {
     val nextStubNumber = rInteropGrpcLogger.nextStubNumber()
     rInteropGrpcLogger.onStubMessageRequest(nextStubNumber, request, f.name)
     val promise = AsyncPromise<Response>()
@@ -170,17 +174,21 @@ class RInterop(
   }
 
   internal fun <Request : GeneratedMessageV3, Response : GeneratedMessageV3> execute(
-    f: KFunction1<Request, ListenableFuture<Response>>, request: Request) : Response {
+    f: KFunction1<Request, ListenableFuture<Response>>,
+    request: Request,
+  ): Response {
     try {
       return executeAsync(f, request).blockingGet(Int.MAX_VALUE)!!
-    } catch (e: ExecutionException) {
+    }
+    catch (e: ExecutionException) {
       throw (e.cause as? RInteropException) ?: e
     }
   }
 
   internal fun <Request : GeneratedMessageV3, Response : GeneratedMessageV3> executeWithCheckCancel(
     f: KFunction1<Request, ListenableFuture<Response>>,
-    request: Request) : Response {
+    request: Request,
+  ): Response {
     return executeAsync(f, request).getWithCheckCanceled()
   }
 
@@ -229,7 +237,8 @@ class RInterop(
         val settings = RSettings.getInstance(project)
         loadWorkspace = settings.loadWorkspace
         saveOnExitValue = settings.saveWorkspace
-      } else {
+      }
+      else {
         loadWorkspace = true
         saveOnExitValue = true
       }
@@ -254,9 +263,11 @@ class RInterop(
       try {
         f()
         promise.setResult(Unit)
-      } catch (ignored: RInteropTerminated) {
+      }
+      catch (ignored: RInteropTerminated) {
         promise.setResult(Unit)
-      } catch (e: Throwable) {
+      }
+      catch (e: Throwable) {
         promise.setError(e)
       }
     }
@@ -267,7 +278,8 @@ class RInterop(
     try {
       executeWithCheckCancel(asyncStub::setWorkingDir, StringValue.of(dir))
       invalidateCaches()
-    } catch (ignored: RInteropTerminated) {
+    }
+    catch (ignored: RInteropTerminated) {
     }
   }
 
@@ -320,20 +332,26 @@ class RInterop(
     val promise = executeCodeImpl(code)
     return if (withCheckCancelled) {
       promise.getWithCheckCanceled()
-    } else {
+    }
+    else {
       promise.blockingGet(Int.MAX_VALUE)!!
     }
   }
 
-  data class ReplSourceFileRequest(val code: String, val file: VirtualFile,
-                                   val lineOffset: Int, val firstLineOffset: Int,
-                                   val debug: Boolean, val firstDebugCommand: ExecuteCodeRequest.DebugCommand)
+  data class ReplSourceFileRequest(
+    val code: String,
+    val file: VirtualFile,
+    val lineOffset: Int,
+    val firstLineOffset: Int,
+    val debug: Boolean,
+    val firstDebugCommand: ExecuteCodeRequest.DebugCommand,
+  )
 
   fun prepareReplSourceFileRequest(
     file: VirtualFile,
     textRange: TextRange? = null,
     debug: Boolean = false,
-    firstDebugCommand: ExecuteCodeRequest.DebugCommand? = null
+    firstDebugCommand: ExecuteCodeRequest.DebugCommand? = null,
   ): ReplSourceFileRequest {
     return runReadAction {
       prepareReplSourceFileRequestImpl(file, textRange, debug, firstDebugCommand)
@@ -344,11 +362,12 @@ class RInterop(
     file: VirtualFile,
     textRange: TextRange?,
     debug: Boolean,
-    firstDebugCommand: ExecuteCodeRequest.DebugCommand?
+    firstDebugCommand: ExecuteCodeRequest.DebugCommand?,
   ): ReplSourceFileRequest {
     val debugCommand = firstDebugCommand ?: if (isUnitTestMode || !debug) {
       ExecuteCodeRequest.DebugCommand.CONTINUE
-    } else {
+    }
+    else {
       RDebuggerUtil.getFirstDebugCommand(project, file, textRange)
     }
     val document = FileDocumentManager.getInstance().getDocument(file)
@@ -361,14 +380,18 @@ class RInterop(
     return ReplSourceFileRequest(code, file, lineOffset, firstLineOffset, debug, debugCommand)
   }
 
-  fun replSourceFile(file: VirtualFile, debug: Boolean = false, textRange: TextRange? = null,
-                     firstDebugCommand: ExecuteCodeRequest.DebugCommand? = null,
-                     consumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<RIExecutionResult> {
+  fun replSourceFile(
+    file: VirtualFile, debug: Boolean = false, textRange: TextRange? = null,
+    firstDebugCommand: ExecuteCodeRequest.DebugCommand? = null,
+    consumer: ((String, ProcessOutputType) -> Unit)? = null,
+  ): CancellablePromise<RIExecutionResult> {
     return replSourceFile(prepareReplSourceFileRequest(file, textRange, debug, firstDebugCommand), consumer)
   }
 
-  fun replSourceFile(request: ReplSourceFileRequest,
-                     consumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<RIExecutionResult> {
+  fun replSourceFile(
+    request: ReplSourceFileRequest,
+    consumer: ((String, ProcessOutputType) -> Unit)? = null,
+  ): CancellablePromise<RIExecutionResult> {
     return executeCodeImpl(
       request.code,
       sourceFileId = sourceFileManager.getFileId(request.file),
@@ -383,9 +406,14 @@ class RInterop(
   }
 
   fun executeCodeAsync(
-    code: String, withEcho: Boolean = true, isRepl: Boolean = false, returnOutput: Boolean = !isRepl,
-    debug: Boolean = false, setLastValue: Boolean = false,
-    outputConsumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<RIExecutionResult> {
+    code: String,
+    withEcho: Boolean = true,
+    isRepl: Boolean = false,
+    returnOutput: Boolean = !isRepl,
+    debug: Boolean = false,
+    setLastValue: Boolean = false,
+    outputConsumer: ((String, ProcessOutputType) -> Unit)? = null,
+  ): CancellablePromise<RIExecutionResult> {
     return executeCodeImpl(
       code,
       withEcho = withEcho,
@@ -397,12 +425,19 @@ class RInterop(
   }
 
   private fun executeCodeImpl(
-    code: String, withEcho: Boolean = true, sourceFileId: String = "", sourceFileLineOffset: Int = 0,
-    sourceFileFirstLineOffset: Int = 0, isRepl: Boolean = false,
-    returnOutput: Boolean = !isRepl, debug: Boolean = false,
+    code: String,
+    withEcho: Boolean = true,
+    sourceFileId: String = "",
+    sourceFileLineOffset: Int = 0,
+    sourceFileFirstLineOffset: Int = 0,
+    isRepl: Boolean = false,
+    returnOutput: Boolean = !isRepl,
+    debug: Boolean = false,
     firstDebugCommand: ExecuteCodeRequest.DebugCommand = ExecuteCodeRequest.DebugCommand.CONTINUE,
-    setLastValue: Boolean = false, isSource: Boolean = false,
-    outputConsumer: ((String, ProcessOutputType) -> Unit)? = null):
+    setLastValue: Boolean = false,
+    isSource: Boolean = false,
+    outputConsumer: ((String, ProcessOutputType) -> Unit)? = null,
+  ):
     CancellablePromise<RIExecutionResult> {
     val request = ExecuteCodeRequest.newBuilder()
       .setCode(code)
@@ -572,7 +607,7 @@ class RInterop(
     groupId: String,
     snapshotNumber: Int,
     snapshotVersion: Int,
-    newParameters: RGraphicsUtils.ScreenParameters
+    newParameters: RGraphicsUtils.ScreenParameters,
   ): RIExecutionResult {
     val newParametersMessage = buildScreenParametersMessage(newParameters)
     val request = GraphicsRescaleStoredRequest.newBuilder()
@@ -641,7 +676,8 @@ class RInterop(
       executeWithCheckCancel(asyncStub::httpdRequest, StringValue.of(url))
         .takeIf { it.success }
         ?.let { HttpdResponse(it.content, it.url) }
-    } catch (e: RInteropTerminated) {
+    }
+    catch (e: RInteropTerminated) {
       null
     }
   }
@@ -798,8 +834,9 @@ class RInterop(
   internal fun dataFrameGetViewer(ref: RReference): Promise<RDataFrameViewer> {
     try {
       RDataFrameViewerImpl.ensureDplyrInstalled(project)
-    } catch (e: RequiredPackageException) {
-       return rejectedPromise(e)
+    }
+    catch (e: RequiredPackageException) {
+      return rejectedPromise(e)
     }
     return executeAsync(asyncStub::dataFrameRegister, ref.proto).thenCancellable { dataFrameIndexToViewer(it.value) }
   }
@@ -840,7 +877,8 @@ class RInterop(
   fun findInheritorNamedArguments(function: RReference): List<String> {
     return try {
       executeWithCheckCancel(asyncStub::findInheritorNamedArguments, function.proto).listList
-    } catch (e: RInteropTerminated) {
+    }
+    catch (e: RInteropTerminated) {
       emptyList()
     }
   }
@@ -849,7 +887,8 @@ class RInterop(
     return try {
       val res = executeWithCheckCancel(asyncStub::findExtraNamedArguments, function.proto)
       RExtraNamedArgumentsInfo(res.argNamesList, res.funArgNamesList)
-    } catch (e: RInteropTerminated) {
+    }
+    catch (e: RInteropTerminated) {
       RExtraNamedArgumentsInfo(emptyList(), emptyList())
     }
   }
@@ -862,7 +901,8 @@ class RInterop(
       executeWithCheckCancel(asyncStub::getLoadedShortS4ClassInfos, Empty.getDefaultInstance()).shortS4ClassInfosList.map {
         RS4ClassInfo(it.name, it.`package`, emptyList(), emptyList(), it.isVirtual)
       }
-    } catch (e: RInteropTerminated) {
+    }
+    catch (e: RInteropTerminated) {
       null
     }
   }
@@ -875,7 +915,8 @@ class RInterop(
                    res.slotsList.map { RS4ClassSlot(it.name, it.type, it.declarationClass) },
                    res.superClassesList.map { RS4SuperClass(it.name, it.distance) },
                    res.isVirtual)
-    } catch (e: RInteropTerminated) {
+    }
+    catch (e: RInteropTerminated) {
       null
     }
   }
@@ -888,7 +929,8 @@ class RInterop(
                    res.slotsList.map { RS4ClassSlot(it.name, it.type, it.declarationClass) },
                    res.superClassesList.map { RS4SuperClass(it.name, it.distance) },
                    res.isVirtual)
-    } catch (e: RInteropTerminated) {
+    }
+    catch (e: RInteropTerminated) {
       null
     }
   }
@@ -901,7 +943,8 @@ class RInterop(
       executeWithCheckCancel(asyncStub::getLoadedShortR6ClassInfos, Empty.getDefaultInstance()).shortR6ClassInfosList.map {
         R6ClassInfo(it.name, emptyList(), emptyList(), emptyList(), emptyList())
       }
-    } catch (e: RInteropTerminated) {
+    }
+    catch (e: RInteropTerminated) {
       null
     }
   }
@@ -913,7 +956,8 @@ class RInterop(
                   res.fieldsList.map { R6ClassField(it.name, it.isPublic) },
                   res.methodsList.map { R6ClassMethod(it.name, it.parameterList, it.isPublic) },
                   res.activeBindingsList.map { R6ClassActiveBinding(it.name) })
-    } catch (e: RInteropTerminated) {
+    }
+    catch (e: RInteropTerminated) {
       null
     }
   }
@@ -925,7 +969,8 @@ class RInterop(
                   res.fieldsList.map { R6ClassField(it.name, it.isPublic) },
                   res.methodsList.map { R6ClassMethod(it.name, it.parameterList, it.isPublic) },
                   res.activeBindingsList.map { R6ClassActiveBinding(it.name) })
-    } catch (e: RInteropTerminated) {
+    }
+    catch (e: RInteropTerminated) {
       null
     }
   }
@@ -933,7 +978,8 @@ class RInterop(
   fun getFormalArguments(function: RReference): List<String> {
     return try {
       executeWithCheckCancel(asyncStub::getFormalArguments, function.proto).listList
-    } catch (e: RInteropTerminated) {
+    }
+    catch (e: RInteropTerminated) {
       emptyList()
     }
   }
@@ -944,7 +990,8 @@ class RInterop(
       executeWithCheckCancel(asyncStub::getTableColumnsInfo, request).run {
         TableInfo(columnsList.map { TableColumnInfo(it.name, it.type) }, TableType.toTableType(tableType))
       }
-    } catch (e: RInteropTerminated) {
+    }
+    catch (e: RInteropTerminated) {
       TableInfo(emptyList(), TableType.UNKNOWN)
     }
   }
@@ -957,7 +1004,8 @@ class RInterop(
                                           .build())
     return if (result.resultCase == ConvertRoxygenToHTMLResponse.ResultCase.TEXT) {
       RIExecutionResult(result.text, "", null)
-    } else {
+    }
+    else {
       RIExecutionResult("", "", result.error)
     }
   }
@@ -966,7 +1014,8 @@ class RInterop(
     try {
       executeWithCheckCancel(asyncStub::clearEnvironment, env.proto)
       invalidateCaches()
-    } catch (ignored: RInteropTerminated) {
+    }
+    catch (ignored: RInteropTerminated) {
     }
   }
 
@@ -980,8 +1029,8 @@ class RInterop(
 
   private fun <TRequest : GeneratedMessageV3> executeRequest(
     methodDescriptor: MethodDescriptor<TRequest, CommandOutput>,
-    request: TRequest
-  ) : RIExecutionResult {
+    request: TRequest,
+  ): RIExecutionResult {
     ApplicationManager.getApplication().assertIsNonDispatchThread()
     val withCheckCancelled = ApplicationManager.getApplication().isReadAccessAllowed
     val stdoutBuffer = StringBuilder()
@@ -994,7 +1043,8 @@ class RInterop(
     }
     if (withCheckCancelled) {
       promise.getWithCheckCanceled()
-    } else {
+    }
+    else {
       promise.blockingGet(Int.MAX_VALUE)
     }
     return RIExecutionResult(stdoutBuffer.toString(), stderrBuffer.toString())
@@ -1003,7 +1053,7 @@ class RInterop(
   private fun <TRequest : GeneratedMessageV3> executeRequestAsync(
     methodDescriptor: MethodDescriptor<TRequest, CommandOutput>,
     request: TRequest,
-    consumer: ((String, ProcessOutputType) -> Unit)? = null
+    consumer: ((String, ProcessOutputType) -> Unit)? = null,
   ): CancellablePromise<Unit> {
     val number = rInteropGrpcLogger.nextStubNumber()
     rInteropGrpcLogger.onExecuteRequestAsync(number, methodDescriptor, request)
@@ -1186,7 +1236,8 @@ class RInterop(
     myRInteropAsyncEventsListeners.forEach {
       try {
         f(it)
-      } catch (t: Throwable) {
+      }
+      catch (t: Throwable) {
         LOG.error(t)
       }
     }
@@ -1236,8 +1287,10 @@ class RInterop(
     })
   }
 
-  private fun stackFromProto(proto: StackFrameList,
-                             indexToEnvironment: (Int) -> RReference = { RReference.sysFrameRef(it, this) }): List<RStackFrame> {
+  private fun stackFromProto(
+    proto: StackFrameList,
+    indexToEnvironment: (Int) -> RReference = { RReference.sysFrameRef(it, this) },
+  ): List<RStackFrame> {
     return proto.framesList.mapIndexed { index, it ->
       val file = sourceFileManager.getFileById(it.position.fileId)
       val position = file?.let { f -> RSourcePosition(f, it.position.line) }
@@ -1253,8 +1306,8 @@ class RInterop(
                     document.getLineStartOffset(extended.endLine) + extended.endOffset)
         }
       }
-    RStackFrame(position, indexToEnvironment(index), it.functionName.takeIf { it.isNotEmpty() },
-                it.equalityObject, extendedPosition, it.sourcePositionText.takeIf { it.isNotEmpty() })
+      RStackFrame(position, indexToEnvironment(index), it.functionName.takeIf { it.isNotEmpty() },
+                  it.equalityObject, extendedPosition, it.sourcePositionText.takeIf { it.isNotEmpty() })
     }
   }
 
@@ -1270,11 +1323,14 @@ class RInterop(
         channel.awaitTermination(1000, TimeUnit.MILLISECONDS)
         processHandler.waitFor(5000)
         executor.shutdown()
-      } catch (ignored: TimeoutException) {
-      } finally {
+      }
+      catch (ignored: TimeoutException) {
+      }
+      finally {
         processHandler.destroyProcess()
       }
-    } else {
+    }
+    else {
       ProgressManager.getInstance().run(object : Task.Backgroundable(null, RBundle.message("rinterop.terminating.title"), true, DEAF) {
         override fun run(indicator: ProgressIndicator) {
           try {
@@ -1322,7 +1378,8 @@ class RInterop(
       return if (code == Status.Code.UNAVAILABLE || code == Status.Code.INTERNAL) {
         terminationPromise.setResult(Unit)
         RInteropTerminated(this)
-      } else {
+      }
+      else {
         RInteropRequestFailed(this, methodName, e)
       }
     }
@@ -1336,7 +1393,8 @@ class RInterop(
         if (!isAlive) return previousValue
         return try {
           f().also { previousValue = it }
-        } catch (e: RInteropTerminated) {
+        }
+        catch (e: RInteropTerminated) {
           previousValue
         }
       }
@@ -1382,7 +1440,8 @@ class RInterop(
           }.onError {
             if (it is RInteropTerminated) {
               promise.setResult(cached)
-            } else {
+            }
+            else {
               promise.setError(it)
             }
           }
@@ -1418,14 +1477,18 @@ internal fun <T> Future<T>.getWithCheckCanceled(cancelOnInterrupt: Boolean = tru
     try {
       ProgressManager.checkCanceled()
       return get(50, TimeUnit.MILLISECONDS)
-    } catch (ignored: TimeoutException) {
-    } catch (e: InterruptedException) {
+    }
+    catch (ignored: TimeoutException) {
+    }
+    catch (e: InterruptedException) {
       if (cancelOnInterrupt) cancel(true)
       throw e
-    } catch (e: ProcessCanceledException) {
+    }
+    catch (e: ProcessCanceledException) {
       if (cancelOnInterrupt) cancel(true)
       throw e
-    } catch (e: ExecutionException) {
+    }
+    catch (e: ExecutionException) {
       throw (e.cause as? RInteropException) ?: e
     }
   }
