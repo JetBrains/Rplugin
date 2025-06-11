@@ -24,6 +24,7 @@ import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.DumbAwareAction
+import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.ui.JBPopupMenu
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -39,6 +40,7 @@ import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
+import org.jetbrains.r.actions.RDumbAwareEdtToggleAction
 import org.jetbrains.r.visualization.inlays.RClipboardUtils
 import org.jetbrains.r.visualization.inlays.table.filters.gui.TableFilterHeader
 import org.jetbrains.r.visualization.ui.MaterialTableUtils
@@ -194,7 +196,7 @@ internal class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(Border
   private fun createActionsPanel() {
     val actionsPanel = JPanel(FlowLayout(FlowLayout.LEFT))
     fun createButton(action: AnAction): ActionButton {
-      val button = ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
+      val button = ActionButton(action, null, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
       actionsPanel.add(button)
       return button
     }
@@ -217,7 +219,7 @@ internal class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(Border
       }
     }
 
-    val filterTable = object : RDumbAwareBgtToggleAction(FILTER_TOOLTIP_ESCAPED,
+    val filterTable = object : RDumbAwareEdtToggleAction(FILTER_TOOLTIP_ESCAPED,
                                                          RBundle.message("action.dataframe.viewer.filter.description"),
                                                          AllIcons.Actions.Find) {
       override fun isSelected(e: AnActionEvent) = filterHeader != null
@@ -232,7 +234,7 @@ internal class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(Border
     }
     filterTableButton = createButton(filterTable)
 
-    val paginateTable = object : RDumbAwareBgtToggleAction(RBundle.message("action.dataframe.viewer.pagination.name"),
+    val paginateTable = object : RDumbAwareEdtToggleAction(RBundle.message("action.dataframe.viewer.pagination.name"),
                                                            RBundle.message("action.dataframe.viewer.pagination.description"),
                                                            RIcons.Table.Pagination) {
       override fun isSelected(e: AnActionEvent): Boolean {
@@ -252,7 +254,7 @@ internal class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(Border
     }
     createButton(paginateTable)
 
-    val autoRefreshAction = object : RDumbAwareBgtToggleAction(RBundle.message("action.dataframe.viewer.auto.refresh.name"),
+    val autoRefreshAction = object : RDumbAwareEdtToggleAction(RBundle.message("action.dataframe.viewer.auto.refresh.name"),
                                                                RBundle.message("action.dataframe.viewer.auto.refresh.description"),
                                                                AllIcons.Actions.Refresh) {
       override fun isSelected(e: AnActionEvent): Boolean {

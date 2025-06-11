@@ -17,5 +17,5 @@ abstract class RDumbAwareBgtAction : DumbAwareAction {
               dynamicDescription: Supplier<@NlsActions.ActionDescription String>,
               icon: Icon?) : super(dynamicText, dynamicDescription, icon)
 
-  override fun getActionUpdateThread() = ActionUpdateThread.BGT
+  override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 }

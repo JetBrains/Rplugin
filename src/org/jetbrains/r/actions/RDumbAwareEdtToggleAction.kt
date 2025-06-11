@@ -5,14 +5,10 @@ import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.util.NlsActions
 import javax.swing.Icon
 
-abstract class RDumbAwareBgtToggleAction : DumbAwareToggleAction {
-  constructor() : super()
-
-  constructor(@NlsActions.ActionText text: String?) : super(text)
-
+abstract class RDumbAwareEdtToggleAction : DumbAwareToggleAction {
   constructor(@NlsActions.ActionText text: String?,
               @NlsActions.ActionDescription description: String?,
               icon: Icon?) : super(text, description, icon)
 
-  override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+  override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
 }
