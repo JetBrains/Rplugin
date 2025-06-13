@@ -13,6 +13,7 @@ jvm_library(
   visibility = ["//visibility:public"],
   srcs = glob(["src/**/*.kt", "src/**/*.java"], allow_empty = True),
   deps = [
+    "@community//platform/core-api:core",
     "//rplugin:r",
     "@community//platform/lang-api:lang",
     "@community//platform/lang-impl",
@@ -28,6 +29,7 @@ jvm_library(
   srcs = glob(["test/**/*.kt", "test/**/*.java"], allow_empty = True),
   associates = [":python"],
   deps = [
+    "@community//platform/core-api:core",
     "//rplugin:r",
     "//rplugin:r_test_lib",
     "@community//platform/lang-api:lang",
