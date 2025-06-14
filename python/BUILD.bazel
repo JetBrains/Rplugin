@@ -30,6 +30,7 @@ jvm_library(
   associates = [":python"],
   deps = [
     "@community//platform/core-api:core",
+    "@community//platform/projectModel-api:projectModel",
     "//rplugin:r",
     "//rplugin:r_test_lib",
     "@community//platform/lang-api:lang",
