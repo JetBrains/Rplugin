@@ -22,6 +22,7 @@ jvm_library(
   deps = [
     "@lib//:guava",
     "@community//platform/analysis-api:analysis",
+    "@community//platform/code-style-api:codeStyle",
     "@community//platform/util/concurrency",
     "@community//platform/credential-store",
     "@community//platform/platform-impl:ide-impl",
@@ -90,6 +91,7 @@ jvm_library(
   deps = [
     "@lib//:guava",
     "@community//platform/analysis-api:analysis",
+    "@community//platform/code-style-api:codeStyle",
     "@community//platform/util/concurrency",
     "@community//platform/util/concurrency:concurrency_test_lib",
     "@community//platform/credential-store",
