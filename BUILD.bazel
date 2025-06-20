@@ -96,7 +96,6 @@ jvm_library(
     "@community//platform/util/concurrency:concurrency_test_lib",
     "@community//platform/credential-store",
     "@community//platform/platform-impl:ide-impl",
-    "@community//platform/platform-impl:ide-impl_test_lib",
     "@lib//:protobuf",
     "@community//platform/editor-ui-ex:editor-ex",
     "@community//platform/indexing-api:indexing",
