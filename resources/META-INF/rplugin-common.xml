@@ -1,7 +1,8 @@
 <idea-plugin>
     <dependencies>
         <plugin id="org.intellij.plugins.markdown"/>
-        <plugin id="org.intellij.intelliLang"/>
+      <plugin id="org.intellij.intelliLang"/>
+      <module name="intellij.platform.langInjection"/>
     </dependencies>
 
     <description><![CDATA[
