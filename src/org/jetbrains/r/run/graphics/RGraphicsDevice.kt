@@ -399,6 +399,7 @@ class RGraphicsDevice(
     }
 
     private fun fetchLatestSnapshots(directory: Path): Map<RSnapshotType, List<RSnapshot>> {
+      if (!directory.exists()) return emptyMap()
       return directory.listDirectoryEntries().filter { it.name.endsWith("png") }.let { files ->
         val type2snapshots = files.mapNotNull { RSnapshot.from(it) }.groupBy { it.type }
         val latest = type2snapshots.asSequence().mapNotNull { entry ->

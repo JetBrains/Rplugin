@@ -76,6 +76,7 @@ object ChunkOutputProvider {
 
   private fun getExternalImages(chunkPath: ChunkPath): List<ExternalImage> {
     val directory = chunkPath.getExternalImagesDirectory()
+    if (!directory.exists()) return emptyList()
     return directory.listDirectoryEntries().mapNotNull { file ->
       ExternalImage.from(file)
     }
