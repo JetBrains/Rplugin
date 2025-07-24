@@ -25,7 +25,7 @@ import javax.swing.BoxLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
 
-class RManageRepoDialog(project: Project, private val onModified: (Boolean) -> Unit) : DialogWrapper(project, false) {
+class RManageRepoDialog(private val project: Project, private val onModified: (Boolean) -> Unit) : DialogWrapper(project, false) {
   private val mainPanel: JPanel
   private val list = RepositoryCheckBoxList()
   private val refreshCheckBox = JBCheckBox(REFRESH_CHECKBOX_TEXT, true)
@@ -85,8 +85,8 @@ class RManageRepoDialog(project: Project, private val onModified: (Boolean) -> U
   private fun reloadList() {
     list.clear()
     currentCranMirror = provider.selectedCranMirrorIndex
-    val repositorySelections = getListBlockingWithIndicator(GETTING_AVAILABLE_REPOSITORIES, "repositories selections") {
-      provider.repositorySelectionsAsync
+    val repositorySelections = getListBlockingWithIndicator(project, GETTING_AVAILABLE_REPOSITORIES, "repositories selections") {
+      provider.getRepositorySelections()
     }
     for ((repository, isSelected) in repositorySelections) {
       list.addItem(repository, repository.url, isSelected)
@@ -126,8 +126,8 @@ class RManageRepoDialog(project: Project, private val onModified: (Boolean) -> U
   }
 
   private fun editCranMirrorAction() {
-    val mirrors = getListBlockingWithIndicator(GETTING_AVAILABLE_MIRRORS, "CRAN mirrors") {
-      provider.cranMirrorsAsync
+    val mirrors = getListBlockingWithIndicator(project, GETTING_AVAILABLE_MIRRORS, "CRAN mirrors") {
+      provider.getCranMirrors()
     }
     val dialog = RChooseMirrorDialog(mirrors, currentCranMirror) { choice ->
       currentCranMirror = choice

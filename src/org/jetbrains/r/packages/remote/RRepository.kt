@@ -14,6 +14,8 @@ sealed class RRepository {
   }
 }
 
+data class RRepositoryWithSelection(val repository: RRepository, val selected: Boolean)
+
 data class RDefaultRepository(override val url: String, override val isOptional: Boolean) : RRepository()
 
 data class RUserRepository(override val url: String) : RRepository() {

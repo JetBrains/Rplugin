@@ -4,10 +4,10 @@
 
 package org.jetbrains.r.mock
 
-import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.packages.remote.RMirror
 import org.jetbrains.r.packages.remote.RRepoPackage
 import org.jetbrains.r.packages.remote.RRepository
+import org.jetbrains.r.packages.remote.RRepositoryWithSelection
 import org.jetbrains.r.packages.remote.RepoProvider
 
 class MockRepoProvider : RepoProvider {
@@ -17,24 +17,18 @@ class MockRepoProvider : RepoProvider {
       throw NotImplementedError()
     }
 
-  override val cranMirrorsAsync: Promise<List<RMirror>>
-    get() = throw NotImplementedError()
+  override suspend fun getCranMirrors(): List<RMirror> = throw NotImplementedError()
 
-  override val mappedEnabledRepositoryUrlsAsync: Promise<List<String>>
-    get() = throw NotImplementedError()
+  override suspend fun getMappedEnabledRepositoryUrls(): List<String> = throw NotImplementedError()
 
-  override val repositorySelectionsAsync: Promise<List<Pair<RRepository, Boolean>>>
-    get() = throw NotImplementedError()
+  override suspend fun getRepositorySelections(): List<RRepositoryWithSelection> = throw NotImplementedError()
 
   override val name2AvailablePackages: Map<String, RRepoPackage>
     get() = throw NotImplementedError()
 
-  override val allPackagesCachedAsync: Promise<List<RRepoPackage>>
-    get() = throw NotImplementedError()
+  override suspend fun getAllPackagesCached(): List<RRepoPackage> = throw NotImplementedError()
 
-  override fun loadAllPackagesAsync(): Promise<List<RRepoPackage>> {
-    throw NotImplementedError()
-  }
+  override suspend fun loadAllPackages(): List<RRepoPackage> = throw NotImplementedError()
 
   override fun selectRepositories(repositorySelections: List<Pair<RRepository, Boolean>>) {
     throw NotImplementedError()

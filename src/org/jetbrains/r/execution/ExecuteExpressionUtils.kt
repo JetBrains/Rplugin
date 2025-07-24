@@ -9,33 +9,72 @@ import com.intellij.execution.process.CapturingProcessRunner
 import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.runBlockingMaybeCancellable
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.NlsContexts
+import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.util.ThrowableComputable
-import org.jetbrains.concurrency.Promise
+import com.intellij.platform.ide.progress.runWithModalProgressBlocking
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.withTimeout
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
+import java.awt.EventQueue.isDispatchThread
 import java.nio.file.Paths
 
 object ExecuteExpressionUtils {
   private val LOGGER = Logger.getInstance(ExecuteExpressionUtils::class.java)
 
   fun <E> getListBlockingWithIndicator(
-    title: String,
+    project: Project,
+    title: @NlsContexts.ModalProgressTitle String,
     debugName: String,
     timeout: Int = DEFAULT_TIMEOUT,
-    task: () -> Promise<List<E>>
+    task: suspend () -> List<E>
   ): List<E> {
-    return getSynchronously(title) {
-      getListBlocking(debugName, timeout, task)
+    return try {
+      runWithModalProgressBlocking(project, title) {
+        withTimeout(timeout.toLong()) {
+          task()
+        }
+      }
+    }
+    catch (e: CancellationException) {
+      throw e
+    }
+    catch (e: Throwable) {
+      LOGGER.error("Failed to get list blocking: $debugName", e)
+      mutableListOf()
     }
   }
 
-  fun <E> getListBlocking(debugName: String, timeout: Int = DEFAULT_TIMEOUT, task: () -> Promise<List<E>>): List<E> {
-    return task()
-      .onError { LOGGER.error("Failed to get list blocking: $debugName", it) }
-      .blockingGet(timeout) ?: emptyList()
+  // taken from: com.jetbrains.python.util.runWithModalBlockingOrInBackground
+  fun <T> runWithModalBlockingOrInBackground(project: Project, @NlsSafe msg: String, action: suspend CoroutineScope.() -> T): T {
+    if (isDispatchThread()) {
+      return runWithModalProgressBlocking(project, msg, action)
+    }
+
+    return runBlockingMaybeCancellable(action)
+  }
+
+  fun <E> getListBlocking(project: Project, debugName: String, timeout: Int = DEFAULT_TIMEOUT, task: suspend () -> List<E>): List<E> {
+    return try {
+      runWithModalBlockingOrInBackground(project, debugName) {
+        withTimeout(timeout.toLong()) {
+          task()
+        }
+      }
+    }
+    catch (e: CancellationException) {
+      throw e
+    }
+    catch (e: Throwable) {
+      LOGGER.error("Failed to get list blocking: $debugName", e)
+      mutableListOf()
+    }
   }
 
   fun <R> getSynchronously(title: String, task: () -> R): R {

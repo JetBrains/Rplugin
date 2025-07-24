@@ -6,16 +6,15 @@ package org.jetbrains.r.packages.remote
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import org.jetbrains.concurrency.Promise
 
 interface RepoProvider {
   var selectedCranMirrorIndex: Int
-  val cranMirrorsAsync: Promise<List<RMirror>>
-  val mappedEnabledRepositoryUrlsAsync: Promise<List<String>>
-  val repositorySelectionsAsync: Promise<List<Pair<RRepository, Boolean>>>
+  suspend fun getCranMirrors(): List<RMirror>
+  suspend fun getMappedEnabledRepositoryUrls(): List<String>
+  suspend fun getRepositorySelections(): List<RRepositoryWithSelection>
   val name2AvailablePackages: Map<String, RRepoPackage>?
-  val allPackagesCachedAsync: Promise<List<RRepoPackage>>
-  fun loadAllPackagesAsync(): Promise<List<RRepoPackage>>
+  suspend fun getAllPackagesCached(): List<RRepoPackage>
+  suspend fun loadAllPackages(): List<RRepoPackage>
   fun selectRepositories(repositorySelections: List<Pair<RRepository, Boolean>>)
   fun onInterpreterVersionChange()
 
