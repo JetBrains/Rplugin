@@ -108,26 +108,26 @@ class RPackageManagementService(private val project: Project,
   }
 
   override fun getAllRepositories(): List<String> {
-    val repositorySelections = getListBlocking("repositories selections") {
-      provider.repositorySelectionsAsync
+    val repositorySelections = getListBlocking(project, "repositories selections") {
+      provider.getRepositorySelections()
     }
-    return repositorySelections.map { it.first.url }
+    return repositorySelections.map { it.repository.url }
   }
 
   override fun getAllPackages(): List<RepoPackage> {
     val cached = allPackagesCached
-    return if (cached.isNotEmpty()) cached else reloadAllPackages()
+    return cached.ifEmpty { reloadAllPackages() }
   }
 
   override fun getAllPackagesCached(): List<RepoPackage> {
-    return getListBlocking("cache of available packages") {
-      provider.allPackagesCachedAsync
+    return getListBlocking(project, "cache of available packages") {
+      provider.getAllPackagesCached()
     }
   }
 
   override fun reloadAllPackages(): List<RepoPackage> {
-    return getListBlocking("available packages") {
-      provider.loadAllPackagesAsync()
+    return getListBlocking(project, "available packages") {
+      provider.loadAllPackages()
     }
   }
 
@@ -177,7 +177,8 @@ class RPackageManagementService(private val project: Project,
 
   @Throws(PackageDetailsException::class)
   fun installPackages(packages: List<RepoPackage>, forceUpgrade: Boolean, listener: MultiListener) {
-    provider.mappedEnabledRepositoryUrlsAsync.onSuccess { repoUrls ->
+    RPluginCoroutineScope.getScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
+      val repoUrls = provider.getMappedEnabledRepositoryUrls()
       val packageNames = packages.map { it.name }
       rStateAsync.onSuccess { state ->
         val manager = RPackageTaskManager(state.rInterop, project, getTaskListener(packageNames, listener))

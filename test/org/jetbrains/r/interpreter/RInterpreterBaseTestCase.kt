@@ -18,6 +18,7 @@ import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.remote.RDefaultRepository
 import org.jetbrains.r.packages.remote.RRepoPackage
 import org.jetbrains.r.packages.remote.RRepository
+import org.jetbrains.r.packages.remote.RRepositoryWithSelection
 import org.jetbrains.r.packages.remote.RepoProvider
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
@@ -111,15 +112,14 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
     val knownPackages = LOCAL_PACKAGES.toMutableList()
 
     override val name2AvailablePackages: Map<String, RRepoPackage>
-      get() = knownPackages.map { Pair(it.name, it.toRepoPackage()) }.toMap()
+      get() = knownPackages.associate { Pair(it.name, it.toRepoPackage()) }
 
-    override val mappedEnabledRepositoryUrlsAsync: Promise<List<String>>
-      get() = resolvedPromise(listOf(repoUrl))
+    override suspend fun getMappedEnabledRepositoryUrls(): List<String> = listOf(repoUrl)
 
-    override val repositorySelectionsAsync: Promise<List<Pair<RRepository, Boolean>>>
-      get() = resolvedPromise(listOf(RDefaultRepository(repoUrl, false) to true))
+    override suspend fun getRepositorySelections(): List<RRepositoryWithSelection>
+      = listOf(RRepositoryWithSelection(RDefaultRepository(repoUrl, false), true))
 
-    override fun loadAllPackagesAsync() = resolvedPromise(knownPackages.map { it.toRepoPackage() })
+    override suspend fun loadAllPackages(): List<RRepoPackage> = knownPackages.map { it.toRepoPackage() }
   }
 
   companion object {

@@ -6,9 +6,14 @@ package org.jetbrains.r.packages.remote
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
-import org.jetbrains.concurrency.runAsync
+import com.intellij.util.SuspendingLazy
+import com.intellij.util.suspendingLazy
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
@@ -21,24 +26,18 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
   private val service: RPackageService
     get() = RPackageService.getInstance(project)
 
-  private val enabledRepositoryUrlsAsync: Promise<List<String>>
-    get() = actualizeEnabledRepositoriesAsync().then {
-      service.enabledRepositoryUrls.takeIf { it.isNotEmpty() } ?: listOf(CRAN_URL_PLACEHOLDER)
-    }
+  private suspend fun getEnabledRepositoryUrls(): List<String> {
+    actualizeEnabledRepositories()
+    return service.enabledRepositoryUrls.takeIf { it.isNotEmpty() } ?: listOf(CRAN_URL_PLACEHOLDER)
+  }
 
   private val userRepositories: List<RUserRepository>
     get() = service.userRepositoryUrls.map { RUserRepository(it) }
 
-  private val defaultRepositoriesAsync: Promise<List<RDefaultRepository>>
-    get() = defaultRepositoriesPromise ?: synchronized(this) {
-      defaultRepositoriesPromise ?: loadDefaultRepositoriesAsync().also {
-        it.onError { defaultRepositoriesPromise = null }
-        defaultRepositoriesPromise = it
-      }
+  private var defaultRepositoriesDeferred: SuspendingLazy<List<RDefaultRepository>> =
+    RPluginCoroutineScope.getScope(project).suspendingLazy {
+      loadDefaultRepositories()
     }
-
-  @Volatile
-  private var defaultRepositoriesPromise: Promise<List<RDefaultRepository>>? = null
 
   override var selectedCranMirrorIndex: Int
     get() = service.cranMirror
@@ -46,55 +45,52 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
       service.cranMirror = index
     }
 
-  override val cranMirrorsAsync by lazy {
-    runAsync {
+  private val cranMirrors: SuspendingLazy<List<RMirror>> =
+    RPluginCoroutineScope.getScope(project).suspendingLazy {
       loadMirrorsWithoutCaching()
+    }
+
+  override suspend fun getCranMirrors(): List<RMirror> = cranMirrors.getValue()
+
+  override suspend fun getMappedEnabledRepositoryUrls(): List<String> {
+    val cranMirrors = getCranMirrors()
+    return if (cranMirrors.isNotEmpty()) {
+      val enabledRepositoryUrls = getEnabledRepositoryUrls()
+      mapRepositoryUrls(enabledRepositoryUrls, cranMirrors)
+    } else {
+      LOGGER.warn("Interpreter has returned an empty list of CRAN mirrors. Cannot map URLs of enabled repos")
+      emptyList()
     }
   }
 
-  override val mappedEnabledRepositoryUrlsAsync: Promise<List<String>>
-    get() = cranMirrorsAsync.thenAsync { cranMirrors ->
-      if (cranMirrors.isNotEmpty()) {
-        enabledRepositoryUrlsAsync.then { enabledRepositoryUrls ->
-          mapRepositoryUrls(enabledRepositoryUrls, cranMirrors)
-        }
-      } else {
-        LOGGER.warn("Interpreter has returned an empty list of CRAN mirrors. Cannot map URLs of enabled repos")
-        resolvedPromise(emptyList())
-      }
-    }
-
-  override val repositorySelectionsAsync: Promise<List<Pair<RRepository, Boolean>>>
-    get() = defaultRepositoriesAsync.thenAsync { defaultRepositories ->
-      enabledRepositoryUrlsAsync.then { enabledRepositoriesUrls ->
-        val repositories = defaultRepositories + userRepositories
-        repositories.map { Pair(it, it.url in enabledRepositoriesUrls) }
-      }
-    }
+  override suspend fun getRepositorySelections(): List<RRepositoryWithSelection> {
+    val defaultRepositories = defaultRepositoriesDeferred.getValue()
+    val enabledRepositoriesUrls = getEnabledRepositoryUrls()
+    val repositories = defaultRepositories + userRepositories
+    return repositories.map { RRepositoryWithSelection(it, it.url in enabledRepositoriesUrls) }
+  }
 
   override val name2AvailablePackages: Map<String, RRepoPackage>?
     get() = RepoUtils.getPackageDetails(project)
 
-  override val allPackagesCachedAsync: Promise<List<RRepoPackage>>
-    get() = enabledRepositoryUrlsAsync.then { enabledRepositoryUrls ->
-      RepoUtils.getFreshPackageDetails(project, enabledRepositoryUrls)?.values?.toList() ?: emptyList()
-    }
+  override suspend fun getAllPackagesCached(): List<RRepoPackage> {
+    val enabledRepositoryUrls = getEnabledRepositoryUrls()
+    return RepoUtils.getFreshPackageDetails(project, enabledRepositoryUrls)?.values?.toList() ?: emptyList()
+  }
 
-  override fun loadAllPackagesAsync(): Promise<List<RRepoPackage>> {
-    return mappedEnabledRepositoryUrlsAsync.thenAsync { mappedUrls ->
-      if (mappedUrls.isNotEmpty()) {
-        enabledRepositoryUrlsAsync.thenAsync { enabledRepositoryUrls ->
-          runAsync {
-            // Note: copy of repos URLs list is intentional.
-            // Downloading of packages will take a long time so we must ensure that the list will stay unchanged
-            val repoUrls = enabledRepositoryUrls.toList()
-            loadAllPackagesWithCaching(repoUrls, mappedUrls)
-          }
-        }
-      } else {
-        LOGGER.warn("List of enabled repos is empty. No packages can be loaded")
-        resolvedPromise(emptyList())
+  override suspend fun loadAllPackages(): List<RRepoPackage> {
+    val mappedUrls = getMappedEnabledRepositoryUrls()
+    return if (mappedUrls.isNotEmpty()) {
+      val enabledRepositoryUrls = getEnabledRepositoryUrls()
+      // Note: copy of repos URLs list is intentional.
+      // Downloading of packages will take a long time so we must ensure that the list will stay unchanged
+      val repoUrls = enabledRepositoryUrls.toList()
+      withContext(Dispatchers.IO) {
+        loadAllPackagesWithCaching(repoUrls, mappedUrls)
       }
+    } else {
+      LOGGER.warn("List of enabled repos is empty. No packages can be loaded")
+      emptyList()
     }
   }
 
@@ -110,7 +106,8 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
   override fun onInterpreterVersionChange() {
     RepoUtils.resetPackageDetails(project)
     service.enabledRepositoryUrls.clear()
-    defaultRepositoriesPromise = null
+
+    defaultRepositoriesDeferred = RPluginCoroutineScope.getScope(project).suspendingLazy { loadDefaultRepositories() }
   }
 
   private fun mapRepositoryUrls(repoUrls: List<String>, cranMirrors: List<RMirror>): List<String> {
@@ -181,15 +178,14 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
     }
   }
 
-  private fun loadDefaultRepositoriesAsync(): Promise<List<RDefaultRepository>> {
-    return cranMirrorsAsync.thenAsync { mirrors ->
-      runAsync {
-        loadDefaultRepositories(mirrors)
-      }
+  private suspend fun loadDefaultRepositories(): List<RDefaultRepository> {
+    val mirrors = getCranMirrors()
+    return withContext(Dispatchers.IO) {
+      loadDefaultRepositoriesSync(mirrors)
     }
   }
 
-  private fun loadDefaultRepositories(mirrors: List<RMirror>): List<RDefaultRepository> {
+  private fun loadDefaultRepositoriesSync(mirrors: List<RMirror>): List<RDefaultRepository> {
     val lines = runHelper(DEFAULT_REPOSITORIES_HELPER)
     if (lines.isEmpty()) {
       return emptyList()
@@ -231,11 +227,10 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
     }
   }
 
-  private fun actualizeEnabledRepositoriesAsync(): Promise<Unit> {
-    return defaultRepositoriesAsync.then { defaultRepositories ->
-      removeOutdatedEnabledRepositories(defaultRepositories)
-      enableMandatoryRepositories(defaultRepositories)
-    }
+  private suspend fun actualizeEnabledRepositories(): Unit {
+    val defaultRepositories = defaultRepositoriesDeferred.getValue()
+    removeOutdatedEnabledRepositories(defaultRepositories)
+    enableMandatoryRepositories(defaultRepositories)
   }
 
   private fun removeOutdatedEnabledRepositories(defaultRepositories: List<RDefaultRepository>) {
