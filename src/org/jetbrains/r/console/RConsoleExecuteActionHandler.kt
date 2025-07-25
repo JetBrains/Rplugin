@@ -50,7 +50,9 @@ import org.jetbrains.r.run.visualize.RVisualizeTableUtil
 import org.jetbrains.r.util.PromiseUtil
 import java.util.*
 
-class RConsoleExecuteActionHandler(private val consoleView: RConsoleView) : BaseConsoleExecuteActionHandler(false), Condition<LanguageConsoleView> {
+class RConsoleExecuteActionHandler(
+  private val consoleView: RConsoleView,
+) : BaseConsoleExecuteActionHandler(false), Condition<LanguageConsoleView> {
   private val rInterop = consoleView.rInterop
   private val listeners = HashSet<Listener>()
   private val consolePromptDecorator
@@ -161,10 +163,10 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView) : Base
           onText(RBundle.message("console.exception.message.with.call", exception.call.lines().first()), ProcessOutputType.STDERR)
         }
         rInterop.lastErrorStack.lastOrNull { it.position?.file?.let { file -> RSourceFileManager.isTemporary(file) } == false }?.position?.let {
-            onText(" (", ProcessOutputType.STDERR)
-            consoleView.printHyperlink("${it.file.name}#${it.line + 1}", SourcePositionHyperlink(it.xSourcePosition))
-            onText(")", ProcessOutputType.STDERR)
-          }
+          onText(" (", ProcessOutputType.STDERR)
+          consoleView.printHyperlink("${it.file.name}#${it.line + 1}", SourcePositionHyperlink(it.xSourcePosition))
+          onText(")", ProcessOutputType.STDERR)
+        }
         onText(": ${exception.message}\n", ProcessOutputType.STDERR)
         if (rInterop.lastErrorStack.isEmpty()) {
           showStackTraceHandler = null
@@ -389,7 +391,8 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView) : Base
     sourceStartOffset: Int? = null,
     firstDebugCommand: ExecuteCodeRequest.DebugCommand = ExecuteCodeRequest.DebugCommand.CONTINUE,
   ): Promise<Unit> = runReadAction {
-    splitCodeForExecution(consoleView.project, code).mapIndexed { index, (text, range) ->
+    splitCodeForExecution(consoleView.project, code)
+      .mapIndexed { index, (text, range) ->
         val doExecute = if (sourceFile == null || sourceStartOffset == null) {
           ({ consoleView.rInterop.replExecute(text, setLastValue = true, debug = isDebug) })
         }
@@ -399,6 +402,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView) : Base
           val request = consoleView.rInterop.prepareReplSourceFileRequest(sourceFile, newRange, isDebug, debugCommand)
           ({ consoleView.rInterop.replSourceFile(request) })
         }
+        // block is lambda!
         {
           executeLater {
             if (isDebug && state == State.DEBUG_PROMPT) {
