@@ -256,7 +256,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
           Scanner(stream, StandardCharsets.UTF_8).use { it.useDelimiter("\\A").next() }
         }
         else {
-          rInterop.httpdRequest(url)?.let { convertHelpPage(it) }
+          rInterop.httpdRequest(url)?.let { adjustHtmlDocumentation(convertHelpPage(it)) }
         }
         FetchedDoc(docText)
       }
@@ -386,6 +386,17 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
       }
       val packageAndMethod = text.split(PACKAGE_METHOD_SEPARATOR.toRegex(), 2).map { s -> StringUtil.unquoteString(s, BACKTICK) }
       return Pair(packageAndMethod[1], packageAndMethod[0])
+    }
+
+    private fun adjustHtmlDocumentation(documentation: String) : String {
+      val noWrapCss = """
+        <style>
+          td code {
+            white-space: nowrap;
+          }        
+        </style>
+        """.trimIndent()
+      return noWrapCss + documentation
     }
 
     private fun adjustHtmlDocumentationForEditor(documentation: StringBuilder) {
