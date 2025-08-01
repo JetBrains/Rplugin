@@ -125,6 +125,7 @@ jvm_library(
     "@lib//:jediterm-core",
     "@lib//:jediterm-ui",
     "@community//plugins/terminal",
+    "@community//plugins/terminal:terminal_test_lib",
     "@community//platform/execution-impl",
     "//plugins/webDeployment",
     "@lib//:winp",
