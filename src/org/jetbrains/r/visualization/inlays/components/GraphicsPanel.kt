@@ -30,7 +30,7 @@ import org.intellij.images.editor.impl.ImageEditorImpl
 import org.intellij.images.ui.ImageComponent
 import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.plugins.terminal.block.util.TerminalDataContextUtils.editor
+import org.jetbrains.plugins.terminal.block.util.TerminalDataContextUtils.terminalEditor
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import java.awt.BorderLayout
@@ -339,7 +339,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
     private fun createImageEditor(project: Project, file: VirtualFile, graphicsPanel: GraphicsPanel): ImageEditor {
       val imageEditor = ImageEditorImpl(project, file, true, false)
-      val parentEditor = DataManager.getInstance().getDataContext(graphicsPanel.component).editor
+      val parentEditor = DataManager.getInstance().getDataContext(graphicsPanel.component).terminalEditor
       if (parentEditor != null) {
         imageEditor.setEditorBackground(parentEditor.colorsScheme.defaultBackground)
       }
