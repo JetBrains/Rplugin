@@ -6,6 +6,7 @@ package org.jetbrains.r.visualization.inlays.components
 
 import com.intellij.ide.DataManager
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
@@ -30,7 +31,6 @@ import org.intellij.images.editor.impl.ImageEditorImpl
 import org.intellij.images.ui.ImageComponent
 import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.plugins.terminal.block.util.TerminalDataContextUtils.terminalEditor
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import java.awt.BorderLayout
@@ -339,7 +339,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
     private fun createImageEditor(project: Project, file: VirtualFile, graphicsPanel: GraphicsPanel): ImageEditor {
       val imageEditor = ImageEditorImpl(project, file, true, false)
-      val parentEditor = DataManager.getInstance().getDataContext(graphicsPanel.component).terminalEditor
+      val parentEditor = DataManager.getInstance().getDataContext(graphicsPanel.component).getData(CommonDataKeys.EDITOR)
       if (parentEditor != null) {
         imageEditor.setEditorBackground(parentEditor.colorsScheme.defaultBackground)
       }
