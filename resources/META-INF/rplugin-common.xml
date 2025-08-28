@@ -124,15 +124,9 @@ You can find the source code in the following repositories:
           <add-to-group group-id="ToolWindowContextMenu" anchor="last"/>
         </action>
 
-        <action id="NewRScriptAction" class="org.jetbrains.r.actions.NewRScriptAction"
-                icon="icons.RIcons.R">
-            <add-to-group group-id="NewGroup" relative-to-action="NewFile" anchor="before"/>
-        </action>
+        <action id="NewRScriptAction" class="org.jetbrains.r.actions.NewRScriptAction" icon="icons.RIcons.R"/>
 
-        <action id="NewRMarkdownAction" class="org.jetbrains.r.actions.NewRMarkdownAction"
-                icon="icons.RIcons.RMarkdown">
-            <add-to-group group-id="NewGroup" relative-to-action="NewRScriptAction" anchor="after"/>
-        </action>
+        <action id="NewRMarkdownAction" class="org.jetbrains.r.actions.NewRMarkdownAction" icon="icons.RIcons.RMarkdown"/>
 
         <group id="org.jetbrains.r.run.visualize.actions.RImportDataContextActionGroup"
                class="org.jetbrains.r.run.visualize.actions.RImportDataContextActionGroup" popup="true"
