@@ -5,7 +5,6 @@
 package org.jetbrains.r.editor
 
 import com.intellij.codeInsight.AutoPopupController
-import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
@@ -45,7 +44,7 @@ class RCompletionAutoPopupHandler : TypedHandlerDelegate() {
     }
 
     if (charTyped != '$' && charTyped != ':' && charTyped != '/' && charTyped != '\\') return Result.CONTINUE
-    AutoPopupController.getInstance(project).scheduleAutoPopup(editor, CompletionType.BASIC) l@{ psiFile ->
+    AutoPopupController.getInstance(project).scheduleAutoPopup(editor) l@{ psiFile ->
       val element = psiFile.findElementAt(offset) ?: return@l false
       val parent = element.parent ?: return@l false
       if (parent is RNamespaceAccessExpression && parent.identifier == null) return@l true
