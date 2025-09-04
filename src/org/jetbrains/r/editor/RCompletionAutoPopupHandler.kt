@@ -67,7 +67,7 @@ class RCompletionAutoPopupHandler : TypedHandlerDelegate() {
   }
 
   private fun showPopup(project: Project, editor: Editor): Result {
-    AutoPopupController.getInstance(project).autoPopupMemberLookup(editor, null)
+    AutoPopupController.getInstance(project).scheduleAutoPopup(editor, null)
     return Result.STOP
   }
 }
