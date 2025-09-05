@@ -29,7 +29,6 @@ jvm_library(
     "@community//platform/editor-ui-ex:editor-ex",
     "@community//platform/indexing-api:indexing",
     "@community//platform/indexing-impl",
-    "@lib//:grpc-core",
     "@community//jps/model-api:model",
     "@community//platform/lang-core",
     "@community//platform/lvcs-api:lvcs",
@@ -38,8 +37,6 @@ jvm_library(
     "@community//platform/structure-view-impl:structureView-impl",
     "@community//platform/usageView",
     "@community//platform/ide-core-impl",
-    "@lib//:grpc-protobuf",
-    "@lib//:grpc-stub",
     "@community//platform/lang-api:lang",
     "@community//platform/lang-impl",
     "@lib//:kotlin-stdlib",
@@ -75,11 +72,10 @@ jvm_library(
     "@community//platform/editor-ui-api:editor-ui",
     "@lib//:jcef",
     "@community//images",
+    "@community//libraries/grpc",
+    "@community//libraries/grpc-netty-shaded",
   ],
-  runtime_deps = [
-    ":r_resources",
-    "@lib//:grpc-netty-shaded",
-  ]
+  runtime_deps = [":r_resources"]
 )
 
 jvm_library(
@@ -99,7 +95,6 @@ jvm_library(
     "@community//platform/editor-ui-ex:editor-ex",
     "@community//platform/indexing-api:indexing",
     "@community//platform/indexing-impl",
-    "@lib//:grpc-core",
     "@community//jps/model-api:model",
     "@community//platform/lang-core",
     "@community//platform/lvcs-api:lvcs",
@@ -108,8 +103,6 @@ jvm_library(
     "@community//platform/structure-view-impl:structureView-impl",
     "@community//platform/usageView",
     "@community//platform/ide-core-impl",
-    "@lib//:grpc-protobuf",
-    "@lib//:grpc-stub",
     "@community//platform/lang-api:lang",
     "@community//platform/lang-impl",
     "@lib//:kotlin-stdlib",
@@ -156,6 +149,8 @@ jvm_library(
     "@lib//:jcef",
     "@community//images",
     "@community//images:images_test_lib",
+    "@community//libraries/grpc",
+    "@community//libraries/grpc-netty-shaded",
   ],
   runtime_deps = [
     ":r_resources",

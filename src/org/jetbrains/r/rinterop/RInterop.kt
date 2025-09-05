@@ -11,6 +11,7 @@ import com.intellij.codeInsight.CodeInsightBundle
 import com.intellij.concurrency.ConcurrentCollectionFactory
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType
+import com.intellij.libraries.grpc.netty.shaded.NettyChannelProviderRegistrationService
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.*
 import com.intellij.openapi.diagnostic.Logger
@@ -89,10 +90,15 @@ class RInterop(
   val interpreter: RInterpreter, val processHandler: ProcessHandler,
   address: String, port: Int, val project: Project,
 ) : UserDataHolderBase(), Disposable {
-  private val channel = ManagedChannelBuilder.forAddress(address, port)
-    .executor(AppExecutorUtil.getAppExecutorService())
-    .usePlaintext()
-    .maxInboundMessageSize(MAX_MESSAGE_SIZE).build()
+
+  private val channel = run {
+    NettyChannelProviderRegistrationService.ensureChannelProviderRegistered()
+
+    ManagedChannelBuilder.forAddress(address, port)
+      .executor(AppExecutorUtil.getAppExecutorService())
+      .usePlaintext()
+      .maxInboundMessageSize(MAX_MESSAGE_SIZE).build()
+  }
 
   private val isUnitTestMode = ApplicationManager.getApplication().isUnitTestMode
   private val deadlineTest
