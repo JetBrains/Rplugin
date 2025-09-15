@@ -20,7 +20,7 @@ abstract class LibraryClassNameIndex<T> : StringStubIndexExtension<RCallExpressi
                              scope: GlobalSearchScope?,
                              processor: Processor<Pair<RCallExpression, T>>) {
     val stubIndex = StubIndex.getInstance()
-    stubIndex.processAllKeys(key, project) { key ->
+    stubIndex.getAllKeys(key, project).forEach { key ->
       stubIndex.processElements(getKey(), key, project, scope, RCallExpression::class.java) { declaration ->
         declaration.mapClassInfoFunction()?.let { processor.process(declaration to it) } ?: true
       }
