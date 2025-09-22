@@ -152,10 +152,7 @@ jvm_library(
     "@community//libraries/grpc",
     "@community//libraries/grpc-netty-shaded",
   ],
-  runtime_deps = [
-    ":r_resources",
-    ":r_test_resources",
-  ]
+  runtime_deps = [":r_test_resources"]
 )
 ### auto-generated section `build intellij.r` end
 
