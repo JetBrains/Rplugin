@@ -1,9 +1,9 @@
 ### auto-generated section `build intellij.r.python` start
-load("@rules_jvm//:jvm.bzl", "jvm_library", "jvm_resources")
+load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
 
-jvm_resources(
+resourcegroup(
   name = "python_resources",
-  files = glob(["resources/**/*"]),
+  srcs = glob(["resources/**/*"]),
   strip_prefix = "resources"
 )
 
@@ -12,6 +12,7 @@ jvm_library(
   module_name = "intellij.r.python",
   visibility = ["//visibility:public"],
   srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
+  resources = [":python_resources"],
   deps = [
     "@community//platform/code-style-api:codeStyle",
     "@community//platform/core-api:core",
@@ -20,8 +21,7 @@ jvm_library(
     "@community//platform/lang-impl",
     "@community//python/openapi:community",
     "@community//python:python-community-impl",
-  ],
-  runtime_deps = [":python_resources"]
+  ]
 )
 
 jvm_library(
