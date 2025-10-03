@@ -20,7 +20,7 @@ jvm_library(
   srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form", "gen/**/*.kt", "gen/**/*.java", "gen-grpc/main/java/**/*.kt", "gen-grpc/main/java/**/*.java", "gen-grpc/main/grpc/**/*.kt", "gen-grpc/main/grpc/**/*.java"], allow_empty = True),
   resources = [":r_resources"],
   deps = [
-    "@lib//:guava",
+    "@community//libraries/guava",
     "@community//platform/analysis-api:analysis",
     "@community//platform/code-style-api:codeStyle",
     "@community//platform/util/concurrency",
@@ -85,7 +85,7 @@ jvm_library(
   resources = [":r_test_resources"],
   associates = [":r"],
   deps = [
-    "@lib//:guava",
+    "@community//libraries/guava",
     "@community//platform/analysis-api:analysis",
     "@community//platform/code-style-api:codeStyle",
     "@community//platform/util/concurrency",
