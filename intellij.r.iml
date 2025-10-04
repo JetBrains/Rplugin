@@ -48,7 +48,7 @@
     <orderEntry type="module" module-name="intellij.webDeployment" />
     <orderEntry type="library" name="winp" level="project" />
     <orderEntry type="library" name="miglayout-swing" level="project" />
-    <orderEntry type="library" name="kotlin-reflect" level="project" />
+    <orderEntry type="module" module-name="intellij.libraries.kotlin.reflect" />
     <orderEntry type="module" module-name="intellij.platform.statistics" />
     <orderEntry type="library" name="javax.annotation-api" level="project" />
     <orderEntry type="module" module-name="intellij.platform.testFramework" scope="TEST" />
