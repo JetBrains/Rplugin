@@ -7,7 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="commons-io" level="project" />
+    <orderEntry type="module" module-name="intellij.libraries.commons.io" />
     <orderEntry type="library" name="kotlin-stdlib" level="project" />
   </component>
 </module>

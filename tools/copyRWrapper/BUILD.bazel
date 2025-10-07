@@ -7,7 +7,7 @@ jvm_library(
   visibility = ["//visibility:public"],
   srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
   deps = [
-    "@lib//:commons-io",
+    "@community//libraries/commons/io",
     "@lib//:kotlin-stdlib",
   ]
 )
