@@ -77,13 +77,6 @@ public class CommonPsiCrumb extends Crumb.Impl implements NavigatableCrumb, Lazy
     }
   }
 
-  private static void moveEditorCaretTo(Editor editor, int offset) {
-    if (offset >= 0) {
-      editor.getCaretModel().moveToOffset(offset);
-      editor.getScrollingModel().scrollToCaret(ScrollType.MAKE_VISIBLE);
-    }
-  }
-
   @Contract("null -> null")
   static PsiElement getElement(Crumb crumb) {
     return crumb instanceof CommonPsiCrumb ? ((CommonPsiCrumb)crumb).anchor.retrieve() : null;
