@@ -12,13 +12,13 @@ import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SyntaxTraverser
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownParagraph
+import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.await
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
-import kotlin.Throws
 
 object RMarkdownUtil {
   private val requiredPackages = listOf(
@@ -43,6 +43,7 @@ object RMarkdownUtil {
     checkOrInstallPackagesAsync(project, utilityName).await()
   }
 
+  @ApiStatus.ScheduledForRemoval
   @Deprecated("use checkOrInstallPackages instead")
   fun checkOrInstallPackagesAsync(project: Project, utilityName: @Nls String): Promise<Unit> {
     return RequiredPackageInstaller.getInstance(project).installPackagesWithUserPermission(utilityName, requiredPackages)
