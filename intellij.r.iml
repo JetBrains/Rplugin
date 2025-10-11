@@ -41,7 +41,7 @@
     <orderEntry type="module" module-name="intellij.platform.debugger.impl" />
     <orderEntry type="module" module-name="intellij.platform.usageView.impl" />
     <orderEntry type="module" module-name="intellij.remoteRun" />
-    <orderEntry type="library" name="jediterm-core" level="project" />
+    <orderEntry type="module" module-name="intellij.libraries.jediterm.core" />
     <orderEntry type="module" module-name="intellij.libraries.jediterm.ui" />
     <orderEntry type="module" module-name="intellij.terminal" />
     <orderEntry type="module" module-name="intellij.platform.execution.impl" />
@@ -50,7 +50,7 @@
     <orderEntry type="module" module-name="intellij.libraries.miglayout.swing" />
     <orderEntry type="module" module-name="intellij.libraries.kotlin.reflect" />
     <orderEntry type="module" module-name="intellij.platform.statistics" />
-    <orderEntry type="library" name="javax.annotation-api" level="project" />
+    <orderEntry type="module" module-name="intellij.libraries.javax.annotation" />
     <orderEntry type="module" module-name="intellij.platform.testFramework" scope="TEST" />
     <orderEntry type="module" module-name="intellij.libraries.commons.compress" scope="TEST" />
     <orderEntry type="module" module-name="intellij.libraries.gson" />
@@ -69,7 +69,7 @@
     <orderEntry type="library" name="kotlinx-coroutines-core" level="project" />
     <orderEntry type="module" module-name="intellij.python.psi" scope="TEST" />
     <orderEntry type="module" module-name="intellij.platform.editor.ui" />
-    <orderEntry type="library" name="jcef" level="project" />
+    <orderEntry type="module" module-name="intellij.libraries.jcef" />
     <orderEntry type="module" module-name="intellij.platform.images" />
     <orderEntry type="module" module-name="intellij.libraries.grpc" />
     <orderEntry type="module" module-name="intellij.libraries.grpc.netty.shaded" />
