@@ -10,14 +10,13 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RForStatement
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.cfg.RControlFlow
 import com.intellij.refactoring.util.CommonRefactoringUtil
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.api.RForStatement
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.cfg.RControlFlow
-import java.util.*
 
 object RInlineUtil {
   fun getLatestDefs(controlFlow: RControlFlow, varName: String, anchor: PsiElement?): List<PsiElement> {

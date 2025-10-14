@@ -16,6 +16,14 @@ import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.common.ExpiringList
+import com.intellij.r.psi.common.emptyExpiringList
+import com.intellij.r.psi.interpreter.RInterpreterState
+import com.intellij.r.psi.interpreter.RInterpreterStateManager
+import com.intellij.r.psi.packages.RInstalledPackage
+import com.intellij.r.psi.rinterop.RInterop
 import com.intellij.util.CatchingConsumer
 import com.intellij.webcore.packaging.InstalledPackage
 import com.intellij.webcore.packaging.PackageManagementService
@@ -26,19 +34,11 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.await
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RPluginCoroutineScope
-import org.jetbrains.r.common.ExpiringList
-import org.jetbrains.r.common.emptyExpiringList
 import org.jetbrains.r.documentation.RDocumentationProvider
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getListBlocking
-import org.jetbrains.r.interpreter.RInterpreterState
-import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
-import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.remote.ui.RPackageServiceListener
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
-import org.jetbrains.r.rinterop.RInterop
 import java.util.concurrent.atomic.AtomicInteger
 
 sealed class PackageDetailsException(message: String) : RuntimeException(message)

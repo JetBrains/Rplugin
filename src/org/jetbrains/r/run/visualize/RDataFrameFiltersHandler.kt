@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.run.visualize
 
-import org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter
+import com.intellij.r.psi.rinterop.DataFrameFilterRequest.Filter
 import org.jetbrains.r.visualization.inlays.table.filters.IFilter
 import org.jetbrains.r.visualization.inlays.table.filters.IParser
 import org.jetbrains.r.visualization.inlays.table.filters.gui.ChoicesHandler

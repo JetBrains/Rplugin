@@ -6,8 +6,8 @@ package org.jetbrains.r.documentation
 
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropAsyncEventsListener
+import com.intellij.r.psi.rinterop.RInterop
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 class RHttpdDocumentationTest : RProcessHandlerBaseTestCase() {
@@ -59,7 +59,7 @@ class RHttpdDocumentationTest : RProcessHandlerBaseTestCase() {
       <a href="psi_element:///a/b/c/d/xyz.html">link</a>
       <a href="psi_element:///q/w/e.html">link</a>
     """.trimIndent()
-    TestCase.assertEquals(expected, RDocumentationProvider.convertHelpPage(RInterop.HttpdResponse(input, url)))
+    TestCase.assertEquals(expected, RDocumentationProvider.convertHelpPage(RInterop.HttpdResponse (input, url)))
   }
 
   private fun executeHelpCommand(command: String): RInterop.HttpdResponse {

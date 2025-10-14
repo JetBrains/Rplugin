@@ -6,11 +6,11 @@ package org.jetbrains.r.hints
 
 import com.intellij.codeInsight.hints.InlayHintsSettings
 import com.intellij.openapi.editor.impl.EditorImpl
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RFileType
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RFileType
+import com.intellij.r.psi.RLanguage
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
+import com.intellij.r.psi.rmarkdown.RMarkdownFileType
 
 class RReturnHintsTest : RLightCodeInsightFixtureTestCase() {
 

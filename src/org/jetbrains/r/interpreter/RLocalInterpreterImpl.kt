@@ -16,18 +16,24 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComponentWithBrowseButton
 import com.intellij.openapi.ui.TextComponentAccessor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.interpreter.OperatingSystem
+import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.interpreter.RInterpreterBase
+import com.intellij.r.psi.interpreter.RInterpreterState
+import com.intellij.r.psi.rinterop.RInterop
 import com.intellij.util.system.CpuArch
 import kotlinx.coroutines.async
 import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.coroutines.launch
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.asPromise
-import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
-import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.rinterop.RInteropUtil
 import java.io.File
 import java.nio.file.Files
@@ -35,12 +41,17 @@ import java.nio.file.Paths
 
 class RLocalInterpreterImpl(location: RLocalInterpreterLocation, project: Project) : RInterpreterBase(location, project) {
   private val interpreterPath = location.path
+
+  override val version: Version = RInterpreterUtil.getVersionByLocation(location) ?: throw RuntimeException("Invalid R interpreter")
+  private val versionInfo = RInterpreterUtil.loadInterpreterVersionInfo(location)
+  override val interpreterName: String get() = versionInfo["version.string"]?.replace(' ', '_')  ?: "unnamed"
+
   override val basePath = project.basePath!!
   override val hostOS get() = OperatingSystem.current()
   override val hostArch get() = CpuArch.CURRENT
   override val interpreterPathOnHost get() = interpreterPath
 
-  override fun createRInteropForProcess(process: ProcessHandler, port: Int): RInterop {
+  override fun createRInteropForProcess(process: ProcessHandler, port: Int): RInteropImpl {
     return RInteropUtil.createRInteropForLocalProcess(this, process, port)
   }
 

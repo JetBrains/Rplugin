@@ -13,6 +13,12 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RFileType
+import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.isAssignee
+import com.intellij.r.psi.refactoring.quoteIfNeeded
+import com.intellij.r.psi.refactoring.rNamesValidator
 import com.intellij.refactoring.RefactoringActionHandler
 import com.intellij.refactoring.extractMethod.AbstractExtractMethodDialog
 import com.intellij.refactoring.extractMethod.ExtractMethodDecorator
@@ -20,12 +26,6 @@ import com.intellij.refactoring.extractMethod.ExtractMethodValidator
 import com.intellij.refactoring.util.AbstractVariableData
 import com.intellij.refactoring.util.CommonRefactoringUtil
 import com.intellij.refactoring.util.CommonRefactoringUtil.RefactoringErrorHintException
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RFileType
-import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.isAssignee
-import org.jetbrains.r.refactoring.quoteIfNeeded
-import org.jetbrains.r.refactoring.rNamesValidator
 
 class RExtractMethodHandler : RefactoringActionHandler {
   override fun invoke(project: Project, elements: Array<out PsiElement>, dataContext: DataContext?) {

@@ -5,11 +5,11 @@
 package org.jetbrains.r.projectGenerator.panel.interpreter
 
 import com.intellij.openapi.ui.ValidationInfo
+import com.intellij.r.psi.interpreter.RInterpreterLocation
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.util.ui.FormBuilder
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
-import org.jetbrains.r.interpreter.RInterpreterLocation
 import java.awt.BorderLayout
 import javax.swing.ButtonGroup
 import javax.swing.Icon

@@ -9,11 +9,11 @@ import com.intellij.lang.findUsages.FindUsagesProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.tree.TokenSet
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.roxygen.lexer.RoxygenLexer
-import org.jetbrains.r.roxygen.parsing.RoxygenElementTypes.ROXYGEN_IDENTIFIER
-import org.jetbrains.r.roxygen.parsing.RoxygenTokenSets
-import org.jetbrains.r.roxygen.psi.api.RoxygenParameter
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.roxygen.lexer.RoxygenLexer
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_IDENTIFIER
+import com.intellij.r.psi.roxygen.parsing.RoxygenTokenSets
+import com.intellij.r.psi.roxygen.psi.api.RoxygenParameter
 
 private class RoxygenFindUsagesProvider : FindUsagesProvider {
   override fun getWordsScanner(): WordsScanner {

@@ -8,7 +8,7 @@ import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.util.use
 import junit.framework.TestCase
 import kotlinx.coroutines.time.withTimeout
-import org.jetbrains.r.rinterop.RReference
+import com.intellij.r.psi.rinterop.RReference
 import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RDataFrameViewer
 import org.jetbrains.r.run.visualize.RFilterParser

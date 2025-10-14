@@ -1,7 +1,11 @@
 package org.jetbrains.r.rinterop
 
 import com.intellij.execution.process.ProcessOutputType
-import org.jetbrains.r.debugger.RSourcePosition
+import com.intellij.r.psi.debugger.RSourcePosition
+import com.intellij.r.psi.rinterop.RInterop
+import com.intellij.r.psi.rinterop.RObject
+import com.intellij.r.psi.rinterop.RReference
+import com.intellij.r.psi.rinterop.RValue
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiFunctionId
 import org.jetbrains.r.run.visualize.RDataFrameViewer
 

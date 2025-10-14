@@ -5,7 +5,7 @@ import com.intellij.psi.PsiDocCommentBase
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.FakePsiElement
 import com.intellij.psi.tree.IElementType
-import org.jetbrains.r.parsing.RTokenTypes
+import com.intellij.r.psi.parsing.RTokenTypes
 
 class RVirtualDocumentationComment(private val parent: PsiElement, private val range: TextRange): FakePsiElement(), PsiDocCommentBase  {
   override fun getParent(): PsiElement {

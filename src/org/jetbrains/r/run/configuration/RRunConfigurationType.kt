@@ -3,8 +3,8 @@ package org.jetbrains.r.run.configuration
 import com.intellij.execution.configurations.SimpleConfigurationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NotNullLazyValue
-import icons.RIcons
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.icons.RIcons
 
 private const val ID = "R"
 

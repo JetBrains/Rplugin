@@ -8,8 +8,8 @@ import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.interpreter.RInterpreterInfo
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.interpreter.RInterpreterInfo
 import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import java.awt.Point
 import javax.swing.JComponent

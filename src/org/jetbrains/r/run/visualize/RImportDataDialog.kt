@@ -22,6 +22,13 @@ import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.interpreter.LocalOrRemotePath
+import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.run.visualize.RVisualization
 import com.intellij.ui.*
 import com.intellij.ui.EditorNotifications.getInstance
 import com.intellij.ui.components.ActionLink
@@ -31,13 +38,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.await
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RPluginCoroutineScope
-import org.jetbrains.r.interpreter.LocalOrRemotePath
-import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.interpreter.findFile
 import org.jetbrains.r.interpreter.isLocal
-import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.run.visualize.forms.RImportDataDialogForm
 import org.jetbrains.r.visualization.inlays.components.BorderlessDialogWrapper
 import org.jetbrains.r.visualization.inlays.components.DialogUtil
@@ -53,7 +55,7 @@ import kotlin.reflect.KProperty
 
 abstract class RImportDataDialog(
   protected val project: Project,
-  protected val interop: RInterop,
+  protected val interop: RInteropImpl,
   parent: Disposable,
   private val initialPath: LocalOrRemotePath? = null
 ) : BorderlessDialogWrapper(project, RBundle.message("import.data.dialog.title"), IdeModalityType.IDE) {
@@ -192,7 +194,7 @@ abstract class RImportDataDialog(
         RPluginCoroutineScope.getScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
           filePath?.findFile(interpreter)?.let { getInstance(project).updateNotifications(it) }
           if (viewAfterImport) {
-            VisualizeTableHandler.visualizeTable(interop, ref, project, name)
+            RVisualization.getInstance(project).visualizeTable(interop, ref, name)
           }
         }
       }
@@ -551,4 +553,9 @@ abstract class RImportDataDialog(
       }
     }
   }
+}
+
+private fun LocalOrRemotePath.findFile(interpreter: RInterpreter, refreshIfNeeded: Boolean = false): VirtualFile? {
+  if (isRemote) return interpreter.findFileByPathAtHost(path)
+  return VfsUtil.findFile(Paths.get(path), refreshIfNeeded)
 }

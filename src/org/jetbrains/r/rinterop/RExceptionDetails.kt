@@ -4,6 +4,8 @@
 
 package org.jetbrains.r.rinterop
 
+import com.intellij.r.psi.rinterop.ExceptionInfo
+
 sealed class RExceptionDetails
 
 object RInterrupted : RExceptionDetails()

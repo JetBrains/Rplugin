@@ -6,7 +6,7 @@ package org.jetbrains.r.help
 
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.help.WebHelpProvider
-import org.jetbrains.r.RPluginUtil
+import com.intellij.r.psi.RPluginUtil
 
 class RWebHelpProvider : WebHelpProvider() {
   override fun getHelpPageUrl(helpTopicId: String): String? {

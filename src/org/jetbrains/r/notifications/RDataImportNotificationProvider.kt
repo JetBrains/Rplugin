@@ -13,12 +13,12 @@ import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import com.intellij.openapi.util.Ref
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.r.psi.RBundle
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotificationProvider
 import com.intellij.ui.HyperlinkLabel
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.run.visualize.actions.RImportBaseDataContextAction
 import org.jetbrains.r.run.visualize.actions.RImportCsvDataContextAction
 import org.jetbrains.r.run.visualize.actions.RImportDataContextAction
@@ -95,7 +95,7 @@ class RDataImportNotificationProvider : EditorNotificationProvider, DumbAware {
   }
 
   companion object {
-    private fun RInterop.hasVariable(name: String): Boolean {
+    private fun RInteropImpl.hasVariable(name: String): Boolean {
       return globalEnvLoader.variables.find { it.name == name } != null
     }
 

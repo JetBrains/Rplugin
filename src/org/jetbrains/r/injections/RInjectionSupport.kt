@@ -1,8 +1,8 @@
 package org.jetbrains.r.injections
 
 import com.intellij.psi.PsiLanguageInjectionHost
+import com.intellij.r.psi.RLanguage
 import org.intellij.plugins.intelliLang.inject.AbstractLanguageInjectionSupport
-import org.jetbrains.r.RLanguage
 
 class RInjectionSupport : AbstractLanguageInjectionSupport() {
   override fun getId(): String {

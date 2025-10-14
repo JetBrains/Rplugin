@@ -7,7 +7,7 @@ package org.jetbrains.r.run.graphics.ui
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RSnapshot

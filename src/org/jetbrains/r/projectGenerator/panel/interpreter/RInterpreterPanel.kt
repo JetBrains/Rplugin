@@ -5,7 +5,7 @@
 package org.jetbrains.r.projectGenerator.panel.interpreter
 
 import com.intellij.openapi.ui.ValidationInfo
-import org.jetbrains.r.interpreter.RInterpreterLocation
+import com.intellij.r.psi.interpreter.RInterpreterLocation
 import org.jetbrains.r.projectGenerator.panel.RPanel
 
 abstract class RInterpreterPanel : RPanel() {

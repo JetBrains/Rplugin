@@ -9,6 +9,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.interpreter.RInterpreterLocation
 import com.intellij.ui.JBColor
 import com.intellij.ui.SideBorder
 import com.intellij.ui.ToolbarDecorator
@@ -17,8 +19,6 @@ import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.AbstractTableCellEditor
 import com.intellij.util.ui.JBDimension
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
 import java.awt.BorderLayout
 import java.awt.Component

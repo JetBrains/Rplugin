@@ -5,8 +5,8 @@
 package org.jetbrains.r.editor
 
 import com.intellij.openapi.options.BeanConfigurable
+import com.intellij.r.psi.RBundle
 import org.jetbrains.annotations.NonNls
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.settings.REditorSettings
 
 @NonNls

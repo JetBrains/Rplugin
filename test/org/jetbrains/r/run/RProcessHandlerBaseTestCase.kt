@@ -21,21 +21,21 @@ import kotlinx.coroutines.runBlocking
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RUsefulTestCase
-import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterStateImpl
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.api.RBooleanLiteral
-import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.psi.api.RNamedArgument
-import org.jetbrains.r.rinterop.RInterop
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.api.RBooleanLiteral
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RNamedArgument
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.rinterop.RInteropUtil
 import org.jetbrains.r.run.debug.RLineBreakpointType
 import java.nio.file.Files
 import kotlin.coroutines.EmptyCoroutineContext
 
 abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
-  protected lateinit var rInterop: RInterop
+  protected lateinit var rInterop: RInteropImpl
   protected open val customDeadline: Long? = null
   protected lateinit var interpreter: RInterpreter
 
@@ -44,7 +44,7 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
   override fun setUp() {
     super.setUp()
     Files.createDirectories(project.stateStore.projectBasePath)
-    project.putUserData(RInterop.DEADLINE_TEST_KEY, customDeadline)
+    project.putUserData(RInteropImpl.DEADLINE_TEST_KEY, customDeadline)
     setupMockInterpreterManager()
     setupMockInterpreterStateManager()
 
@@ -59,7 +59,7 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
 
   override fun tearDown() {
     try {
-      project.putUserData(RInterop.DEADLINE_TEST_KEY, null)
+      project.putUserData(RInteropImpl.DEADLINE_TEST_KEY, null)
       if (this::rInterop.isInitialized && !Disposer.isDisposed(rInterop)) {
         runAsync {
           Disposer.dispose(rInterop)
@@ -152,11 +152,11 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
     private var state: RInterpreterStateImpl? = null
 
     class InteropSpawner {
-      private val interopCache = ArrayList<RInterop>()
-      private val interopPromises = ArrayList<Promise<RInterop>>()
+      private val interopCache = ArrayList<RInteropImpl>()
+      private val interopPromises = ArrayList<Promise<RInteropImpl>>()
 
-      fun run(interpreter: RInterpreter, workingDirectory: String, tries: Int = 5): RInterop {
-        val result : Promise<RInterop>
+      fun run(interpreter: RInterpreter, workingDirectory: String, tries: Int = 5): RInteropImpl {
+        val result : Promise<RInteropImpl>
         synchronized(this) {
           while (interopPromises.size + interopCache.size < maxInteropNumber) {
             val promise = RInteropUtil.runRWrapperAndInterop(interpreter, workingDirectory)
@@ -194,11 +194,11 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
       }
     }
 
-    private fun createRInterop(interpreter: RInterpreter): RInterop {
+    private fun createRInterop(interpreter: RInterpreter): RInteropImpl {
       return RInteropUtil.runRWrapperAndInterop(interpreter).blockingGet(DEFAULT_TIMEOUT)!!
     }
 
-    private fun getRInterop(interpreter: RInterpreter): RInterop {
+    private fun getRInterop(interpreter: RInterpreter): RInteropImpl {
       val interop = interopSpawner.run(interpreter, interpreter.basePath)
       val currentState = state
       if (currentState == null) {

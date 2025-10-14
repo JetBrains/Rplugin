@@ -10,10 +10,10 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.psi.api.*
 import com.intellij.refactoring.RefactoringFactory
 import com.intellij.refactoring.rename.RenameHandlerRegistry
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.refactoring.rename.RNameSuggestionProvider
 import org.jetbrains.r.rendering.editor.AdvancedTextEditor
 

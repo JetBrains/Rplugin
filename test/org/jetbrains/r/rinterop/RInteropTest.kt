@@ -7,6 +7,10 @@ package org.jetbrains.r.rinterop
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.r.psi.rinterop.ProtoUtil
+import com.intellij.r.psi.rinterop.RReference
+import com.intellij.r.psi.rinterop.RValue
+import com.intellij.r.psi.rinterop.RValueFunction
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.runAsync

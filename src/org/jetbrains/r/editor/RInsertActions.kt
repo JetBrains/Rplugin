@@ -11,10 +11,10 @@ import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.psi.PsiDocumentManager
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.editor
-import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
 abstract class RInsertActionBase(private val symbol: String) : DumbAwareAction(), RPromotedAction {
   override fun actionPerformed(e: AnActionEvent) {

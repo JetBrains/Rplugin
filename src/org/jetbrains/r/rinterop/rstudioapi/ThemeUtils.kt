@@ -1,8 +1,8 @@
 package org.jetbrains.r.rinterop.rstudioapi
 
+import com.intellij.r.psi.rinterop.RObject
 import com.intellij.ui.JBColor
 import com.intellij.util.ui.UIUtil
-import org.jetbrains.r.rinterop.RObject
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRBoolean
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
 import java.awt.Color

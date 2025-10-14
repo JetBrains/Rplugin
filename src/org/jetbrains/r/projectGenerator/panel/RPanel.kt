@@ -5,7 +5,7 @@
 package org.jetbrains.r.projectGenerator.panel
 
 import com.intellij.ui.components.JBPanel
-import icons.RIcons
+import com.intellij.r.psi.icons.RIcons
 import javax.swing.Icon
 
 abstract class RPanel : JBPanel<RPanel>() {

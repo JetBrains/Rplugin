@@ -5,7 +5,11 @@
 package org.jetbrains.r.settings
 
 import com.intellij.openapi.components.*
-import org.jetbrains.r.interpreter.*
+import com.intellij.r.psi.interpreter.RInterpreterInfo
+import com.intellij.r.psi.interpreter.RInterpreterLocation
+import org.jetbrains.r.interpreter.RBasicInterpreterInfo
+import org.jetbrains.r.interpreter.RVersion
+import org.jetbrains.r.interpreter.toLocalPathOrNull
 import java.io.File
 
 @State(name = "RInterpreterSettings", storages = [Storage("rInterpreterSettings.xml")])

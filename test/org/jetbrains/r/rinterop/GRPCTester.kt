@@ -11,6 +11,7 @@ import com.google.gson.JsonElement
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.StringValue
 import com.intellij.openapi.project.Project
+import com.intellij.r.psi.rinterop.Init
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream
 import java.io.File
 import java.io.InputStreamReader
@@ -22,7 +23,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.memberFunctions
 
 class GRPCTester(path: String,
-                 private val rInterop: RInterop,
+                 private val rInterop: RInteropImpl,
                  private val pathReplacers: ArrayList<PathReplacer>) {
 
   val messages: Array<RInteropGrpcLogger.Message>

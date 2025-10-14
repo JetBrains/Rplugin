@@ -9,15 +9,15 @@ import com.intellij.codeInsight.daemon.impl.HighlightVisitor
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.api.RControlFlowHolder
+import com.intellij.r.psi.psi.api.RFile
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RParameter
+import com.intellij.r.psi.psi.findVariableDefinition
+import com.intellij.r.psi.psi.isDependantIdentifier
+import com.intellij.r.psi.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.annotator.textAttribute
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.api.RControlFlowHolder
-import org.jetbrains.r.psi.api.RFile
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.api.RParameter
-import org.jetbrains.r.psi.findVariableDefinition
-import org.jetbrains.r.psi.isDependantIdentifier
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 class RRainbowVisitor : RainbowVisitor() {
   override fun suitableForFile(psiFile: PsiFile): Boolean = psiFile is RFile || psiFile.virtualFile?.fileType == RMarkdownFileType

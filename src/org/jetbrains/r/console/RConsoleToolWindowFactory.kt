@@ -27,6 +27,9 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.openapi.wm.ex.ToolWindowManagerListener
 import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
@@ -36,11 +39,8 @@ import com.intellij.util.ui.components.BorderLayoutPanel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.configuration.RSettingsProjectConfigurable
-import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterManagerImpl
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory

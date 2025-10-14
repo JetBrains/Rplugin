@@ -10,13 +10,19 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.patterns.PlatformPatterns.psiElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.editor.completion.GLOBAL_GROUPING
+import com.intellij.r.psi.editor.completion.RLookupElement
+import com.intellij.r.psi.editor.completion.RLookupElementFactory
+import com.intellij.r.psi.editor.completion.RLookupElementInsertHandler
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.references.RSearchScopeUtil
+import com.intellij.r.psi.roxygen.RoxygenLanguage
+import com.intellij.r.psi.roxygen.RoxygenUtil
+import com.intellij.r.psi.roxygen.psi.RoxygenElementFilters
+import com.intellij.r.psi.roxygen.psi.api.RoxygenIdentifierExpression
+import com.intellij.r.psi.roxygen.psi.api.RoxygenNamespaceAccessExpression
 import com.intellij.util.ProcessingContext
-import org.jetbrains.r.editor.completion.*
-import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.roxygen.psi.RoxygenElementFilters
-import org.jetbrains.r.roxygen.psi.api.RoxygenIdentifierExpression
-import org.jetbrains.r.roxygen.psi.api.RoxygenNamespaceAccessExpression
+import org.jetbrains.r.editor.completion.RPackageCompletionUtil
 
 class RoxygenCompletionContributor : CompletionContributor() {
 
@@ -62,7 +68,7 @@ class RoxygenCompletionContributor : CompletionContributor() {
     }
 
     private fun CompletionResultSet.consumeTag(tagName: String) {
-      consume(PrioritizedLookupElement.withGrouping(RLookupElement("@$tagName", true), GLOBAL_GROUPING))
+      consume(PrioritizedLookupElement.withGrouping(RLookupElement ("@$tagName", true), GLOBAL_GROUPING))
     }
   }
 

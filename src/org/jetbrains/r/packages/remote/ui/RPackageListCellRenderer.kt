@@ -4,9 +4,9 @@
 
 package org.jetbrains.r.packages.remote.ui
 
+import com.intellij.r.psi.RBundle
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.SimpleTextAttributes
-import org.jetbrains.r.RBundle
 import javax.swing.JList
 
 class RPackageListCellRenderer : ColoredListCellRenderer<RPackageUpdateInfo>() {

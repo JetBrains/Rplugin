@@ -7,9 +7,9 @@ package org.jetbrains.r.settings
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.UnnamedConfigurable
 import com.intellij.openapi.project.Project
+import com.intellij.r.psi.interpreter.RInterpreterInfo
+import com.intellij.r.psi.interpreter.RInterpreterLocation
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.interpreter.RInterpreterInfo
-import org.jetbrains.r.interpreter.RInterpreterLocation
 import javax.swing.Icon
 
 interface RInterpreterSettingsProvider {

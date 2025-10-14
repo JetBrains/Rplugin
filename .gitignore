@@ -13,11 +13,6 @@
 .idea/rGraphicsSettings.xml
 .idea/rpackages.xml
 
-# grpc generated files
-gen/main/grpc/org/jetbrains/r/rinterop/RPIServiceGrpc.java
-gen/main/java/org/jetbrains/r/rinterop/Service.java
-gen/main/java/org/jetbrains/r/packages/LibrarySummary.java
-
 /deps
 /out
 /build

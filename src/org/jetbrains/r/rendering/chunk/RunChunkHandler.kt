@@ -28,6 +28,9 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.rinterop.RIExecutionResult
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import com.intellij.util.io.createDirectories
 import kotlinx.coroutines.CoroutineScope
@@ -36,16 +39,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.concurrency.*
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.editor.ui.rMarkdownNotebook
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
-import org.jetbrains.r.rinterop.RIExecutionResult
-import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.rmarkdown.RmdFenceProvider
@@ -179,7 +179,7 @@ class RunChunkHandler(
 
     @RequiresReadLock
     @Throws(RunChunkHandlerException::class)
-    fun makeRequest(textRange: TextRange?, console: RConsoleView, isDebug: Boolean): RInterop.ReplSourceFileRequest {
+    fun makeRequest(textRange: TextRange?, console: RConsoleView, isDebug: Boolean): RInteropImpl.ReplSourceFileRequest {
       val range = codeElement.getTextRange(textRange)
       val originalRequest = console.rInterop.prepareReplSourceFileRequest(file.virtualFile, range, isDebug)
       return modifyRequestIfPython(originalRequest, codeElement)
@@ -326,7 +326,7 @@ class RunChunkHandler(
       project.service()
 
     @Throws(RunChunkHandlerException::class)
-    private fun modifyRequestIfPython(request: RInterop.ReplSourceFileRequest, codeElement: CodeElement): RInterop.ReplSourceFileRequest =
+    private fun modifyRequestIfPython(request: RInteropImpl.ReplSourceFileRequest, codeElement: CodeElement): RInteropImpl.ReplSourceFileRequest =
       when {
         codeElement.fenceProvider.fenceLanguage === RLanguage.INSTANCE -> {
           request
@@ -344,7 +344,7 @@ class RunChunkHandler(
       return device?.dumpAndShutdownAsync() ?: resolvedPromise()
     }
 
-    private fun pullOutputsWithLogAsync(rInterop: RInterop, cacheDirectory: String): Promise<Unit> {
+    private fun pullOutputsWithLogAsync(rInterop: RInteropImpl, cacheDirectory: String): Promise<Unit> {
       return runAsync {
         pullOutputs(rInterop, cacheDirectory)
       }.onError { e ->
@@ -352,7 +352,7 @@ class RunChunkHandler(
       }
     }
 
-    private fun pullOutputs(rInterop: RInterop, cacheDirectory: String) {
+    private fun pullOutputs(rInterop: RInteropImpl, cacheDirectory: String) {
       val response = rInterop.pullChunkOutputPaths()
       for (relativePath in response.relativePaths) {
         val remotePath = "${response.directory}/$relativePath"
@@ -405,7 +405,7 @@ class RunChunkHandler(
       }.joinToString(prefix = "\"", postfix = "\"", separator = "")
     }
 
-    private fun beforeRunChunk(rInterop: RInterop, rmarkdownParameters: String, chunkText: String) {
+    private fun beforeRunChunk(rInterop: RInteropImpl, rmarkdownParameters: String, chunkText: String) {
       logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText))
     }
 
@@ -453,7 +453,7 @@ class RunChunkHandler(
 
     private fun afterRunChunk(
       element: PsiElement,
-      rInterop: RInterop,
+      rInterop: RInteropImpl,
       result: ExecutionResult?,
       console: RConsoleView,
       editor: EditorEx,
@@ -496,7 +496,7 @@ class RunChunkHandler(
 
     private fun executeCode(
       project: Project,
-      request: RInterop.ReplSourceFileRequest,
+      request: RInteropImpl.ReplSourceFileRequest,
       console: RConsoleView,
       onOutput: (ProcessOutput) -> Unit = {},
     ): Promise<ExecutionResult> {

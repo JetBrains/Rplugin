@@ -9,8 +9,8 @@ import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.r.psi.RFileType
 import com.intellij.xdebugger.evaluation.XDebuggerEditorsProviderBase
-import org.jetbrains.r.RFileType
 
 internal class REditorsProvider : XDebuggerEditorsProviderBase() {
   override fun getFileType(): FileType = RFileType

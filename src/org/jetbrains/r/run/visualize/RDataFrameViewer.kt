@@ -6,8 +6,8 @@ package org.jetbrains.r.run.visualize
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
+import com.intellij.r.psi.rinterop.DataFrameFilterRequest
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.r.rinterop.DataFrameFilterRequest
 import javax.swing.RowSorter
 import kotlin.reflect.KClass
 

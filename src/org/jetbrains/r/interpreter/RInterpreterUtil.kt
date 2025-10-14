@@ -19,18 +19,19 @@ import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RPluginUtil
+import com.intellij.r.psi.interpreter.*
+import com.intellij.r.psi.lexer.SingleStringTokenLexer
+import com.intellij.r.psi.notifications.RNotificationUtil
 import com.intellij.util.EnvironmentUtil
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesScanner
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.configuration.RSettingsProjectConfigurable
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.interpreter.RInterpreterUtil.runHelper
-import org.jetbrains.r.lexer.SingleStringTokenLexer
-import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.rinterop.RCondaUtil
 import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RSettings
@@ -477,3 +478,25 @@ object RInterpreterUtil {
 }
 
 class RProfileErrorException(stderr: String) : Exception(".Rprofile may contain errors: $stderr")
+
+fun RInterpreter.runHelper(helper: File, args: List<String>, workingDirectory: String = basePath) = runHelper(interpreterLocation, helper, workingDirectory, args, project)
+
+fun RInterpreter.isLocal(): Boolean = interpreterLocation is RLocalInterpreterLocation
+
+fun RInterpreter.runMultiOutputHelper(helper: File, workingDirectory: String?, args: List<String>, processor: RMultiOutputProcessor) {
+  return RInterpreterUtil.runMultiOutputHelper(interpreterLocation, helper, workingDirectory, args, processor, project)
+}
+
+fun RInterpreter.runHelperProcess(script: String,
+                                  scriptArgs: List<String>,
+                                  workingDirectory: String = basePath,
+                                  environment: Map<String, String>? = null,
+                                  interpreterArgs: List<String>? = null): BaseProcessHandler<*> {
+  val allArguments = RInterpreterUtil.getRunHelperArgs(script, scriptArgs, project, interpreterArgs)
+  return interpreterLocation.runInterpreterOnHost(allArguments, workingDirectory, environment)
+}
+
+fun RInterpreter.uploadFileToHostIfNeeded(path: LocalOrRemotePath, preserveName: Boolean = false): String {
+  if (isLocal() || path.isRemote) return path.path
+  return uploadFileToHost(File(path.path), preserveName)
+}

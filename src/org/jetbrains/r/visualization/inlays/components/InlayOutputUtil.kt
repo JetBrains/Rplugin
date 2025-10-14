@@ -14,8 +14,8 @@ import com.intellij.openapi.util.NlsContexts.DialogTitle
 import com.intellij.openapi.util.NlsContexts.Label
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.r.psi.RBundle
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.RBundle
 import java.awt.image.BufferedImage
 import java.io.File
 import java.nio.file.Paths

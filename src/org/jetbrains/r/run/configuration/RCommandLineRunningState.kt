@@ -8,8 +8,8 @@ import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.vfs.VirtualFileManager
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.interpreter.RInterpreterManager
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import org.jetbrains.r.interpreter.runHelperProcess
 

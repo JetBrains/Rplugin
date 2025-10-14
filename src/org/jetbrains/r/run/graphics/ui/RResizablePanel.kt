@@ -9,7 +9,8 @@ import com.intellij.ui.scale.JBUIScale
 import com.intellij.util.ui.JBUI
 import java.awt.*
 import java.awt.event.MouseEvent
-import javax.swing.*
+import javax.swing.JComponent
+import javax.swing.JLayeredPane
 import javax.swing.event.MouseInputAdapter
 import kotlin.math.max
 import kotlin.math.min

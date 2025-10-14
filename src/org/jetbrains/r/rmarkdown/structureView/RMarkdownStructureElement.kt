@@ -16,10 +16,10 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.PsiFileImpl
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.psi.RStructureViewElement
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
 import org.intellij.plugins.markdown.structureView.MarkdownBasePresentation
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.psi.RStructureViewElement
 import org.jetbrains.r.rmarkdown.RMarkdownPsiUtil
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import javax.swing.Icon

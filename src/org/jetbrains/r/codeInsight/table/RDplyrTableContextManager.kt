@@ -1,7 +1,7 @@
 package org.jetbrains.r.codeInsight.table
 
+import com.intellij.r.psi.psi.*
 import com.intellij.util.Processor
-import org.jetbrains.r.psi.*
 
 class RDplyrTableContextManager : RTableManipulationAnalyzerManager<DplyrFunction>() {
   override fun getTableManipulationAnalyzer(): TableManipulationAnalyzer<DplyrFunction> {

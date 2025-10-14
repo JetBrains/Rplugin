@@ -10,7 +10,7 @@ import com.intellij.lang.CodeDocumentationAwareCommenter
 import com.intellij.psi.PsiComment
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.elementType
-import org.jetbrains.r.parsing.RTokenTypes
+import com.intellij.r.psi.parsing.RTokenTypes
 
 class RCommenter : CodeDocumentationAwareCommenter, IndentedCommenter {
   override fun getLineCommentPrefix(): String = "# "

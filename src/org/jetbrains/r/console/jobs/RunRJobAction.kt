@@ -13,12 +13,12 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
+import com.intellij.r.psi.RFileType
+import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.interpreter.RInterpreterManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.jetbrains.r.RFileType
-import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.interpreter.RInterpreterManager
 
 class RunRJobAction : DumbAwareAction() {
   override fun actionPerformed(e: AnActionEvent) {

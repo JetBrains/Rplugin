@@ -7,17 +7,20 @@ package org.jetbrains.r.debugger
 
 import com.google.protobuf.Empty
 import com.google.protobuf.Int32Value
-import com.intellij.codeInsight.hint.HintManager
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.*
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.util.DocumentUtil
+import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.rinterop.DebugAddOrModifyBreakpointRequest
+import com.intellij.r.psi.rinterop.DebugSetMasterBreakpointRequest
+import com.intellij.r.psi.rinterop.ExecuteCodeRequest
+import com.intellij.r.psi.rinterop.SourcePosition
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.*
@@ -25,15 +28,15 @@ import com.intellij.xdebugger.impl.breakpoints.XBreakpointManagerImpl
 import com.intellij.xdebugger.impl.breakpoints.XDependentBreakpointListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RPluginCoroutineScope
-import org.jetbrains.r.rinterop.*
+import org.jetbrains.r.rinterop.RInteropAsyncEventsListener
+import org.jetbrains.r.rinterop.RInteropImpl
+import org.jetbrains.r.rinterop.RSourceFileManager
 import org.jetbrains.r.run.debug.RLineBreakpointType
 import kotlin.math.max
 import kotlin.math.min
 
 object RDebuggerUtil {
-  fun createBreakpointListener(rInterop: RInterop, parentDisposable: Disposable? = rInterop) {
+  fun createBreakpointListener(rInterop: RInteropImpl, parentDisposable: Disposable? = rInterop) {
     val breakpointManager = XDebuggerManager.getInstance(rInterop.project).breakpointManager
     val breakpointType = XDebuggerUtil.getInstance().findBreakpointType(RLineBreakpointType::class.java)
     val dependentBreakpointManager = (breakpointManager as? XBreakpointManagerImpl)?.dependentBreakpointManager
@@ -145,26 +148,6 @@ object RDebuggerUtil {
       ExecuteCodeRequest.DebugCommand.CONTINUE
     } else {
       ExecuteCodeRequest.DebugCommand.STOP
-    }
-  }
-
-  fun navigateAndCheckSourceChanges(project: Project, pair: Pair<RSourcePosition, String?>?) {
-    runWriteAction {  }
-    val (position, lineInR) = pair ?: return
-    position.xSourcePosition.createNavigatable(project).navigate(true)
-    if (lineInR == null) return
-    val lineInFile = FileDocumentManager.getInstance().getDocument(position.file)?.let { document ->
-      try {
-        document.getText(DocumentUtil.getLineTextRange(document, position.line))
-      } catch (e: IndexOutOfBoundsException) {
-        null
-      }
-    }
-    if (lineInFile == null || !StringUtil.equalsIgnoreWhitespaces(lineInFile, lineInR)) {
-      val editor = (FileEditorManager.getInstance(project).getSelectedEditor(position.file) as? TextEditor)?.editor
-      if (editor != null) {
-        HintManager.getInstance().showInformationHint(editor, RBundle.message("debugger.file.has.changed.notification"))
-      }
     }
   }
 }

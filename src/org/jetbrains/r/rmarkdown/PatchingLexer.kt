@@ -5,11 +5,11 @@
 package org.jetbrains.r.rmarkdown
 
 import com.intellij.psi.tree.IElementType
+import com.intellij.r.psi.lexer.PatchingLexerWithQueue
+import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import org.intellij.markdown.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.MarkdownElementType
 import org.intellij.plugins.markdown.lang.lexer.MarkdownToplevelLexer
-import org.jetbrains.r.lexer.PatchingLexerWithQueue
-import java.util.*
 
 val R_FENCE_ELEMENT_TYPE = IElementType("R Fence", RMarkdownLanguage)
 

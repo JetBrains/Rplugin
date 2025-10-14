@@ -10,9 +10,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiRecursiveVisitor
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.api.*
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.api.*
 
 object RRefactoringUtil {
   fun getRScope(local: PsiElement): RControlFlowHolder {

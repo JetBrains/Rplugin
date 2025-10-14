@@ -7,10 +7,10 @@ package org.jetbrains.r.inspections
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.isFunctionFromLibrary
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.isFunctionFromLibrary
 
 /**
  * 1:length(a) -> seq_along(a)

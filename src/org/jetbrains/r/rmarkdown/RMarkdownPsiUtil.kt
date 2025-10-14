@@ -21,7 +21,7 @@ import org.intellij.plugins.markdown.lang.psi.MarkdownPsiElement
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownFile
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownHeader
-import java.util.Locale
+import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 

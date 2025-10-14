@@ -6,8 +6,8 @@ import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileSystemItem
-import icons.RIcons
-import org.jetbrains.r.packages.build.RPackageBuildUtil
+import com.intellij.r.psi.packages.build.RPackageBuildUtil
+import com.intellij.r.psi.icons.RIcons
 import javax.swing.Icon
 
 class RProjectIconProvider : IconProvider() {

@@ -11,7 +11,7 @@ import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.wm.ToolWindowManager
-import org.jetbrains.r.RFileType
+import com.intellij.r.psi.RFileType
 import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
 
 class RConsoleEditorFactoryListener : EditorFactoryListener {
@@ -31,7 +31,7 @@ class RConsoleEditorFactoryListener : EditorFactoryListener {
         if (toolWindow != null && toolWindow.contentManager.contentCount == 0) {
           /**
            * see R-1549
-           * currentConsoleAsync triggers file saving in [org.jetbrains.r.interpreter.RInterpreter.prepareForExecutionAsync]
+           * currentConsoleAsync triggers file saving in [com.intellij.r.psi.interpreter.RInterpreter.prepareForExecutionAsync]
            * but RConsoleManager expects that currentConsoleAsync will be called after creation of RConsoleToolWindowFactory
            * see [org.jetbrains.r.console.RConsoleManager.runSingleConsole]
            * Ideally RConsole and toolwindow should not be bound in a such way

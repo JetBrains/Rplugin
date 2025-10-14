@@ -7,11 +7,11 @@ package org.jetbrains.r.inspections
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.api.ROperator
-import org.jetbrains.r.psi.api.RVisitor
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.ROperator
+import com.intellij.r.psi.psi.api.RVisitor
 
 /**
  * a = 3 -> a <- 3

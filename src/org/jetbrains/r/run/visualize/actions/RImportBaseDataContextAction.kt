@@ -6,9 +6,9 @@ package org.jetbrains.r.run.visualize.actions
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.interpreter.getLocalOrRemotePath
-import org.jetbrains.r.rinterop.RInterop
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.interpreter.getLocalOrRemotePath
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.run.visualize.RImportBaseDataDialog
 import org.jetbrains.r.run.visualize.RImportDataUtil
 
@@ -19,7 +19,7 @@ class RImportBaseDataContextAction : RImportDataContextAction(
   override val supportedFormats = RImportDataUtil.supportedTextFormats
   override val suggestedFormats = RImportDataUtil.suggestedTextFormats
 
-  override fun applyTo(project: Project, interop: RInterop, file: VirtualFile) {
+  override fun applyTo(project: Project, interop: RInteropImpl, file: VirtualFile) {
     RImportBaseDataDialog.show(project, interop, project, file.getLocalOrRemotePath(interop.interpreter))
   }
 }

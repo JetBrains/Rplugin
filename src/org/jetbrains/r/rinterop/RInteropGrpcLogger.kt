@@ -7,6 +7,7 @@ package org.jetbrains.r.rinterop
 import com.google.gson.*
 import com.google.protobuf.GeneratedMessageV3
 import com.intellij.concurrency.ConcurrentCollectionFactory
+import com.intellij.r.psi.rinterop.CommandOutput
 import io.grpc.MethodDescriptor
 import java.lang.reflect.Type
 import java.util.*

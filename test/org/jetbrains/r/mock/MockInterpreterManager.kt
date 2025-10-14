@@ -7,13 +7,14 @@ package org.jetbrains.r.mock
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.CompletableDeferred
-import org.jetbrains.r.interpreter.*
+import com.intellij.r.psi.interpreter.*
+import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 import org.jetbrains.r.settings.RInterpreterSettingsProvider
 
 class MockInterpreterManager(project: Project) : RInterpreterManager {
   override var interpreterLocation: RInterpreterLocation? =
-    RInterpreterSettingsProvider.getProviders().asSequence().mapNotNull { it.provideInterpreterForTests() }.firstOrNull() ?:
-      RLocalInterpreterLocation(RInterpreterUtil.suggestHomePath())
+    RInterpreterSettingsProvider.getProviders().asSequence().mapNotNull { it.provideInterpreterForTests() }.firstOrNull() ?: RLocalInterpreterLocation(RInterpreterUtil.suggestHomePath())
 
   override val interpreterOrNull: RInterpreter = interpreterLocation!!.createInterpreter(project).getOrThrow()
 

@@ -1,7 +1,7 @@
 package org.jetbrains.r.injections
 
 import com.intellij.lang.Language
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RLanguage
 import org.jetbrains.r.RUsefulTestCase
 import org.junit.Assert.assertNotEquals
 

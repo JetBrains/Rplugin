@@ -9,8 +9,8 @@ import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo.EMPTY
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.console.RConsoleRuntimeInfo
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.console.RConsoleRuntimeInfo
 import org.jetbrains.r.packages.RequiredPackage
 
 class LoadPackageFix(private val packageName: String,

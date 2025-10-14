@@ -4,10 +4,10 @@
 package org.jetbrains.r.roxygen.usage
 
 import com.intellij.psi.PsiElement
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.roxygen.RoxygenLanguage
 import com.intellij.usages.impl.rules.UsageType
 import com.intellij.usages.impl.rules.UsageTypeProvider
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.roxygen.RoxygenLanguage
 
 private class RoxygenUsageTypeProvider : UsageTypeProvider {
   override fun getUsageType(element: PsiElement): UsageType? {

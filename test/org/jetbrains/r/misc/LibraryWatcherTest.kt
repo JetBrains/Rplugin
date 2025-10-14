@@ -5,8 +5,8 @@
 package org.jetbrains.r.misc
 
 import org.jetbrains.r.interpreter.RInterpreterTestUtil
-import org.jetbrains.r.interpreter.RLibraryWatcher
-import org.jetbrains.r.interpreter.uploadFileToHost
+import com.intellij.r.psi.interpreter.RLibraryWatcher
+import com.intellij.r.psi.interpreter.uploadFileToHost
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger

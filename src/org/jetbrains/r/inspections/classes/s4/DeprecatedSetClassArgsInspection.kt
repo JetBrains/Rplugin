@@ -9,13 +9,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
+import com.intellij.r.psi.parsing.RElementTypes
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.isFunctionFromLibrary
 import org.jetbrains.r.inspections.RInspection
-import org.jetbrains.r.parsing.RElementTypes
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.isFunctionFromLibrary
 
 class DeprecatedSetClassArgsInspection : RInspection() {
   override fun getDisplayName() = RBundle.message("inspection.deprecated.setClass.args.name")

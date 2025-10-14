@@ -12,7 +12,7 @@ import com.intellij.psi.codeStyle.CodeStyleConfigurable
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CodeStyleSettingsProvider
 import com.intellij.psi.codeStyle.CustomCodeStyleSettings
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RLanguage
 
 /**
  * This class is based on the Groovy and Json formatter implementation.

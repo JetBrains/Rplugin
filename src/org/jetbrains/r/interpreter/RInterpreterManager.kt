@@ -10,24 +10,21 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
-import com.intellij.openapi.components.service
-import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.psi.stubs.StubUpdatingIndex
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RPluginUtil
+import com.intellij.r.psi.interpreter.*
+import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.rinterop.RInteropCoroutineScope
 import com.intellij.util.indexing.FileBasedIndex
 import kotlinx.coroutines.*
-import kotlinx.coroutines.future.asCompletableFuture
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.asPromise
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.packages.remote.RepoProvider
 import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
-import org.jetbrains.r.rinterop.RInteropCoroutineScope
 import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RSettings
 import org.jetbrains.r.statistics.RInterpretersCollector
@@ -35,45 +32,9 @@ import java.io.IOException
 import java.nio.file.Paths
 
 interface RInterpreterManager {
-  val interpreterOrNull: RInterpreter?
-  var interpreterLocation: RInterpreterLocation?
-
-  /**
-   * better to use [launchInterpreter] or [awaitInterpreter]
-   */
-  fun getInterpreterDeferred(force: Boolean = false): Deferred<Result<RInterpreter>>
-
-  fun launchInterpreter(force: Boolean = false) {
-    getInterpreterDeferred(force)
-  }
-
-  suspend fun awaitInterpreter(force: Boolean = false): Result<RInterpreter> =
-    withContext(Dispatchers.IO) {
-      getInterpreterDeferred(force).await()
-    }
-
-  fun hasInterpreterLocation(): Boolean
-
   companion object {
-    fun getInstance(project: Project): RInterpreterManager = project.service()
-    private fun getInstanceIfCreated(project: Project): RInterpreterManager? = project.getServiceIfCreated(RInterpreterManager::class.java)
-
-    @Deprecated("use RInterpreterManager.getInstance(project).getInterpreterDeferred(force) instead")
-    @JvmOverloads
-    fun getInterpreterAsync(project: Project): Promise<RInterpreter> =
-      getInstance(project).getInterpreterDeferred().asCompletableFuture().asPromise().then<RInterpreter>{ it.getOrThrow() }
-
-    fun getInterpreterOrNull(project: Project): RInterpreter? = getInstanceIfCreated(project)?.interpreterOrNull
-
-    fun getInterpreterBlocking(project: Project, timeout: Int): RInterpreter? =
-      runBlockingCancellable {
-        withTimeoutOrNull(timeout.toLong()) {
-          getInstance(project).awaitInterpreter().getOrNull()
-        }
-      }
-
     fun restartInterpreter(project: Project, afterRestart: Runnable? = null) {
-      val manager = getInstance(project)
+      val manager = RInterpreterManager.getInstance(project)
 
       RInteropCoroutineScope.getCoroutineScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
         val interpreter = manager.awaitInterpreter(force = true).getOrNull()

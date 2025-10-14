@@ -7,11 +7,11 @@ package org.jetbrains.r.refactoring.inline
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.ElementDescriptionUtil
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RIdentifierExpression
 import com.intellij.refactoring.inline.InlineOptionsDialog
 import com.intellij.usageView.UsageViewNodeTextLocation
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.api.RIdentifierExpression
 
 class RInlineAssignmentDialog(project: Project,
                               private val editor: Editor?,

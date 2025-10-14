@@ -7,11 +7,11 @@ package org.jetbrains.r.run.visualize
 import com.intellij.codeInsight.hint.HintUtil
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
+import com.intellij.r.psi.RBundle
 import com.intellij.ui.components.JBLoadingPanel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBEmptyBorder
 import com.intellij.util.ui.JBInsets
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.visualization.inlays.components.EmptyComponentPanel
 import org.jetbrains.r.visualization.ui.MaterialTable
 import org.jetbrains.r.visualization.ui.MaterialTableUtils

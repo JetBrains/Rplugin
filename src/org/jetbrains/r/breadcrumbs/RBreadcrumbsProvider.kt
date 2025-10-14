@@ -8,16 +8,16 @@ import com.intellij.lang.Language
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RFile
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import com.intellij.ui.breadcrumbs.BreadcrumbsProvider
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownFile
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.api.RFile
-import org.jetbrains.r.psi.api.RFunctionExpression
-import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 import org.jetbrains.r.rmarkdown.RMarkdownPsiUtil
 
 class RBreadcrumbsProvider : BreadcrumbsProvider {

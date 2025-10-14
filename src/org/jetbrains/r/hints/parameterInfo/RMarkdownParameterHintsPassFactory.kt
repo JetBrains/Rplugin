@@ -8,8 +8,8 @@ import com.intellij.codeHighlighting.TextEditorHighlightingPass
 import com.intellij.codeInsight.hints.ParameterHintsPassFactory
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.rmarkdown.RMarkdownLanguage
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 
 class RMarkdownParameterHintsPassFactory : ParameterHintsPassFactory() {
   override fun createHighlightingPass(psiFile: PsiFile, editor: Editor): TextEditorHighlightingPass? {

@@ -12,12 +12,12 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.RainbowColorSettingsPage
-import icons.RIcons
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
+import com.intellij.r.psi.icons.RIcons
 import org.jetbrains.annotations.NonNls
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.highlighting.RColorSettingsPage.Companion.R_DEMO
 import org.jetbrains.r.highlighting.RColorSettingsPage.Companion.TAGS
-import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 import javax.swing.Icon
 
 class RMarkdownColorSettingsPage : RainbowColorSettingsPage {

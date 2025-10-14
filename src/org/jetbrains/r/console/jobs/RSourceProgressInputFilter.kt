@@ -7,7 +7,7 @@ package org.jetbrains.r.console.jobs
 import com.intellij.execution.filters.InputFilter
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.util.Pair
-import org.jetbrains.r.lexer.SingleStringTokenLexer
+import com.intellij.r.psi.lexer.SingleStringTokenLexer
 
 class RSourceProgressInputFilter(private val onProgressEvent: (String) -> Unit) : InputFilter {
   private val output = StringBuffer()

@@ -6,16 +6,13 @@ package org.jetbrains.r.packages.remote
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.RPluginUtil
+import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.util.SuspendingLazy
 import com.intellij.util.suspendingLazy
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.r.RPluginCoroutineScope
-import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.runHelper
 import org.jetbrains.r.packages.RPackageService

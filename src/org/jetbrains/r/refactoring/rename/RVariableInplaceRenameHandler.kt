@@ -9,17 +9,17 @@ import com.intellij.pom.PomTargetPsiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiNamedElement
+import com.intellij.r.psi.classes.s4.classInfo.RStringLiteralPomTarget
+import com.intellij.r.psi.classes.s4.context.RS4ContextProvider
+import com.intellij.r.psi.classes.s4.context.setClass.RS4SetClassClassNameContext
+import com.intellij.r.psi.classes.s4.context.setClass.RS4SlotDeclarationContext
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.api.RForStatement
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RPsiElement
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
 import com.intellij.refactoring.rename.inplace.VariableInplaceRenameHandler
 import com.intellij.refactoring.rename.inplace.VariableInplaceRenamer
-import org.jetbrains.r.classes.s4.classInfo.RStringLiteralPomTarget
-import org.jetbrains.r.classes.s4.context.RS4ContextProvider
-import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassClassNameContext
-import org.jetbrains.r.classes.s4.context.setClass.RS4SlotDeclarationContext
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.api.RForStatement
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.api.RPsiElement
-import org.jetbrains.r.psi.api.RStringLiteralExpression
 
 class RVariableInplaceRenameHandler : VariableInplaceRenameHandler() {
 

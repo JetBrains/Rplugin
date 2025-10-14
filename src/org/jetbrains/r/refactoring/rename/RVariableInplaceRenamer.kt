@@ -11,19 +11,19 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.pom.PomTargetPsiElement
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.classes.s4.classInfo.RStringLiteralPomTarget
+import com.intellij.r.psi.classes.s4.context.RS4ContextProvider
+import com.intellij.r.psi.classes.s4.context.methods.RS4SetGenericFunctionNameContext
+import com.intellij.r.psi.classes.s4.context.methods.RS4SetMethodFunctionNameContext
+import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
+import com.intellij.r.psi.psi.RPomTarget
+import com.intellij.r.psi.psi.RRecursiveElementVisitor
+import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.isFunctionFromLibrary
+import com.intellij.r.psi.psi.references.RSearchScopeUtil
+import com.intellij.r.psi.psi.stubs.classes.RS4GenericIndex
+import com.intellij.r.psi.psi.stubs.classes.RS4MethodsIndex
 import com.intellij.refactoring.rename.inplace.VariableInplaceRenamer
-import org.jetbrains.r.classes.s4.classInfo.RStringLiteralPomTarget
-import org.jetbrains.r.classes.s4.context.RS4ContextProvider
-import org.jetbrains.r.classes.s4.context.methods.RS4SetGenericFunctionNameContext
-import org.jetbrains.r.classes.s4.context.methods.RS4SetMethodFunctionNameContext
-import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
-import org.jetbrains.r.psi.RPomTarget
-import org.jetbrains.r.psi.RRecursiveElementVisitor
-import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.isFunctionFromLibrary
-import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.classes.RS4GenericIndex
-import org.jetbrains.r.psi.stubs.classes.RS4MethodsIndex
 
 class RVariableInplaceRenamer : VariableInplaceRenamer {
 

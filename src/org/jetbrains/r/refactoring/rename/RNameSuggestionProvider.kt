@@ -10,9 +10,9 @@ import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.codeStyle.SuggestedNameInfo
 import com.intellij.psi.search.LocalSearchScope
 import com.intellij.psi.search.searches.ReferencesSearch
+import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.references.RReferenceBase
 import com.intellij.refactoring.rename.NameSuggestionProvider
-import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.references.RReferenceBase
 import org.jetbrains.r.refactoring.RRefactoringUtil
 
 class RNameSuggestionProvider : NameSuggestionProvider {

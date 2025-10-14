@@ -9,8 +9,8 @@ import com.intellij.openapi.util.Disposer
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.RUsefulTestCase
-import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.interpreter.RInterpreterManager
 import java.io.File
 
 class RProfileTest : RUsefulTestCase() {
@@ -48,7 +48,7 @@ class RProfileTest : RUsefulTestCase() {
     }
   }
 
-  private inline fun doTest(code: String, f: (RInterop) -> Unit) {
+  private inline fun doTest(code: String, f: (RInteropImpl) -> Unit) {
     val file = File(project.basePath, ".Rprofile")
     try {
       file.writeText(code)

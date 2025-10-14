@@ -5,13 +5,15 @@ import com.intellij.psi.filters.ElementFilter
 import com.intellij.psi.filters.position.FilterPattern
 import com.intellij.psi.impl.PsiElementBase
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.codeInsight.table.RTableColumnCollectProcessor
+import com.intellij.r.psi.codeInsight.table.RTableContextManager
+import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
+import com.intellij.r.psi.psi.TableColumnInfo
+import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.isFunctionFromLibrarySoft
+import com.intellij.r.psi.psi.references.RResolveUtil
 import com.intellij.util.Processor
 import org.jetbrains.r.console.runtimeInfo
-import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
-import org.jetbrains.r.psi.TableColumnInfo
-import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.isFunctionFromLibrarySoft
-import org.jetbrains.r.psi.references.RResolveUtil
 
 class RGgplotTableContextManager : RTableContextManager {
   override fun processColumnsInContext(context: PsiElement, processor: Processor<TableColumnInfo>): Boolean {

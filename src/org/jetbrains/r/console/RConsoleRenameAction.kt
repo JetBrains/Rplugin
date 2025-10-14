@@ -6,7 +6,7 @@ package org.jetbrains.r.console
 
 import com.intellij.ide.actions.ToolWindowTabRenameActionBase
 import com.intellij.openapi.project.DumbAware
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
 
 class RConsoleRenameAction : ToolWindowTabRenameActionBase(RConsoleToolWindowFactory.ID, RBundle.message("console.rename.label")),
                               DumbAware

@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.VisualPosition
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.r.psi.rinterop.*
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise

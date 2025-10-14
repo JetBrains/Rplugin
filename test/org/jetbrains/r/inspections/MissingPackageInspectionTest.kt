@@ -6,7 +6,7 @@
 package org.jetbrains.r.inspections
 
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
-import org.jetbrains.r.RFileType.DOT_R_EXTENSION
+import com.intellij.r.psi.RFileType.DOT_R_EXTENSION
 import org.jetbrains.r.interpreter.RInterpreterBaseTestCase
 import java.nio.file.Paths
 

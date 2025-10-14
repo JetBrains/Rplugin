@@ -12,8 +12,8 @@ import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizableOptions
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RLanguage
 
 
 private typealias CCSS = CommonCodeStyleSettings

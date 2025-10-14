@@ -19,6 +19,7 @@ import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.SourceTreeToPsiMap
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.rinterop.RInteropCoroutineScope
 import kotlinx.coroutines.launch
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
@@ -32,7 +33,6 @@ import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.editor.ui.rMarkdownCellToolbarPanel
 import org.jetbrains.r.editor.ui.rMarkdownNotebook
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
-import org.jetbrains.r.rinterop.RInteropCoroutineScope
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
 import org.jetbrains.r.rmarkdown.RmdFenceProvider

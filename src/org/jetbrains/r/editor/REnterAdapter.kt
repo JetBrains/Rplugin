@@ -14,9 +14,9 @@ import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.elementType
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.parsing.RElementTypes
 import org.jetbrains.r.editor.formatting.findPrevNonSpaceNode
-import org.jetbrains.r.parsing.RElementTypes
 
 private val R_CLOSE_PAIRS = TokenSet.create(
   RElementTypes.R_RPAR,

@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.r.psi.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.quarto.QuartoFileType
 
 object RMarkdownVirtualFile {

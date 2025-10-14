@@ -12,13 +12,13 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.progress.EmptyProgressIndicator
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import com.intellij.ui.JBIntSpinner
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.ui.JBUI
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.RConsoleView
-import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 import javax.swing.JPanel
 import javax.swing.JSpinner
 import javax.swing.text.DefaultFormatter

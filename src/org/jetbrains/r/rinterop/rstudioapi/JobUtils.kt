@@ -1,13 +1,13 @@
 package org.jetbrains.r.rinterop.rstudioapi
 
+import com.intellij.r.psi.rinterop.RObject
 import com.intellij.util.PathUtil
 import org.jetbrains.concurrency.await
 import org.jetbrains.r.console.jobs.ExportGlobalEnvPolicy
 import org.jetbrains.r.console.jobs.RJobRunner
 import org.jetbrains.r.console.jobs.RJobTask
 import org.jetbrains.r.console.jobs.RJobsToolWindowFactory
-import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.RObject
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.findFileByPathAtHostHelper
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.getRNull
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.rError
@@ -15,7 +15,7 @@ import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toStringOrNull
 
 object JobUtils {
-  suspend fun jobRunScript(rInterop: RInterop, args: RObject): RObject {
+  suspend fun jobRunScript(rInterop: RInteropImpl, args: RObject): RObject {
     val path = args.list.getRObjects(0).rString.getStrings(0)
     val name = args.list.getRObjects(1).toStringOrNull()
     val file = findFileByPathAtHostHelper(rInterop, path).await()
@@ -35,7 +35,7 @@ object JobUtils {
     return "${descriptor.hashCode()}".toRString()
   }
 
-  fun jobRemove(rInterop: RInterop, args: RObject): RObject {
+  fun jobRemove(rInterop: RInteropImpl, args: RObject): RObject {
     val id = args.rString.getStrings(0).toInt()
     val jobList = RJobsToolWindowFactory.getJobsPanel(rInterop.project)?.jobList ?: return getRNull()
     jobList.removeJobEntity(jobList.jobEntities.find {

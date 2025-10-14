@@ -20,10 +20,10 @@ import com.intellij.pom.Navigatable
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import icons.RIcons
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RFileType
-import org.jetbrains.r.packages.build.RPackageBuildUtil
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RFileType
+import com.intellij.r.psi.packages.build.RPackageBuildUtil
+import com.intellij.r.psi.icons.RIcons
 
 class CreateRTestFileAction : CreateFromTemplateAction(FileTemplateManager.getDefaultInstance().getInternalTemplate(TEST_FILE_TEMPLATE)) {
 

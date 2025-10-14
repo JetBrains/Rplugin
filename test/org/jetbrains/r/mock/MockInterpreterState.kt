@@ -11,14 +11,15 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RUsefulTestCase
-import org.jetbrains.r.common.ExpiringList
-import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.interpreter.RInterpreterState
+import com.intellij.r.psi.common.ExpiringList
+import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.RInterpreterState
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.packages.RInstalledPackage
+import com.intellij.r.psi.packages.RInstalledPackage
 import org.jetbrains.r.packages.RSkeletonUtil
-import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.skeleton.RSkeletonFileType
+import com.intellij.r.psi.packages.RSkeletonUtilPsi
+import com.intellij.r.psi.rinterop.RInterop
+import com.intellij.r.psi.skeleton.RSkeletonFileType
 import java.nio.file.Path
 
 class MockInterpreterState(override val project: Project, var provider: MockInterpreterStateProvider) : RInterpreterState {
@@ -31,7 +32,7 @@ class MockInterpreterState(override val project: Project, var provider: MockInte
   override val installedPackages: ExpiringList<RInstalledPackage>
     get() = provider.installedPackages.takeIf { it.isNotEmpty() } ?: ExpiringList(
       skeletonFiles
-        .mapNotNull { RSkeletonUtil.skeletonFileToRPackage(it) }
+        .mapNotNull { RSkeletonUtilPsi.skeletonFileToRPackage(it) }
         .map {
           val canonicalPath = Path.of(skeletonsDirectory, it.name).toString()
           RInstalledPackage(it.name, it.version, null, skeletonsDirectory, canonicalPath, emptyMap())

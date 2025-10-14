@@ -9,28 +9,28 @@ package org.jetbrains.r.packages
 
 import com.intellij.openapi.diagnostic.Attachment
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressIndicatorProvider
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
-import com.intellij.psi.util.CachedValueProvider
-import com.intellij.psi.util.CachedValuesManager
+import com.intellij.r.psi.RPluginUtil
+import com.intellij.r.psi.classes.S4ClassInfo
+import com.intellij.r.psi.interpreter.uploadFileToHost
+import com.intellij.r.psi.packages.LibrarySummary.RLibraryPackage
+import com.intellij.r.psi.packages.LibrarySummary.RLibraryPackage.*
+import com.intellij.r.psi.packages.LibrarySummary.RLibrarySymbol
+import com.intellij.r.psi.packages.RInstalledPackage
+import com.intellij.r.psi.packages.RPackage
+import com.intellij.r.psi.packages.RPackagePriority
+import com.intellij.r.psi.packages.RSkeletonUtilPsi
+import com.intellij.r.psi.skeleton.RSkeletonFileType
 import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.classes.S4ClassInfo
 import org.jetbrains.r.interpreter.RMultiOutputProcessor
 import org.jetbrains.r.interpreter.runHelper
 import org.jetbrains.r.interpreter.runMultiOutputHelper
-import org.jetbrains.r.interpreter.uploadFileToHost
-import org.jetbrains.r.packages.LibrarySummary.RLibraryPackage
-import org.jetbrains.r.packages.LibrarySummary.RLibraryPackage.*
-import org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol
 import org.jetbrains.r.packages.remote.RepoUtils
-import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.skeleton.RSkeletonFileType
+import org.jetbrains.r.rinterop.RInteropImpl
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -50,7 +50,7 @@ object RSkeletonUtil {
 
   private val RAM_SIZE_HELPER by lazy { RPluginUtil.findFileInRHelpers("R/ram_size.R") }
 
-  private val LOG = Logger.getInstance(RSkeletonUtil::class.java)
+  private val LOG = Logger.getInstance(RSkeletonUtilPsi::class.java)
 
   fun checkVersion(skeletonsDirectoryPath: String) {
     val skeletonsDirectory = File(skeletonsDirectoryPath)
@@ -69,7 +69,7 @@ object RSkeletonUtil {
     }
   }
 
-  fun updateSkeletons(interop: RInterop, progressIndicator: ProgressIndicator? = null): Boolean {
+  fun updateSkeletons(interop: RInteropImpl, progressIndicator: ProgressIndicator? = null): Boolean {
     val state = interop.state
     checkVersion(state.skeletonsDirectory)
     val generationList = mutableListOf<Pair<RPackage, Path>>()
@@ -88,7 +88,7 @@ object RSkeletonUtil {
   }
 
   internal fun generateSkeletons(generationList: List<Pair<RPackage, Path>>,
-                                 interop: RInterop,
+                                 interop: RInteropImpl,
                                  progressIndicator: ProgressIndicator? = null): Boolean {
     if (generationList.isEmpty()) return false
     var result = false
@@ -125,7 +125,7 @@ object RSkeletonUtil {
     return result
   }
 
-  private fun getLimitedByRAMBucketSize(interop: RInterop): Int {
+  private fun getLimitedByRAMBucketSize(interop: RInteropImpl): Int {
     val ram = interop.interpreter.runHelper(RAM_SIZE_HELPER, emptyList()).toDoubleOrNull()
     return if (ram == null) DEFAULT_MAX_BUCKET_SIZE
     else when {
@@ -149,15 +149,6 @@ object RSkeletonUtil {
   fun installedPackageToSkeletonFile(skeletonsDirectory: String, installedPackage: RInstalledPackage): VirtualFile? {
     val skeletonPath = installedPackageToSkeletonPath(skeletonsDirectory, installedPackage)
     return VfsUtil.findFile(skeletonPath, false)
-  }
-
-  fun skeletonFileToRPackage(skeletonFile: PsiFile): RPackage? = RPackage.getOrCreateRPackageBySkeletonFile(skeletonFile)
-
-  fun skeletonFileToRPackage(skeletonFile: VirtualFile): RPackage? {
-    val (name, version) = skeletonFile.parent.name.split('-', limit = 2)
-                            .takeIf { it.size == 2 }
-                            ?.let { Pair(it[0], it[1]) } ?: return null
-    return RPackage(name, version)
   }
 
   fun getPriorityFromSkeletonFile(file: File): RPackagePriority? {
@@ -344,7 +335,7 @@ object RSkeletonUtil {
   }
 
   private class RSkeletonProcessor(private val es: ExecutorService,
-                                   rInterop: RInterop,
+                                   rInterop: RInteropImpl,
                                    private val indicator: ProgressIndicator?,
                                    private val allNewPackagesCnt: Int,
                                    private val rPackages: List<RPackage>,
@@ -433,20 +424,3 @@ object RSkeletonUtil {
     }
   }
 }
-
-data class RPackage(val name: String, val version: String) {
-  companion object {
-    /**
-     * if [file] type is Skeleton File Type, returns package and version which was used for its generation or null otherwise
-     */
-    fun getOrCreateRPackageBySkeletonFile(file: PsiFile): RPackage? {
-      if (!FileTypeRegistry.getInstance().isFileOfType(file.virtualFile, RSkeletonFileType)) return null
-      return CachedValuesManager.getCachedValue(file) {
-        CachedValueProvider.Result(RSkeletonUtil.skeletonFileToRPackage(file.virtualFile), file)
-      }
-    }
-  }
-}
-
-val RLibrarySymbol.Type.isFunctionDeclaration
-  get() = this == RLibrarySymbol.Type.FUNCTION || this == RLibrarySymbol.Type.S4GENERIC || this == RLibrarySymbol.Type.S4METHOD

@@ -8,12 +8,12 @@ import com.intellij.codeInspection.LocalInspectionToolSession
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.classes.s4.context.RS4ContextProvider
-import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassClassNameContext
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.classes.s4.context.RS4ContextProvider
+import com.intellij.r.psi.classes.s4.context.setClass.RS4SetClassClassNameContext
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
+import com.intellij.r.psi.psi.api.RVisitor
 import org.jetbrains.r.inspections.RInspection
-import org.jetbrains.r.psi.api.RStringLiteralExpression
-import org.jetbrains.r.psi.api.RVisitor
 
 class MissingS4ClassNameInspection : RInspection() {
   override fun getDisplayName() = RBundle.message("inspection.missing.s4.class.name.name")

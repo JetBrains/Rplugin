@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.run.visualize
 
-import org.jetbrains.r.rinterop.DataFrameFilterRequest
+import com.intellij.r.psi.rinterop.DataFrameFilterRequest
 import javax.swing.RowFilter
 
 class RRowFilter(val proto: DataFrameFilterRequest.Filter): RowFilter<Any?, Any?>() {

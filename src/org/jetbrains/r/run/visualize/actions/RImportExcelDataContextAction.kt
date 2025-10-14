@@ -6,17 +6,17 @@ package org.jetbrains.r.run.visualize.actions
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.interpreter.getLocalOrRemotePath
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.interpreter.getLocalOrRemotePath
 import org.jetbrains.r.packages.RequiredPackage
-import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.run.visualize.RImportDataUtil
 import org.jetbrains.r.run.visualize.RImportExcelDataDialog
 
 class RImportExcelDataContextAction : RImportDataContextAction(TITLE, DESCRIPTION) {
   override val supportedFormats = RImportDataUtil.supportedExcelFormats
 
-  override fun applyTo(project: Project, interop: RInterop, file: VirtualFile) {
+  override fun applyTo(project: Project, interop: RInteropImpl, file: VirtualFile) {
     RImportExcelDataDialog.show(project, interop, project, file.getLocalOrRemotePath(interop.interpreter))
   }
 

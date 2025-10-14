@@ -13,8 +13,8 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.r.psi.RBundle
 import com.intellij.testFramework.LightVirtualFile
-import org.jetbrains.r.RBundle
 import java.beans.PropertyChangeListener
 import java.beans.PropertyChangeSupport
 import javax.swing.Icon

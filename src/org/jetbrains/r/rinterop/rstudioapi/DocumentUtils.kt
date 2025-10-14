@@ -12,6 +12,8 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.fileTypes.ex.FileTypeChooser
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.psi.PsiManager
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.rinterop.RObject
 import com.intellij.ui.components.dialog
 import com.intellij.ui.dsl.builder.columns
 import com.intellij.ui.dsl.builder.panel
@@ -19,11 +21,9 @@ import com.intellij.util.PathUtilRt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.concurrency.await
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
 import org.jetbrains.r.rendering.editor.chunkExecutionState
-import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.RObject
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.findFileByPathAtHostHelper
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.getConsoleView
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.getRNull
@@ -34,15 +34,15 @@ import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toStringOrNull
 
 object DocumentUtils {
-  fun getSourceEditorContext(rInterop: RInterop): RObject {
+  fun getSourceEditorContext(rInterop: RInteropImpl): RObject {
     return getDocumentContext(rInterop, ContextType.SOURCE)
   }
 
-  fun getConsoleEditorContext(rInterop: RInterop): RObject {
+  fun getConsoleEditorContext(rInterop: RInteropImpl): RObject {
     return getDocumentContext(rInterop, ContextType.CONSOLE)
   }
 
-  fun getActiveDocumentContext(rInterop: RInterop): RObject {
+  fun getActiveDocumentContext(rInterop: RInteropImpl): RObject {
     return getDocumentContext(rInterop, ContextType.ACTIVE)
   }
 
@@ -52,7 +52,7 @@ object DocumentUtils {
     ACTIVE
   }
 
-  private fun getDocumentContext(rInterop: RInterop, type: ContextType): RObject {
+  private fun getDocumentContext(rInterop: RInteropImpl, type: ContextType): RObject {
     val id: String
     val newType = if (type == ContextType.ACTIVE) {
       if (rInterop.isInSourceFileExecution.get()) {
@@ -106,7 +106,7 @@ object DocumentUtils {
       .build()
   }
 
-  fun insertText(rInterop: RInterop, args: RObject): RObject {
+  fun insertText(rInterop: RInteropImpl, args: RObject): RObject {
     val document = getDocumentFromId(args.list.getRObjects(1).toStringOrNull(), rInterop) ?: return getRNull()
     val insertions = args.list.getRObjects(0).list.rObjectsList.sortedWith(compareBy(
       { -it.list.getRObjects(0).rInt.intsList[0].toInt() },
@@ -141,7 +141,7 @@ object DocumentUtils {
     return getRNull()
   }
 
-  fun setSelectionRanges(rInterop: RInterop, args: RObject): RObject {
+  fun setSelectionRanges(rInterop: RInteropImpl, args: RObject): RObject {
     val ranges = args.list.getRObjects(0).list.rObjectsList.map { it.rInt.intsList.map { it.toInt() } }
     val document = getDocumentFromId(args.list.getRObjects(1).toStringOrNull(), rInterop) ?: return getRNull()
     val editors = EditorFactory.getInstance().editors(document, rInterop.project).toList()
@@ -158,7 +158,7 @@ object DocumentUtils {
     return getRNull()
   }
 
-  suspend fun documentNew(rInterop: RInterop, args: RObject): RObject {
+  suspend fun documentNew(rInterop: RInteropImpl, args: RObject): RObject {
     val type = args.list.getRObjects(0).rString.getStrings(0)
     val text = args.list.getRObjects(1).rString.getStrings(0)
     val line = args.list.getRObjects(2).rInt.getInts(0).toInt()
@@ -231,7 +231,7 @@ object DocumentUtils {
     return RObject.getDefaultInstance()
   }
 
-  suspend fun navigateToFile(rInterop: RInterop, args: RObject): RObject {
+  suspend fun navigateToFile(rInterop: RInteropImpl, args: RObject): RObject {
     val filePath = args.list.getRObjects(0).rString.getStrings(0)
     val line = args.list.getRObjects(1).rInt.getInts(0).toInt() - 1
     val column = args.list.getRObjects(1).rInt.getInts(1).toInt() - 1
@@ -246,7 +246,7 @@ object DocumentUtils {
     return getRNull()
   }
 
-  fun documentClose(rInterop: RInterop, args: RObject): RObject {
+  fun documentClose(rInterop: RInteropImpl, args: RObject): RObject {
     val id = args.list.getRObjects(0).rString.getStrings(0)
     val numId = (id.drop(1)).toInt()
     val editor = FileEditorManager.getInstance(rInterop.project).allEditors.find { it.hashCode() == numId }
@@ -255,7 +255,7 @@ object DocumentUtils {
     return true.toRBoolean()
   }
 
-  private fun getDocumentFromId(id: String?, rInterop: RInterop): Document? {
+  private fun getDocumentFromId(id: String?, rInterop: RInteropImpl): Document? {
     if (id == null) {
       return if (rInterop.isInSourceFileExecution.get()) {
         val editor = FileEditorManager.getInstance(rInterop.project).selectedEditor

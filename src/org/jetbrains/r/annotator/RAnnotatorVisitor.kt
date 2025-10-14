@@ -17,15 +17,15 @@ import com.intellij.openapi.util.UserDataHolder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReference
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.RPsiUtil.isFieldLikeComponent
+import com.intellij.r.psi.psi.ReferenceKind
+import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.getKind
+import com.intellij.r.psi.psi.isFunctionFromLibrary
 import org.jetbrains.r.highlighting.*
-import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.RPsiUtil.isFieldLikeComponent
-import org.jetbrains.r.psi.ReferenceKind
-import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.getKind
-import org.jetbrains.r.psi.isFunctionFromLibrary
 
 class RAnnotatorVisitor(private val holder: MutableList<HighlightInfo>, private val annotationSession: UserDataHolder) : RVisitor() {
 

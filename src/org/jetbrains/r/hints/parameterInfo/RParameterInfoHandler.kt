@@ -8,13 +8,14 @@ import com.intellij.lang.parameterInfo.*
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.parsing.RElementTypes
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.api.RArgumentList
-import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.psi.api.RFunctionExpression
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
+import com.intellij.r.psi.parsing.RElementTypes
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.api.RArgumentList
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RFunctionExpression
 
 class RParameterInfoHandler : ParameterInfoHandler<RArgumentList, RParameterInfoHandler.RParameterInfoArgumentList> {
 

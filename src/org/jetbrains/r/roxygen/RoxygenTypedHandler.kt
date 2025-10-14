@@ -12,8 +12,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.elementType
-import org.jetbrains.r.roxygen.parsing.RoxygenElementTypes
-import org.jetbrains.r.roxygen.psi.RoxygenFile
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes
+import com.intellij.r.psi.roxygen.psi.RoxygenFile
 
 class RoxygenTypedHandler : TypedHandlerDelegate() {
 

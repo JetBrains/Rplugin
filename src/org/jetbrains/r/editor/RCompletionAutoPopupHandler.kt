@@ -10,14 +10,14 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import org.jetbrains.r.RFileType
-import org.jetbrains.r.parsing.RElementTypes
-import org.jetbrains.r.psi.api.RExpression
-import org.jetbrains.r.psi.api.RListSubsetOperator
-import org.jetbrains.r.psi.api.RNamespaceAccessExpression
-import org.jetbrains.r.psi.api.RStringLiteralExpression
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
-import org.jetbrains.r.roxygen.RoxygenFileType
+import com.intellij.r.psi.RFileType
+import com.intellij.r.psi.parsing.RElementTypes
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RListSubsetOperator
+import com.intellij.r.psi.psi.api.RNamespaceAccessExpression
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
+import com.intellij.r.psi.rmarkdown.RMarkdownFileType
+import com.intellij.r.psi.roxygen.RoxygenFileType
 import org.jetbrains.r.settings.REditorSettings
 
 private const val identifierPrefixLength = 2

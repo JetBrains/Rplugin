@@ -7,7 +7,7 @@ package org.jetbrains.r.cfg
 import com.intellij.internal.cfgView.ShowControlFlowHandler
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
-import org.jetbrains.r.psi.api.RFile
+import com.intellij.r.psi.psi.api.RFile
 import java.io.File
 import java.io.IOException
 
@@ -24,7 +24,7 @@ class RControlFlowTest: RLightCodeInsightFixtureTestCase() {
     val fullPath = File(testDataPath, filename).path
     val file = myFixture.configureByFile("$filename.r") as RFile
     val functionExpressions = PsiTreeUtil.collectElementsOfType(file,
-                                                                org.jetbrains.r.psi.api.RFunctionExpression::class.java).sortedBy { it.textOffset }
+                                                                com.intellij.r.psi.psi.api.RFunctionExpression::class.java).sortedBy { it.textOffset }
 
     val builder = StringBuilder()
 
@@ -37,7 +37,7 @@ class RControlFlowTest: RLightCodeInsightFixtureTestCase() {
     file.controlFlow.instructions.forEach { instruction -> builder.appendLine(instruction) }
     for (functionExpression in functionExpressions) {
       builder.appendLine(
-        "[${counter++}]Function ${(functionExpression.parent as? org.jetbrains.r.psi.api.RAssignmentStatement)?.name ?: "anon"}")
+        "[${counter++}]Function ${(functionExpression.parent as?com.intellij.r.psi.psi.api.RAssignmentStatement)?.name ?: "anon"}")
       functionExpression.controlFlow.instructions.forEach { instruction -> builder.appendLine(instruction) }
       if (GENERATE_SVG) {
         ShowControlFlowHandler.toSvgFile("$fullPath.$counter.svg", functionExpression)

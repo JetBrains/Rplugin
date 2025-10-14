@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.inspections
 
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
 
 class ClosureAssignmentInspectionTest : RInspectionTest() {
 

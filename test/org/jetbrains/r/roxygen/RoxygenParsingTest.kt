@@ -5,7 +5,7 @@ package org.jetbrains.r.roxygen
 
 import com.intellij.testFramework.ParsingTestCase
 import org.jetbrains.r.RUsefulTestCase
-import org.jetbrains.r.roxygen.parsing.RoxygenParserDefinition
+import com.intellij.r.psi.roxygen.parsing.RoxygenParserDefinition
 
 class RoxygenParsingTest : ParsingTestCase("roxygen/parser", "roxygen", RoxygenParserDefinition()) {
   fun testSingleTextLine() = doTest(true)

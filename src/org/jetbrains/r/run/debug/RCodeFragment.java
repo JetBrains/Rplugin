@@ -12,9 +12,9 @@ import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.SingleRootFileViewProvider;
 import com.intellij.psi.impl.PsiManagerEx;
 import com.intellij.psi.impl.file.impl.FileManager;
+import com.intellij.r.psi.psi.RFileImpl;
 import com.intellij.testFramework.LightVirtualFile;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.r.psi.RFileImpl;
 
 class RCodeFragment extends RFileImpl {
 

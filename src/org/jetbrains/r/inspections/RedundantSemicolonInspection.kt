@@ -11,10 +11,10 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.elementType
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.parsing.RElementTypes
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.api.RVisitor
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.parsing.RElementTypes
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.api.RVisitor
 
 /**
  * c(); -> c()

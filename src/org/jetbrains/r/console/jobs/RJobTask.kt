@@ -5,7 +5,7 @@
 package org.jetbrains.r.console.jobs
 
 import com.intellij.openapi.vfs.VirtualFile
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
 
 enum class ExportGlobalEnvPolicy {
   DO_NO_EXPORT {

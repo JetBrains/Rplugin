@@ -7,8 +7,8 @@ package org.jetbrains.r.projectGenerator.builder
 import com.intellij.ide.util.projectWizard.ModuleBuilder
 import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.module.ModuleTypeManager
-import icons.RIcons
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.icons.RIcons
 import javax.swing.Icon
 
 open class RModuleType : ModuleType<ModuleBuilder>(R_MODULE) {

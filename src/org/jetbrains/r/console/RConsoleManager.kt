@@ -13,6 +13,10 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.fileLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFocusManager
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.packages.RPackageProjectManager
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentManager
 import com.intellij.ui.content.ContentManagerEvent
@@ -26,11 +30,7 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.await
 import org.jetbrains.concurrency.resolvedPromise
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.configuration.RInterpreterBarWidgetFactory
-import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.packages.RPackageProjectManager
 import java.util.concurrent.atomic.AtomicInteger
 
 private val LOG = fileLogger()

@@ -9,12 +9,12 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.interpreter.RInterpreterStateManager
+import com.intellij.r.psi.psi.api.RFile
 import org.jetbrains.r.intentions.InstallPackagesFix
-import org.jetbrains.r.interpreter.RInterpreterStateManager
-import org.jetbrains.r.psi.api.RFile
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
-import java.util.Locale
+import java.util.*
 
 class MarkdownRequirementsInspection : RInspection() {
   override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {

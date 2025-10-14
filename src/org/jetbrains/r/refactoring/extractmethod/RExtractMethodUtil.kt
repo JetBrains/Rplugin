@@ -10,12 +10,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.RPrecedenceUtil
+import com.intellij.r.psi.psi.api.*
 import com.intellij.refactoring.extractMethod.ExtractMethodHelper
 import com.intellij.refactoring.extractMethod.SimpleDuplicatesFinder
 import com.intellij.refactoring.util.AbstractVariableData
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.RPrecedenceUtil
-import org.jetbrains.r.psi.api.*
 
 
 object RExtractMethodUtil {

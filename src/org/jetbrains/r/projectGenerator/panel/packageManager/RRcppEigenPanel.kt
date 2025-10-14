@@ -7,7 +7,7 @@ package org.jetbrains.r.projectGenerator.panel.packageManager
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
 import java.awt.BorderLayout
 import javax.swing.JCheckBox

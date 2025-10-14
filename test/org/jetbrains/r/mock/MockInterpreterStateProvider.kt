@@ -5,11 +5,12 @@
 package org.jetbrains.r.mock
 
 import com.intellij.openapi.vfs.VirtualFile
-import org.jetbrains.r.common.ExpiringList
-import org.jetbrains.r.common.emptyExpiringList
-import org.jetbrains.r.interpreter.RInterpreterState
-import org.jetbrains.r.packages.RInstalledPackage
-import org.jetbrains.r.rinterop.RInterop
+import com.intellij.r.psi.common.ExpiringList
+import com.intellij.r.psi.common.emptyExpiringList
+import com.intellij.r.psi.interpreter.RInterpreterState
+import com.intellij.r.psi.packages.RInstalledPackage
+import org.jetbrains.r.rinterop.RInteropImpl
+import com.intellij.r.psi.rinterop.RInterop
 
 interface MockInterpreterStateProvider {
   val rInterop: RInterop
@@ -21,7 +22,7 @@ interface MockInterpreterStateProvider {
 
   companion object {
     val DUMMY = object : MockInterpreterStateProvider {
-      override val rInterop: RInterop
+      override val rInterop: RInteropImpl
         get() = throw NotImplementedError()
 
       override val isUpdating: Boolean?

@@ -27,21 +27,22 @@ import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Key
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RFileType
+import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.util.RPathUtil
 import com.intellij.util.WaitForProgressToShow
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RFileType
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.help.RWebHelpProvider
-import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.rinterop.RInteropUtil
 import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RGraphicsRepository
@@ -50,7 +51,6 @@ import org.jetbrains.r.run.graphics.ui.RGraphicsToolWindowListener
 import org.jetbrains.r.settings.REditorSettings
 import org.jetbrains.r.settings.RGraphicsSettings
 import org.jetbrains.r.settings.RSettings
-import org.jetbrains.r.util.RPathUtil
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -86,7 +86,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
     return promise
   }
 
-  internal fun initByInterop(rInterop: RInterop, promise: AsyncPromise<RConsoleView> = AsyncPromise()): Promise<RConsoleView> {
+  internal fun initByInterop(rInterop: RInteropImpl, promise: AsyncPromise<RConsoleView> = AsyncPromise()): Promise<RConsoleView> {
     UIUtil.invokeLaterIfNeeded {
       WriteIntentReadAction.run {
         consoleView = RConsoleView(rInterop, consoleTitle)

@@ -6,7 +6,7 @@ package org.jetbrains.r.intentions
 
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.project.Project
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 

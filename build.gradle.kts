@@ -48,7 +48,7 @@ dependencies {
 }
 
 protobuf {
-    generatedFilesBaseDir = "$projectDir/gen-grpc"
+    generatedFilesBaseDir = "$projectDir/psi/gen-grpc"
     protoc {
         artifact = "com.google.protobuf:protoc:$protobufVersion"
     }

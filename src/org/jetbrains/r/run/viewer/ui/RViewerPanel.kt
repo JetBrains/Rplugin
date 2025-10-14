@@ -7,12 +7,12 @@ package org.jetbrains.r.run.viewer.ui
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.util.Disposer
+import com.intellij.r.psi.RBundle
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.util.ui.JBUI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.run.viewer.RViewerUtils
 import org.jetbrains.r.visualization.inlays.components.EmptyComponentPanel
 import java.io.File

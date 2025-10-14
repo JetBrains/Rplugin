@@ -8,12 +8,12 @@ import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.icons.AllIcons
 import com.intellij.patterns.PlatformPatterns.psiElement
+import com.intellij.r.psi.editor.completion.NAMED_ARGUMENT_PRIORITY
+import com.intellij.r.psi.editor.completion.RLookupElement
 import com.intellij.util.ProcessingContext
 import org.intellij.plugins.markdown.lang.MarkdownLanguage
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.r.console.runtimeInfo
-import org.jetbrains.r.editor.completion.NAMED_ARGUMENT_PRIORITY
-import org.jetbrains.r.editor.completion.RLookupElement
 
 class RMarkdownCompletionContributor : CompletionContributor() {
   init {

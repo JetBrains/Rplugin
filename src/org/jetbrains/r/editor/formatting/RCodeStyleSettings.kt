@@ -7,7 +7,7 @@ package org.jetbrains.r.editor.formatting
 
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CustomCodeStyleSettings
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RLanguage
 
 @Suppress("PropertyName")
 class RCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSettings(RLanguage.INSTANCE.id, container) {

@@ -11,6 +11,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.r.psi.interpreter.RInterpreterManager
 import junit.framework.TestCase
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.interpreter.*
@@ -186,13 +187,13 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
     }
   }
 
-  private fun execute(code: String, interop: RInterop = rInterop): String {
+  private fun execute(code: String, interop: RInteropImpl = rInterop): String {
     val result = interop.executeCode(code)
     TestCase.assertNull(result.exception)
     return result.stdout
   }
 
-  private fun executeFile(file: String, interop: RInterop = rInterop): String {
+  private fun executeFile(file: String, interop: RInteropImpl = rInterop): String {
     val output = StringBuilder()
     val script = StringUtil.convertLineSeparators(File(file).readText())
     RConsoleExecuteActionHandler.splitCodeForExecution(project, prepareCode(script)).forEach { (code, _) ->
@@ -217,7 +218,7 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
     return output.toString()
   }
 
-  private inline fun withRInterop(f: (RInterop) -> Unit) {
+  private inline fun withRInterop(f: (RInteropImpl) -> Unit) {
     val newInterop = RInteropUtil.runRWrapperAndInterop(interpreter).blockingGet(DEFAULT_TIMEOUT)!!
     try {
       newInterop.asyncEventsStartProcessing()

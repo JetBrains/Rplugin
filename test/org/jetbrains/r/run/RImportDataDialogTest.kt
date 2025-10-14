@@ -3,7 +3,7 @@ package org.jetbrains.r.run
 import com.intellij.openapi.ui.DialogWrapper
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.r.interpreter.LocalOrRemotePath
+import com.intellij.r.psi.interpreter.LocalOrRemotePath
 import org.jetbrains.r.run.visualize.RImportBaseDataDialog
 import java.nio.file.Paths
 import kotlin.io.path.exists

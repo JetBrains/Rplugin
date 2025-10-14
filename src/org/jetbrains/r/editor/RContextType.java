@@ -7,9 +7,9 @@ package org.jetbrains.r.editor;
 import com.intellij.codeInsight.template.FileTypeBasedContextType;
 import com.intellij.lang.Language;
 import com.intellij.psi.PsiFile;
+import com.intellij.r.psi.RFileType;
+import com.intellij.r.psi.RLanguage;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.r.RFileType;
-import org.jetbrains.r.RLanguage;
 
 public class RContextType extends FileTypeBasedContextType {
     public RContextType() {

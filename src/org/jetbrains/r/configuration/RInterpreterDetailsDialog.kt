@@ -5,12 +5,12 @@
 package org.jetbrains.r.configuration
 
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.interpreter.RInterpreterInfo
 import com.intellij.ui.CollectionListModel
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import org.jetbrains.r.visualization.inlays.components.DialogUtil
 import javax.swing.JComponent

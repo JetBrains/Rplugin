@@ -1,7 +1,7 @@
 package org.jetbrains.r.rmarkdown
 
 import com.intellij.lang.Language
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RLanguage
 
 private class RmdCellLanguageProviderForR : RmdCellLanguageProvider {
   override fun getLanguages(): Map<String, Language> {

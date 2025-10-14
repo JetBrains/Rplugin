@@ -17,11 +17,11 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.util.text.TextWithMnemonic
 import com.intellij.openapi.wm.impl.welcomeScreen.FlatWelcomeFrame
 import com.intellij.platform.DirectoryProjectGenerator
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RPluginUtil
 import com.intellij.ui.HideableDecorator
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.UIUtil
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.projectGenerator.panel.interpreter.RAddNewInterpreterPanel

@@ -8,15 +8,15 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.testFramework.UsefulTestCase
 import junit.framework.TestCase
-import org.jetbrains.r.RFileType
+import com.intellij.r.psi.RFileType
 import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.console.runtimeInfo
-import org.jetbrains.r.packages.RPackage
-import org.jetbrains.r.rinterop.RValueDataFrame
-import org.jetbrains.r.rinterop.RValueFunction
-import org.jetbrains.r.rinterop.RVar
-import org.jetbrains.r.rinterop.getWithCheckCanceled
-import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
+import com.intellij.r.psi.packages.RPackage
+import com.intellij.r.psi.rinterop.RValueDataFrame
+import com.intellij.r.psi.rinterop.RValueFunction
+import com.intellij.r.psi.rinterop.RVar
+import com.intellij.r.psi.rinterop.getWithCheckCanceled
+import com.intellij.r.psi.skeleton.psi.RSkeletonAssignmentStatement
 
 class RSkeletonResolveTest : RConsoleBaseTestCase() {
   override fun setUp() {
@@ -42,7 +42,7 @@ class RSkeletonResolveTest : RConsoleBaseTestCase() {
     TestCase.assertTrue(resolveResult is RSkeletonAssignmentStatement)
     val assignment = resolveResult as RSkeletonAssignmentStatement
     TestCase.assertFalse(assignment.stub.exported)
-    val rVar = assignment.createRVar(console)
+    val rVar = assignment.createRVar(console.rInterop)
     val text = FileDocumentManager.getInstance().getDocument(rVar.ref.functionSourcePosition()!!.file)!!.text
     UsefulTestCase.assertInstanceOf(rVar.value, RValueFunction::class.java)
     TestCase.assertTrue(text.contains("quote(`||`)"))
@@ -107,7 +107,7 @@ class RSkeletonResolveTest : RConsoleBaseTestCase() {
   private fun runTest(expression: String): RVar {
     val resolveResult = resolve(expression)
     TestCase.assertTrue(resolveResult is RSkeletonAssignmentStatement)
-    return (resolveResult as RSkeletonAssignmentStatement).createRVar(console)
+    return (resolveResult as RSkeletonAssignmentStatement).createRVar(console.rInterop)
   }
 
   private fun resolve(expression: String): PsiElement? {

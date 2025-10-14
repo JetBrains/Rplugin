@@ -6,7 +6,7 @@ package org.jetbrains.r.diagnostic
 
 import com.intellij.diagnostic.ITNReporter
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent
-import org.jetbrains.r.RPluginUtil
+import com.intellij.r.psi.RPluginUtil
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant

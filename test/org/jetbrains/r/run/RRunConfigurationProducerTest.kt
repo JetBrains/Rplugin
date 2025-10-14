@@ -8,7 +8,7 @@ import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.editor.impl.EditorComponentImpl
 import com.intellij.openapi.editor.impl.EditorImpl
 import org.jetbrains.r.RUsefulTestCase
-import org.jetbrains.r.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.run.configuration.RRunConfiguration
 import org.jetbrains.r.run.configuration.RRunConfigurationProducer

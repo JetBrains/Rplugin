@@ -10,9 +10,9 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.psi.api.RControlFlowHolder
-import org.jetbrains.r.psi.api.RParameter
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.psi.api.RControlFlowHolder
+import com.intellij.r.psi.psi.api.RParameter
 
 class UnusedParameterInspection : org.jetbrains.r.inspections.RInspection() {
 
@@ -25,7 +25,7 @@ class UnusedParameterInspection : org.jetbrains.r.inspections.RInspection() {
   }
 
   private inner class Visitor(
-    private val myProblemHolder: ProblemsHolder) : org.jetbrains.r.psi.api.RVisitor() {
+    private val myProblemHolder: ProblemsHolder) : com.intellij.r.psi.psi.api.RVisitor() {
 
     override fun visitParameter(o: RParameter) {
       val rControlFlowHolder = PsiTreeUtil.getParentOfType(o, RControlFlowHolder::class.java)

@@ -13,7 +13,7 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.PsiFile
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
 import org.jetbrains.r.packages.RequiredPackage
 
 abstract class DependencyManagementFix(protected val missingPackages: List<RequiredPackage> = emptyList()) : LocalQuickFix {

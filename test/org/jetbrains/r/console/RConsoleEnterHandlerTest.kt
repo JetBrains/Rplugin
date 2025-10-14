@@ -5,7 +5,7 @@
 package org.jetbrains.r.console
 
 import com.intellij.openapi.editor.ex.EditorEx
-import org.jetbrains.r.RFileType
+import com.intellij.r.psi.RFileType
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 
 class RConsoleEnterHandlerTest : RLightCodeInsightFixtureTestCase() {

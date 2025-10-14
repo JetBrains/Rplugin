@@ -11,6 +11,8 @@ import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showOkCancelDialog
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.rinterop.RObject
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBPasswordField
 import com.intellij.ui.components.JBTextField
@@ -19,10 +21,8 @@ import com.intellij.ui.dsl.builder.columns
 import com.intellij.ui.dsl.builder.panel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.isLocal
-import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.RObject
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.getRNull
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.rError
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRBoolean
@@ -128,15 +128,15 @@ object DialogUtils {
     return CredentialAttributes(generateServiceName("rstudioapi", key))
   }
 
-  suspend fun selectFile(rInterop: RInterop, args: RObject): RObject {
+  suspend fun selectFile(rInterop: RInteropImpl, args: RObject): RObject {
     return selectHelper(rInterop, args)
   }
 
-  suspend fun selectDirectory(rInterop: RInterop, args: RObject): RObject {
+  suspend fun selectDirectory(rInterop: RInteropImpl, args: RObject): RObject {
     return selectHelper(rInterop, args, selectFolder = true)
   }
 
-  private suspend fun selectHelper(rInterop: RInterop, args: RObject, selectFolder: Boolean = false): RObject {
+  private suspend fun selectHelper(rInterop: RInteropImpl, args: RObject, selectFolder: Boolean = false): RObject {
     val caption = args.list.getRObjects(0).rString.getStrings(0)
     val label = args.list.getRObjects(1).rString.getStrings(0)
     val path = args.list.getRObjects(2).rString.getStrings(0)

@@ -7,14 +7,14 @@ package org.jetbrains.r.inspections.dplyr
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.psi.RDplyrAnalyzer
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.api.ROperator
+import com.intellij.r.psi.psi.api.ROperatorExpression
+import com.intellij.r.psi.psi.api.RVisitor
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.inspections.RInspection
-import org.jetbrains.r.psi.RDplyrAnalyzer
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.api.ROperator
-import org.jetbrains.r.psi.api.ROperatorExpression
-import org.jetbrains.r.psi.api.RVisitor
 
 /**
  * Flag &&, || inside of dplyr expressions.

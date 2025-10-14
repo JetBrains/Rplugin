@@ -14,17 +14,17 @@ import com.intellij.psi.SyntaxTraverser
 import com.intellij.psi.search.LocalSearchScope
 import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.RRecursiveElementVisitor
+import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.isFunctionFromLibrary
+import com.intellij.r.psi.psi.references.RReferenceBase
+import com.intellij.r.psi.skeleton.psi.RSkeletonBase
 import com.intellij.refactoring.util.CommonRefactoringUtil
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.RRecursiveElementVisitor
-import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.isFunctionFromLibrary
-import org.jetbrains.r.psi.references.RReferenceBase
 import org.jetbrains.r.refactoring.RRefactoringUtil
-import org.jetbrains.r.skeleton.psi.RSkeletonBase
 
 /**
  * In IJ codebase there seems to be a different inline impls for methods, parameters, consts etc.

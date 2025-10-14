@@ -6,7 +6,7 @@ package org.jetbrains.r.editor
 
 import com.intellij.codeInsight.lookup.CharFilter
 import com.intellij.codeInsight.lookup.Lookup
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RLanguage
 
 
 class RCharFilter : CharFilter() {

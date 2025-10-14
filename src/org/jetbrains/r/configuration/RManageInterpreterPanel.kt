@@ -7,10 +7,10 @@ package org.jetbrains.r.configuration
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.FixedSizeButton
+import com.intellij.r.psi.interpreter.RInterpreterInfo
 import com.intellij.ui.CollectionComboBoxModel
 import com.intellij.util.ui.JBUI
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import org.jetbrains.r.settings.RLocalInterpreterSettingsProvider
 import java.awt.Dimension

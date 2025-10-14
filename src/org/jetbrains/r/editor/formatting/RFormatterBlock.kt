@@ -13,7 +13,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.lang.Language
 import com.intellij.psi.formatter.FormatterUtil.isWhitespaceOrEmpty
 import com.intellij.psi.formatter.common.AbstractBlock
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RLanguage
 
 class RFormatterBlock internal constructor(private val context: RFormattingContext, node: ASTNode)
   : AbstractBlock(node, context.computeWrap(node), context.computeAlignment(node)), BlockEx {

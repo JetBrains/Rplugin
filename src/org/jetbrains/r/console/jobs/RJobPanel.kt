@@ -21,6 +21,9 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.Formats
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiManager
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.PopupHandler
@@ -36,15 +39,12 @@ import com.intellij.util.ui.JBEmptyBorder
 import com.intellij.util.ui.NamedColorUtil
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.components.BorderLayoutPanel
-import icons.RIcons
+import com.intellij.r.psi.icons.RIcons
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.miginfocom.swing.MigLayout
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.actions.RDumbAwareBgtAction
-import org.jetbrains.r.interpreter.RInterpreterManager
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent

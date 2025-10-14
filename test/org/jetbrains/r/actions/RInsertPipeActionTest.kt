@@ -5,7 +5,7 @@
 package org.jetbrains.r.actions
 
 import com.intellij.application.options.CodeStyle
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RLanguage
 import org.jetbrains.r.RUsefulTestCase
 
 class RInsertPipeActionTest : RUsefulTestCase() {

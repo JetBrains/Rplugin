@@ -4,56 +4,21 @@
 
 package org.jetbrains.r.console
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
+import com.intellij.r.psi.classes.r6.R6ClassInfo
+import com.intellij.r.psi.classes.s4.classInfo.RS4ClassInfo
+import com.intellij.r.psi.console.RConsoleRuntimeInfo
+import com.intellij.r.psi.hints.parameterInfo.RExtraNamedArgumentsInfo
+import com.intellij.r.psi.psi.TableInfo
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.rinterop.RReference
+import com.intellij.r.psi.rinterop.getWithCheckCanceled
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.r.classes.r6.R6ClassInfo
-import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfo
-import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
-import org.jetbrains.r.psi.TableInfo
-import org.jetbrains.r.psi.api.RFunctionExpression
-import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.RReference
-import org.jetbrains.r.rinterop.RValue
-import org.jetbrains.r.rinterop.getWithCheckCanceled
+import org.jetbrains.r.rinterop.RInteropImpl
 import java.util.concurrent.atomic.AtomicReference
 
-interface RConsoleRuntimeInfo {
-  val variables: Map<String, RValue>
-  val loadedPackages: Map<String, Int>
-  val rMarkdownChunkOptions: List<String>
-  val workingDir: String
-  fun loadPackage(name: String)
-  fun loadDistinctStrings(expression: String): List<String>
-  fun loadObjectNames(expression: String) : List<String>
-  fun loadInheritorNamedArguments(baseFunctionName: String) : List<String>
-  fun loadExtraNamedArguments(functionName: String): RExtraNamedArgumentsInfo
-  fun loadExtraNamedArguments(functionName: String, functionExpression: RFunctionExpression): RExtraNamedArgumentsInfo
-  fun loadShortS4ClassInfos(): List<RS4ClassInfo>
-  fun loadS4ClassInfoByObjectName(objectName: String): RS4ClassInfo?
-  fun loadS4ClassInfoByClassName(className: String): RS4ClassInfo?
-  fun loadR6ClassInfoByObjectName(objectName: String): R6ClassInfo?
-  fun getFormalArguments(expression: String) : List<String>
-  fun loadTableColumns(expression: String): TableInfo
-  val rInterop: RInterop
-
-  companion object {
-    fun get(psiFile: PsiFile): RConsoleRuntimeInfo? {
-      if (ApplicationManager.getApplication().isUnitTestMode) psiFile.getUserData(KEY)?.let { return it }
-
-      return get(psiFile.project)
-    }
-
-    fun get(project: Project): RConsoleRuntimeInfo? {
-      val console = RConsoleManager.getInstance(project).currentConsoleOrNull ?: return null
-      return console.consoleRuntimeInfo.takeIf { console.rInterop.isAlive }
-    }
-  }
-}
-
-class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntimeInfo {
+class RConsoleRuntimeInfoImpl(override val rInterop: RInteropImpl) : RConsoleRuntimeInfo {
   private val objectNamesCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
   private val distinctStringsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
   private val inheritorNamedArgumentsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }

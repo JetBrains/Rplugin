@@ -7,6 +7,7 @@ package org.jetbrains.r.interpreter
 import com.intellij.execution.process.CapturingProcessRunner
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.r.psi.interpreter.RInterpreter
 import com.intellij.testFramework.PlatformTestUtil
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicInteger

@@ -12,13 +12,14 @@ import com.intellij.psi.templateLanguages.TemplateDataElementType
 import com.intellij.psi.templateLanguages.TemplateLanguageFileViewProvider
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.OuterLanguageElementType
+import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import org.intellij.markdown.MarkdownElementTypes
 import org.intellij.markdown.MarkdownTokenTypes
 import org.intellij.markdown.ast.ASTNode
 import org.intellij.markdown.ast.accept
 import org.intellij.markdown.ast.visitors.RecursiveVisitor
 import org.intellij.markdown.parser.MarkdownParser
-import java.util.Locale
+import java.util.*
 import org.intellij.markdown.IElementType as MarkdownIElementType
 
 val INNER_ELEMENT = IElementType("INNER", RMarkdownLanguage)

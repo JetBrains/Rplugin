@@ -8,8 +8,8 @@ import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.HighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.options.colors.AttributesDescriptor
+import com.intellij.r.psi.RBundle
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.RBundle
 
 private typealias Colors = DefaultLanguageHighlighterColors
 

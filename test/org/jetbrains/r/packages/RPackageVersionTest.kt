@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.packages
 
+import com.intellij.r.psi.packages.RPackageVersion
 import junit.framework.TestCase
 import org.jetbrains.r.RUsefulTestCase
 

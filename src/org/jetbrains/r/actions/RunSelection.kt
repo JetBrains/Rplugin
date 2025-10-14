@@ -12,14 +12,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
-import org.jetbrains.r.RFileType
+import com.intellij.r.psi.RFileType
+import com.intellij.r.psi.notifications.RNotificationUtil
+import com.intellij.r.psi.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.debugger.RDebuggerUtil
-import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 
 /**

@@ -9,11 +9,11 @@ import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.psi.PsiElement
-import org.jetbrains.r.roxygen.AUTOLINK
-import org.jetbrains.r.roxygen.HELP_PAGE_LINK
-import org.jetbrains.r.roxygen.LINK_DESTINATION
-import org.jetbrains.r.roxygen.PARAMETER
-import org.jetbrains.r.roxygen.psi.api.*
+import com.intellij.r.psi.roxygen.AUTOLINK
+import com.intellij.r.psi.roxygen.HELP_PAGE_LINK
+import com.intellij.r.psi.roxygen.LINK_DESTINATION
+import com.intellij.r.psi.roxygen.PARAMETER
+import com.intellij.r.psi.roxygen.psi.api.*
 
 
 class RoxygenAnnotatorVisitor(private val holder: AnnotationHolder) : RoxygenVisitor() {

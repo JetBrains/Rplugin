@@ -7,8 +7,8 @@ package org.jetbrains.r.projectGenerator.template
 import com.intellij.ide.util.projectWizard.WizardContext
 import com.intellij.platform.ProjectTemplate
 import com.intellij.platform.ProjectTemplatesFactory
-import icons.RIcons
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.icons.RIcons
 
 class RTemplatesFactory : ProjectTemplatesFactory() {
 

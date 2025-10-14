@@ -9,10 +9,10 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.api.ROperator
-import org.jetbrains.r.psi.api.RVisitor
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.ROperator
+import com.intellij.r.psi.psi.api.RVisitor
 
 class ClosureAssignmentInspection : RInspection() {
   override fun getDisplayName() = RBundle.message("inspection.closure.assignment.name")

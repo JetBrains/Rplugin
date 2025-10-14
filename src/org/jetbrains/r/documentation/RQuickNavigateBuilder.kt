@@ -9,21 +9,21 @@ import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiModificationTracker
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.packages.RSkeletonUtilPsi
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.RSkeletonParameterPomTarget
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RParameter
+import com.intellij.r.psi.psi.api.RPsiElement
+import com.intellij.r.psi.refactoring.quoteIfNeeded
+import com.intellij.r.psi.refactoring.rNamesValidator
+import com.intellij.r.psi.rinterop.RReference
+import com.intellij.r.psi.rinterop.RValueDataFrame
 import com.intellij.ui.ColorUtil
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.runtimeInfo
-import org.jetbrains.r.packages.RSkeletonUtil
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.RSkeletonParameterPomTarget
-import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.api.RParameter
-import org.jetbrains.r.psi.api.RPsiElement
-import org.jetbrains.r.refactoring.quoteIfNeeded
-import org.jetbrains.r.refactoring.rNamesValidator
-import org.jetbrains.r.rinterop.RReference
-import org.jetbrains.r.rinterop.RValueDataFrame
 
 object RQuickNavigateBuilder {
 
@@ -185,7 +185,7 @@ object RQuickNavigateBuilder {
   }
 
   private fun StringBuilder.addFileOrPackageInfoIfNeeded(file: PsiFile) {
-    val rPackage = RSkeletonUtil.skeletonFileToRPackage(file)
+    val rPackage = RSkeletonUtilPsi.skeletonFileToRPackage(file)
     val fileName: String =
       if (rPackage != null) "${rPackage.name} (${rPackage.version})"
       else file.name

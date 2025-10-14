@@ -13,17 +13,17 @@ import com.intellij.codeInspection.util.InspectionMessage
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
+import com.intellij.r.psi.interpreter.RInterpreterStateManager
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.RRecursiveElementVisitor
+import com.intellij.r.psi.psi.api.*
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.intentions.InstallAllFilePackagesFix
 import org.jetbrains.r.intentions.InstallPackagesFix
-import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.RRecursiveElementVisitor
-import org.jetbrains.r.psi.api.*
 
 class MissingPackageInspection : RInspection() {
 

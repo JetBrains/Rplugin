@@ -7,7 +7,6 @@ package org.jetbrains.r.packages
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
@@ -16,48 +15,15 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiUtilCore
+import com.intellij.r.psi.packages.DependencyPackage
+import com.intellij.r.psi.packages.DependencyVersionBound
+import com.intellij.r.psi.packages.PackageDescriptionInfo
+import com.intellij.r.psi.packages.RPackageProjectManager
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import java.util.concurrent.atomic.AtomicReference
 
-data class DependencyVersionBound(
-  val version: String,
-  val strict: Boolean = false
-)
-
-data class DependencyPackage(
-  val name: String,
-  val lowerBound: DependencyVersionBound? = null,
-  val upperBound: DependencyVersionBound? = null
-) {
-  fun versionSatisfies(version: String): Boolean {
-    return lowerBoundSatisfies(version) && upperBoundSatisfies(version)
-  }
-
-  fun lowerBoundSatisfies(version: String): Boolean {
-    if (lowerBound == null) return true
-    val compareResult = RPackageVersion.compare(version, lowerBound.version) ?: return true
-    return compareResult > 0 || !lowerBound.strict && compareResult == 0
-  }
-
-  private fun upperBoundSatisfies(version: String): Boolean {
-    if (upperBound == null) return true
-    val compareResult = RPackageVersion.compare(version, upperBound.version) ?: return true
-    return compareResult < 0 || !upperBound.strict && compareResult == 0
-  }
-}
-
-data class PackageDescriptionInfo(
-  val packageName: String,
-  val version: String,
-  val title: String,
-  val depends: List<DependencyPackage>,
-  val imports: List<DependencyPackage>,
-  val suggests: List<DependencyPackage>
-)
-
-@Service(Service.Level.PROJECT)
-class RPackageProjectManager(private val project: Project) {
+class RPackageProjectManagerImpl(private val project: Project) : RPackageProjectManager {
 
   private val rConsoleManager = RConsoleManager.getInstance(project)
   private val requiredPackageInstaller = RequiredPackageInstaller.getInstance(project)
@@ -68,7 +34,7 @@ class RPackageProjectManager(private val project: Project) {
    * @return *null* if no DESCRIPTION file or is it written **pretty** bad (mandatory fields are omitted,
    * gross syntax errors, etc.)
    */
-  fun getProjectPackageDescriptionInfo(): PackageDescriptionInfo? {
+  override fun getProjectPackageDescriptionInfo(): PackageDescriptionInfo? {
     return runReadAction {
       CachedValuesManager.getManager(project).getCachedValue(project) {
         val virtualFile = project.guessProjectDir()?.findChild("DESCRIPTION")
@@ -86,7 +52,7 @@ class RPackageProjectManager(private val project: Project) {
     }
   }
 
-  fun loadOrSuggestToInstallMissedPackages(packageInfo: PackageDescriptionInfo? = getProjectPackageDescriptionInfo()) = invokeLater {
+  override fun loadOrSuggestToInstallMissedPackages(packageInfo: PackageDescriptionInfo?): Unit = invokeLater {
     if (packageInfo == null) return@invokeLater
     val consoles =
       if (ApplicationManager.getApplication().isUnitTestMode) {

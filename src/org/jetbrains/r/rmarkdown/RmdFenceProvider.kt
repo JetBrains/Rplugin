@@ -10,7 +10,7 @@ import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.tree.IElementType
 import org.jetbrains.r.editor.formatting.TemplateContext
-import java.util.Locale
+import java.util.*
 
 interface RmdFenceProvider {
   val fenceLanguage: Language

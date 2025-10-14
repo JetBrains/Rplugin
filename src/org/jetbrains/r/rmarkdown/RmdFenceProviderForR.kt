@@ -10,7 +10,7 @@ import com.intellij.formatting.Indent
 import com.intellij.lang.Language
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.tree.IElementType
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RLanguage
 import org.jetbrains.r.editor.formatting.RFormatterBlock
 import org.jetbrains.r.editor.formatting.RFormattingContext
 import org.jetbrains.r.editor.formatting.TemplateContext

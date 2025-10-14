@@ -14,20 +14,20 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
+import com.intellij.r.psi.RPluginUtil
+import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.util.EventDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
-import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.runHelperProcess
-import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropImpl
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.util.*
@@ -94,7 +94,7 @@ class RJobRunner(
     }
   }
 
-  private fun generateRunScript(interpreter: RInterpreter, task: RJobTask, rInterop: RInterop?): Pair<String, String?> {
+  private fun generateRunScript(interpreter: RInterpreter, task: RJobTask, rInterop: RInteropImpl?): Pair<String, String?> {
     var importFile: String? = null
     var exportFile: String? = null
 

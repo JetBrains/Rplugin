@@ -5,10 +5,10 @@
 package org.jetbrains.r.classes
 
 import com.intellij.psi.PsiElement
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.psi.api.RFile
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RFile
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 abstract class RClassesUtilTestsBase : RProcessHandlerBaseTestCase() {

@@ -14,7 +14,7 @@ import com.intellij.openapi.startup.StartupManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
 import org.jetbrains.r.actions.NewRScriptAction
 
 class REmptyProjectGenerator : RProjectGenerator() {

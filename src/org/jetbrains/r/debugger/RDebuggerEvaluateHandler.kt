@@ -8,12 +8,12 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import com.intellij.xdebugger.XExpression
 import com.intellij.xdebugger.evaluation.EvaluationMode
 import com.intellij.xdebugger.impl.breakpoints.XExpressionImpl
 import com.intellij.xdebugger.impl.evaluate.XDebuggerEvaluationDialog
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 import org.jetbrains.r.run.debug.stack.RXDebuggerEvaluator
 
 internal object RDebuggerEvaluateHandler {

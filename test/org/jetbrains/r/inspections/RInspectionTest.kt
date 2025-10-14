@@ -11,7 +11,7 @@ import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.editor.colors.CodeInsightColors
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import org.intellij.lang.annotations.Language
-import org.jetbrains.r.RFileType
+import com.intellij.r.psi.RFileType
 import org.jetbrains.r.RUsefulTestCase
 
 import java.io.IOException

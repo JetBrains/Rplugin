@@ -12,8 +12,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.*
-import icons.RIcons
-import org.jetbrains.r.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.icons.RIcons
 import org.jetbrains.r.projectGenerator.builder.RModuleBuilder
 import org.jetbrains.r.projectGenerator.step.RProjectSettingsStep
 import org.jetbrains.r.settings.RSettings

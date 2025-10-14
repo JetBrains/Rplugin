@@ -7,12 +7,12 @@ package org.jetbrains.r.actions
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.notifications.RNotificationUtil
 import com.intellij.ui.AppUIUtil
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleView
-import org.jetbrains.r.notifications.RNotificationUtil
 
 abstract class RRunActionBase : REditorActionBase() {
   override fun actionPerformed(e: AnActionEvent) {

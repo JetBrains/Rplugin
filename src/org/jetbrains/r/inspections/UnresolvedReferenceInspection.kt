@@ -10,17 +10,17 @@ import com.intellij.codeInspection.LocalInspectionToolSession
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.console.RConsoleRuntimeInfo
+import com.intellij.r.psi.interpreter.RInterpreterStateManager
+import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.isFunctionFromLibrary
+import com.intellij.r.psi.psi.references.RReferenceBase
+import com.intellij.r.psi.psi.references.RSearchScopeUtil
+import com.intellij.r.psi.psi.stubs.classes.RS4ClassNameIndex
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.intentions.LoadPackageFix
-import org.jetbrains.r.interpreter.RInterpreterStateManager
-import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.isFunctionFromLibrary
-import org.jetbrains.r.psi.references.RReferenceBase
-import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
 
 class UnresolvedReferenceInspection : RInspection() {
 

@@ -14,11 +14,11 @@ import com.intellij.openapi.startup.StartupManager
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.packages.build.RPackageBuildUtil
 import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.PackagesNotificationPanel
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.execution.ExecuteExpressionUtils
-import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.projectGenerator.panel.RPanel
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
 import java.nio.file.Paths

@@ -9,13 +9,12 @@ import com.intellij.lang.folding.FoldingBuilder
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.util.TextRange
-import org.jetbrains.r.parsing.RElementTypes
-import org.jetbrains.r.parsing.RTokenTypes
-import org.jetbrains.r.psi.api.RBlockExpression
-import org.jetbrains.r.psi.api.RForStatement
-import org.jetbrains.r.psi.api.RFunctionExpression
-import org.jetbrains.r.psi.api.RIfStatement
-import java.util.*
+import com.intellij.r.psi.parsing.RElementTypes
+import com.intellij.r.psi.parsing.RTokenTypes
+import com.intellij.r.psi.psi.api.RBlockExpression
+import com.intellij.r.psi.psi.api.RForStatement
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIfStatement
 
 /**
  * Defines how code folding should behave for R files

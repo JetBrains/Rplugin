@@ -10,7 +10,7 @@ import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.blockingGetAndDispatchEvents
 
-class RDebuggerTestHelper(rInterop: RInterop) {
+class RDebuggerTestHelper(rInterop: RInteropImpl) {
   private var promise = AsyncPromise<Boolean>()
 
   init {

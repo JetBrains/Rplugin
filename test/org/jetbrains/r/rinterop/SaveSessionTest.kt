@@ -12,9 +12,9 @@ import com.intellij.xdebugger.XDebuggerUtil
 import junit.framework.TestCase
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.debugger.RDebuggerUtil
-import org.jetbrains.r.debugger.RSourcePosition
-import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.interpreter.RInterpreterManager
+import com.intellij.r.psi.debugger.RSourcePosition
+import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.interpreter.RInterpreterManager
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 import org.jetbrains.r.run.debug.RLineBreakpointType
 
@@ -100,7 +100,7 @@ class SaveSessionTest : RUsefulTestCase() {
     }
   }
 
-  private inline fun withRInterop(f: (RInterop) -> Unit) {
+  private inline fun withRInterop(f: (RInteropImpl) -> Unit) {
     val rInterop = RInteropUtil.runRWrapperAndInterop(interpreter).blockingGet(DEFAULT_TIMEOUT)!!
     try {
       f(rInterop)

@@ -7,8 +7,8 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
+import com.intellij.r.psi.RBundle
 import com.intellij.util.containers.toArray
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.inspections.RInspection
 import java.util.concurrent.ConcurrentHashMap
 

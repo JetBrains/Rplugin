@@ -5,8 +5,8 @@ package org.jetbrains.r.roxygen
 
 import com.intellij.lang.refactoring.RefactoringSupportProvider
 import com.intellij.psi.PsiElement
-import org.jetbrains.r.roxygen.psi.api.RoxygenIdentifierExpression
-import org.jetbrains.r.roxygen.psi.api.RoxygenParameter
+import com.intellij.r.psi.roxygen.psi.api.RoxygenIdentifierExpression
+import com.intellij.r.psi.roxygen.psi.api.RoxygenParameter
 
 class RoxygenRefactoringProvider : RefactoringSupportProvider() {
   override fun isMemberInplaceRenameAvailable(element: PsiElement, context: PsiElement?): Boolean {

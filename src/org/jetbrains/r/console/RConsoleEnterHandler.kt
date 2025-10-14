@@ -16,9 +16,9 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
-import org.jetbrains.r.parsing.RElementTypes
-import org.jetbrains.r.psi.RRecursiveElementVisitor
-import org.jetbrains.r.psi.api.RCallExpression
+import com.intellij.r.psi.parsing.RElementTypes
+import com.intellij.r.psi.psi.RRecursiveElementVisitor
+import com.intellij.r.psi.psi.api.RCallExpression
 import org.jetbrains.r.statistics.RWorkflowCollector.logConsoleMethodCall
 
 object RConsoleEnterHandler {

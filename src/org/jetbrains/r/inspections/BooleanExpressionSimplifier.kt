@@ -11,9 +11,9 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.api.*
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.api.*
 
 /**
  * Find boolean expressions that can be simplified (e.g. (x && TRUE), (!!y))

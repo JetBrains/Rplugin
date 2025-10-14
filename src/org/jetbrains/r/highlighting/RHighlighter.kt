@@ -9,11 +9,10 @@ import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.psi.tree.IElementType
-import org.jetbrains.r.lexer.RLexer
-import org.jetbrains.r.parsing.RElementTypes
-import org.jetbrains.r.parsing.RTokenTypes
-import org.jetbrains.r.psi.RPsiUtil
-import java.util.*
+import com.intellij.r.psi.lexer.RLexer
+import com.intellij.r.psi.parsing.RElementTypes
+import com.intellij.r.psi.parsing.RTokenTypes
+import com.intellij.r.psi.psi.RPsiUtil
 
 class RHighlighter : SyntaxHighlighterBase() {
 

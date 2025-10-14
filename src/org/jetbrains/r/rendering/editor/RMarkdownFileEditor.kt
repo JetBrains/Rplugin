@@ -23,10 +23,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
-import icons.RIcons
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.icons.RIcons
 import kotlinx.coroutines.launch
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RMarkdownInterruptAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction

@@ -9,10 +9,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.PsiManagerEx
+import com.intellij.r.psi.RFileType
+import com.intellij.r.psi.psi.RFileImpl
 import com.intellij.testFramework.LightVirtualFile
 import com.intellij.xdebugger.evaluation.XDebuggerEditorsProviderBase
-import org.jetbrains.r.RFileType
-import org.jetbrains.r.psi.RFileImpl
 
 object RDebuggerEditorsProvider : XDebuggerEditorsProviderBase() {
   override fun createExpressionCodeFragment(project: Project, text: String, context: PsiElement?, isPhysical: Boolean): PsiFile {

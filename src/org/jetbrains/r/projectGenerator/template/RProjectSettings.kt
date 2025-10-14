@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.projectGenerator.template
 
-import org.jetbrains.r.interpreter.RInterpreterLocation
+import com.intellij.r.psi.interpreter.RInterpreterLocation
 
 class RProjectSettings {
   var useNewInterpreter: Boolean = true

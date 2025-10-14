@@ -3,7 +3,7 @@ package org.jetbrains.r.quarto
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.openapi.vfs.CharsetToolkit
 import com.intellij.openapi.vfs.VirtualFile
-import icons.RIcons
+import com.intellij.r.psi.icons.RIcons
 import org.jetbrains.annotations.NonNls
 import javax.swing.Icon
 

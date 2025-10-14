@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.inspections.classes.s4
 
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
 import org.jetbrains.r.inspections.RInspectionTest
 
 class DeprecatedSetClassArgsInspectionTest : RInspectionTest() {

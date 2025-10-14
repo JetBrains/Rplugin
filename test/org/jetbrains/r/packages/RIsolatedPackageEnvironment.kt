@@ -1,8 +1,8 @@
 package org.jetbrains.r.packages
 
 import org.jetbrains.r.interpreter.RInterpreterBaseTestCase
-import org.jetbrains.r.interpreter.RInterpreterState
-import org.jetbrains.r.interpreter.RInterpreterStateManager
+import com.intellij.r.psi.interpreter.RInterpreterState
+import com.intellij.r.psi.interpreter.RInterpreterStateManager
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.invariantSeparatorsPathString

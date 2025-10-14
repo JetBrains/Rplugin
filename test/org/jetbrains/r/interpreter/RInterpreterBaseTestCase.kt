@@ -6,21 +6,21 @@ package org.jetbrains.r.interpreter
 
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.registerServiceInstance
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
-import org.jetbrains.r.common.ExpiringList
+import com.intellij.r.psi.common.ExpiringList
+import com.intellij.r.psi.interpreter.RInterpreterState
+import com.intellij.r.psi.interpreter.RInterpreterStateManager
 import org.jetbrains.r.interpreter.RInterpreterTestUtil.makeChildInterpreter
 import org.jetbrains.r.mock.MockInterpreterState
 import org.jetbrains.r.mock.MockInterpreterStateProvider
 import org.jetbrains.r.mock.MockRepoProvider
-import org.jetbrains.r.packages.RInstalledPackage
+import com.intellij.r.psi.packages.RInstalledPackage
+import com.intellij.r.psi.interpreter.uploadFileToHost
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.remote.RDefaultRepository
 import org.jetbrains.r.packages.remote.RRepoPackage
-import org.jetbrains.r.packages.remote.RRepository
 import org.jetbrains.r.packages.remote.RRepositoryWithSelection
 import org.jetbrains.r.packages.remote.RepoProvider
-import org.jetbrains.r.rinterop.RInterop
+import com.intellij.r.psi.rinterop.RInterop
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 import java.io.File
 

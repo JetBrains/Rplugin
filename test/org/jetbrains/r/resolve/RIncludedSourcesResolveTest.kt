@@ -13,7 +13,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilCore
 import junit.framework.TestCase
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.psi.api.RFile
+import com.intellij.r.psi.psi.api.RFile
 import java.io.File
 
 class RIncludedSourcesResolveTest : RResolveFromFilesTestCase("resolveInSource") {

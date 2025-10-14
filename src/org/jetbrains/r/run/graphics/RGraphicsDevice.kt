@@ -7,10 +7,10 @@ package org.jetbrains.r.run.graphics
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.r.psi.rinterop.RIExecutionResult
 import com.intellij.util.io.delete
 import org.jetbrains.concurrency.*
-import org.jetbrains.r.rinterop.RIExecutionResult
-import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.settings.RGraphicsSettings
 import java.nio.file.Path
 import kotlin.io.path.exists
@@ -18,7 +18,7 @@ import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.name
 
 class RGraphicsDevice(
-  private val rInterop: RInterop,
+  private val rInterop: RInteropImpl,
   private val shadowDirectory: Path,
   initialParameters: RGraphicsUtils.ScreenParameters,
   private val inMemory: Boolean,

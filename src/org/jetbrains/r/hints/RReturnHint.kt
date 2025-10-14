@@ -4,8 +4,8 @@
 
 package org.jetbrains.r.hints
 
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.psi.api.*
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.psi.api.*
 
 sealed class RReturnHint(hintPrefix: String, function: RFunctionExpression) {
   val hintText: String = hintPrefix + getFunctionName(function)

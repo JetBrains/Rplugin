@@ -9,8 +9,8 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.psi.PsiDocumentManager
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.rmarkdown.RMarkdownLanguage
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 
 /**
  * Marker interface to distinguish R actions invoked in the editor from all other actions.

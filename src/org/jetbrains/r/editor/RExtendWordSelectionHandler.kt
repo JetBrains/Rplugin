@@ -7,8 +7,8 @@ package org.jetbrains.r.editor
 import com.intellij.codeInsight.editorActions.ExtendWordSelectionHandlerBase
 import com.intellij.openapi.util.Condition
 import com.intellij.psi.PsiElement
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.api.RPsiElement
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RPsiElement
 
 class RExtendWordSelectionHandler : ExtendWordSelectionHandlerBase() {
   override fun canSelect(e: PsiElement): Boolean {

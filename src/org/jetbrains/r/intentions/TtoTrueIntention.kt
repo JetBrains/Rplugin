@@ -8,10 +8,10 @@ package org.jetbrains.r.intentions
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.api.RIdentifierExpression
 import com.intellij.util.IncorrectOperationException
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.api.RIdentifierExpression
 
 class TtoTrueIntention : AbstractRIntention() {
 

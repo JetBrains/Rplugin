@@ -5,13 +5,14 @@ import com.intellij.psi.*
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.codeInsight.libraries.RLibrarySupportProvider
+import com.intellij.r.psi.editor.completion.RLookupElementFactory
+import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
+import com.intellij.r.psi.psi.RRecursiveElementVisitor
+import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.impl.RStringLiteralExpressionImpl
 import com.intellij.util.Processor
 import org.jetbrains.annotations.NonNls
-import org.jetbrains.r.editor.completion.RLookupElementFactory
-import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
-import org.jetbrains.r.psi.RRecursiveElementVisitor
-import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.impl.RStringLiteralExpressionImpl
 
 class RShinySupportProvider : RLibrarySupportProvider {
   override fun resolve(element: RPsiElement): ResolveResult? {

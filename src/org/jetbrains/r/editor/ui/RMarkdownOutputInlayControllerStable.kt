@@ -11,8 +11,8 @@ import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
+import com.intellij.r.psi.RPluginCoroutineScope
 import kotlinx.coroutines.launch
-import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.addBlockElement
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.disposeComponent
 import org.jetbrains.r.editor.ui.RMarkdownOutputInlayControllerUtil.extractOffset

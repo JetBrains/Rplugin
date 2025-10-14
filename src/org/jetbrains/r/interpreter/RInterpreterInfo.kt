@@ -1,15 +1,11 @@
-/*
- * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
- */
-
 package org.jetbrains.r.interpreter
 
 import com.intellij.openapi.util.Version
+import com.intellij.r.psi.interpreter.RInterpreterInfo
+import com.intellij.r.psi.interpreter.RInterpreterLocation
 
-interface RInterpreterInfo {
-  val interpreterName: String
-  val interpreterLocation: RInterpreterLocation
-  val version: Version
+fun List<RInterpreterInfo>.findByPath(path: String): RInterpreterInfo? {
+  return find { it.interpreterLocation.toLocalPathOrNull() == path }
 }
 
 data class RBasicInterpreterInfo(
@@ -27,8 +23,4 @@ data class RBasicInterpreterInfo(
       return version?.let { RBasicInterpreterInfo(name, location, it) }
     }
   }
-}
-
-fun List<RInterpreterInfo>.findByPath(path: String): RInterpreterInfo? {
-  return find { it.interpreterLocation.toLocalPathOrNull() == path }
 }

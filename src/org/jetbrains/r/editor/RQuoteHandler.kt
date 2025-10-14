@@ -9,7 +9,7 @@ import com.intellij.codeInsight.editorActions.SimpleTokenSetQuoteHandler
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.highlighter.HighlighterIterator
-import org.jetbrains.r.parsing.RElementTypes
+import com.intellij.r.psi.parsing.RElementTypes
 
 class RQuoteHandler : SimpleTokenSetQuoteHandler(RElementTypes.R_STRING), MultiCharQuoteHandler {
   override fun isOpeningQuote(iterator: HighlighterIterator?, offset: Int): Boolean {

@@ -8,11 +8,11 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.RPrecedenceUtil
-import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.findBlockParent
-import org.jetbrains.r.psi.findParenthesisParent
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.RPrecedenceUtil
+import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.findBlockParent
+import com.intellij.r.psi.psi.findParenthesisParent
 import org.jetbrains.r.refactoring.RIntroduceLocalHandler.Companion.IntroduceOperation
 
 class RIntroduceVariableHandler : RIntroduceLocalHandler() {

@@ -10,9 +10,9 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.DumbAware
-import org.jetbrains.r.RFileType
+import com.intellij.r.psi.RFileType
+import com.intellij.r.psi.notifications.RNotificationUtil
 import org.jetbrains.r.interpreter.RProfileErrorException
-import org.jetbrains.r.notifications.RNotificationUtil
 
 class RConsoleAction : AnAction(), DumbAware {
   init {

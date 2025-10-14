@@ -10,11 +10,11 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.refactoring.rename.NameSuggestionProvider
 import com.intellij.refactoring.rename.PreferrableNameSuggestionProvider
-import org.jetbrains.r.RFileType.DOT_R_EXTENSION
+import com.intellij.r.psi.RFileType.DOT_R_EXTENSION
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.api.RParameter
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RParameter
 
 class RNameSuggestionProviderTest : RLightCodeInsightFixtureTestCase() {
 

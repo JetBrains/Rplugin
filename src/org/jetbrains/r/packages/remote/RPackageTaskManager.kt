@@ -16,13 +16,13 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.interpreter.RLibraryWatcher
+import com.intellij.r.psi.packages.RInstalledPackage
+import com.intellij.r.psi.rinterop.RInterop
+import com.intellij.r.psi.rinterop.RInteropTerminated
 import com.intellij.webcore.packaging.PackagesNotificationPanel
 import com.intellij.webcore.packaging.RepoPackage
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.interpreter.RLibraryWatcher
-import org.jetbrains.r.packages.RInstalledPackage
-import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.RInteropTerminated
 import java.util.concurrent.ConcurrentSkipListSet
 import java.util.concurrent.locks.ReentrantLock
 

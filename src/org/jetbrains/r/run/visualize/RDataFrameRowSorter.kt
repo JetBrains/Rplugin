@@ -8,9 +8,9 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.Disposer
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.rinterop.DataFrameFilterRequest
-import org.jetbrains.r.rinterop.getWithCheckCanceled
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.rinterop.DataFrameFilterRequest
+import com.intellij.r.psi.rinterop.getWithCheckCanceled
 import java.util.concurrent.CancellationException
 import java.util.concurrent.Future
 import javax.swing.JTable

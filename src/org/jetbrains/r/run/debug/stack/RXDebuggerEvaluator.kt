@@ -6,12 +6,12 @@
 package org.jetbrains.r.run.debug.stack
 
 import com.intellij.openapi.Disposable
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.debugger.exception.RDebuggerException
+import com.intellij.r.psi.rinterop.RReference
+import com.intellij.r.psi.rinterop.RVar
 import com.intellij.xdebugger.XSourcePosition
 import com.intellij.xdebugger.evaluation.XDebuggerEvaluator
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.debugger.exception.RDebuggerException
-import org.jetbrains.r.rinterop.RReference
-import org.jetbrains.r.rinterop.RVar
 
 class RXDebuggerEvaluator(private val stackFrame: RXStackFrame, private var parentDisposable: Disposable? = null) : XDebuggerEvaluator() {
   override fun evaluate(expression: String, callback: XEvaluationCallback, expressionPosition: XSourcePosition?) {

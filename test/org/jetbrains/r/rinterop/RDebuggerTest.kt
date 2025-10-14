@@ -12,9 +12,11 @@ import com.intellij.xdebugger.impl.XDebuggerUtilImpl
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.RFileType
+import com.intellij.r.psi.RFileType
 import org.jetbrains.r.debugger.RDebuggerUtil
-import org.jetbrains.r.debugger.RSourcePosition
+import com.intellij.r.psi.debugger.RSourcePosition
+import com.intellij.r.psi.rinterop.ExecuteCodeRequest
+import com.intellij.r.psi.rinterop.RReference
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 class RDebuggerTest : RProcessHandlerBaseTestCase() {

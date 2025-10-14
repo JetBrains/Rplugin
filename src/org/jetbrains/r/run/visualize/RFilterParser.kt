@@ -5,7 +5,7 @@
 package org.jetbrains.r.run.visualize
 
 import com.google.protobuf.Empty
-import org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter
+import com.intellij.r.psi.rinterop.DataFrameFilterRequest.Filter
 import org.jetbrains.r.visualization.inlays.table.filters.IParser
 import java.text.ParseException
 

@@ -15,13 +15,13 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.r.psi.RBundle
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.SideBorder
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
-import icons.RIcons
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.icons.RIcons
 import org.jetbrains.r.visualization.inlays.RClipboardUtils
 import org.jetbrains.r.visualization.inlays.dataframe.DataFrame
 import org.jetbrains.r.visualization.inlays.dataframe.columns.DoubleType

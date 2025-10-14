@@ -21,14 +21,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilCore
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.psi.RRecursiveElementVisitor
-import org.jetbrains.r.psi.api.RBlockExpression
-import org.jetbrains.r.psi.api.RFunctionExpression
-import org.jetbrains.r.psi.api.RIfStatement
-import org.jetbrains.r.psi.api.RLoopStatement
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.psi.RRecursiveElementVisitor
+import com.intellij.r.psi.psi.api.RBlockExpression
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIfStatement
+import com.intellij.r.psi.psi.api.RLoopStatement
+import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import org.jetbrains.r.refactoring.RRefactoringUtil
-import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
 class RReturnHintPass(private val file: PsiFile,
                       editor: Editor,

@@ -9,9 +9,9 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
-import icons.RIcons
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.interpreter.RInterpreterManager
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.icons.RIcons
 
 
 /**

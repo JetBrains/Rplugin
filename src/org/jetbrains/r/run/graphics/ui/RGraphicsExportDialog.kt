@@ -12,11 +12,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.MessageDialogBuilder
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.Disposer
+import com.intellij.r.psi.RBundle
 import com.intellij.ui.DocumentAdapter
 import com.intellij.util.ui.JBUI
-import icons.RIcons
+import com.intellij.r.psi.icons.RIcons
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager

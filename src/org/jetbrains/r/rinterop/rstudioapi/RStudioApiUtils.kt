@@ -14,17 +14,17 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vcs.changes.actions.RefreshAction
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.rinterop.RObject
 import com.intellij.util.PathUtilRt
 import com.intellij.util.containers.ComparatorUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.await
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.isLocal
-import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.RObject
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.rinterop.rstudioapi.RStudioAPISourceMarkerInspection.Companion.SOURCE_MARKERS_KEY
 import java.util.concurrent.ConcurrentHashMap
 
@@ -122,12 +122,12 @@ enum class RStudioApiFunctionId {
 }
 
 object RStudioApiUtils {
-  fun viewer(rInterop: RInterop, args: RObject) {
+  fun viewer(rInterop: RInteropImpl, args: RObject) {
     val url = args.list.getRObjects(0).rString.getStrings(0)
     rInterop.interpreter.showUrlInViewer(rInterop, url)
   }
 
-  fun sourceMarkers(rInterop: RInterop, args: RObject) {
+  fun sourceMarkers(rInterop: RInteropImpl, args: RObject) {
     val name = args.list.getRObjects(0).rString.getStrings(0)
     val markers = args.list.getRObjects(1).list.rObjectsList.map { marker ->
       marker.list.rObjectsList
@@ -187,19 +187,19 @@ object RStudioApiUtils {
     }
   }
 
-  fun versionInfoMode(rInterop: RInterop): RObject {
+  fun versionInfoMode(rInterop: RInteropImpl): RObject {
     val mode = if (rInterop.interpreter.isLocal()) "desktop" else "server"
     return mode.toRString()
   }
 
-  suspend fun translateLocalUrl(rInterop: RInterop, args: RObject): RObject {
+  suspend fun translateLocalUrl(rInterop: RInteropImpl, args: RObject): RObject {
     val url = args.list.getRObjects(0).rString.getStrings(0)
     val absolute = args.list.getRObjects(1).rBoolean.getBooleans(0)
     val result = rInterop.interpreter.translateLocalUrl(rInterop, url, absolute).await()
     return result.toRString()
   }
 
-  fun executeCommand(rInterop: RInterop, args: RObject) {
+  fun executeCommand(rInterop: RInteropImpl, args: RObject) {
     when (val command = args.list.getRObjects(0).rString.getStrings(0)) {
       "vcsRefresh" -> {
         invokeLater {
@@ -264,7 +264,7 @@ object RStudioApiUtils {
     return RObject.newBuilder().setRNull(RObject.RNull.getDefaultInstance()).build()
   }
 
-  internal fun getConsoleView(rInterop: RInterop): RConsoleView? {
+  internal fun getConsoleView(rInterop: RInteropImpl): RConsoleView? {
     return if (RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull?.rInterop == rInterop) {
       RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull
     }
@@ -277,7 +277,7 @@ object RStudioApiUtils {
     return RObject.newBuilder().setError(message).build()
   }
 
-  internal fun findFileByPathAtHostHelper(rInterop: RInterop, path: String): Promise<VirtualFile?> {
+  internal fun findFileByPathAtHostHelper(rInterop: RInteropImpl, path: String): Promise<VirtualFile?> {
     val promise = AsyncPromise<VirtualFile?>()
     if (rInterop.interpreter.isLocal()) {
       promise.setResult(rInterop.interpreter.findFileByPathAtHost(path))

@@ -124,25 +124,25 @@ You can find the source code in the following repositories:
 
         <action id="org.jetbrains.r.console.RConsoleView.RSetCurrentDirectoryFromEditor"
                 class="org.jetbrains.r.console.RConsoleView$RSetCurrentDirectoryFromEditor"
-                icon="icons.RIcons.ChangeWorkingDirectory"/>
+                icon="com.intellij.r.psi.icons.RIcons.ChangeWorkingDirectory"/>
 
         <action id="RConsoleRenameAction" class="org.jetbrains.r.console.RConsoleRenameAction">
           <add-to-group group-id="ToolWindowContextMenu" anchor="last"/>
         </action>
 
         <action id="NewRScriptAction" class="org.jetbrains.r.actions.NewRScriptAction"
-                icon="icons.RIcons.R">
+                icon="com.intellij.r.psi.icons.RIcons.R">
             <add-to-group group-id="NewGroup" relative-to-action="NewFile" anchor="before"/>
         </action>
 
         <action id="NewRMarkdownAction" class="org.jetbrains.r.actions.NewRMarkdownAction"
-                icon="icons.RIcons.RMarkdown">
+                icon="com.intellij.r.psi.icons.RIcons.RMarkdown">
             <add-to-group group-id="NewGroup" relative-to-action="NewRScriptAction" anchor="after"/>
         </action>
 
         <group id="org.jetbrains.r.run.visualize.actions.RImportDataContextActionGroup"
                class="org.jetbrains.r.run.visualize.actions.RImportDataContextActionGroup" popup="true"
-                icon="icons.RIcons.R">
+                icon="com.intellij.r.psi.icons.RIcons.R">
             <add-to-group group-id="ProjectViewPopupMenu" relative-to-action="SynchronizeCurrentFile" anchor="after"/>
         </group>
 
@@ -150,7 +150,7 @@ You can find the source code in the following repositories:
         <action id="org.jetbrains.r.actions.DumpRInteropMessages" class="org.jetbrains.r.actions.DumpRInteropMessages"/>
 
         <action id="org.jetbrains.r.console.jobs.RunRJobAction" class="org.jetbrains.r.console.jobs.RunRJobAction"
-                icon="icons.RIcons.Run.RunJob"/>
+                icon="com.intellij.r.psi.icons.RIcons.Run.RunJob"/>
     </actions>
 
     <actions>
@@ -186,7 +186,7 @@ You can find the source code in the following repositories:
         </action>
         <action id="org.jetbrains.r.actions.RunSelection"
                 class="org.jetbrains.r.actions.RunSelection"
-                icon="icons.RIcons.Run.RunCurrent">
+                icon="com.intellij.r.psi.icons.RIcons.Run.RunCurrent">
             <keyboard-shortcut keymap="$default" first-keystroke="control ENTER"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta ENTER" replace-all="true"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta ENTER" replace-all="true"/>
@@ -194,7 +194,7 @@ You can find the source code in the following repositories:
         </action>
         <action id="org.jetbrains.r.actions.DebugSelection"
                 class="org.jetbrains.r.actions.DebugSelection"
-                icon="icons.RIcons.Run.DebugCurrent">
+                icon="com.intellij.r.psi.icons.RIcons.Run.DebugCurrent">
           <keyboard-shortcut keymap="$default" first-keystroke="control alt ENTER"/>
           <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt ENTER" replace-all="true"/>
           <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt ENTER" replace-all="true"/>
@@ -387,8 +387,8 @@ You can find the source code in the following repositories:
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
-        <lang.elementManipulator forClass="org.jetbrains.r.psi.api.RStringLiteralExpression"
-                                 implementationClass="org.jetbrains.r.psi.impl.RStringLiteralManipulator"/>
+        <lang.elementManipulator forClass="com.intellij.r.psi.psi.api.RStringLiteralExpression"
+                                 implementationClass="com.intellij.r.psi.psi.impl.RStringLiteralManipulator"/>
         <additionalTextAttributes scheme="Default" file="colorSchemes/RMarkdownChunkDefault.xml"/>
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/RMarkdownChunkDarcula.xml"/>
         <additionalTextAttributes scheme="Default" file="colorSchemes/RLanguageDefault.xml"/>
@@ -398,12 +398,12 @@ You can find the source code in the following repositories:
         <statistics.counterUsagesCollector implementationClass="org.jetbrains.r.statistics.RWorkflowCollector"/>
 
         <indexedRootsProvider implementation="org.jetbrains.r.settings.RIndexableSetContributor"/>
-        <fileType name="R" implementationClass="org.jetbrains.r.RFileType" fieldName="INSTANCE" language="R" extensions="R;Rprofile"/>
-        <fileType name="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownFileType" fieldName="INSTANCE"
+        <fileType name="R" implementationClass="com.intellij.r.psi.RFileType" fieldName="INSTANCE" language="R" extensions="R;Rprofile"/>
+        <fileType name="RMarkdown" implementationClass="com.intellij.r.psi.rmarkdown.RMarkdownFileType" fieldName="INSTANCE"
                   language="RMarkdown" extensions="Rmd"/>
       <fileType name="Quarto" implementationClass="org.jetbrains.r.quarto.QuartoFileType" fieldName="INSTANCE"
                 language="Quarto" extensions="Qmd"/>
-        <fileType name="Roxygen" implementationClass="org.jetbrains.r.roxygen.RoxygenFileType" fieldName="INSTANCE" language="Roxygen"/>
+        <fileType name="Roxygen" implementationClass="com.intellij.r.psi.roxygen.RoxygenFileType" fieldName="INSTANCE" language="Roxygen"/>
 
         <lang.fileViewProviderFactory language="RMarkdown"
                                       implementationClass="org.jetbrains.r.rmarkdown.RMarkdownFileViewProviderFactory"/>
@@ -413,7 +413,7 @@ You can find the source code in the following repositories:
         <lang.syntaxHighlighterFactory language="R"
                                        implementationClass="org.jetbrains.r.highlighting.RSyntaxHighlighterFactory"/>
         <highlightVisitor implementation="org.jetbrains.r.highlighting.RRainbowVisitor"/>
-        <lang.syntaxHighlighter language="Roxygen" implementationClass="org.jetbrains.r.roxygen.RoxygenSyntaxHighlighter"/>
+        <lang.syntaxHighlighter language="Roxygen" implementationClass="com.intellij.r.psi.roxygen.RoxygenSyntaxHighlighter"/>
 
         <actionPromoter implementation="org.jetbrains.r.actions.RActionPromoter"/>
 
@@ -429,25 +429,25 @@ You can find the source code in the following repositories:
         <colorSettingsPage implementation="org.jetbrains.r.highlighting.RMarkdownColorSettingsPage"/>
         <lang.formatter language="R" implementationClass="org.jetbrains.r.editor.formatting.RFormattingModelBuilder"/>
         <lang.braceMatcher language="R" implementationClass="org.jetbrains.r.editor.RBraceMatcher"/>
-        <lang.braceMatcher language="Roxygen" implementationClass="org.jetbrains.r.roxygen.RoxygenBraceMatcher"/>
+        <lang.braceMatcher language="Roxygen" implementationClass="com.intellij.r.psi.roxygen.RoxygenBraceMatcher"/>
         <quoteHandler className="org.jetbrains.r.editor.RQuoteHandler" fileType="R"/>
 
         <lang.foldingBuilder language="R" implementationClass="org.jetbrains.r.editor.RFoldingBuilder"/>
         <annotator language="R" implementationClass="org.jetbrains.r.annotator.RAnnotator"/>
         <annotator language="Roxygen" implementationClass="org.jetbrains.r.roxygen.annotator.RoxygenAnnotator"/>
-        <lang.namesValidator language="R" implementationClass="org.jetbrains.r.refactoring.RNamesValidator"/>
+        <lang.namesValidator language="R" implementationClass="com.intellij.r.psi.refactoring.RNamesValidator"/>
 
         <!-- Codeinsight -->
 
-        <lang.ast.factory language="R" implementationClass="org.jetbrains.r.parsing.RAstFactory"/>
-        <lang.ast.factory language="Roxygen" implementationClass="org.jetbrains.r.roxygen.parsing.RoxygenAstFactory"/>
+        <lang.ast.factory language="R" implementationClass="com.intellij.r.psi.parsing.RAstFactory"/>
+        <lang.ast.factory language="Roxygen" implementationClass="com.intellij.r.psi.roxygen.parsing.RoxygenAstFactory"/>
 
-        <lang.parserDefinition language="R" implementationClass="org.jetbrains.r.parsing.RParserDefinition"/>
+        <lang.parserDefinition language="R" implementationClass="com.intellij.r.psi.parsing.RParserDefinition"/>
         <lang.parserDefinition language="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownParserDefinition"/>
         <lang.parserDefinition language="Quarto" implementationClass="org.jetbrains.r.quarto.QuartoParserDefinition"/>
-        <lang.parserDefinition language="Roxygen" implementationClass="org.jetbrains.r.roxygen.parsing.RoxygenParserDefinition"/>
+        <lang.parserDefinition language="Roxygen" implementationClass="com.intellij.r.psi.roxygen.parsing.RoxygenParserDefinition"/>
 
-        <languageInjector implementation="org.jetbrains.r.roxygen.RoxygenLanguageInjector"/>
+        <languageInjector implementation="com.intellij.r.psi.roxygen.RoxygenLanguageInjector"/>
 
         <lang.formatter language="RMarkdown" implementationClass="org.jetbrains.r.editor.formatting.RMarkdownFormattingModelBuilder"/>
 
@@ -456,31 +456,31 @@ You can find the source code in the following repositories:
         <rmdCellLanguageProvider implementation="org.jetbrains.r.rmarkdown.RmdCellLanguageProviderForR"/>
         <rmdCellLanguageProvider implementation="org.jetbrains.r.rmarkdown.RmdCellLanguageProviderForPython"/>
 
-        <lang.tokenSeparatorGenerator language="R" implementationClass="org.jetbrains.r.RTokenSeparatorGenerator"/>
+        <lang.tokenSeparatorGenerator language="R" implementationClass="com.intellij.r.psi.RTokenSeparatorGenerator"/>
 
         <fileEditorProvider implementation="org.jetbrains.r.rendering.editor.RFileEditorProvider"/>
         <fileEditorProvider implementation="org.jetbrains.r.run.visualize.RTableEditorProvider"/>
 
-        <stubIndex implementation="org.jetbrains.r.psi.stubs.RAssignmentNameIndex"/>
-        <stubIndex implementation="org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex"/>
-        <stubIndex implementation="org.jetbrains.r.psi.stubs.RInternalAssignmentCompletionIndex"/>
-        <stubIndex implementation="org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex"/>
-        <stubIndex implementation="org.jetbrains.r.psi.stubs.classes.RS4GenericIndex"/>
-        <stubIndex implementation="org.jetbrains.r.psi.stubs.classes.RS4MethodsIndex"/>
-        <stubIndex implementation="org.jetbrains.r.psi.stubs.classes.R6ClassNameIndex"/>
-        <stubElementTypeHolder class="org.jetbrains.r.parsing.RElementTypes"/>
+        <stubIndex implementation="com.intellij.r.psi.psi.stubs.RAssignmentNameIndex"/>
+        <stubIndex implementation="com.intellij.r.psi.psi.stubs.RAssignmentCompletionIndex"/>
+        <stubIndex implementation="com.intellij.r.psi.psi.stubs.RInternalAssignmentCompletionIndex"/>
+        <stubIndex implementation="com.intellij.r.psi.psi.stubs.classes.RS4ClassNameIndex"/>
+        <stubIndex implementation="com.intellij.r.psi.psi.stubs.classes.RS4GenericIndex"/>
+        <stubIndex implementation="com.intellij.r.psi.psi.stubs.classes.RS4MethodsIndex"/>
+        <stubIndex implementation="com.intellij.r.psi.psi.stubs.classes.R6ClassNameIndex"/>
+        <stubElementTypeHolder class="com.intellij.r.psi.parsing.RElementTypes"/>
 
         <lang.commenter language="R" implementationClass="org.jetbrains.r.editor.RCommenter"/>
         <lang.commenter language="Roxygen" implementationClass="org.jetbrains.r.roxygen.usage.RoxygenCommenter"/>
         <enterHandlerDelegate implementation="org.jetbrains.r.editor.REnterAdapter"/>
-        <enterHandlerDelegate implementation="org.jetbrains.r.roxygen.RoxygenEnterInLineCommentHandler"/>
-        <enterHandlerDelegate implementation="org.jetbrains.r.roxygen.RoxygenEnterDelegateToHostHandler" order="last"/>
+        <enterHandlerDelegate implementation="com.intellij.r.psi.roxygen.RoxygenEnterInLineCommentHandler"/>
+        <enterHandlerDelegate implementation="com.intellij.r.psi.roxygen.RoxygenEnterDelegateToHostHandler" order="last"/>
         <backspaceHandlerDelegate implementation="org.jetbrains.r.editor.RBackspaceHandler"/>
 
-        <lang.findUsagesProvider implementationClass="org.jetbrains.r.psi.references.RFindUsagesProvider" language="R"/>
+        <lang.findUsagesProvider implementationClass="com.intellij.r.psi.psi.references.RFindUsagesProvider" language="R"/>
         <lang.findUsagesProvider implementationClass="org.jetbrains.r.roxygen.usage.RoxygenFindUsagesProvider" language="Roxygen"/>
-        <elementDescriptionProvider implementation="org.jetbrains.r.psi.references.RPomTargetDescriptionProvider"/>
-        <elementDescriptionProvider implementation="org.jetbrains.r.classes.s4.RS4PomTargetDescriptionProvider"/>
+        <elementDescriptionProvider implementation="com.intellij.r.psi.psi.references.RPomTargetDescriptionProvider"/>
+        <elementDescriptionProvider implementation="com.intellij.r.psi.classes.s4.RS4PomTargetDescriptionProvider"/>
         <usageTypeProvider implementation="org.jetbrains.r.roxygen.usage.RoxygenUsageTypeProvider"/>
         <targetElementEvaluator language="R" implementationClass="org.jetbrains.r.codeInsight.findUsages.RTargetElementEvaluator"/>
 
@@ -497,11 +497,11 @@ You can find the source code in the following repositories:
 
         <fileBreadcrumbsCollector implementation="org.jetbrains.r.breadcrumbs.RFileBreadcrumbsCollector" order="first"/>
 
-        <controlFlowProvider implementation="org.jetbrains.r.psi.cfg.RControlFlowProvider"/>
+        <controlFlowProvider implementation="com.intellij.r.psi.psi.cfg.RControlFlowProvider"/>
 
-        <psi.referenceContributor language="R" implementation="org.jetbrains.r.psi.references.RReferenceContributor"/>
-        <psi.referenceContributor language="R" implementation="org.jetbrains.r.classes.s4.RS4ReferenceContributor"/>
-        <referencesSearch implementation="org.jetbrains.r.classes.s4.RS4ReferenceSearcher"/>
+        <psi.referenceContributor language="R" implementation="com.intellij.r.psi.psi.references.RReferenceContributor"/>
+        <psi.referenceContributor language="R" implementation="com.intellij.r.psi.classes.s4.RS4ReferenceContributor"/>
+        <referencesSearch implementation="com.intellij.r.psi.classes.s4.RS4ReferenceSearcher"/>
 
         <typedHandler implementation="org.jetbrains.r.editor.RCompletionAutoPopupHandler" order="first, before completionAutoPopup"/>
         <typedHandler implementation="org.jetbrains.r.roxygen.RoxygenTypedHandler"/>
@@ -511,10 +511,10 @@ You can find the source code in the following repositories:
                                      id="editor.preferences.rOptions"
                                      displayName="R"/>
 
-        <filetype.stubBuilder filetype="RPluginSkeletonFile" implementationClass="org.jetbrains.r.skeleton.RSkeletonFileStubBuilder"/>
-        <fileType.fileViewProviderFactory filetype="RPluginSkeletonFile" implementationClass="org.jetbrains.r.skeleton.RSkeletonViewProviderFactory"/>
-        <stubElementTypeHolder class="org.jetbrains.r.skeleton.psi.RSkeletonElementTypes"/>
-        <fileType extensions="RPluginSkeletonFile" name="RPluginSkeletonFile" fieldName="INSTANCE" implementationClass="org.jetbrains.r.skeleton.RSkeletonFileType"/>
+        <filetype.stubBuilder filetype="RPluginSkeletonFile" implementationClass="com.intellij.r.psi.skeleton.RSkeletonFileStubBuilder"/>
+        <fileType.fileViewProviderFactory filetype="RPluginSkeletonFile" implementationClass="com.intellij.r.psi.skeleton.RSkeletonViewProviderFactory"/>
+        <stubElementTypeHolder class="com.intellij.r.psi.skeleton.psi.RSkeletonElementTypes"/>
+        <fileType extensions="RPluginSkeletonFile" name="RPluginSkeletonFile" fieldName="INSTANCE" implementationClass="com.intellij.r.psi.skeleton.RSkeletonFileType"/>
 
         <codeInsight.parameterInfo language="R" implementationClass="org.jetbrains.r.hints.parameterInfo.RParameterInfoHandler"/>
         <codeInsight.parameterNameHints language="R" implementationClass="org.jetbrains.r.hints.parameterInfo.RInlayParameterHintsProvider"/>
@@ -538,10 +538,22 @@ You can find the source code in the following repositories:
 
         <applicationService serviceImplementation="org.jetbrains.r.packages.remote.RPackageDescriptionCache"/>
 
-        <projectService serviceInterface="org.jetbrains.r.interpreter.RInterpreterManager"
+        <projectService serviceInterface="com.intellij.r.psi.rinterop.RInteropManager"
+                        serviceImplementation="org.jetbrains.r.rinterop.RInteropManagerImpl"/>
+
+        <projectService serviceInterface="com.intellij.r.psi.run.visualize.RVisualization"
+                        serviceImplementation="org.jetbrains.r.run.visualize.RVisualizationImpl"/>
+
+        <projectService serviceInterface="com.intellij.r.psi.packages.RPackageProjectManager"
+                        serviceImplementation="org.jetbrains.r.packages.RPackageProjectManagerImpl"/>
+
+        <projectService serviceInterface="com.intellij.r.psi.debugger.RDebuggerPanelManager"
+                        serviceImplementation="org.jetbrains.r.debugger.RDebuggerPanelManagerImpl"/>
+
+        <projectService serviceInterface="com.intellij.r.psi.interpreter.RInterpreterManager"
                         serviceImplementation="org.jetbrains.r.interpreter.RInterpreterManagerImpl"/>
 
-        <projectService serviceInterface="org.jetbrains.r.interpreter.RInterpreterStateManager"
+        <projectService serviceInterface="com.intellij.r.psi.interpreter.RInterpreterStateManager"
                         serviceImplementation="org.jetbrains.r.interpreter.RInterpreterStateManagerImpl"/>
 
         <projectService serviceImplementation="org.jetbrains.r.settings.REditorSettings"/>
@@ -560,17 +572,17 @@ You can find the source code in the following repositories:
 
         <!-- tool windows-->
         <lang.psiStructureViewFactory language="R"
-                                      implementationClass="org.jetbrains.r.psi.RScriptStructureViewFactory"/>
+                                      implementationClass="com.intellij.r.psi.psi.RScriptStructureViewFactory"/>
 
-        <toolWindow id="R_Jobs" anchor="bottom" canCloseContents="false" icon="icons.RIcons.ToolWindow.RConsole"
+        <toolWindow id="R_Jobs" anchor="bottom" canCloseContents="false" icon="com.intellij.r.psi.icons.RIcons.ToolWindow.RConsole"
                     factoryClass="org.jetbrains.r.console.jobs.RJobsToolWindowFactory" secondary="false"
                     order="after R_Console"/>
 
-        <toolWindow id="R_Console" anchor="bottom" canCloseContents="true" icon="icons.RIcons.ToolWindow.RConsole"
+        <toolWindow id="R_Console" anchor="bottom" canCloseContents="true" icon="com.intellij.r.psi.icons.RIcons.ToolWindow.RConsole"
                     factoryClass="org.jetbrains.r.console.RConsoleToolWindowFactory" secondary="false"/>
 
 
-        <toolWindow id="R_Tools" anchor="right" canCloseContents="false" icon="icons.RIcons.ToolWindow.RConsole"
+        <toolWindow id="R_Tools" anchor="right" canCloseContents="false" icon="com.intellij.r.psi.icons.RIcons.ToolWindow.RConsole"
                     factoryClass="org.jetbrains.r.rendering.toolwindow.RToolWindowFactory" secondary="false"/>
 
 
@@ -591,7 +603,7 @@ You can find the source code in the following repositories:
                                  order="first"/>
 
         <!--see /Users/brandl/projects/jb/intellij-community/plugins/groovy/src/META-INF/rplugin-common.xml:448-->
-        <vetoRenameCondition implementation="org.jetbrains.r.psi.references.RenamingVetoCondition"/>
+        <vetoRenameCondition implementation="com.intellij.r.psi.psi.references.RenamingVetoCondition"/>
         <inlineActionHandler implementation="org.jetbrains.r.refactoring.inline.RInlineAssignmentHandler"/>
 
         <!-- coding assistance-->
@@ -771,9 +783,9 @@ You can find the source code in the following repositories:
 
   <extensionPoints>
     <extensionPoint qualifiedName="org.jetbrains.r.librarySupportProvider"
-                    interface="org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider" dynamic="true"/>
+                    interface="com.intellij.r.psi.codeInsight.libraries.RLibrarySupportProvider" dynamic="true"/>
     <extensionPoint qualifiedName="org.jetbrains.r.tableContextProvider"
-                    interface="org.jetbrains.r.codeInsight.table.RTableContextManager" dynamic="true"/>
+                    interface="com.intellij.r.psi.codeInsight.table.RTableContextManager" dynamic="true"/>
   </extensionPoints>
 
   <extensions defaultExtensionNs="org.jetbrains.r">

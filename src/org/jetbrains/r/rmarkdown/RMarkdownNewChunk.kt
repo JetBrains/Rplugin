@@ -17,6 +17,7 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.impl.source.tree.TreeUtil.findLastLeaf
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.rmarkdown.RMarkdownFileType
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.caret

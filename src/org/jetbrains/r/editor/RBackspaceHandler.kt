@@ -7,7 +7,7 @@ package org.jetbrains.r.editor
 import com.intellij.codeInsight.editorActions.BackspaceHandlerDelegate
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RLanguage
 
 class RBackspaceHandler : BackspaceHandlerDelegate() {
   override fun beforeCharDeleted(c: Char, file: PsiFile, editor: Editor) {

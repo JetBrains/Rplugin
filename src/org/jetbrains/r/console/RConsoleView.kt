@@ -37,6 +37,11 @@ import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.psi.RRecursiveElementVisitor
 import com.intellij.ui.JBSplitter
 import com.intellij.util.IJSwingUtilities
 import com.intellij.util.PathUtil
@@ -49,15 +54,10 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.asPromise
 import org.jetbrains.concurrency.await
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.annotator.RAnnotatorVisitor
 import org.jetbrains.r.debugger.RDebuggerUtil
-import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
-import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.rinterop.RInteropUtil
 import org.jetbrains.r.run.visualize.RVisualizeTableUtil
 import java.awt.BorderLayout
@@ -65,11 +65,11 @@ import java.awt.Font
 import java.awt.event.KeyEvent
 import javax.swing.JComponent
 
-class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(rInterop.project, title, RLanguage.INSTANCE) {
+class RConsoleView(val rInterop: RInteropImpl, title: String) : LanguageConsoleImpl(rInterop.project, title, RLanguage.INSTANCE) {
   val interpreter: RInterpreter
     get() = rInterop.interpreter
   val executeActionHandler = RConsoleExecuteActionHandler(this)
-  val consoleRuntimeInfo = RConsoleRuntimeInfoImpl(rInterop)
+  val consoleRuntimeInfo = rInterop.consoleRuntimeInfo
   val isRunningCommand: Boolean
     get() = executeActionHandler.isRunningCommand
 

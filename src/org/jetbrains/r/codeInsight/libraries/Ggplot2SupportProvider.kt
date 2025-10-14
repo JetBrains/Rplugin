@@ -4,11 +4,12 @@ import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.completion.CompletionUtilCore.DUMMY_IDENTIFIER_TRIMMED
 import com.intellij.codeInsight.completion.PrioritizedLookupElement
 import com.intellij.psi.PsiElement
-import org.jetbrains.r.editor.completion.ARGUMENT_VALUE_PRIORITY
-import org.jetbrains.r.editor.completion.RLookupElement
-import org.jetbrains.r.editor.completion.RLookupElementFactory
-import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.isFunctionFromLibrarySoft
+import com.intellij.r.psi.codeInsight.libraries.RLibrarySupportProvider
+import com.intellij.r.psi.editor.completion.ARGUMENT_VALUE_PRIORITY
+import com.intellij.r.psi.editor.completion.RLookupElement
+import com.intellij.r.psi.editor.completion.RLookupElementFactory
+import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.isFunctionFromLibrarySoft
 
 class Ggplot2SupportProvider : RLibrarySupportProvider {
   override fun completeArgumentName(call: RCallExpression, completionConsumer: CompletionResultSet) {

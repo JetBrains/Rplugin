@@ -10,20 +10,20 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages.showInfoMessage
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.RLibraryWatcher
+import com.intellij.r.psi.packages.RInstalledPackage
+import com.intellij.r.psi.packages.RPackageVersion
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import com.intellij.webcore.packaging.ManagePackagesDialog
 import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.PackagesNotificationPanel
 import com.intellij.webcore.packaging.RepoPackage
-import icons.RIcons
+import com.intellij.r.psi.icons.RIcons
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
-import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.interpreter.RLibraryWatcher
-import org.jetbrains.r.packages.RInstalledPackage
-import org.jetbrains.r.packages.RPackageVersion
 import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.visualization.ui.ToolbarUtil
 

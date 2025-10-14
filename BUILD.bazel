@@ -17,7 +17,7 @@ jvm_library(
   name = "r",
   module_name = "intellij.r",
   visibility = ["//visibility:public"],
-  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form", "gen/**/*.kt", "gen/**/*.java", "gen-grpc/main/java/**/*.kt", "gen-grpc/main/java/**/*.java", "gen-grpc/main/grpc/**/*.kt", "gen-grpc/main/grpc/**/*.java"], allow_empty = True),
+  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
   resources = [":r_resources"],
   deps = [
     "@community//libraries/guava",
@@ -75,6 +75,7 @@ jvm_library(
     "@community//images",
     "@community//libraries/grpc",
     "@community//libraries/grpc-netty-shaded",
+    "//rplugin/psi",
   ]
 )
 
@@ -152,6 +153,7 @@ jvm_library(
     "@community//images:images_test_lib",
     "@community//libraries/grpc",
     "@community//libraries/grpc-netty-shaded",
+    "//rplugin/psi",
   ]
 )
 ### auto-generated section `build intellij.r` end

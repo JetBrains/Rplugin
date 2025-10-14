@@ -14,20 +14,22 @@ import com.intellij.openapi.vfs.DeprecatedVirtualFileSystem
 import com.intellij.openapi.vfs.NonPhysicalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.debugger.RSourcePosition
+import com.intellij.r.psi.rinterop.RRef
+import com.intellij.r.psi.rinterop.RReference
+import com.intellij.r.psi.util.thenCancellable
 import com.intellij.testFramework.ReadOnlyLightVirtualFile
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.CancellablePromise
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.run.debug.RLineBreakpointType
-import org.jetbrains.r.util.thenCancellable
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
-class RSourceFileManager(private val rInterop: RInterop): Disposable {
+class RSourceFileManager(private val rInterop: RInteropImpl): Disposable {
   private val files = ConcurrentHashMap<String, VirtualFile>()
   private val fileToId = ConcurrentHashMap<VirtualFile, String>()
   private val cachedFunctionPositions by rInterop.Cached { ConcurrentHashMap<RRef, Optional<Pair<RSourcePosition, String?>>>() }

@@ -8,20 +8,20 @@ package org.jetbrains.r.run.debug.stack
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.invokeLater
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.debugger.exception.RDebuggerException
+import com.intellij.r.psi.rinterop.RValueError
+import com.intellij.r.psi.rinterop.RValueUnevaluated
+import com.intellij.r.psi.rinterop.RVar
+import com.intellij.r.psi.rinterop.RVariableLoader
+import com.intellij.r.psi.util.tryRegisterDisposable
 import com.intellij.ui.ColoredTextContainer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.xdebugger.XExpression
 import com.intellij.xdebugger.frame.*
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.rejectedPromise
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.debugger.RStackFrame
-import org.jetbrains.r.debugger.exception.RDebuggerException
-import org.jetbrains.r.rinterop.RValueError
-import org.jetbrains.r.rinterop.RValueUnevaluated
-import org.jetbrains.r.rinterop.RVar
-import org.jetbrains.r.rinterop.RVariableLoader
-import org.jetbrains.r.util.tryRegisterDisposable
 import kotlin.math.min
 
 class RXStackFrame(val functionName: String,

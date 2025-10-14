@@ -14,10 +14,10 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RPluginCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RPluginCoroutineScope
 import java.awt.BorderLayout
 import java.awt.FlowLayout
 import javax.swing.*

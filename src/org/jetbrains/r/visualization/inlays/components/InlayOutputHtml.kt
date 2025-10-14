@@ -4,10 +4,10 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.Disposer
+import com.intellij.r.psi.RBundle
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.ui.jcef.JBCefBrowserBase
 import com.intellij.ui.jcef.JBCefJSQuery
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.visualization.inlays.InlayOutputData
 import org.jetbrains.r.visualization.inlays.MouseWheelUtils
 import java.util.function.Function

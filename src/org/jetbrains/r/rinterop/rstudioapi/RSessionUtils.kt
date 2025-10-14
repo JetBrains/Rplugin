@@ -4,16 +4,16 @@ import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.psi.PsiDocumentManager
+import com.intellij.r.psi.rinterop.RObject
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.RObject
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.getConsoleView
 
 object RSessionUtils {
-  fun sendToConsole(rInterop: RInterop, args: RObject): AsyncPromise<Unit> {
+  fun sendToConsole(rInterop: RInteropImpl, args: RObject): AsyncPromise<Unit> {
     val code = args.list.getRObjects(0).rString.getStrings(0)
     val execute = args.list.getRObjects(1).rBoolean.getBooleans(0)
     val echo = args.list.getRObjects(2).rBoolean.getBooleans(0)
@@ -65,7 +65,7 @@ object RSessionUtils {
     return promise
   }
 
-  fun restartSession(rInterop: RInterop, args: RObject) {
+  fun restartSession(rInterop: RInteropImpl, args: RObject) {
     val command = args.list.getRObjects(0).rString.getStrings(0)
     getConsoleView(rInterop)?.print("\nRestarting R session...\n\n", ConsoleViewContentType.NORMAL_OUTPUT)
     RInterpreterManager.restartInterpreter(rInterop.project, Runnable {

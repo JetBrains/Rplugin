@@ -8,11 +8,11 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.api.RFunctionExpression
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.api.RParameter
-import org.jetbrains.r.psi.findParenthesisParent
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RParameter
+import com.intellij.r.psi.psi.findParenthesisParent
 import org.jetbrains.r.refactoring.RIntroduceLocalHandler.Companion.IntroduceOperation
 
 class RIntroduceParameterHandler : RIntroduceLocalHandler() {

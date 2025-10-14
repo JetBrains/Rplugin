@@ -6,6 +6,7 @@ package org.jetbrains.r.roxygen
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.fileTypes.ExtensionFileNameMatcher
 import com.intellij.openapi.fileTypes.FileTypeManager
+import com.intellij.r.psi.roxygen.RoxygenFileType
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import java.nio.file.Paths
 

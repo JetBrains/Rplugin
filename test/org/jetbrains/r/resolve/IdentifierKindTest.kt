@@ -6,9 +6,9 @@ package org.jetbrains.r.resolve
 
 import junit.framework.TestCase
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
-import org.jetbrains.r.psi.ReferenceKind
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.getKind
+import com.intellij.r.psi.psi.ReferenceKind
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.getKind
 
 class IdentifierKindTest : RLightCodeInsightFixtureTestCase() {
 

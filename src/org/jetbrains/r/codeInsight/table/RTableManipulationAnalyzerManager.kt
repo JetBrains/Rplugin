@@ -2,11 +2,16 @@ package org.jetbrains.r.codeInsight.table
 
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiElement
+import com.intellij.r.psi.codeInsight.table.RTableColumnCollectProcessor
+import com.intellij.r.psi.codeInsight.table.RTableContextManager
+import com.intellij.r.psi.psi.TableColumnInfo
+import com.intellij.r.psi.psi.TableManipulationAnalyzer
+import com.intellij.r.psi.psi.TableManipulationContextInfo
+import com.intellij.r.psi.psi.TableManipulationFunction
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
 import com.intellij.util.Processor
 import org.jetbrains.r.console.runtimeInfo
-import org.jetbrains.r.psi.*
-import org.jetbrains.r.psi.api.RExpression
-import org.jetbrains.r.psi.api.RStringLiteralExpression
 import java.util.function.Consumer
 
 abstract class RTableManipulationAnalyzerManager<T : TableManipulationFunction> : RTableContextManager {

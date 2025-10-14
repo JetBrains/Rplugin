@@ -1,6 +1,6 @@
 package org.jetbrains.r.quarto
 
-import java.util.Locale
+import java.util.*
 import java.util.regex.Pattern
 
 object QuartoPsiUtil {

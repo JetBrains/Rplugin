@@ -5,7 +5,8 @@
 package org.jetbrains.r.debugger
 
 import com.intellij.openapi.util.TextRange
-import org.jetbrains.r.rinterop.RReference
+import com.intellij.r.psi.debugger.RSourcePosition
+import com.intellij.r.psi.rinterop.RReference
 
 data class RStackFrame(val position: RSourcePosition?, val environment: RReference, val functionName: String?, val equalityObject: Long,
                        val extendedPosition: TextRange? = null, val sourcePositionText: String? = null)

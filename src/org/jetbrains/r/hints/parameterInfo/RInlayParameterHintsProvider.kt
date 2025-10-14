@@ -10,11 +10,12 @@ import com.intellij.codeInsight.hints.InlayParameterHintsProvider
 import com.intellij.codeInsight.hints.Option
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.packages.RSkeletonUtil
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
+import com.intellij.r.psi.packages.RSkeletonUtilPsi
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.skeleton.psi.RSkeletonAssignmentStatement
 
 class RInlayParameterHintsProvider : InlayParameterHintsProvider {
 
@@ -85,7 +86,7 @@ class RInlayParameterHintsProvider : InlayParameterHintsProvider {
     if (element !is RArgumentList) return null
     val assignment = RPsiUtil.resolveCall(element.parent as RCallExpression).firstOrNull() ?: return null
     val fullName = if (assignment is RSkeletonAssignmentStatement) {
-      val rPackage = RSkeletonUtil.skeletonFileToRPackage(assignment.containingFile) ?: return null
+      val rPackage = RSkeletonUtilPsi.skeletonFileToRPackage(assignment.containingFile) ?: return null
       rPackage.name + "::" + assignment.name
     }
     else assignment.name

@@ -1,11 +1,11 @@
 package org.jetbrains.r.run.graphics.ui
 
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.r.psi.RBundle
 import com.intellij.ui.dsl.builder.RightGap
 import com.intellij.ui.dsl.builder.bindIntText
 import com.intellij.ui.dsl.builder.columns
 import com.intellij.ui.dsl.builder.panel
-import org.jetbrains.r.RBundle
 import javax.swing.JComponent
 
 private const val INPUT_COLUMN_COUNT = 7

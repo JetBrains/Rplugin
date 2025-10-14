@@ -7,7 +7,7 @@ package org.jetbrains.r.highlighting
 
 import com.intellij.lexer.Lexer
 import junit.framework.TestCase
-import org.jetbrains.r.lexer.RLexer
+import com.intellij.r.psi.lexer.RLexer
 
 class RHighlightingLexerTest : TestCase() {
 

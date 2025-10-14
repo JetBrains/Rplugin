@@ -9,7 +9,7 @@ import com.intellij.psi.impl.ElementBase
 import com.intellij.psi.scope.PsiScopeProcessor
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.SearchScope
-import org.jetbrains.r.psi.api.RStringLiteralExpression
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
 
 class RDocumentationFakeTargetElement(private val rExpression: RStringLiteralExpression) : ElementBase(), PsiNamedElement {
   override fun getProject(): Project {return rExpression.project}

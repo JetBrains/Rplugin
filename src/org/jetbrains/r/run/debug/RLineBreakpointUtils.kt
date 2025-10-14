@@ -9,13 +9,13 @@ import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
-import org.jetbrains.r.RFileType
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.psi.api.RBlockExpression
-import org.jetbrains.r.psi.api.RExpression
-import org.jetbrains.r.psi.api.RFile
+import com.intellij.r.psi.RFileType
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.psi.api.RBlockExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RFile
+import com.intellij.r.psi.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.rinterop.RSourceFileManager
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 internal object RLineBreakpointUtils {
   fun canPutAt(project: Project, file: VirtualFile, line: Int): Boolean {

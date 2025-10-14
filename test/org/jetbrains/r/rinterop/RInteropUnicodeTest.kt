@@ -4,6 +4,8 @@
 
 package org.jetbrains.r.rinterop
 
+import com.intellij.r.psi.rinterop.RReference
+import com.intellij.r.psi.rinterop.RValueSimple
 import junit.framework.TestCase
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 

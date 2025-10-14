@@ -7,16 +7,16 @@ package org.jetbrains.r.refactoring.rename
 import com.intellij.openapi.editor.Editor
 import com.intellij.pom.PomTargetPsiElement
 import com.intellij.psi.PsiElement
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.classes.s4.classInfo.RStringLiteralPomTarget
+import com.intellij.r.psi.classes.s4.context.RS4ContextProvider
+import com.intellij.r.psi.classes.s4.context.setClass.RS4SetClassClassNameContext
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.api.*
 import com.intellij.refactoring.rename.RenamePsiElementProcessor
 import com.intellij.refactoring.rename.UnresolvableCollisionUsageInfo
 import com.intellij.usageView.UsageInfo
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.classes.s4.classInfo.RStringLiteralPomTarget
-import org.jetbrains.r.classes.s4.context.RS4ContextProvider
-import org.jetbrains.r.classes.s4.context.setClass.RS4SetClassClassNameContext
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.refactoring.RRefactoringUtil
 
 class RenameRPsiElementProcessor : RenamePsiElementProcessor() {

@@ -6,7 +6,7 @@ package org.jetbrains.r.console
 
 import com.intellij.testFramework.UsefulTestCase
 import com.intellij.util.ui.UIUtil
-import org.jetbrains.r.packages.RPackageProjectManager
+import com.intellij.r.psi.packages.RPackageProjectManager
 
 class RPackageDependenciesTest : RConsoleBaseTestCase() {
 

@@ -20,14 +20,20 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.wm.impl.status.FatalErrorWidgetFactory
+import com.intellij.r.psi.RPluginUtil
+import com.intellij.r.psi.interpreter.OperatingSystem
+import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.interpreter.runProcessOnHost
+import com.intellij.r.psi.interpreter.uploadFileToHost
+import com.intellij.r.psi.util.RPathUtil
 import com.intellij.util.PathUtilRt
 import com.intellij.util.system.CpuArch
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.interpreter.*
+import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.isLocal
+import org.jetbrains.r.interpreter.runHelper
 import org.jetbrains.r.settings.RSettings
-import org.jetbrains.r.util.RPathUtil
 import org.jvnet.winp.WinProcess
 import java.io.File
 import java.io.FileInputStream
@@ -37,8 +43,8 @@ import java.util.concurrent.TimeoutException
 
 object RInteropUtil {
   val LOG = Logger.getInstance(RInteropUtil.javaClass)
-  fun runRWrapperAndInterop(interpreter: RInterpreter, workingDirectory: String = interpreter.basePath): Promise<RInterop> {
-    val promise = AsyncPromise<RInterop>()
+  fun runRWrapperAndInterop(interpreter: RInterpreter, workingDirectory: String = interpreter.basePath): Promise<RInteropImpl> {
+    val promise = AsyncPromise<RInteropImpl>()
     var createdProcess: ProcessHandler? = null
     ProcessIOExecutorService.INSTANCE.execute {
       runRWrapper(interpreter, workingDirectory).onError {
@@ -52,11 +58,11 @@ object RInteropUtil {
   }
 
   private fun createRInterop(process: ProcessHandler,
-                             promise: AsyncPromise<RInterop>,
+                             promise: AsyncPromise<RInteropImpl>,
                              paths: RPaths,
                              interpreter: RInterpreter) {
     val linePromise = AsyncPromise<String>()
-    var rInteropForReport: RInterop? = null
+    var rInteropForReport: RInteropImpl? = null
     val stdout = StringBuilder()
     val stderr = StringBuffer()
 
@@ -123,7 +129,7 @@ object RInteropUtil {
         val port = Regex("PORT (\\d+)\\n").find(line)?.groupValues?.getOrNull(1)?.toIntOrNull()
                    ?: throw RuntimeException("Invalid RWrapper output")
         val rInterop = interpreter.createRInteropForProcess(process, port)
-        rInteropForReport = rInterop
+        rInteropForReport = rInterop as RInteropImpl?
         promise.setResult(rInterop)
       } catch (e: Throwable) {
         promise.setError(e)
@@ -131,7 +137,7 @@ object RInteropUtil {
     }
   }
 
-  private fun reportCrash(project: Project, rInterop: RInterop?, updateCrashes: List<File>,
+  private fun reportCrash(project: Project, rInterop: RInteropImpl?, updateCrashes: List<File>,
                           crashReportFile: String? = null, terminatedWithReport: Boolean = false) {
     if (ApplicationManager.getApplication()?.isUnitTestMode == true) return
     if (rInterop?.killedByUsed == true) return
@@ -314,9 +320,9 @@ object RInteropUtil {
     return newCrashes
   }
 
-  fun createRInteropForLocalProcess(interpreter: RInterpreter, processHandler: ProcessHandler, port: Int): RInterop {
+  fun createRInteropForLocalProcess(interpreter: RInterpreter, processHandler: ProcessHandler, port: Int): RInteropImpl {
     val project = interpreter.project
-    val rInterop = RInterop(interpreter, processHandler, "127.0.0.1", port, project)
+    val rInterop = RInteropImpl(interpreter, processHandler, "127.0.0.1", port, project)
     val workspaceFile = if (ApplicationManager.getApplication().isUnitTestMode) {
       project.getUserData(WORKSPACE_FILE_FOR_TESTS)
     } else {

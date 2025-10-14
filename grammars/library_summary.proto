@@ -5,7 +5,7 @@
 syntax = "proto3";
 import "classes.proto";
 
-option java_package = "org.jetbrains.r.packages";
+option java_package = "com.intellij.r.psi.packages";
 
 package library_summary;
 
@@ -21,7 +21,7 @@ message RLibrarySymbol {
   }
   message FunctionRepresentation {
     message ExtraNamedArguments {
-      // See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+      // See com.intellij.r.psi.hints.parameterInfo.RExtraNamedArgumentsInfo for details
       repeated string argNames = 1;
       repeated string funArgNames = 2;
     }

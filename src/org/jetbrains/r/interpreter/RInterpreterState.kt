@@ -17,66 +17,25 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.PsiDocumentManagerImpl
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.common.ExpiringList
+import com.intellij.r.psi.common.emptyExpiringList
+import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.RInterpreterState
+import com.intellij.r.psi.interpreter.RLibraryWatcher
+import com.intellij.r.psi.packages.RInstalledPackage
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.containers.ContainerUtil
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.common.ExpiringList
-import org.jetbrains.r.common.emptyExpiringList
-import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RSkeletonUtil
-import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropAsyncEventsListener
+import org.jetbrains.r.rinterop.RInteropImpl
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
-interface RInterpreterState {
-  /**
-   *  true if skeletons update was performed at least once.
-   */
-  val isSkeletonInitialized: Boolean
-
-  /** A place where all skeleton-related data will be stored */
-  val skeletonsDirectory: String
-
-  val project: Project
-
-  val rInterop: RInterop
-
-  data class LibraryPath(val path: String, val isWritable: Boolean)
-  val libraryPaths: List<LibraryPath>
-
-  val skeletonFiles: Set<VirtualFile>
-
-  val installedPackages: ExpiringList<RInstalledPackage>
-
-  val userLibraryPath: String
-
-  val isUpdating: Boolean
-
-  fun getPackageByName(name: String): RInstalledPackage?
-
-  fun getLibraryPathByName(name: String): LibraryPath?
-
-  fun getSkeletonFileByPackageName(name: String): PsiFile?
-
-  fun updateState(): Promise<Unit>
-
-  fun cancelStateUpdating()
-
-  fun markOutdated()
-
-  fun scheduleSkeletonUpdate()
-
-  fun hasPackage(name: String): Boolean {
-    return getPackageByName(name) != null
-  }
-}
-
-
-  class RInterpreterStateImpl(override val project: Project, override val rInterop: RInterop) : RInterpreterState {
+class RInterpreterStateImpl(override val project: Project, override val rInterop: RInteropImpl) : RInterpreterState {
   @Volatile
   override var isSkeletonInitialized: Boolean = false
     private set
@@ -315,7 +274,7 @@ interface RInterpreterState {
       DumbService.getInstance(project).queueTask(MyDumbModeTask(rInterop))
     }
 
-    private inner class MyDumbModeTask(val rInterop: RInterop) : DumbModeTask() {
+    private inner class MyDumbModeTask(val rInterop: RInteropImpl) : DumbModeTask() {
       override fun performInDumbMode(indicator: ProgressIndicator) {
         if (!project.isOpen || project.isDisposed) return
         if (RSkeletonUtil.updateSkeletons(rInterop, indicator)) {

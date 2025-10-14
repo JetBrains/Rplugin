@@ -7,18 +7,18 @@ package org.jetbrains.r.completion
 import com.intellij.openapi.application.runReadAction
 import com.intellij.testFramework.fixtures.CompletionAutoPopupTester
 import com.intellij.util.ThrowableRunnable
-import org.jetbrains.r.RFileType
+import com.intellij.r.psi.RFileType
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
-import org.jetbrains.r.classes.r6.R6ClassInfo
-import org.jetbrains.r.classes.s4.classInfo.RS4ClassInfo
-import org.jetbrains.r.console.RConsoleRuntimeInfo
+import com.intellij.r.psi.classes.r6.R6ClassInfo
+import com.intellij.r.psi.classes.s4.classInfo.RS4ClassInfo
+import com.intellij.r.psi.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.addRuntimeInfo
-import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
-import org.jetbrains.r.psi.TableInfo
-import org.jetbrains.r.psi.api.RFunctionExpression
-import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.RValueSimple
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
+import com.intellij.r.psi.hints.parameterInfo.RExtraNamedArgumentsInfo
+import com.intellij.r.psi.psi.TableInfo
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import org.jetbrains.r.rinterop.RInteropImpl
+import com.intellij.r.psi.rinterop.RValueSimple
+import com.intellij.r.psi.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.settings.REditorSettings
 
 class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
@@ -216,7 +216,7 @@ class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
     }
 
 
-    override val rInterop: RInterop
+    override val rInterop: RInteropImpl
       get() = throw NotImplementedError()
   }
 }

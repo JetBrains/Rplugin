@@ -9,10 +9,10 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.psi.tree.IElementType
+import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import org.intellij.plugins.markdown.lang.MarkdownLanguage
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.lexer.MarkdownLexerAdapter
-import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 import org.jetbrains.r.rmarkdown.RmdCellLanguageProvider
 import org.jetbrains.r.visualization.RIntervalsGenerator
 import org.jetbrains.r.visualization.RNotebookCellLines.*

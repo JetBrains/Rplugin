@@ -6,6 +6,7 @@ package org.jetbrains.r.rmarkdown
 
 import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.psi.util.PsiTreeUtil.findChildOfAnyType
+import com.intellij.r.psi.rmarkdown.RMarkdownFileType
 import com.jetbrains.python.inspections.PyInspectionExtension
 import com.jetbrains.python.psi.PyElement
 import com.jetbrains.python.psi.PyFile

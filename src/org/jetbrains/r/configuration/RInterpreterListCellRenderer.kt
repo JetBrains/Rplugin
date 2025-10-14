@@ -4,14 +4,14 @@
 
 package org.jetbrains.r.configuration
 
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.interpreter.RInterpreterInfo
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.TitledSeparator
 import com.intellij.util.ui.JBUI
-import icons.RIcons
+import com.intellij.r.psi.icons.RIcons
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 import org.jetbrains.r.interpreter.R_UNKNOWN
 import org.jetbrains.r.settings.RInterpreterSettingsProvider

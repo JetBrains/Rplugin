@@ -11,12 +11,12 @@ import com.intellij.codeInsight.controlflow.ControlFlowUtil
 import com.intellij.codeInsight.controlflow.Instruction
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.RRecursiveElementVisitor
-import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.cfg.RControlFlow
-import org.jetbrains.r.psi.cfg.RControlFlowUtil
-import org.jetbrains.r.psi.isAssignee
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.RRecursiveElementVisitor
+import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.cfg.RControlFlow
+import com.intellij.r.psi.psi.cfg.RControlFlowUtil
+import com.intellij.r.psi.psi.isAssignee
 
 class RCodeFragment(
   val expressions: List<RExpression>,

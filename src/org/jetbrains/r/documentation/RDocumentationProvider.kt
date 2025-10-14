@@ -20,24 +20,24 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.editor.completion.RLookupElement
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.refactoring.quoteIfNeeded
+import com.intellij.r.psi.refactoring.rNamesValidator
+import com.intellij.r.psi.rinterop.RInterop
+import com.intellij.r.psi.rinterop.getWithCheckCanceled
 import com.intellij.ui.popup.AbstractPopup
 import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.runtimeInfo
-import org.jetbrains.r.editor.completion.RLookupElement
 import org.jetbrains.r.highlighting.DOC_COMMENT
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.refactoring.quoteIfNeeded
-import org.jetbrains.r.refactoring.rNamesValidator
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
-import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RSourceFileManager
-import org.jetbrains.r.rinterop.getWithCheckCanceled
 import java.awt.Color
 import java.io.File
 import java.net.URL
@@ -145,7 +145,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
       }
       else {
         convertHelpPage(RInterop.HttpdResponse(result.stdout, "")) +
-          "<hr>\n<div style=\"text-align: center;\">[Package <em>${fileName}</em>]</div>\n"
+        "<hr>\n<div style=\"text-align: center;\">[Package <em>${fileName}</em>]</div>\n"
       }
       FetchedDoc(docText)
     }

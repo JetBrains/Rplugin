@@ -3,10 +3,10 @@ package org.jetbrains.r.run.graphics
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
-import org.jetbrains.r.rinterop.RInterop
-import java.util.ArrayDeque
+import org.jetbrains.r.rinterop.RInteropImpl
+import java.util.*
 
-class RGraphicsRescaleQueue(private val deviceId: Long, private val interop: RInterop) {
+class RGraphicsRescaleQueue(private val deviceId: Long, private val interop: RInteropImpl) {
   private var isTaskRunning = false
   private val queue = ArrayDeque<TaskWrapper>()
 

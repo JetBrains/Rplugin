@@ -7,13 +7,13 @@ package org.jetbrains.r.inspections.dplyr
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.psi.RDplyrAnalyzer
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.RPrecedenceUtil
+import com.intellij.r.psi.psi.api.*
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.inspections.RInspection
-import org.jetbrains.r.psi.RDplyrAnalyzer
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.RPrecedenceUtil
-import org.jetbrains.r.psi.api.*
 
 /**
  * Replace calls of dplyr functions with pipe

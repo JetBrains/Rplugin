@@ -5,6 +5,7 @@
 package org.jetbrains.r.rinterop
 
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.r.psi.rinterop.*
 import junit.framework.TestCase
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 

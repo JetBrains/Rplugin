@@ -3,6 +3,7 @@ package org.jetbrains.r.rinterop.rstudioapi
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.internal.statistic.service.fus.collectors.FUCounterUsageLogger
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.r.psi.rinterop.RObject
 import com.intellij.terminal.ui.TerminalWidget
 import com.intellij.ui.content.Content
 import com.intellij.util.execution.ParametersListUtil
@@ -10,8 +11,7 @@ import org.jetbrains.plugins.terminal.ShellTerminalWidget
 import org.jetbrains.plugins.terminal.TerminalProjectOptionsProvider
 import org.jetbrains.plugins.terminal.TerminalToolWindowFactory
 import org.jetbrains.plugins.terminal.TerminalToolWindowManager
-import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.RObject
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.getRNull
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.rError
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRBoolean
@@ -23,11 +23,11 @@ import kotlin.math.max
 import kotlin.math.min
 
 object TerminalUtils {
-  fun terminalActivate(rInterop: RInterop, args: RObject) {
+  fun terminalActivate(rInterop: RInteropImpl, args: RObject) {
     TODO()
   }
 
-  fun terminalBuffer(rInterop: RInterop, args: RObject): RObject {
+  fun terminalBuffer(rInterop: RInteropImpl, args: RObject): RObject {
     //TODO stripAnsi
     val id = args.list.getRObjects(0).rString.getStrings(0)
     val terminal = terminalFromId(rInterop, id) ?: return rError("Unknown terminal identifier '$id'")
@@ -38,14 +38,14 @@ object TerminalUtils {
     return RObject.newBuilder().setRString(lst).build()
   }
 
-  fun terminalBusy(rInterop: RInterop, args: RObject): RObject {
+  fun terminalBusy(rInterop: RInteropImpl, args: RObject): RObject {
     val id = args.list.getRObjects(0).rString.getStrings(0)
     val terminal = terminalFromId(rInterop, id) ?: return false.toRBoolean()
     val widget: ShellTerminalWidget = TerminalToolWindowManager.getWidgetByContent(terminal)!! as ShellTerminalWidget
     return widget.hasRunningCommands().toRBoolean()
   }
 
-  fun terminalClear(rInterop: RInterop, args: RObject): RObject {
+  fun terminalClear(rInterop: RInteropImpl, args: RObject): RObject {
     val id = args.list.getRObjects(0).rString.getStrings(0)
     val terminal = terminalFromId(rInterop, id) ?: return rError("Unknown terminal identifier '$id'")
     val widget: ShellTerminalWidget = TerminalToolWindowManager.getWidgetByContent(terminal)!! as ShellTerminalWidget
@@ -54,7 +54,7 @@ object TerminalUtils {
     return getRNull()
   }
 
-  fun terminalExecute(rInterop: RInterop, args: RObject): RObject {
+  fun terminalExecute(rInterop: RInteropImpl, args: RObject): RObject {
     val command = args.list.getRObjects(0).rString.getStrings(0)
     val workingDir = args.list.getRObjects(1).toStringOrNull()
     val env = args.list.getRObjects(2).rString.stringsList.toList().map {
@@ -69,25 +69,25 @@ object TerminalUtils {
     return idFromTerminal(rInterop, terminalWidget)?.toRString() ?: getRNull()
   }
 
-  fun terminalExitCode(rInterop: RInterop, args: RObject) {
+  fun terminalExitCode(rInterop: RInteropImpl, args: RObject) {
     TODO()
   }
 
-  fun terminalKill(rInterop: RInterop, args: RObject) {
+  fun terminalKill(rInterop: RInteropImpl, args: RObject) {
     val id = args.list.getRObjects(0).rString.getStrings(0)
     val terminal = terminalFromId(rInterop, id) ?: return
     val widget: ShellTerminalWidget = TerminalToolWindowManager.getWidgetByContent(terminal)!! as ShellTerminalWidget
     widget.close()
   }
 
-  fun terminalRunning(rInterop: RInterop, args: RObject): RObject {
+  fun terminalRunning(rInterop: RInteropImpl, args: RObject): RObject {
     val id = args.list.getRObjects(0).rString.getStrings(0)
     val terminal = terminalFromId(rInterop, id) ?: return false.toRBoolean()
     val widget: ShellTerminalWidget = TerminalToolWindowManager.getWidgetByContent(terminal)!! as ShellTerminalWidget
     return widget.isSessionRunning.toRBoolean()
   }
 
-  fun terminalSend(rInterop: RInterop, args: RObject): RObject {
+  fun terminalSend(rInterop: RInteropImpl, args: RObject): RObject {
     val id = args.list.getRObjects(0).rString.getStrings(0)
     val text = args.list.getRObjects(1).rString.getStrings(0)
     val terminal = terminalFromId(rInterop, id) ?: return rError("Unknown terminal identifier '$id'")
@@ -98,14 +98,14 @@ object TerminalUtils {
     return getRNull()
   }
 
-  fun terminalVisible(rInterop: RInterop): RObject {
+  fun terminalVisible(rInterop: RInteropImpl): RObject {
     val contentManager = ToolWindowManager.getInstance(rInterop.project).getToolWindow(
       TerminalToolWindowFactory.TOOL_WINDOW_ID)?.contentManager
     val selectedContent = contentManager?.selectedContent ?: return getRNull()
     return selectedContent.hashCode().toString().toRString()
   }
 
-  fun terminalCreate(rInterop: RInterop, args: RObject): RObject {
+  fun terminalCreate(rInterop: RInteropImpl, args: RObject): RObject {
     //TODO shellType
     val caption = args.list.getRObjects(0).toStringOrNull()
     val show = args.list.getRObjects(1).rBoolean.getBooleans(0)
@@ -114,25 +114,25 @@ object TerminalUtils {
     return idFromTerminal(rInterop, shellWidget)?.toRString() ?: getRNull()
   }
 
-  fun terminalContext(rInterop: RInterop, args: RObject): RObject {
+  fun terminalContext(rInterop: RInteropImpl, args: RObject): RObject {
     val id = args.list.getRObjects(0).rString.getStrings(0)
     return asRStudioTerminal(terminalFromId(rInterop, id) ?: return getRNull(), rInterop)
   }
 
-  fun terminalList(rInterop: RInterop): RObject {
+  fun terminalList(rInterop: RInteropImpl): RObject {
     val contents = listTerminals(rInterop) ?: return getRNull()
     val lst = RObject.RString.newBuilder()
     lst.addAllStrings(contents.map { it.hashCode().toString() })
     return RObject.newBuilder().setRString(lst).build()
   }
 
-  private fun terminalFromId(rInterop: RInterop, id: String): Content? {
+  private fun terminalFromId(rInterop: RInteropImpl, id: String): Content? {
     val numId = id.toInt()
     val terminals = listTerminals(rInterop)
     return terminals?.find { it.hashCode() == numId }
   }
 
-  private fun idFromTerminal(rInterop: RInterop, shellWidget: TerminalWidget): String? {
+  private fun idFromTerminal(rInterop: RInteropImpl, shellWidget: TerminalWidget): String? {
     val toolWindowManager =
       ToolWindowManager.getInstance(rInterop.project).getToolWindow(TerminalToolWindowFactory.TOOL_WINDOW_ID)
     val contents = toolWindowManager?.contentManager?.contents ?: return null
@@ -140,7 +140,7 @@ object TerminalUtils {
     return content.hashCode().toString()
   }
 
-  private fun listTerminals(rInterop: RInterop): Array<Content>? {
+  private fun listTerminals(rInterop: RInteropImpl): Array<Content>? {
     val contentManager = ToolWindowManager.getInstance(rInterop.project).getToolWindow(
       TerminalToolWindowFactory.TOOL_WINDOW_ID)?.contentManager
     return contentManager?.contents
@@ -167,7 +167,7 @@ object TerminalUtils {
     textBuffer.unlock()
   }
 
-  private fun asRStudioTerminal(terminal: Content, rInterop: RInterop): RObject {
+  private fun asRStudioTerminal(terminal: Content, rInterop: RInteropImpl): RObject {
     val caption = terminal.tabName
     val handle = terminal.hashCode().toString()
     FUCounterUsageLogger.getInstance()

@@ -8,8 +8,8 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.pom.PomTargetPsiElement
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.classes.s4.classInfo.RStringLiteralPomTarget
-import org.jetbrains.r.psi.api.RIdentifierExpression
+import com.intellij.r.psi.classes.s4.classInfo.RStringLiteralPomTarget
+import com.intellij.r.psi.psi.api.RIdentifierExpression
 
 class RS4IncludedSourcesResolveTest : RResolveFromFilesTestCase("resolveInS4Source") {
 

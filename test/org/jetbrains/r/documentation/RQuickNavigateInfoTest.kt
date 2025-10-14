@@ -10,7 +10,7 @@ import com.intellij.openapi.editor.colors.EditorColorsScheme
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.console.addRuntimeInfo
-import org.jetbrains.r.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.RInterpreterManager
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 import java.io.File
 import java.nio.file.Path

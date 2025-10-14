@@ -8,11 +8,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import com.intellij.ui.breadcrumbs.BreadcrumbsProvider
 import com.intellij.ui.components.breadcrumbs.Crumb
 import com.intellij.xml.breadcrumbs.CrumbPresentation
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
 class RFileBreadcrumbsCollector(private val project: Project) : CommonPsiFileBreadcrumbsCollector(project) {
   override fun handlesFile(virtualFile: VirtualFile): Boolean {

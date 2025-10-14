@@ -5,11 +5,11 @@
 package org.jetbrains.r.run.debug.stack
 
 import com.intellij.openapi.Disposable
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.rinterop.*
+import com.intellij.r.psi.util.tryRegisterDisposable
 import com.intellij.xdebugger.XExpression
 import com.intellij.xdebugger.frame.*
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.rinterop.*
-import org.jetbrains.r.util.tryRegisterDisposable
 import java.util.concurrent.CancellationException
 
 internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStackFrame,

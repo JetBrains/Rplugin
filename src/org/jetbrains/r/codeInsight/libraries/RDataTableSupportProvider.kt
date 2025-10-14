@@ -5,13 +5,14 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.ResolveResult
+import com.intellij.r.psi.codeInsight.libraries.RLibrarySupportProvider
+import com.intellij.r.psi.editor.completion.RLookupElementFactory
+import com.intellij.r.psi.psi.TableColumnInfo
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RPsiElement
+import com.intellij.r.psi.psi.isInsideSubscription
 import com.intellij.util.Processor
 import org.jetbrains.r.codeInsight.table.RDataTableContextManager
-import org.jetbrains.r.editor.completion.RLookupElementFactory
-import org.jetbrains.r.psi.TableColumnInfo
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.api.RPsiElement
-import org.jetbrains.r.psi.isInsideSubscription
 
 class RDataTableSupportProvider : RLibrarySupportProvider{
   override fun resolve(element: RPsiElement): ResolveResult? {

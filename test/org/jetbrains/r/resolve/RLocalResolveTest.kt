@@ -6,9 +6,9 @@ package org.jetbrains.r.resolve
 
 import com.intellij.openapi.fileTypes.LanguageFileType
 import junit.framework.TestCase
-import org.jetbrains.r.RFileType
+import com.intellij.r.psi.RFileType
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
+import com.intellij.r.psi.rmarkdown.RMarkdownFileType
 
 class RLocalResolveTest: RLightCodeInsightFixtureTestCase() {
 

@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.inspections
 
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
 import org.jetbrains.r.inspections.classes.s4.UnknownS4ClassNameInspection
 
 class UnknownS4ClassNameInspectionTest : RInspectionTest() {

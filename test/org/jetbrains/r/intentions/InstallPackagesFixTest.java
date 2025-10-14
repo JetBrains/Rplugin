@@ -10,10 +10,10 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.r.RUsefulTestCase;
 import org.jetbrains.r.inspections.MissingPackageInspection;
-import org.jetbrains.r.interpreter.RInterpreter;
-import org.jetbrains.r.interpreter.RInterpreterManager;
+import com.intellij.r.psi.interpreter.RInterpreter;
+import com.intellij.r.psi.interpreter.RInterpreterManager;
 import org.jetbrains.r.interpreter.RInterpreterUtil;
-import org.jetbrains.r.packages.RInstalledPackage;
+import com.intellij.r.psi.packages.RInstalledPackage;
 import org.jetbrains.r.packages.remote.RepoUtils;
 
 import java.util.Collections;

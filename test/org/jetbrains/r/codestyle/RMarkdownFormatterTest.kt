@@ -8,7 +8,7 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.codeStyle.CodeStyleManager
 import org.intellij.lang.annotations.Language
 import org.jetbrains.r.RUsefulTestCase
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
+import com.intellij.r.psi.rmarkdown.RMarkdownFileType
 
 class RMarkdownFormatterTest : RUsefulTestCase() {
   fun testRMarkdownDefaultFenceFormatting() {

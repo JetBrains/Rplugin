@@ -11,6 +11,7 @@ import com.intellij.psi.*
 import com.intellij.psi.impl.source.PsiFileImpl
 import com.intellij.psi.templateLanguages.TemplateDataElementType
 import com.intellij.psi.templateLanguages.TemplateLanguageFileViewProvider
+import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import com.intellij.util.containers.FactoryMap
 import org.intellij.plugins.markdown.lang.parser.MarkdownParserManager
 

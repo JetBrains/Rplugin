@@ -6,10 +6,10 @@ package org.jetbrains.r.hints.parameterInfo
 
 import com.intellij.codeInsight.hints.getLanguageForSettingKey
 import com.intellij.codeInsight.hints.settings.ParameterNameHintsSettings
-import org.jetbrains.r.RFileType
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RFileType
+import com.intellij.r.psi.RLanguage
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
+import com.intellij.r.psi.rmarkdown.RMarkdownFileType
 
 class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
 

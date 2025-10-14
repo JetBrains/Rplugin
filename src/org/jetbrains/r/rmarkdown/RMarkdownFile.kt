@@ -6,6 +6,8 @@ package org.jetbrains.r.rmarkdown
 
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.psi.FileViewProvider
+import com.intellij.r.psi.rmarkdown.RMarkdownFileType
+import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 
 class RMarkdownFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, RMarkdownLanguage) {
   override fun getFileType() = RMarkdownFileType

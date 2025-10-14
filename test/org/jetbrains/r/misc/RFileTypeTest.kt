@@ -6,7 +6,7 @@ package org.jetbrains.r.misc
 
 import com.intellij.openapi.fileTypes.FileTypeManager
 import junit.framework.TestCase
-import org.jetbrains.r.RFileType
+import com.intellij.r.psi.RFileType
 import org.jetbrains.r.RUsefulTestCase
 
 class RFileTypeTest : RUsefulTestCase() {

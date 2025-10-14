@@ -4,17 +4,17 @@
 
 package org.jetbrains.r.run.visualize
 
+import com.intellij.r.psi.interpreter.LocalOrRemotePath
+import com.intellij.r.psi.interpreter.uploadFileToHost
+import com.intellij.r.psi.rinterop.RReference
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.interpreter.LocalOrRemotePath
-import org.jetbrains.r.interpreter.uploadFileToHost
-import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.RReference
+import org.jetbrains.r.rinterop.RInteropImpl
 import java.io.File
 
 data class RImportOptions(val mode: String, val additional: Map<String, String>)
 
-class RDataImporter(private val interop: RInterop) {
+class RDataImporter(private val interop: RInteropImpl) {
   @Volatile
   private var lastLocalAndHostPath: Pair<String, String>? = null
   private val OUTPUT_NUMBER = "[1]"

@@ -26,6 +26,8 @@ import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.r.psi.RBundle;
+import com.intellij.r.psi.packages.RInstalledPackage;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.SearchTextField;
 import com.intellij.ui.ToolbarDecorator;
@@ -45,10 +47,8 @@ import com.intellij.util.ui.UIUtil;
 import com.intellij.webcore.packaging.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.r.RBundle;
-import org.jetbrains.r.packages.RInstalledPackage;
 import org.jetbrains.r.packages.remote.RPackageManagementService;
-import org.jetbrains.r.rinterop.RInteropKt;
+import org.jetbrains.r.rinterop.RInteropImplKt;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -133,7 +133,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
       IJSwingUtilities.updateComponentTreeUI(myIsLoadedCheckBox);
     });
 
-    connect.subscribe(RInteropKt.getLOADED_LIBRARIES_UPDATED(), myPackagesTable::repaint);
+    connect.subscribe(RInteropImplKt.getLOADED_LIBRARIES_UPDATED(), myPackagesTable::repaint);
     AnAction upgradeAction = new DumbAwareAction() {
       @Override
       public @NotNull ActionUpdateThread getActionUpdateThread() {

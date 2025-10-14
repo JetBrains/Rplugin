@@ -8,7 +8,7 @@ import com.intellij.codeInsight.TargetElementUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.refactoring.util.CommonRefactoringUtil
 import org.jetbrains.r.RUsefulTestCase
-import org.jetbrains.r.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RAssignmentStatement
 
 class RInlineFunctionTest : RUsefulTestCase() {
 

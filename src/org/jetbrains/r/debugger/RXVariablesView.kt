@@ -14,6 +14,8 @@ import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.EmptyRunnable
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.rinterop.RVar
 import com.intellij.ui.AppUIUtil
 import com.intellij.ui.ClickListener
 import com.intellij.ui.DoubleClickListener
@@ -36,14 +38,12 @@ import com.intellij.xdebugger.impl.frame.actions.XWatchesTreeActionBase
 import com.intellij.xdebugger.impl.ui.DebuggerUIUtil
 import com.intellij.xdebugger.impl.ui.tree.XDebuggerTree
 import com.intellij.xdebugger.impl.ui.tree.nodes.*
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.RDebuggerPanel
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
-import org.jetbrains.r.rinterop.RVar
 import org.jetbrains.r.run.debug.stack.RXDebuggerEvaluator
 import org.jetbrains.r.run.debug.stack.RXStackFrame
 import org.jetbrains.r.run.debug.stack.RXVariableViewSettings

@@ -14,7 +14,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilCore
-import org.jetbrains.r.psi.RGlobalVariablesFilter
+import com.intellij.r.psi.psi.RGlobalVariablesFilter
 import org.jetbrains.r.rmarkdown.RMarkdownPsiUtil
 
 class RMarkdownStructureViewFactory : PsiStructureViewFactory {

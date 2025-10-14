@@ -11,12 +11,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SyntaxTraverser
+import com.intellij.r.psi.RBundle
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownParagraph
 import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.await
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 
@@ -32,7 +32,7 @@ object RMarkdownUtil {
 
   /**
    * @return list of missing R Markdown's requirements or `null` if such a list cannot be formed right now
-   * (notably when [interpreter][org.jetbrains.r.interpreter.RInterpreter] hasn't been initialized yet)
+   * (notably when [interpreter][com.intellij.r.psi.interpreter.RInterpreter] hasn't been initialized yet)
    */
   fun getMissingPackages(project: Project): List<RequiredPackage>? {
     return RequiredPackageInstaller.getInstance(project).getMissingPackagesOrNull(requiredPackages)

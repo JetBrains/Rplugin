@@ -11,7 +11,7 @@ import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.UsefulTestCase
 import org.intellij.lang.annotations.Language
 import org.jetbrains.r.RUsefulTestCase
-import org.jetbrains.r.psi.RGlobalVariablesFilterId
+import com.intellij.r.psi.psi.RGlobalVariablesFilterId
 
 class RStructureViewTest : RUsefulTestCase() {
   fun testJustFunctions() {

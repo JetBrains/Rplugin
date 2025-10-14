@@ -8,14 +8,14 @@ import com.intellij.codeInspection.LocalInspectionToolSession
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
+import com.intellij.r.psi.psi.api.RVisitor
+import com.intellij.r.psi.psi.isFunctionFromLibrary
+import com.intellij.r.psi.psi.references.RSearchScopeUtil
+import com.intellij.r.psi.psi.stubs.classes.RS4ClassNameIndex
 import org.jetbrains.r.inspections.RInspection
-import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.psi.api.RStringLiteralExpression
-import org.jetbrains.r.psi.api.RVisitor
-import org.jetbrains.r.psi.isFunctionFromLibrary
-import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
 
 class InstanceOfVirtualS4ClassInspection : RInspection() {
   override fun getDisplayName() = RBundle.message("inspection.virtual.s4class.instance.name")

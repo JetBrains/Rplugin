@@ -3,6 +3,7 @@ package org.jetbrains.r.visualization.inlays.components
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.util.messages.Topic
+import org.jetbrains.r.visualization.inlays.components.NotebookInlayMouseListener.Companion.topic
 import java.awt.AWTEvent
 import java.awt.event.MouseEvent
 import java.util.*

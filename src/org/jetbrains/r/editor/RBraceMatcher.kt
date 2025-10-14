@@ -11,8 +11,8 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
-import org.jetbrains.r.parsing.RElementTypes
-import org.jetbrains.r.parsing.RTokenTypes
+import com.intellij.r.psi.parsing.RElementTypes
+import com.intellij.r.psi.parsing.RTokenTypes
 import org.jetbrains.r.rmarkdown.MARKDOWN_EOL
 
 private val bracePairs = arrayOf(

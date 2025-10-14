@@ -9,14 +9,14 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.ElementManipulators
 import com.intellij.psi.PsiElementVisitor
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.classes.s4.context.RS4ContextProvider
-import org.jetbrains.r.classes.s4.context.methods.RS4SetMethodFunctionNameContext
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.classes.s4.context.RS4ContextProvider
+import com.intellij.r.psi.classes.s4.context.methods.RS4SetMethodFunctionNameContext
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
+import com.intellij.r.psi.psi.api.RVisitor
+import com.intellij.r.psi.psi.references.RSearchScopeUtil
+import com.intellij.r.psi.psi.stubs.classes.RS4GenericIndex
 import org.jetbrains.r.inspections.RInspection
-import org.jetbrains.r.psi.api.RStringLiteralExpression
-import org.jetbrains.r.psi.api.RVisitor
-import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.classes.RS4GenericIndex
 
 class UnknownS4GenericInspection : RInspection() {
   override fun getDisplayName() = RBundle.message("inspection.unknown.s4.generic.name")

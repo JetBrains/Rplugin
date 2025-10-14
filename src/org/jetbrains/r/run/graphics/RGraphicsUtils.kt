@@ -8,7 +8,7 @@ package org.jetbrains.r.run.graphics
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.ui.JreHiDpiUtil
 import com.intellij.util.ui.UIUtil
-import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropImpl
 import java.awt.Dimension
 import java.awt.GraphicsConfiguration
 import java.awt.Toolkit
@@ -48,7 +48,7 @@ object RGraphicsUtils {
     return createParameters(parameters?.dimension, parameters?.resolution)
   }
 
-  fun createGraphicsDevice(rInterop: RInterop, screenDimension: Dimension?, resolution: Int?): RGraphicsDevice {
+  fun createGraphicsDevice(rInterop: RInteropImpl, screenDimension: Dimension?, resolution: Int?): RGraphicsDevice {
     val tmpDirectory = createTempDeviceDirectory()
     val parameters = createParameters(screenDimension, resolution)
     return RGraphicsDevice(rInterop, tmpDirectory, parameters, true)

@@ -5,9 +5,10 @@
 package org.jetbrains.r.classes.r6
 
 import com.intellij.psi.util.childrenOfType
+import com.intellij.r.psi.classes.r6.R6ClassInfoUtil
 import org.jetbrains.r.classes.RClassesUtilTestsBase
-import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RCallExpression
 
 class R6ClassInfoUtilTests : RClassesUtilTestsBase() {
   private val fullClassCodeDefinition = """

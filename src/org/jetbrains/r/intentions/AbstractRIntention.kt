@@ -11,9 +11,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.r.psi.RLanguage
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.annotations.Contract
-import org.jetbrains.r.RLanguage
 
 
 abstract class AbstractRIntention protected constructor() : IntentionAction {

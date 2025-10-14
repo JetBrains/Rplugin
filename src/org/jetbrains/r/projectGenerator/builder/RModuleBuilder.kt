@@ -12,9 +12,9 @@ import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.roots.ModifiableRootModel
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider
+import com.intellij.r.psi.RBundle
 import com.intellij.util.concurrency.ThreadingAssertions
 import org.jetbrains.annotations.NonNls
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.projectGenerator.step.RGeneratorSettingsWizardStep
 import org.jetbrains.r.projectGenerator.template.RProjectGenerator
 

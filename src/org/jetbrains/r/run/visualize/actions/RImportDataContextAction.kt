@@ -14,8 +14,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
-import org.jetbrains.r.rinterop.RInterop
-import java.util.Locale
+import org.jetbrains.r.rinterop.RInteropImpl
+import java.util.*
 
 abstract class RImportDataContextAction(text: String, description: String) : DumbAwareAction(text, description, null) {
   protected abstract val supportedFormats: Array<String>
@@ -66,13 +66,13 @@ abstract class RImportDataContextAction(text: String, description: String) : Dum
     return true
   }
 
-  protected abstract fun applyTo(project: Project, interop: RInterop, file: VirtualFile)
+  protected abstract fun applyTo(project: Project, interop: RInteropImpl, file: VirtualFile)
 
   companion object {
     private val AnActionEvent.selectedFiles: Array<VirtualFile>?
       get() = getData(CommonDataKeys.VIRTUAL_FILE_ARRAY)
 
-    private fun getCurrentInteropOrNull(project: Project): RInterop? {
+    private fun getCurrentInteropOrNull(project: Project): RInteropImpl? {
       return RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop
     }
 

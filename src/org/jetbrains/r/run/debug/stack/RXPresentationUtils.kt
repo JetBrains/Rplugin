@@ -9,21 +9,22 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.debugger.RDebuggerUtilPsi
+import com.intellij.r.psi.debugger.exception.RDebuggerException
+import com.intellij.r.psi.rinterop.*
+import com.intellij.r.psi.util.tryRegisterDisposable
 import com.intellij.xdebugger.frame.XFullValueEvaluator
 import com.intellij.xdebugger.frame.XValueNode
 import com.intellij.xdebugger.frame.presentation.XValuePresentation
 import com.intellij.xdebugger.impl.ui.tree.nodes.XValueNodeImpl
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.debugger.RDebuggerUtil
-import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.packages.RequiredPackageInstaller
-import org.jetbrains.r.rinterop.*
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RVisualizeTableUtil
-import org.jetbrains.r.util.tryRegisterDisposable
 
 private abstract class RXValuePresentationBase(val v: RXVar) : XValuePresentation() {
   open val forceShowClasses: Boolean = false
@@ -113,7 +114,7 @@ internal object RXPresentationUtils {
         val ref = rxVar.rVar.ref
         ref.functionSourcePositionWithTextAsync().then {
           ApplicationManager.getApplication().invokeLater {
-            RDebuggerUtil.navigateAndCheckSourceChanges(ref.rInterop.project, it)
+            RDebuggerUtilPsi.navigateAndCheckSourceChanges(ref.rInterop.project, it)
             callback.evaluated("")
           }
         }
@@ -148,7 +149,8 @@ internal object RXPresentationUtils {
     node.setFullValueEvaluator(object : XFullValueEvaluator(text) {
       override fun startEvaluation(callback: XFullValueEvaluationCallback) {
         val ref = rxVar.rVar.ref
-        ref.rInterop.dataFrameGetViewer(ref).onSuccess {
+        val rInterop = ref.rInterop as? RInteropImpl ?: return
+        rInterop.dataFrameGetViewer(ref).onSuccess {
           RVisualizeTableUtil.showTableAsync(ref.rInterop.project, it, rxVar.name)
         }.onError {
           when (it) {

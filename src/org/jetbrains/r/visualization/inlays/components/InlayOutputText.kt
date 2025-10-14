@@ -17,11 +17,11 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.impl.softwrap.EmptySoftWrapPainter
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RPluginCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.withLock
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.visualization.inlays.InlayExecutor
 import org.jetbrains.r.visualization.inlays.InlayOutputData
 import org.jetbrains.r.visualization.inlays.MouseWheelUtils

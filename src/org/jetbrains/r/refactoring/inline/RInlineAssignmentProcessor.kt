@@ -12,17 +12,17 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.RRecursiveElementVisitor
+import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.getParameters
 import com.intellij.refactoring.BaseRefactoringProcessor
 import com.intellij.refactoring.util.CommonRefactoringUtil
 import com.intellij.usageView.UsageInfo
 import com.intellij.usageView.UsageViewDescriptor
 import com.intellij.util.IncorrectOperationException
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.RRecursiveElementVisitor
-import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.getParameters
 import org.jetbrains.r.refactoring.RRefactoringUtil
 
 /**

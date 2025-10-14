@@ -13,9 +13,9 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilBase
-import org.jetbrains.r.psi.api.RFile
+import com.intellij.r.psi.psi.api.RFile
+import com.intellij.r.psi.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 abstract class REditorActionBase : DumbAwareAction(), RPromotedAction {
   override fun update(e: AnActionEvent) {

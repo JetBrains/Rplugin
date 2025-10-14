@@ -6,11 +6,11 @@ package org.jetbrains.r.resolve
 
 import com.intellij.pom.PomTargetPsiElement
 import junit.framework.TestCase
-import org.jetbrains.r.RFileType
+import com.intellij.r.psi.RFileType
 import org.jetbrains.r.console.RConsoleBaseTestCase
-import org.jetbrains.r.psi.DataFramePomTarget
-import org.jetbrains.r.psi.FunctionPomTarget
-import org.jetbrains.r.psi.VariablePomTarget
+import com.intellij.r.psi.psi.DataFramePomTarget
+import com.intellij.r.psi.psi.FunctionPomTarget
+import com.intellij.r.psi.psi.VariablePomTarget
 import kotlin.reflect.KClass
 
 class GlobalResolveTest : RConsoleBaseTestCase() {

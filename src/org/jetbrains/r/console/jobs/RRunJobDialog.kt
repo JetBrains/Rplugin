@@ -14,14 +14,14 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.interpreter.RInterpreter
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.dsl.builder.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RPluginCoroutineScope
-import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.isLocal
 import javax.swing.JComponent
 import javax.swing.event.DocumentEvent

@@ -5,13 +5,13 @@
 package org.jetbrains.r.projectGenerator.panel.interpreter
 
 import com.intellij.openapi.ui.ValidationInfo
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RPluginUtil
+import com.intellij.r.psi.interpreter.RInterpreterInfo
+import com.intellij.r.psi.interpreter.RInterpreterLocation
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.configuration.RManageInterpreterPanel
 import org.jetbrains.r.execution.ExecuteExpressionUtils
-import org.jetbrains.r.interpreter.RInterpreterInfo
-import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.getVersion
 import java.awt.BorderLayout

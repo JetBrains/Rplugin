@@ -7,12 +7,12 @@ package org.jetbrains.r.inspections
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.psi.api.RNamedArgument
-import org.jetbrains.r.psi.api.RVisitor
-import org.jetbrains.r.psi.isFunctionFromLibrary
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RNamedArgument
+import com.intellij.r.psi.psi.api.RVisitor
+import com.intellij.r.psi.psi.isFunctionFromLibrary
 
 /**
  * c() -> NULL

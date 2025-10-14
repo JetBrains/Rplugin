@@ -13,8 +13,8 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CodeStyleSettingsManager
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import org.intellij.lang.annotations.Language
-import org.jetbrains.r.RFileType
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RFileType
+import com.intellij.r.psi.RLanguage
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.editor.formatting.RCodeStyleSettings
 

@@ -6,10 +6,10 @@ import com.intellij.patterns.PatternCondition;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.patterns.PsiElementPattern;
 import com.intellij.psi.PsiElement;
+import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo;
+import com.intellij.r.psi.psi.api.*;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.r.hints.parameterInfo.RArgumentInfo;
-import org.jetbrains.r.psi.api.*;
 
 public final class RPatterns {
   private static final Logger LOG = Logger.getInstance(RPatterns.class);

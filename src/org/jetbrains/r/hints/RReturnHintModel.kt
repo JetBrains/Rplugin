@@ -21,12 +21,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiUtilCore
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 import java.util.concurrent.ConcurrentHashMap
 
 private val rMarkdownLanguages = listOf(RLanguage.INSTANCE, RMarkdownLanguage)

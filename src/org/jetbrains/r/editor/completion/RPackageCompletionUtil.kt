@@ -12,14 +12,15 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.r.psi.editor.completion.RLookupElementFactory
+import com.intellij.r.psi.interpreter.RInterpreterState
+import com.intellij.r.psi.interpreter.RInterpreterStateManager
+import com.intellij.r.psi.packages.build.RPackageBuildUtil
+import com.intellij.r.psi.psi.stubs.RAssignmentCompletionIndex
+import com.intellij.r.psi.psi.stubs.RInternalAssignmentCompletionIndex
+import com.intellij.r.psi.psi.stubs.classes.RS4GenericIndex
 import com.intellij.util.Processor
 import org.jetbrains.r.console.runtimeInfo
-import org.jetbrains.r.interpreter.RInterpreterState
-import org.jetbrains.r.interpreter.RInterpreterStateManager
-import org.jetbrains.r.packages.build.RPackageBuildUtil
-import org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex
-import org.jetbrains.r.psi.stubs.RInternalAssignmentCompletionIndex
-import org.jetbrains.r.psi.stubs.classes.RS4GenericIndex
 
 object RPackageCompletionUtil {
 

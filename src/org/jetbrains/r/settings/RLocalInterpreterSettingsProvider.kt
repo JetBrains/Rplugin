@@ -5,10 +5,10 @@
 package org.jetbrains.r.settings
 
 import com.intellij.icons.AllIcons.Nodes.HomeFolder
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.interpreter.RInterpreterInfo
+import com.intellij.r.psi.interpreter.RInterpreterLocation
 import org.jetbrains.r.configuration.RAddInterpreterDialog
-import org.jetbrains.r.interpreter.RInterpreterInfo
-import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 import javax.swing.Icon
 

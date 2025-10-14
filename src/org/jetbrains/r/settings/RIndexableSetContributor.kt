@@ -6,8 +6,8 @@ package org.jetbrains.r.settings
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.r.psi.interpreter.RInterpreterStateManager
 import com.intellij.util.indexing.IndexableSetContributor
-import org.jetbrains.r.interpreter.RInterpreterStateManager
 
 class RIndexableSetContributor : IndexableSetContributor() {
   override fun getAdditionalProjectRootsToIndex(project: Project): Set<VirtualFile> {

@@ -8,8 +8,8 @@ package org.jetbrains.r.parser
 import com.intellij.patterns.PlatformPatterns.psiElement
 import com.intellij.patterns.PsiElementPattern
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.psi.api.RExpression
-import org.jetbrains.r.psi.api.ROperatorExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.ROperatorExpression
 
 /**
  * @author Holger Brandl
@@ -95,7 +95,7 @@ class ResolverTest : AbstractResolverTest() {
 
     val dotMatcher: PsiElementPattern.Capture<RExpression> = psiElement(RExpression::class.java)
             .withText(".")
-            .withParent(psiElement(org.jetbrains.r.psi.api.RArgumentList::class.java))
+            .withParent(psiElement(com.intellij.r.psi.psi.api.RArgumentList::class.java))
 
 
     fun testDontFlagLhsCallInPipe() {

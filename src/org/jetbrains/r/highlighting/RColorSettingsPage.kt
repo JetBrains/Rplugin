@@ -12,9 +12,9 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.RainbowColorSettingsPage
-import icons.RIcons
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.icons.RIcons
 import org.jetbrains.annotations.NonNls
-import org.jetbrains.r.RLanguage
 import javax.swing.Icon
 
 class RColorSettingsPage : RainbowColorSettingsPage {

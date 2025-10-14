@@ -1,0 +1,42 @@
+### auto-generated section `build intellij.r.psi` start
+load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
+
+resourcegroup(
+  name = "psi_resources",
+  srcs = glob(["resources/**/*"]),
+  strip_prefix = "resources"
+)
+
+jvm_library(
+  name = "psi",
+  module_name = "intellij.r.psi",
+  visibility = ["//visibility:public"],
+  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form", "gen/**/*.kt", "gen/**/*.java", "gen-grpc/main/java/**/*.kt", "gen-grpc/main/java/**/*.java", "gen-grpc/main/grpc/**/*.kt", "gen-grpc/main/grpc/**/*.java"], allow_empty = True),
+  resources = [":psi_resources"],
+  deps = [
+    "@lib//:protobuf",
+    "@community//platform/core-api:core",
+    "@community//platform/core-impl",
+    "@community//platform/lang-impl",
+    "@community//platform/indexing-api:indexing",
+    "@community//platform/usageView",
+    "@community//platform/util:util-ui",
+    "@community//platform/code-style-api:codeStyle",
+    "@community//platform/editor-ui-api:editor-ui",
+    "@community//platform/util/concurrency",
+    "@community//platform/analysis-api:analysis",
+    "@community//platform/util",
+    "@community//platform/core-ui",
+    "@community//plugins/markdown/core:markdown",
+    "@community//platform/xdebugger-api:debugger",
+    "@community//platform/xdebugger-impl:debugger-impl",
+    "@community//platform/platform-impl:ide-impl",
+    "@community//platform/indexing-impl",
+    "@community//platform/platform-util-io:ide-util-io",
+    "@community//platform/ide-core-impl",
+    "@community//libraries/grpc",
+    "@community//libraries/guava",
+    "@community//libraries/javax/annotation",
+  ]
+)
+### auto-generated section `build intellij.r.psi` end

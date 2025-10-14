@@ -7,7 +7,7 @@ import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
-import org.jetbrains.r.RBundle
+import com.intellij.r.psi.RBundle
 import java.awt.Image
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection

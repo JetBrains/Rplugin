@@ -10,12 +10,12 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.refactoring.BaseRefactoringProcessor
 import com.intellij.testFramework.fixtures.CodeInsightTestUtil
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RFileType.DOT_R_EXTENSION
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RFileType.DOT_R_EXTENSION
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import org.jetbrains.r.refactoring.rename.RMemberInplaceRenameHandler
 import org.jetbrains.r.refactoring.rename.RVariableInplaceRenameHandler
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
+import com.intellij.r.psi.rmarkdown.RMarkdownFileType
 import java.io.File
 import java.util.Locale
 

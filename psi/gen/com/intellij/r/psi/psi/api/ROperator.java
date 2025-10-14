@@ -1,0 +1,17 @@
+// This is a generated file. Not intended for manual editing.
+package com.intellij.r.psi.psi.api;
+
+import java.util.List;
+import org.jetbrains.annotations.*;
+import com.intellij.psi.PsiElement;
+import com.intellij.r.psi.psi.references.ROperatorReference;
+
+public interface ROperator extends RPsiElement {
+
+  @NotNull
+  String getName();
+
+  @NotNull
+  ROperatorReference getReference();
+
+}

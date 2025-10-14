@@ -18,6 +18,7 @@ import com.intellij.openapi.editor.colors.EditorColorsScheme
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.r.psi.RBundle
 import com.intellij.testFramework.BinaryLightVirtualFile
 import com.intellij.ui.JreHiDpiUtil
 import com.intellij.ui.components.ActionLink
@@ -31,7 +32,6 @@ import org.intellij.images.editor.impl.ImageEditorImpl
 import org.intellij.images.ui.ImageComponent
 import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import java.awt.BorderLayout
 import java.awt.Component

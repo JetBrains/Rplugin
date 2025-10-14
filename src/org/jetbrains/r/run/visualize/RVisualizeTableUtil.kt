@@ -12,10 +12,10 @@ import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
+import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.util.ui.JBUI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.jetbrains.r.RPluginCoroutineScope
 import org.jetbrains.r.visualization.ui.MaterialTable
 import javax.swing.table.DefaultTableColumnModel
 import javax.swing.table.TableColumn

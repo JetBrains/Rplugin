@@ -5,10 +5,10 @@
 package org.jetbrains.r.run.graphics.ui
 
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.r.psi.RBundle
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.layout.selected
-import org.jetbrains.r.RBundle
 import java.awt.Component
 import javax.swing.*
 

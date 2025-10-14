@@ -14,13 +14,13 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.impl.source.tree.SharedImplUtil
 import com.intellij.psi.tree.TokenSet
+import com.intellij.r.psi.RLanguage
+import com.intellij.r.psi.parsing.RElementTypes
+import com.intellij.r.psi.parsing.RParserDefinition
+import com.intellij.r.psi.parsing.RTokenTypes
+import com.intellij.r.psi.psi.RPsiUtil
+import com.intellij.r.psi.psi.api.*
 import com.intellij.util.containers.FactoryMap
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.parsing.RElementTypes
-import org.jetbrains.r.parsing.RParserDefinition
-import org.jetbrains.r.parsing.RTokenTypes
-import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.api.*
 
 private val NON_INDENT_PARTS = TokenSet.create(
   RElementTypes.R_RPAR,

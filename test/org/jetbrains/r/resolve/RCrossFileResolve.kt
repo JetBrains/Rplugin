@@ -5,9 +5,9 @@
 package org.jetbrains.r.resolve
 
 import junit.framework.TestCase
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RLanguage
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
-import org.jetbrains.r.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
 
 class RCrossFileResolve: RLightCodeInsightFixtureTestCase() {
 

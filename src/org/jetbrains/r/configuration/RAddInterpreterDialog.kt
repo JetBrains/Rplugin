@@ -10,10 +10,14 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showYesNoDialog
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
+import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.interpreter.RInterpreterInfo
+import com.intellij.r.psi.interpreter.RInterpreterLocation
 import com.intellij.util.PathUtil
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.execution.ExecuteExpressionUtils
-import org.jetbrains.r.interpreter.*
+import org.jetbrains.r.interpreter.RBasicInterpreterInfo
+import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 
 class RAddInterpreterDialog {
   companion object {

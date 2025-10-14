@@ -8,7 +8,7 @@ import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.testFramework.common.ThreadLeakTracker
 import com.jetbrains.python.PythonLanguage
 import org.intellij.plugins.markdown.lang.MarkdownLanguage
-import org.jetbrains.r.RLanguage
+import com.intellij.r.psi.RLanguage
 import org.jetbrains.r.visualization.RNotebookCellLines
 import org.jetbrains.r.visualization.RNotebookCellLines.CellType.CODE
 import org.jetbrains.r.visualization.RNotebookCellLines.CellType.MARKDOWN
