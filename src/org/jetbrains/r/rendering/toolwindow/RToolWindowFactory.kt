@@ -135,7 +135,7 @@ private const val HELP_DEFAULT_TEXT = """
   <html>
   <body>
   <p><span></span></p>
-  <p><span>With the plugin for the </span>
+  <p><span>With IDE support for the </span>
   <span><a href="https://www.r-project.org/">R language</a></span><span>,</span><span
      >&nbsp;you can perform various statistical computing and enjoy your favorite features of the integrated development environment:</span>
   </p>
@@ -171,7 +171,6 @@ private const val HELP_DEFAULT_TEXT = """
     <li><span>Managing R packages; ability to create your own R packages.</span></li>
   </ul>
   <p><span>Find a bug? Please, file an issue <a href="https://youtrack.jetbrains.com/issues/R">here</a></span>.</p>
-  <p><span>For more details, see </span><span><a href="https://www.jetbrains.com/help/pycharm/2019.3/r-plugin-support.html">PyCharm web help</a></span><span>.</span></p>
   <br>
   <p>
   This plugin comes with ABSOLUTELY NO WARRANTY.</p>
