@@ -1,6 +1,7 @@
 <idea-plugin>
     <dependencies>
         <plugin id="org.intellij.plugins.markdown"/>
+        <plugin id="com.intellij.platform.images"/>
         <module name="intellij.platform.langInjection"/>
         <module name="intellij.libraries.grpc.netty.shaded"/>
     </dependencies>
