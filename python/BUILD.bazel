@@ -22,6 +22,7 @@ jvm_library(
     "@community//platform/lang-impl",
     "@community//python/openapi:community",
     "@community//python:python-community-impl",
+    "@lib//:kotlin-stdlib",
   ]
 )
 
@@ -45,6 +46,7 @@ jvm_library(
     "@community//python/openapi:community_test_lib",
     "@community//python:python-community-impl",
     "@community//python/testFramework",
+    "@lib//:kotlin-stdlib",
   ]
 )
 ### auto-generated section `build intellij.r.python` end
