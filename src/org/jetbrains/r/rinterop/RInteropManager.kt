@@ -13,6 +13,6 @@ class RInteropManagerImpl(
   }
 
   override suspend fun currentConsoleInteropOrStart(): RInterop {
-    TODO("Not yet implemented")
+    return RConsoleManager.getInstance(project).awaitCurrentConsole().getOrThrow().rInterop
   }
 }
