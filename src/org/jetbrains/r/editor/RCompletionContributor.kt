@@ -49,6 +49,7 @@ import com.intellij.r.psi.refactoring.rNamesValidator
 import com.intellij.r.psi.rinterop.RValueFunction
 import com.intellij.r.psi.skeleton.psi.RSkeletonAssignmentStatement
 import com.intellij.r.psi.util.RPathUtil
+import com.intellij.testFramework.LightVirtualFile
 import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
 import org.jetbrains.r.console.RConsoleView
@@ -72,7 +73,7 @@ class RCompletionContributor : CompletionContributor() {
 
   override fun fillCompletionVariants(parameters: CompletionParameters, resultSet: CompletionResultSet) {
     val project = parameters.originalFile.project
-    if (RLspStatus.isLspRunning(project)) {
+    if (RLspStatus.isLspRunning(project) && parameters.originalFile.virtualFile.isInLocalFileSystem) {
       // do not run completions when LSP is running, otherwise we get duplicates
       resultSet.runRemainingContributors(parameters) {
         resultSet.addElement(it.lookupElement)
