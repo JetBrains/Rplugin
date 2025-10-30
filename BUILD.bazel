@@ -77,6 +77,7 @@ jvm_library(
     "@community//libraries/grpc",
     "@community//libraries/grpc-netty-shaded",
     "//rplugin/psi",
+    "@community//platform/xdebugger-impl/shared",
   ]
 )
 
@@ -156,6 +157,7 @@ jvm_library(
     "@community//libraries/grpc",
     "@community//libraries/grpc-netty-shaded",
     "//rplugin/psi",
+    "@community//platform/xdebugger-impl/shared",
   ]
 )
 ### auto-generated section `build intellij.r` end
