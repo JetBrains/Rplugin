@@ -4,21 +4,21 @@
 
 package org.jetbrains.r.breadcrumbs
 
+import com.intellij.lang.LanguageUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiManager
 import com.intellij.r.psi.RLanguage
 import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import com.intellij.ui.breadcrumbs.BreadcrumbsProvider
 import com.intellij.ui.components.breadcrumbs.Crumb
 import com.intellij.xml.breadcrumbs.CrumbPresentation
 
-class RFileBreadcrumbsCollector(private val project: Project) : CommonPsiFileBreadcrumbsCollector(project) {
+class RFileBreadcrumbsCollector(project: Project) : CommonPsiFileBreadcrumbsCollector(project) {
   override fun handlesFile(virtualFile: VirtualFile): Boolean {
     if (!virtualFile.isValid) return false
-    val psiFile = PsiManager.getInstance(project).findFile(virtualFile) ?: return false
-    return psiFile.language == RLanguage.INSTANCE || psiFile.language == RMarkdownLanguage
+    val language = LanguageUtil.getFileLanguage(virtualFile)
+    return language == RLanguage.INSTANCE || language == RMarkdownLanguage
   }
 
   override fun createCrumb(element: PsiElement, provider: BreadcrumbsProvider, presentation: CrumbPresentation?): Crumb {

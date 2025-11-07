@@ -7,14 +7,9 @@ package org.jetbrains.r.settings
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.*
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.r.psi.interpreter.RInterpreterLocation
-import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.RLocalInterpreterLocation
-import org.jetbrains.r.interpreter.toLocalPathOrNull
 
 @Service(Service.Level.PROJECT)
 @State(name = "RSettings", storages = [Storage("rSettings.xml")])
@@ -67,13 +62,6 @@ class RSettings(private val project: Project) : SimplePersistentStateComponent<R
     }
   }
 
-  @Synchronized
-  private fun fetchInterpreterLocation(): RInterpreterLocation? {
-    return getSuggestedPath()
-      ?.let { RLocalInterpreterLocation(it) }
-      ?.also { state.interpreterPath = it.toLocalPathOrNull() ?: "" }
-  }
-
   private fun fireListeners(actualInterpreterLocation: RInterpreterLocation?) {
     interpreterLocationListeners.forEach { it.projectInterpreterLocationChanged(actualInterpreterLocation) }
   }
@@ -100,13 +88,6 @@ class RSettings(private val project: Project) : SimplePersistentStateComponent<R
   }
 
   companion object {
-    private fun getSuggestedPath(): String? {
-      return runAsync { RInterpreterUtil.suggestHomePath() }
-        .onError { Logger.getInstance(RSettings::class.java).error(it) }
-        .blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT)
-        ?.takeIf { it.isNotBlank() }
-    }
-
     fun getInstance(project: Project): RSettings = project.service<RSettings>()
   }
 }

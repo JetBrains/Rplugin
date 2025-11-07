@@ -43,8 +43,7 @@ object RInterpretersCollector : CounterUsagesCollector() {
                                                             IS_CONDA,
                                                             SUGGESTED)
 
-  fun logSetupInterpreter(project: Project?, interpreter: RInterpreter) {
-    val suggestedInterpreters = collectFoundInterpreters(interpreter)
+  fun logSetupInterpreter(project: Project, interpreter: RInterpreter, suggestedInterpreters: List<String>) {
     val isConda = isConda(interpreter.interpreterLocation)
     val data = ArrayList<EventPair<*>>()
     data.add(EventFields.Version.with(interpreter.version.toCompactString()))
@@ -57,7 +56,7 @@ object RInterpretersCollector : CounterUsagesCollector() {
     return RCondaUtil.findCondaByRInterpreter(File(interpreterLocation.toLocalPathOrNull() ?: return false)) != null
   }
 
-  private fun collectFoundInterpreters(selected: RInterpreter): List<String> {
+  suspend fun collectFoundInterpreters(selected: RInterpreter): List<String> {
     val allInterpreters = RInterpreterUtil.suggestAllInterpreters(false)
     val selectedInfo: RInterpreterInfo? = allInterpreters.find { it.interpreterLocation == selected.interpreterLocation }
     return if (selectedInfo == null) {

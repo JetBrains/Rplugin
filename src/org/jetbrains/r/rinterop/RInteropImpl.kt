@@ -1370,7 +1370,7 @@ class RInteropImpl(
   }
 
   override fun invalidateCaches() {
-    RInteropCoroutineScope.getCoroutineScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
+    RInteropCoroutineScope.getCoroutineScope(project).launch(ModalityState.nonModal().asContextElement()) {
       edtWriteAction {
         PsiManager.getInstance(project).dropPsiCaches()
       }

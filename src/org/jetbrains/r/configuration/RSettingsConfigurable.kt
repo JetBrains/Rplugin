@@ -8,6 +8,7 @@ import com.intellij.openapi.options.DslConfigurableBase
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.util.Disposer
+import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.interpreter.RInterpreterInfo
 import com.intellij.r.psi.interpreter.RInterpreterLocation
@@ -16,7 +17,6 @@ import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.settings.RInterpreterSettings
@@ -70,7 +70,7 @@ class RSettingsConfigurable(private val project: Project) : DslConfigurableBase(
     }
 
     extensionConfigurables.forEach { it.reset() }
-    val existing = getSynchronously(LOADING_INTERPRETERS_TEXT) {
+    val existing = runWithModalProgressBlocking(project, RBundle.message("project.settings.interpreters.loading")) {
       RInterpreterUtil.suggestAllInterpreters(true)
     }
     val selection = settings.interpreterLocation?.findAmong(existing)
@@ -122,9 +122,5 @@ class RSettingsConfigurable(private val project: Project) : DslConfigurableBase(
   private fun onInterpreterLocationChanged() {
     if (project.isDefault) return
     RInterpreterManager.restartInterpreter(project)
-  }
-
-  companion object {
-    private val LOADING_INTERPRETERS_TEXT = RBundle.message("project.settings.interpreters.loading")
   }
 }

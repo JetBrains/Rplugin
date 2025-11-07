@@ -17,12 +17,13 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.util.text.TextWithMnemonic
 import com.intellij.openapi.wm.impl.welcomeScreen.FlatWelcomeFrame
 import com.intellij.platform.DirectoryProjectGenerator
+import com.intellij.platform.ide.progress.ModalTaskOwner
+import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginUtil
 import com.intellij.ui.HideableDecorator
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.UIUtil
-import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.projectGenerator.panel.interpreter.RAddNewInterpreterPanel
 import org.jetbrains.r.projectGenerator.panel.interpreter.RChooseInterpreterGroupPanel
@@ -170,7 +171,7 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
     val container = JPanel(BorderLayout())
     val decoratorPanel = JPanel(VerticalFlowLayout())
 
-    val existingInterpreters = getSynchronously(RBundle.message("project.settings.interpreters.loading")) {
+    val existingInterpreters = runWithModalProgressBlocking(ModalTaskOwner.guess(), RBundle.message("project.settings.interpreters.loading")) {
       RInterpreterUtil.suggestAllInterpreters(enabledOnly = false, localOnly = onlyLocalInterpreters)
     }
 

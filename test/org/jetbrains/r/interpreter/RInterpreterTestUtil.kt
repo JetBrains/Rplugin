@@ -9,6 +9,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.r.psi.interpreter.RInterpreter
 import com.intellij.testFramework.PlatformTestUtil
+import com.intellij.testFramework.common.timeoutRunBlocking
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -16,7 +17,7 @@ object RInterpreterTestUtil {
   private val LOGGER = Logger.getInstance(RInterpreterTestUtil::class.java)
 
   fun makeChildInterpreter(project: Project): RLocalInterpreterImpl {
-    val interpreterPath = RInterpreterUtil.suggestHomePath()
+    val interpreterPath = timeoutRunBlocking { RInterpreterUtil.suggestHomePath() }
     val location = RLocalInterpreterLocation(interpreterPath)
     return RLocalInterpreterImpl(location, project)
   }

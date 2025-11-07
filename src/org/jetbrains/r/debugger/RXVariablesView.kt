@@ -15,6 +15,7 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.EmptyRunnable
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.rinterop.RVar
 import com.intellij.ui.AppUIUtil
 import com.intellij.ui.ClickListener
@@ -153,8 +154,8 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
 
   private fun installEditListeners() {
     val watchTree = tree
-    val quitePeriod = Alarm()
-    val editAlarm = Alarm()
+    val quitePeriod = Alarm(RPluginCoroutineScope.getScope(console.project))
+    val editAlarm = Alarm(RPluginCoroutineScope.getScope(console.project))
     val mouseListener = object : ClickListener() {
       override fun onClick(event: MouseEvent, clickCount: Int): Boolean {
         if (!SwingUtilities.isLeftMouseButton(event) || event.isShiftDown || event.isAltDown || event.isControlDown || event.isMetaDown) {

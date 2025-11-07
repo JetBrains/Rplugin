@@ -752,7 +752,7 @@ You can find the source code in the following repositories:
         <!-- R help providers -->
         <webHelpProvider implementation="org.jetbrains.r.help.RWebHelpProvider"/>
 
-        <virtualFileSystem implementationClass="org.jetbrains.r.rinterop.RSourceFileManager$MyVirtualFileSystem"
+        <virtualFileSystem implementationClass="com.intellij.r.psi.rinterop.RSourceFileManager$MyVirtualFileSystem"
                            key="rwrapper" physical="false"/>
         <!-- Diagnostics -->
         <errorHandler implementation="org.jetbrains.r.diagnostic.RExceptionAnalyzerReporter"/>

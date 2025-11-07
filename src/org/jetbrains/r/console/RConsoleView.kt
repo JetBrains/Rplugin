@@ -305,7 +305,7 @@ class RConsoleView(val rInterop: RInteropImpl, title: String) : LanguageConsoleI
     postFlushActions.add {
       val allHighlighters = to.allHighlighters.toList()
       var currentOffset = historyLengthBeforeInput
-      for (currentLine in 0..nextLineBegins.size) {
+      for (currentLine in 0..<nextLineBegins.size) {
         // Firstly, find console prompt
         val promptIndex = allHighlighters.indexOfFirst { it.startOffset == currentOffset }.takeIf { it != -1 } ?: break
         val prompt = allHighlighters[promptIndex]

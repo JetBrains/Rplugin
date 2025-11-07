@@ -27,7 +27,7 @@ class RSourceFileManager {
     override fun refresh(asynchronous: Boolean) {
     }
 
-    internal fun createFile(name: String, text: String): VirtualFile {
+    fun createFile(name: String, text: String): VirtualFile {
       val file = object : ReadOnlyLightVirtualFile("${fileIndex.incrementAndGet()}/$name", RLanguage.INSTANCE, text) {
         override fun getFileSystem() = this@MyVirtualFileSystem
         override fun getName() = name
@@ -36,7 +36,7 @@ class RSourceFileManager {
       return file
     }
 
-    internal fun removeFile(path: String) {
+    fun removeFile(path: String) {
       files.remove(path)
     }
   }

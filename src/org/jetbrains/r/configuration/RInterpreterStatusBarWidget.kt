@@ -6,6 +6,7 @@ package org.jetbrains.r.configuration
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.service
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAwareAction
@@ -18,19 +19,21 @@ import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidgetFactory
 import com.intellij.openapi.wm.impl.status.EditorBasedStatusBarPopup
 import com.intellij.openapi.wm.impl.status.widget.StatusBarWidgetsManager
+import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.interpreter.RInterpreterInfo
 import com.intellij.r.psi.interpreter.RInterpreterLocation
 import com.intellij.util.messages.MessageBusConnection
 import com.intellij.r.psi.icons.RIcons
+import com.intellij.r.psi.RPluginCoroutineScope
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.Nls
-import org.jetbrains.concurrency.CancellablePromise
-import org.jetbrains.concurrency.isPending
-import org.jetbrains.concurrency.isRejected
-import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.console.RConsoleToolWindowFactory
-import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.RLocalInterpreterLocation
@@ -65,29 +68,40 @@ private class RInterpreterStatusBarWidget(project: Project,
   private val settings = RSettings.getInstance(project)
 
   @Volatile
-  private var fetchInterpreterPromise: CancellablePromise<RInterpreterInfo?>? = null
+  private var fetchInterpreterPromise: Deferred<RInterpreterInfo?>? = null
+  @Volatile
+  private var cachedValue: Pair<RInterpreterInfo?, Long> = null to 0L
 
+  private val freshnessMillis: Long = 2000L
+
+  @OptIn(ExperimentalCoroutinesApi::class)
   override fun getWidgetState(file: VirtualFile?): WidgetState {
+    val now = System.currentTimeMillis()
     val projectInterpreterInfo: RInterpreterInfo? = synchronized(this) {
-      val fetchPromise = fetchInterpreterPromise
+      val (cached, lastFetchFinishedAtMillis) = cachedValue
+      val fresh = lastFetchFinishedAtMillis != 0L && (now - lastFetchFinishedAtMillis) < freshnessMillis
+      val promise = fetchInterpreterPromise
 
       when {
-        (fetchPromise == null || fetchPromise.isPending) -> {
-          fetchInterpreterPromise?.cancel()
-          fetchInterpreterPromise = runAsync {
+        fresh -> cached
+
+        promise == null || promise.isCancelled || promise.isCompleted -> {
+          fetchInterpreterPromise = RPluginCoroutineScope.getScope(project).async {
             val projectInterpreterLocation = settings.interpreterLocation
-            RInterpreterUtil.suggestAllInterpreters(true).firstOrNull { it.interpreterLocation == projectInterpreterLocation }
-          }.onProcessed { update() } as CancellablePromise
+            val fetched = RInterpreterUtil.suggestAllInterpreters(true)
+              .firstOrNull { it.interpreterLocation == projectInterpreterLocation }
+            cachedValue = fetched to System.currentTimeMillis()
+            fetched
+          }
+          RPluginCoroutineScope.getScope(project).async {
+            fetchInterpreterPromise?.await()
+            withContext(Dispatchers.EDT) { update() }
+          }
           return WidgetState.NO_CHANGE
         }
-        fetchPromise.isSucceeded -> {
-          fetchInterpreterPromise = null
-          fetchPromise.blockingGet(1)
-        }
-        fetchPromise.isRejected -> {
-          fetchInterpreterPromise = null
-          null
-        }
+
+        promise.isActive -> cached
+
         else -> return WidgetState.NO_CHANGE
       }
     }
@@ -126,7 +140,7 @@ class RInterpreterPopupFactory(private val project: Project) {
 
   fun createPopup(context: DataContext): ListPopup {
     val group = DefaultActionGroup()
-    val allInterpreters = ExecuteExpressionUtils.getSynchronously(RBundle.message("project.settings.interpreters.loading")) {
+    val allInterpreters = runWithModalProgressBlocking(project, RBundle.message("project.settings.interpreters.loading")) {
       RInterpreterUtil.suggestAllInterpreters(true)
     }
     val groupedInterpreters = allInterpreters.groupBy { it.interpreterLocation.javaClass }

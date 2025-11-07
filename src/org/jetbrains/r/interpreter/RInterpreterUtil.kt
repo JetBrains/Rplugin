@@ -20,14 +20,21 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.RPluginUtil
 import com.intellij.r.psi.interpreter.*
 import com.intellij.r.psi.lexer.SingleStringTokenLexer
 import com.intellij.r.psi.notifications.RNotificationUtil
 import com.intellij.util.EnvironmentUtil
+import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesScanner
+import com.intellij.util.io.computeDetached
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.withContext
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.configuration.RSettingsProjectConfigurable
 import org.jetbrains.r.console.RConsoleManager
@@ -104,7 +111,7 @@ object RInterpreterUtil {
     return version != null && version.isOrGreaterThan(3, 4)
   }
 
-  fun suggestAllInterpreters(enabledOnly: Boolean, localOnly: Boolean = false): List<RInterpreterInfo> {
+  suspend fun suggestAllInterpreters(enabledOnly: Boolean, localOnly: Boolean = false): List<RInterpreterInfo> {
     fun MutableList<RInterpreterInfo>.addInterpreter(path: String, name: String) {
       if (findByPath(path) == null) {
         RBasicInterpreterInfo.from(name, RLocalInterpreterLocation(path))?.let { inflated ->
@@ -114,7 +121,7 @@ object RInterpreterUtil {
       }
     }
 
-    fun suggestAllExisting(): List<RInterpreterInfo> {
+    suspend fun suggestAllExisting(): List<RInterpreterInfo> {
       return mutableListOf<RInterpreterInfo>().apply {
         if (localOnly) {
           addAll(RInterpreterSettings.existingInterpreters.filter { it.interpreterLocation is RLocalInterpreterLocation })
@@ -139,7 +146,7 @@ object RInterpreterUtil {
     }
   }
 
-  fun suggestHomePath(): String {
+  suspend fun suggestHomePath(): String {
     return suggestAllHomePaths().firstOrNull() ?: ""
   }
 
@@ -162,20 +169,23 @@ object RInterpreterUtil {
     return result
   }
 
-  fun suggestAllHomePaths(): List<String> {
+  suspend fun suggestAllHomePaths(): List<String> {
     if (ApplicationManager.getApplication().isUnitTestMode && EnvironmentUtil.getValue("RPLUGIN_INTERPRETER_PATH") != null) {
       return listOf(EnvironmentUtil.getValue("RPLUGIN_INTERPRETER_PATH")!!)
     }
     return suggestHomePaths()
   }
 
-  private fun suggestHomePaths(): List<String> {
+  @OptIn(DelicateCoroutinesApi::class)
+  private suspend fun suggestHomePaths(): List<String> {
     if (SystemInfo.isWindows) {
       return fromPathVariable.union(suggestHomePathInProgramFiles()).toList()
     }
     try {
-      val rFromPath = CapturingProcessHandler(GeneralCommandLine("which", "R"))
-        .runProcess(DEFAULT_TIMEOUT).stdout.trim { it <= ' ' }
+      val rFromPath = computeDetached {
+        CapturingProcessHandler(GeneralCommandLine("which", "R"))
+          .runProcess(DEFAULT_TIMEOUT).stdout.trim { it <= ' ' }
+      }
 
       if (rFromPath.isNotEmpty()) {
         return listOf(rFromPath)

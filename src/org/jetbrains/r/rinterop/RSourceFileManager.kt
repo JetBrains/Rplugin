@@ -10,16 +10,13 @@ import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.vfs.DeprecatedVirtualFileSystem
-import com.intellij.openapi.vfs.NonPhysicalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.r.psi.RLanguage
 import com.intellij.r.psi.debugger.RSourcePosition
 import com.intellij.r.psi.rinterop.RRef
 import com.intellij.r.psi.rinterop.RReference
+import com.intellij.r.psi.rinterop.RSourceFileManager
 import com.intellij.r.psi.util.thenCancellable
-import com.intellij.testFramework.ReadOnlyLightVirtualFile
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import org.jetbrains.annotations.TestOnly
@@ -27,7 +24,6 @@ import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.r.run.debug.RLineBreakpointType
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicInteger
 
 class RSourceFileManager(private val rInterop: RInteropImpl): Disposable {
   private val files = ConcurrentHashMap<String, VirtualFile>()
@@ -67,6 +63,7 @@ class RSourceFileManager(private val rInterop: RInteropImpl): Disposable {
     if (text.isEmpty()) return null
     val name = rInterop.execute(rInterop.asyncStub::getSourceFileName, StringValue.of(fileId)).value
       .takeIf { it.isNotEmpty() } ?: "tmp"
+    val filesystem = VirtualFileManager.getInstance().getFileSystem(PROTOCOL) as RSourceFileManager.MyVirtualFileSystem
     val file = filesystem.createFile(name, text)
     fileToId[file] = fileId
     files[fileId] = file
@@ -99,54 +96,22 @@ class RSourceFileManager(private val rInterop: RInteropImpl): Disposable {
 
   @TestOnly
   fun createFileForTest(name: String, text: String): VirtualFile {
-    return filesystem.createFile(name, text)
+    return (VirtualFileManager.getInstance().getFileSystem(PROTOCOL) as RSourceFileManager.MyVirtualFileSystem).createFile(name, text)
   }
 
   override fun dispose() {
-  }
-
-  class MyVirtualFileSystem : DeprecatedVirtualFileSystem(), NonPhysicalFileSystem {
-    private val files = ConcurrentHashMap<String, VirtualFile>()
-    private val fileIndex = AtomicInteger(0)
-
-    init {
-      startEventPropagation()
-    }
-
-    override fun getProtocol() = PROTOCOL
-
-    override fun findFileByPath(path: String) = files[path]
-
-    override fun refreshAndFindFileByPath(path: String) = findFileByPath(path)
-
-    override fun refresh(asynchronous: Boolean) {
-    }
-
-    internal fun createFile(name: String, text: String): VirtualFile {
-      val file = object : ReadOnlyLightVirtualFile("${fileIndex.incrementAndGet()}/$name", RLanguage.INSTANCE, text) {
-        override fun getFileSystem() = this@MyVirtualFileSystem
-        override fun getName() = name
-      }
-      files[file.path] = file
-      return file
-    }
-
-    internal fun removeFile(path: String) {
-      files.remove(path)
-    }
   }
 
   companion object {
     private const val IDE_PREFIX = "ide:"
     private const val R_LOCAL_PREFIX = "rlocal:"
     private const val PROTOCOL = "rwrapper"
-    private val filesystem = VirtualFileManager.getInstance().getFileSystem(PROTOCOL) as MyVirtualFileSystem
 
-    fun isTemporary(file: VirtualFile) = file.fileSystem == filesystem
+    fun isTemporary(file: VirtualFile) = file.fileSystem == VirtualFileManager.getInstance().getFileSystem(PROTOCOL)
 
     fun isInvalid(url: String): Boolean {
       if (VirtualFileManager.extractProtocol(url) == PROTOCOL) {
-        return filesystem.findFileByPath(VirtualFileManager.extractPath(url)) == null
+        return VirtualFileManager.getInstance().getFileSystem(PROTOCOL).findFileByPath(VirtualFileManager.extractPath(url)) == null
       }
       return false
     }

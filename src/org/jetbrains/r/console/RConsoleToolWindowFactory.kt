@@ -27,6 +27,7 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.openapi.wm.ex.ToolWindowManagerListener
 import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
+import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.interpreter.RInterpreterManager
@@ -61,7 +62,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
         val visible = toolWindow.isVisible
         if (!previousVisibility.get() && visible) {
           if (RSettings.getInstance(project).interpreterLocation == null) {
-            ProgressManager.getInstance().runProcessWithProgressSynchronously( {
+            runWithModalProgressBlocking(project, RBundle.message("console.starting.label.text")) {
               RInterpreterUtil.suggestAllInterpreters(true, true).firstOrNull()?.let { interpreterInfo ->
                 invokeAndWaitIfNeeded {
                   if (project.isDisposed) return@invokeAndWaitIfNeeded
@@ -69,7 +70,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
                   RInterpreterManager.getInstance(project).interpreterLocation = interpreterInfo.interpreterLocation
                 }
               }
-            }, RBundle.message("console.starting.label.text"), false, project)
+            }
           }
           tryAddContent(toolWindow, project)
         }

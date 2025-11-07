@@ -5,12 +5,13 @@
 package org.jetbrains.r.run
 
 import junit.framework.TestCase
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.interpreter.RInterpreterUtil
 
 class InterpreterValidityTest : RUsefulTestCase() {
   fun testValidity() {
-    RInterpreterUtil.suggestAllHomePaths().forEach { interpreterPath ->
+    runBlocking { RInterpreterUtil.suggestAllHomePaths() }.forEach { interpreterPath ->
       TestCase.assertNotNull(RInterpreterUtil.getVersionByPath(interpreterPath))
     }
   }

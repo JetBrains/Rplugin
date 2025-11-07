@@ -10,6 +10,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
+import com.intellij.openapi.progress.runBlockingMaybeCancellable
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.psi.stubs.StubUpdatingIndex
@@ -56,7 +57,7 @@ interface RInterpreterManager {
   }
 }
 
-private class NoRInterpreterException(message: String = "No R Interpreter"): RuntimeException(message)
+class NoRInterpreterException(message: String = "No R Interpreter"): RuntimeException(message)
 
 internal class RInterpreterManagerImpl(
   private val project: Project,
@@ -122,7 +123,7 @@ internal class RInterpreterManagerImpl(
 
   private fun fetchInterpreterLocation(): RInterpreterLocation? {
     return if (ApplicationManager.getApplication().isUnitTestMode) {
-      RLocalInterpreterLocation(RInterpreterUtil.suggestHomePath())
+      RLocalInterpreterLocation(runBlockingMaybeCancellable { RInterpreterUtil.suggestHomePath() })
     } else {
       RSettings.getInstance(project).interpreterLocation
     }
@@ -138,7 +139,8 @@ internal class RInterpreterManagerImpl(
       location.createInterpreter(project).onSuccess { it ->
         interpreterOrNull = it
         ensureInterpreterStored(it)
-        RInterpretersCollector.logSetupInterpreter(project, it)
+        val suggestedInterpreters = RInterpretersCollector.collectFoundInterpreters(it)
+        RInterpretersCollector.logSetupInterpreter(project, it, suggestedInterpreters)
       }.onFailure { e ->
         RInterpreterBase.LOG.warn(e)
         RSettings.getInstance(project).interpreterLocation = null
