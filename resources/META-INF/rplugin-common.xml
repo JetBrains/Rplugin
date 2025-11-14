@@ -754,8 +754,6 @@ You can find the source code in the following repositories:
 
         <virtualFileSystem implementationClass="com.intellij.r.psi.rinterop.RSourceFileManager$MyVirtualFileSystem"
                            key="rwrapper" physical="false"/>
-        <!-- Diagnostics -->
-        <errorHandler implementation="org.jetbrains.r.diagnostic.RExceptionAnalyzerReporter"/>
 
         <!-- Registry keys -->
         <registryKey defaultValue="120000" key="r.interpreter.defaultTimeout" description="Default timeout for R interpreter operations"/>
