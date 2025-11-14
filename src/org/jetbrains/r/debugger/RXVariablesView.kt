@@ -38,6 +38,7 @@ import com.intellij.xdebugger.impl.frame.actions.XMoveWatchUp
 import com.intellij.xdebugger.impl.frame.actions.XWatchesTreeActionBase
 import com.intellij.xdebugger.impl.ui.DebuggerUIUtil
 import com.intellij.xdebugger.impl.ui.tree.XDebuggerTree
+import com.intellij.xdebugger.impl.ui.tree.XDebuggerTreeState
 import com.intellij.xdebugger.impl.ui.tree.nodes.*
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
@@ -91,9 +92,9 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
     super.clear()
   }
 
-  override fun doCreateNewRootNode(stackFrame: XStackFrame?): XValueContainerNode<*> {
+  override fun doCreateNewRootNode(stackFrame: XStackFrame?, state: XDebuggerTreeState?): XValueContainerNode.Root<*> {
     val watchExpressions = rootNode?.watchChildren.orEmpty().map { it.expression }
-    val node = object : WatchesRootNode(tree, this, watchExpressions, stackFrame, true) {
+    val node = object : WatchesRootNode(tree, this, watchExpressions, stackFrame, true, state) {
       override fun clearChildren() {
         this@RXVariablesView.stackFrame?.resetOffset()
         super.clearChildren()
