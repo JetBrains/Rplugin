@@ -17,12 +17,12 @@ import com.intellij.openapi.util.ThrowableComputable
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.r.psi.RPluginUtil
 import com.intellij.r.psi.interpreter.RInterpreterLocation
+import com.intellij.util.ui.EDT
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withTimeout
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
-import java.awt.EventQueue.isDispatchThread
 import java.nio.file.Paths
 
 object ExecuteExpressionUtils {
@@ -33,7 +33,7 @@ object ExecuteExpressionUtils {
     title: @NlsContexts.ModalProgressTitle String,
     debugName: String,
     timeout: Int = DEFAULT_TIMEOUT,
-    task: suspend () -> List<E>
+    task: suspend () -> List<E>,
   ): List<E> {
     return try {
       runWithModalProgressBlocking(project, title) {
@@ -53,7 +53,7 @@ object ExecuteExpressionUtils {
 
   // taken from: com.jetbrains.python.util.runWithModalBlockingOrInBackground
   fun <T> runWithModalBlockingOrInBackground(project: Project, @NlsSafe msg: String, action: suspend CoroutineScope.() -> T): T {
-    if (isDispatchThread()) {
+    if (EDT.isCurrentThreadEdt()) {
       return runWithModalProgressBlocking(project, msg, action)
     }
 
@@ -83,33 +83,39 @@ object ExecuteExpressionUtils {
     }, title, false, null)
   }
 
-  fun executeScriptInBackground(interpreterLocation: RInterpreterLocation,
-                                relativeScriptPath: String,
-                                args: List<String>,
-                                title: String,
-                                timeout: Int = DEFAULT_TIMEOUT,
-                                project: Project? = null): ProcessOutput {
+  fun executeScriptInBackground(
+    interpreterLocation: RInterpreterLocation,
+    relativeScriptPath: String,
+    args: List<String>,
+    title: String,
+    timeout: Int = DEFAULT_TIMEOUT,
+    project: Project? = null,
+  ): ProcessOutput {
     return getSynchronously(title) {
       executeScript(interpreterLocation, relativeScriptPath, args, timeout, project)
     }
   }
 
-  fun launchScript(interpreterLocation: RInterpreterLocation,
-                   relativeScriptPath: String,
-                   args: List<String>,
-                   workingDirectory: String? = null,
-                   project: Project? = null): BaseProcessHandler<*> {
+  fun launchScript(
+    interpreterLocation: RInterpreterLocation,
+    relativeScriptPath: String,
+    args: List<String>,
+    workingDirectory: String? = null,
+    project: Project? = null,
+  ): BaseProcessHandler<*> {
     val helper = RPluginUtil.findFileInRHelpers(Paths.get("R", relativeScriptPath).toString())
     val helperOnHost = interpreterLocation.uploadFileToHost(helper)
     val interpreterArgs = RInterpreterUtil.getRunHelperArgs(helperOnHost, args, project)
     return interpreterLocation.runInterpreterOnHost(interpreterArgs, workingDirectory)
   }
 
-  fun executeScript(interpreterLocation: RInterpreterLocation,
-                    relativeScriptPath: String,
-                    args: List<String>,
-                    timeout: Int = DEFAULT_TIMEOUT,
-                    project: Project? = null): ProcessOutput {
+  fun executeScript(
+    interpreterLocation: RInterpreterLocation,
+    relativeScriptPath: String,
+    args: List<String>,
+    timeout: Int = DEFAULT_TIMEOUT,
+    project: Project? = null,
+  ): ProcessOutput {
     val process = launchScript(interpreterLocation, relativeScriptPath, args, project = project)
     return CapturingProcessRunner(process).runProcess(timeout)
   }
