@@ -36,6 +36,7 @@ import com.intellij.xdebugger.impl.frame.XWatchesView
 import com.intellij.xdebugger.impl.frame.actions.XMoveWatchDown
 import com.intellij.xdebugger.impl.frame.actions.XMoveWatchUp
 import com.intellij.xdebugger.impl.frame.actions.XWatchesTreeActionBase
+import com.intellij.xdebugger.impl.messages.XDebuggerImplBundle
 import com.intellij.xdebugger.impl.ui.DebuggerUIUtil
 import com.intellij.xdebugger.impl.ui.tree.XDebuggerTree
 import com.intellij.xdebugger.impl.ui.tree.XDebuggerTreeState
@@ -230,7 +231,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
       ActionManager.getInstance().getAction("XDebugger.RemoveWatch"),
       object : XMoveWatchUp() {
         init {
-          this.templatePresentation.text = ActionsBundle.message("action.XDebugger.MoveWatchUp.text")
+          this.templatePresentation.text = XDebuggerImplBundle.message("action.XDebugger.MoveWatchUp.text")
         }
 
         override fun perform(e: AnActionEvent, tree: XDebuggerTree, watchesView: XWatchesView) {
@@ -240,7 +241,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
       },
       object : XMoveWatchDown() {
         init {
-          this.templatePresentation.text = ActionsBundle.message("action.XDebugger.MoveWatchDown.text")
+          this.templatePresentation.text = XDebuggerImplBundle.message("action.XDebugger.MoveWatchDown.text")
         }
 
         override fun perform(e: AnActionEvent, tree: XDebuggerTree, watchesView: XWatchesView) {

@@ -37,6 +37,7 @@ import com.intellij.xdebugger.impl.actions.handlers.XDebuggerCustomMuteBreakpoin
 import com.intellij.xdebugger.impl.frame.XDebuggerFramesList
 import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
 import com.intellij.r.psi.icons.RIcons
+import com.intellij.xdebugger.impl.messages.XDebuggerImplBundle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Nls
@@ -278,7 +279,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   }
 
   private fun createMuteBreakpointsAction(): ToggleAction {
-    return object : RDumbAwareBgtToggleAction(ActionsBundle.message("action.XDebugger.MuteBreakpoints.text"), null,
+    return object : RDumbAwareBgtToggleAction(XDebuggerImplBundle.message("action.XDebugger.MuteBreakpoints.text"), null,
                                               AllIcons.Debugger.MuteBreakpoints) {
       override fun isSelected(e: AnActionEvent) = breakpointsMuted
 
