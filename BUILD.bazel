@@ -52,6 +52,7 @@ jvm_library(
     "@community//libraries/jediterm-core",
     "@community//libraries/jediterm-ui",
     "@community//plugins/terminal",
+    "@community//platform/execution",
     "@community//platform/execution-impl",
     "//plugins/webDeployment",
     "@community//libraries/winp",
@@ -78,6 +79,7 @@ jvm_library(
     "@community//libraries/grpc-netty-shaded",
     "//rplugin/psi",
     "@community//platform/xdebugger-impl/shared",
+    "@community//platform/forms_rt:java-guiForms-rt",
   ]
 )
 
@@ -123,6 +125,7 @@ jvm_library(
     "@community//libraries/jediterm-core",
     "@community//libraries/jediterm-ui",
     "@community//plugins/terminal",
+    "@community//platform/execution",
     "@community//platform/execution-impl",
     "//plugins/webDeployment",
     "@community//libraries/winp",
@@ -158,6 +161,7 @@ jvm_library(
     "@community//libraries/grpc-netty-shaded",
     "//rplugin/psi",
     "@community//platform/xdebugger-impl/shared",
+    "@community//platform/forms_rt:java-guiForms-rt",
   ]
 )
 ### auto-generated section `build intellij.r` end

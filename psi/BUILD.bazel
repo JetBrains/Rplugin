@@ -16,6 +16,7 @@ jvm_library(
   deps = [
     "@lib//:protobuf",
     "@community//platform/core-api:core",
+    "@community//platform/lang-api:lang",
     "@community//platform/core-impl",
     "@community//platform/lang-impl",
     "@community//platform/indexing-api:indexing",
