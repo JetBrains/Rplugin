@@ -1,0 +1,5 @@
+<idea-plugin>
+  <extensions defaultExtensionNs="com.intellij">
+    <fileType name="R" implementationClass="com.intellij.r.psi.RFileType" fieldName="INSTANCE" language="R" extensions="R;Rprofile"/>
+  </extensions>
+</idea-plugin>
