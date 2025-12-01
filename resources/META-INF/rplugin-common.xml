@@ -86,7 +86,7 @@ You can find the source code in the following repositories:
                       interface="org.jetbrains.r.rmarkdown.RmdCellLanguageProvider" dynamic="true"/>
 
       <extensionPoint qualifiedName="com.intellij.rInterpreterSettingsProvider"
-                      interface="org.jetbrains.r.settings.RInterpreterSettingsProvider" dynamic="true"/>
+                      interface="com.intellij.r.psi.settings.RInterpreterSettingsProvider" dynamic="true"/>
 
       <extensionPoint qualifiedName="com.intellij.rLspStatus"
                       interface="org.jetbrains.r.lsp.RLspStatus" dynamic="true"/>
@@ -100,31 +100,31 @@ You can find the source code in the following repositories:
             <add-to-group group-id="ToolsMenu" anchor="last"/>
         </action>
 
-        <action id="org.jetbrains.r.console.RConsoleView.RInterruptAction"
-                class="org.jetbrains.r.console.RConsoleView$RInterruptAction"
+        <action id="org.jetbrains.r.console.RConsoleViewImpl.RInterruptAction"
+                class="org.jetbrains.r.console.RConsoleViewImpl$RInterruptAction"
                 icon="AllIcons.Actions.Suspend">
           <keyboard-shortcut keymap="$default" first-keystroke="control C"/>
           <keyboard-shortcut keymap="Mac OS X" first-keystroke="control C" replace-all="true"/>
           <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control C" replace-all="true"/>
         </action>
 
-        <action id="org.jetbrains.r.console.RConsoleView.RestartRAction"
-                class="org.jetbrains.r.console.RConsoleView$RestartRAction"
+        <action id="org.jetbrains.r.console.RConsoleViewImpl.RestartRAction"
+                class="org.jetbrains.r.console.RConsoleViewImpl$RestartRAction"
                 icon="AllIcons.Actions.Restart"/>
 
-        <action id="org.jetbrains.r.console.RConsoleView.TerminateRWithReportAction"
-                class="org.jetbrains.r.console.RConsoleView$TerminateRWithReportAction"
+        <action id="org.jetbrains.r.console.RConsoleViewImpl.TerminateRWithReportAction"
+                class="org.jetbrains.r.console.RConsoleViewImpl$TerminateRWithReportAction"
                 icon="AllIcons.Debugger.KillProcess"/>
 
-        <action id="org.jetbrains.r.console.RConsoleView.REofAction"
-                class="org.jetbrains.r.console.RConsoleView$REofAction">
+        <action id="org.jetbrains.r.console.RConsoleViewImpl.REofAction"
+                class="org.jetbrains.r.console.RConsoleViewImpl$REofAction">
           <keyboard-shortcut keymap="$default" first-keystroke="control D"/>
           <keyboard-shortcut keymap="Mac OS X" first-keystroke="control D" replace-all="true"/>
           <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control D" replace-all="true"/>
         </action>
 
-        <action id="org.jetbrains.r.console.RConsoleView.RSetCurrentDirectoryFromEditor"
-                class="org.jetbrains.r.console.RConsoleView$RSetCurrentDirectoryFromEditor"
+        <action id="org.jetbrains.r.console.RConsoleViewImpl.RSetCurrentDirectoryFromEditor"
+                class="org.jetbrains.r.console.RConsoleViewImpl$RSetCurrentDirectoryFromEditor"
                 icon="com.intellij.r.psi.icons.RIcons.ChangeWorkingDirectory"/>
 
         <action id="RConsoleRenameAction" class="org.jetbrains.r.console.RConsoleRenameAction">
@@ -531,9 +531,9 @@ You can find the source code in the following repositories:
                              id="org.jetbrains.r.configuration.RSettingsProjectConfigurable"
                              bundle="messages.RPluginBundle"
                              key="r.settings"
-                             instance="org.jetbrains.r.configuration.RSettingsProjectConfigurable"/>
+                             instance="com.intellij.r.psi.configuration.RSettingsProjectConfigurable"/>
 
-        <applicationService serviceImplementation="org.jetbrains.r.settings.RInterpreterSettings"/>
+        <applicationService serviceImplementation="com.intellij.r.psi.settings.RInterpreterSettings"/>
 
         <applicationService serviceImplementation="org.jetbrains.r.settings.REditorSettings"/>
 
@@ -556,6 +556,12 @@ You can find the source code in the following repositories:
 
         <projectService serviceInterface="com.intellij.r.psi.interpreter.RInterpreterStateManager"
                         serviceImplementation="org.jetbrains.r.interpreter.RInterpreterStateManagerImpl"/>
+
+        <projectService serviceInterface="com.intellij.r.psi.interpreter.RLocalInterpreterProvider"
+                        serviceImplementation="org.jetbrains.r.interpreter.RLocalInterpreterProviderImpl"/>
+
+        <projectService serviceInterface="com.intellij.r.psi.console.RConsoleManager"
+                        serviceImplementation="org.jetbrains.r.console.RConsoleManagerImpl"/>
 
         <projectService serviceImplementation="org.jetbrains.r.settings.REditorSettings"/>
 
@@ -760,7 +766,7 @@ You can find the source code in the following repositories:
         <registryKey defaultValue="30000" key="r.interpreter.initializedTimeout" description="Timeout for initializing Rwrapper"/>
 
         <!-- Interpreter -->
-        <rInterpreterSettingsProvider implementation="org.jetbrains.r.settings.RLocalInterpreterSettingsProvider"/>
+        <rInterpreterSettingsProvider implementation="com.intellij.r.psi.settings.RLocalInterpreterSettingsProvider"/>
 
       <notificationGroup id="RDataFrameViewer" displayType="BALLOON"/>
       <notificationGroup id="RMarkdownRenderError" displayType="BALLOON"/>

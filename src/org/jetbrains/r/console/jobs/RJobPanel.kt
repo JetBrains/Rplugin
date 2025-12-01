@@ -23,6 +23,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiManager
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.icons.RIcons
 import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.OnePixelSplitter
@@ -39,7 +40,6 @@ import com.intellij.util.ui.JBEmptyBorder
 import com.intellij.util.ui.NamedColorUtil
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.components.BorderLayoutPanel
-import com.intellij.r.psi.icons.RIcons
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.miginfocom.swing.MigLayout

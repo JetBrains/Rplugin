@@ -11,7 +11,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleManagerImpl
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rinterop.RInteropImpl
@@ -73,7 +73,7 @@ abstract class RImportDataContextAction(text: String, description: String) : Dum
       get() = getData(CommonDataKeys.VIRTUAL_FILE_ARRAY)
 
     private fun getCurrentInteropOrNull(project: Project): RInteropImpl? {
-      return RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop
+      return RConsoleManagerImpl.getInstance(project).currentConsoleOrNull?.rInterop
     }
 
     fun List<RequiredPackage>.areSatisfied(project: Project): Boolean {

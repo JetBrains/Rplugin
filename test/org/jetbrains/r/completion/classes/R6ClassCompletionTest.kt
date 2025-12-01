@@ -7,7 +7,7 @@ package org.jetbrains.r.completion.classes
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementPresentation
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
-import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.console.RConsoleViewImpl
 import org.jetbrains.r.console.addRuntimeInfo
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
@@ -118,7 +118,7 @@ class R6ClassCompletionTest : RProcessHandlerBaseTestCase() {
   private fun doTestBase(text: String, withRuntimeInfo: Boolean = false, inConsole: Boolean = false): Array<LookupElement> {
     myFixture.configureByText("foo.R", text)
     if (inConsole) {
-      myFixture.file.putUserData(RConsoleView.IS_R_CONSOLE_KEY, true)
+      myFixture.file.putUserData(RConsoleViewImpl.IS_R_CONSOLE_KEY, true)
     }
     if (withRuntimeInfo) {
       myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))

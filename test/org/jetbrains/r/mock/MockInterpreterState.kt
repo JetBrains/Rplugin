@@ -9,17 +9,17 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import org.jetbrains.concurrency.resolvedPromise
-import org.jetbrains.r.RUsefulTestCase
 import com.intellij.r.psi.common.ExpiringList
 import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.r.psi.interpreter.RInterpreterState
-import org.jetbrains.r.interpreter.RInterpreterUtil
+import com.intellij.r.psi.interpreter.RInterpreterUtil
 import com.intellij.r.psi.packages.RInstalledPackage
-import org.jetbrains.r.packages.RSkeletonUtil
 import com.intellij.r.psi.packages.RSkeletonUtilPsi
 import com.intellij.r.psi.rinterop.RInterop
 import com.intellij.r.psi.skeleton.RSkeletonFileType
+import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.r.RUsefulTestCase
+import org.jetbrains.r.packages.RSkeletonUtil
 import java.nio.file.Path
 
 class MockInterpreterState(override val project: Project, var provider: MockInterpreterStateProvider) : RInterpreterState {

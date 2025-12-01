@@ -3,7 +3,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.interpreter
+package com.intellij.r.psi.interpreter
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
@@ -20,28 +20,22 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.r.psi.RBundle
-import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.RPluginUtil
-import com.intellij.r.psi.interpreter.*
+import com.intellij.r.psi.configuration.RSettingsProjectConfigurable
+import com.intellij.r.psi.console.RConsoleManager
+import com.intellij.r.psi.interpreter.RInterpreterUtil.runHelper
 import com.intellij.r.psi.lexer.SingleStringTokenLexer
 import com.intellij.r.psi.notifications.RNotificationUtil
+import com.intellij.r.psi.rinterop.RCondaUtil
+import com.intellij.r.psi.settings.RInterpreterSettings
+import com.intellij.r.psi.settings.RSettings
 import com.intellij.util.EnvironmentUtil
-import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesScanner
 import com.intellij.util.io.computeDetached
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.withContext
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.configuration.RSettingsProjectConfigurable
-import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.interpreter.RInterpreterUtil.runHelper
-import org.jetbrains.r.rinterop.RCondaUtil
-import org.jetbrains.r.settings.RInterpreterSettings
-import org.jetbrains.r.settings.RSettings
 import java.io.File
 import java.nio.file.Paths
 import kotlin.io.path.exists
@@ -99,7 +93,8 @@ object RInterpreterUtil {
 
   fun getVersionByLocation(interpreterLocation: RInterpreterLocation, project: Project? = null): Version? {
     val result = runRInterpreter(interpreterLocation, listOf("--version"), null)
-    val version = parseVersion(result.stdoutLines.firstOrNull()) ?: parseVersion(result.stderrLines.firstOrNull())
+    val version = parseVersion(result.stdoutLines.firstOrNull())
+                  ?: parseVersion(result.stderrLines.firstOrNull())
     if (version != null) return version
 
     val script = RPluginUtil.findFileInRHelpers("R/GetVersion.R").takeIf { it.exists() } ?: return null
@@ -145,7 +140,6 @@ object RInterpreterUtil {
       existing
     }
   }
-
   suspend fun suggestHomePath(): String {
     return suggestAllHomePaths().firstOrNull() ?: ""
   }
@@ -159,13 +153,13 @@ object RInterpreterUtil {
       result.add(CondaPath(it.toString(), "(base)"))
     }
     Paths.get(condaRoot, "envs").takeIf { it.exists() && it.isDirectory() }
-                                        ?.toFile()?.listFiles()
-                                        ?.filter { it.isDirectory }
-                                        ?.forEach { env ->
-      Paths.get(env.absolutePath, "bin", rbin).takeIf { it.exists() }?.let {
-        result.add(CondaPath(it.toString(), env.name))
+      ?.toFile()?.listFiles()
+      ?.filter { it.isDirectory }
+      ?.forEach { env ->
+        Paths.get(env.absolutePath, "bin", rbin).takeIf { it.exists() }?.let {
+          result.add(CondaPath(it.toString(), env.name))
+        }
       }
-    }
     return result
   }
 
@@ -373,7 +367,7 @@ object RInterpreterUtil {
       ShowSettingsUtil.getInstance().showSettingsDialog(project, RSettingsProjectConfigurable::class.java)
     }
     val downloadAction = RNotificationUtil.createNotificationAction(RBundle.message("interpreter.manager.download.r.hint")) {
-      RInterpreterManagerImpl.openDownloadRPage()
+      RInterpreterManager.openDownloadRPage()
     }
     RNotificationUtil.notifyInterpreterError(project, message, settingsAction, downloadAction)
   }
@@ -390,15 +384,15 @@ object RInterpreterUtil {
       val processHandler = interpreterLocation.runInterpreterOnHost(args)
       return CapturingProcessRunner(processHandler).runProcess(DEFAULT_TIMEOUT)
     } catch (e: Throwable) {
-      RLocalInterpreterImpl.LOG.info("Failed to run R executable: \n" +
-                                     "Interpreter " + interpreterLocation + "\n" +
-                                     "Exception occurred: " + e.message)
+      RLocalInterpreterProvider.LOG.info("Failed to run R executable: \n" +
+                                         "Interpreter " + interpreterLocation + "\n" +
+                                         "Exception occurred: " + e.message)
     }
     return null
   }
 
   fun validateRProfile(project: Project, interpreterLocation: RInterpreterLocation, workingDir: String?,
-                               suggestRestartConsole: Boolean = false) {
+                       suggestRestartConsole: Boolean = false) {
     if (RSettings.getInstance(project).disableRprofile) return
     val helperOnHost = interpreterLocation.uploadFileToHost(RPluginUtil.findFileInRHelpers("R/empty.R"))
     val interpreterArgs = getRunHelperArgs(helperOnHost, listOf(), project)
@@ -410,7 +404,7 @@ object RInterpreterUtil {
         object : AnAction(RBundle.message("interpreter.rprofile.error.disable.and.restart")) {
           override fun actionPerformed(e: AnActionEvent) {
             RSettings.getInstance(project).disableRprofile = true
-            RConsoleManager.runConsole(project, true, workingDir).onError {
+            RConsoleManager.getInstance(project).runConsole(true, workingDir).onError {
               RNotificationUtil.notifyConsoleError(project, it.message)
             }
           }
@@ -489,7 +483,7 @@ object RInterpreterUtil {
 
 class RProfileErrorException(stderr: String) : Exception(".Rprofile may contain errors: $stderr")
 
-fun RInterpreter.runHelper(helper: File, args: List<String>, workingDirectory: String = basePath) = runHelper(interpreterLocation, helper, workingDirectory, args, project)
+fun RInterpreter.runHelper(helper: File, args: List<String>, workingDirectory: String = basePath) = RInterpreterUtil.runHelper(interpreterLocation, helper, workingDirectory, args, project)
 
 fun RInterpreter.isLocal(): Boolean = interpreterLocation is RLocalInterpreterLocation
 

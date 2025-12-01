@@ -15,9 +15,9 @@ import com.intellij.psi.PsiManager
 import com.intellij.r.psi.RFileType
 import com.intellij.r.psi.notifications.RNotificationUtil
 import com.intellij.r.psi.rmarkdown.RMarkdownFileType
-import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleManagerImpl
 import org.jetbrains.r.console.RConsoleToolWindowFactory
-import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.console.RConsoleViewImpl
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
 
@@ -33,7 +33,7 @@ abstract class RunSelectionBase : REditorActionBase() {
     super.update(e)
     val project = e.project ?: return
     e.presentation.isEnabled = e.presentation.isEnabled &&
-                               RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.isAlive != false
+                               RConsoleManagerImpl.getInstance(project).currentConsoleOrNull?.rInterop?.isAlive != false
   }
 
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
@@ -42,7 +42,7 @@ abstract class RunSelectionBase : REditorActionBase() {
     val project = e.project ?: return
     val editor = e.editor ?: return
     val selection = REditorActionUtil.getSelectedCode(editor) ?: return
-    RConsoleManager.getInstance(project).currentConsoleAsync.onSuccess { console ->
+    RConsoleManagerImpl.getInstance(project).currentConsoleAsync.onSuccess { console ->
       ConsoleHistoryController.addToHistory(console, selection.code)
       when (selection.file.fileType) {
         RFileType -> executeForRFile(console, selection)
@@ -53,7 +53,7 @@ abstract class RunSelectionBase : REditorActionBase() {
     RConsoleToolWindowFactory.focusOnCurrentConsole(project)
   }
 
-  private fun executeForRFile(console: RConsoleView, selection: REditorActionUtil.SelectedCode) {
+  private fun executeForRFile(console: RConsoleViewImpl, selection: REditorActionUtil.SelectedCode) {
     val debugCommand = RDebuggerUtil.getFirstDebugCommand(console.project, selection.file, selection.range)
     console.executeActionHandler.splitAndExecute(selection.code, isDebug = isDebug, sourceFile = selection.file,
                                                  sourceStartOffset = selection.range.startOffset,

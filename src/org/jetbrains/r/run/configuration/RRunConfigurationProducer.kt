@@ -9,10 +9,10 @@ import com.intellij.openapi.project.guessModuleDir
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.templateLanguages.TemplateLanguageFileViewProvider
+import com.intellij.r.psi.interpreter.RInterpreterUtil.getDefaultInterpreterOptions
+import com.intellij.r.psi.interpreter.RLocalInterpreterLocation
 import com.intellij.r.psi.psi.api.RFile
-import org.jetbrains.r.interpreter.RInterpreterUtil.getDefaultInterpreterOptions
-import org.jetbrains.r.interpreter.RLocalInterpreterLocation
-import org.jetbrains.r.settings.RSettings
+import com.intellij.r.psi.settings.RSettings
 
 class RRunConfigurationProducer : LazyRunConfigurationProducer<RRunConfiguration>() {
   override fun setupConfigurationFromContext(configuration: RRunConfiguration,

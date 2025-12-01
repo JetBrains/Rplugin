@@ -6,9 +6,9 @@ package org.jetbrains.r.refactoring.inline
 
 import com.intellij.codeInsight.TargetElementUtil
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.psi.api.RAssignmentStatement
 import com.intellij.refactoring.util.CommonRefactoringUtil
 import org.jetbrains.r.RUsefulTestCase
-import com.intellij.r.psi.psi.api.RAssignmentStatement
 
 class RInlineLocalTest : RUsefulTestCase() {
 

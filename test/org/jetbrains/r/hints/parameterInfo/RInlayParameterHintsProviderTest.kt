@@ -8,8 +8,8 @@ import com.intellij.codeInsight.hints.getLanguageForSettingKey
 import com.intellij.codeInsight.hints.settings.ParameterNameHintsSettings
 import com.intellij.r.psi.RFileType
 import com.intellij.r.psi.RLanguage
-import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import com.intellij.r.psi.rmarkdown.RMarkdownFileType
+import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 
 class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
 

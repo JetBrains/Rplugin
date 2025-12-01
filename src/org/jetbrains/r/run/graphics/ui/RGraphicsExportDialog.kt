@@ -13,9 +13,10 @@ import com.intellij.openapi.ui.MessageDialogBuilder
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.Disposer
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.icons.RIcons
+import com.intellij.r.psi.visualization.inlays.components.DialogUtil
 import com.intellij.ui.DocumentAdapter
 import com.intellij.util.ui.JBUI
-import com.intellij.r.psi.icons.RIcons
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
@@ -24,7 +25,6 @@ import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RSnapshot
 import org.jetbrains.r.run.graphics.ui.forms.RGraphicsExportDialogForm
 import org.jetbrains.r.visualization.inlays.components.BorderlessDialogWrapper
-import org.jetbrains.r.visualization.inlays.components.DialogUtil
 import org.jetbrains.r.visualization.inlays.components.GraphicsPanel
 import org.jetbrains.r.visualization.inlays.components.InlayOutputUtil
 import java.awt.*

@@ -4,10 +4,10 @@
 
 package org.jetbrains.r.resolve
 
-import junit.framework.TestCase
 import com.intellij.r.psi.RLanguage
-import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import com.intellij.r.psi.psi.api.RIdentifierExpression
+import junit.framework.TestCase
+import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 
 class RCrossFileResolve: RLightCodeInsightFixtureTestCase() {
 

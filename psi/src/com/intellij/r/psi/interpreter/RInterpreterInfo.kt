@@ -12,3 +12,23 @@ interface RInterpreterInfo {
   val version: Version
 }
 
+fun List<RInterpreterInfo>.findByPath(path: String): RInterpreterInfo? {
+  return find { it.interpreterLocation.toLocalPathOrNull() == path }
+}
+
+data class RBasicInterpreterInfo(
+  override val interpreterName: String,
+  override val interpreterLocation: RInterpreterLocation,
+  override val version: Version
+) : RInterpreterInfo {
+  companion object {
+    fun from(name: String, location: RInterpreterLocation): RBasicInterpreterInfo? {
+      val version = try {
+        location.getVersion()
+      } catch (_: Exception) {
+        null
+      }
+      return version?.let { RBasicInterpreterInfo(name, location, it) }
+    }
+  }
+}

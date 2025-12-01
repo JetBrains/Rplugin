@@ -19,16 +19,16 @@ import com.intellij.r.psi.packages.DependencyPackage
 import com.intellij.r.psi.packages.DependencyVersionBound
 import com.intellij.r.psi.packages.PackageDescriptionInfo
 import com.intellij.r.psi.packages.RPackageProjectManager
-import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.console.RConsoleManagerImpl
+import org.jetbrains.r.console.RConsoleViewImpl
 import java.util.concurrent.atomic.AtomicReference
 
 class RPackageProjectManagerImpl(private val project: Project) : RPackageProjectManager {
 
-  private val rConsoleManager = RConsoleManager.getInstance(project)
+  private val rConsoleManager = RConsoleManagerImpl.getInstance(project)
   private val requiredPackageInstaller = RequiredPackageInstaller.getInstance(project)
   private val lastReceivedInfo = AtomicReference<PackageDescriptionInfo?>(null)
-  private val lastConsoles = AtomicReference<List<RConsoleView>>(emptyList())
+  private val lastConsoles = AtomicReference<List<RConsoleViewImpl>>(emptyList())
 
   /**
    * @return *null* if no DESCRIPTION file or is it written **pretty** bad (mandatory fields are omitted,
@@ -88,7 +88,7 @@ class RPackageProjectManagerImpl(private val project: Project) : RPackageProject
     }
   }
 
-  private fun loadMissingPackagesToConsoles(consoles: List<RConsoleView>, packageInfo: PackageDescriptionInfo): List<DependencyPackage> {
+  private fun loadMissingPackagesToConsoles(consoles: List<RConsoleViewImpl>, packageInfo: PackageDescriptionInfo): List<DependencyPackage> {
     if (consoles.isEmpty()) return emptyList()
     val installedPackages = consoles.first().rInterop.state.installedPackages.map { it.name to it.version }.toMap()
     val allPackagesToLoad = packageInfo.depends + packageInfo.imports + packageInfo.suggests

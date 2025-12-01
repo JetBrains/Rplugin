@@ -13,8 +13,8 @@ import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.RainbowColorSettingsPage
 import com.intellij.r.psi.RBundle
-import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import com.intellij.r.psi.icons.RIcons
+import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.r.highlighting.RColorSettingsPage.Companion.R_DEMO
 import org.jetbrains.r.highlighting.RColorSettingsPage.Companion.TAGS

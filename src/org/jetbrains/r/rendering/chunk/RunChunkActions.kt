@@ -28,7 +28,7 @@ import org.jetbrains.r.actions.editor
 import org.jetbrains.r.actions.psiFile
 import org.jetbrains.r.actions.virtualFile
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
-import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleManagerImpl
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.editor.ui.rMarkdownCellToolbarPanel
 import org.jetbrains.r.editor.ui.rMarkdownNotebook
@@ -125,7 +125,7 @@ fun canRunChunk(project: Project): Boolean =
   RMarkdownUtil.areRequirementsSatisfied(project) && isConsoleReady(project)
 
 private fun isConsoleReady(project: Project): Boolean {
-  return RConsoleManager.getInstance(project).currentConsoleOrNull?.executeActionHandler?.let {
+  return RConsoleManagerImpl.getInstance(project).currentConsoleOrNull?.executeActionHandler?.let {
     it.chunkState == null && it.state == RConsoleExecuteActionHandler.State.PROMPT
   } ?: true
 }

@@ -2,7 +2,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.configuration
+package com.intellij.r.psi.configuration
 
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.popup.JBPopupFactory
@@ -10,7 +10,7 @@ import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.interpreter.RInterpreterInfo
-import org.jetbrains.r.settings.RInterpreterSettingsProvider
+import com.intellij.r.psi.settings.RInterpreterSettingsProvider
 import java.awt.Point
 import javax.swing.JComponent
 

@@ -26,13 +26,13 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.icons.RIcons
+import com.intellij.r.psi.interpreter.isLocal
 import kotlinx.coroutines.launch
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RMarkdownInterruptAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.actions.editor
-import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.interpreter.isLocal
+import org.jetbrains.r.console.RConsoleManagerImpl
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
 import org.jetbrains.r.rendering.chunk.canRunChunk
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
@@ -214,7 +214,7 @@ private fun createBuildAndShowAction(project: Project, report: VirtualFile, mana
       if (profileLastOutput.isBlank()) {
         return
       }
-      val interop = RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop
+      val interop = RConsoleManagerImpl.getInstance(project).currentConsoleOrNull?.rInterop
       if (interop != null && !interop.interpreter.isLocal()) {
         interop.interpreter.showFileInViewer(interop, profileLastOutput)
       } else {

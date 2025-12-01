@@ -29,6 +29,7 @@ jvm_library(
     "@community//platform/util",
     "@community//platform/core-ui",
     "@community//plugins/markdown/core:markdown",
+    "@community//platform/projectModel-api:projectModel",
     "@community//platform/xdebugger-api:debugger",
     "@community//platform/xdebugger-impl:debugger-impl",
     "@community//platform/platform-impl:ide-impl",

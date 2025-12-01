@@ -33,11 +33,11 @@ class RConsoleEditorFactoryListener : EditorFactoryListener {
            * see R-1549
            * currentConsoleAsync triggers file saving in [com.intellij.r.psi.interpreter.RInterpreter.prepareForExecutionAsync]
            * but RConsoleManager expects that currentConsoleAsync will be called after creation of RConsoleToolWindowFactory
-           * see [org.jetbrains.r.console.RConsoleManager.runSingleConsole]
+           * see [org.jetbrains.r.console.RConsoleManagerImpl.runSingleConsole]
            * Ideally RConsole and toolwindow should not be bound in a such way
            */
           invokeLater(outerModalityState) {
-            RConsoleManager.getInstance(project).currentConsoleAsync.onSuccess {
+            RConsoleManagerImpl.getInstance(project).currentConsoleAsync.onSuccess {
               toolWindowManager.invokeLater {
                 toolWindow.show { }
               }

@@ -8,11 +8,11 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.visualization.inlays.components.DialogUtil
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RSnapshot
 import org.jetbrains.r.visualization.inlays.components.BorderlessDialogWrapper
-import org.jetbrains.r.visualization.inlays.components.DialogUtil
 import java.awt.BorderLayout
 import java.awt.event.ActionListener
 import java.awt.event.KeyEvent

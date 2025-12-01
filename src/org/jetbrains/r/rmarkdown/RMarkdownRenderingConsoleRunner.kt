@@ -24,11 +24,11 @@ import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginUtil
 import com.intellij.r.psi.interpreter.RInterpreter
 import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.runHelperProcess
 import com.intellij.r.psi.interpreter.uploadFileToHost
 import com.intellij.r.psi.util.RPathUtil
 import com.intellij.util.PathUtil
 import kotlinx.coroutines.*
-import org.jetbrains.r.interpreter.runHelperProcess
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
 import java.awt.BorderLayout
 import java.io.IOException

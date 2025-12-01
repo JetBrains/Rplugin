@@ -2,19 +2,19 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.configuration
+package com.intellij.r.psi.configuration
 
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.icons.RIcons
 import com.intellij.r.psi.interpreter.RInterpreterInfo
+import com.intellij.r.psi.interpreter.RLocalInterpreterLocation
+import com.intellij.r.psi.interpreter.R_UNKNOWN
+import com.intellij.r.psi.settings.RInterpreterSettingsProvider
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.TitledSeparator
 import com.intellij.util.ui.JBUI
-import com.intellij.r.psi.icons.RIcons
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.interpreter.RLocalInterpreterLocation
-import org.jetbrains.r.interpreter.R_UNKNOWN
-import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import java.awt.Component
 import javax.swing.JList
 

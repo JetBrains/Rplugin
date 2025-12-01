@@ -17,12 +17,12 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.interpreter.isLocal
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.dsl.builder.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.r.interpreter.isLocal
 import javax.swing.JComponent
 import javax.swing.event.DocumentEvent
 import kotlin.reflect.KMutableProperty0

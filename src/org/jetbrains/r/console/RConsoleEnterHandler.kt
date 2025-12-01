@@ -69,7 +69,7 @@ object RConsoleEnterHandler {
     }
   }
 
-  fun analyzePrompt(consoleView: RConsoleView) {
+  fun analyzePrompt(consoleView: RConsoleViewImpl) {
     val file = consoleView.file
     file.accept(object : RRecursiveElementVisitor() {
       override fun visitCallExpression(call: RCallExpression) {

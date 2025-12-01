@@ -4,10 +4,10 @@
 
 package org.jetbrains.r.classes.s4
 
-import org.jetbrains.r.classes.RClassesUtilTestsBase
 import com.intellij.r.psi.classes.s4.classInfo.RS4ClassInfoUtil
 import com.intellij.r.psi.classes.s4.classInfo.RS4SuperClass
 import com.intellij.r.psi.psi.api.RCallExpression
+import org.jetbrains.r.classes.RClassesUtilTestsBase
 
 class RS4ClassInfoUtilTests : RClassesUtilTestsBase() {
   private val setClassCode = """

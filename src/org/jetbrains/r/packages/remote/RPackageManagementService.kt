@@ -20,8 +20,10 @@ import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.common.ExpiringList
 import com.intellij.r.psi.common.emptyExpiringList
+import com.intellij.r.psi.execution.ExecuteExpressionUtils.getListBlocking
 import com.intellij.r.psi.interpreter.RInterpreterState
 import com.intellij.r.psi.interpreter.RInterpreterStateManager
+import com.intellij.r.psi.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import com.intellij.r.psi.packages.RInstalledPackage
 import com.intellij.r.psi.rinterop.RInterop
 import com.intellij.util.CatchingConsumer
@@ -35,8 +37,6 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.await
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.documentation.RDocumentationProvider
-import org.jetbrains.r.execution.ExecuteExpressionUtils.getListBlocking
-import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import org.jetbrains.r.packages.remote.ui.RPackageServiceListener
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import java.util.concurrent.atomic.AtomicInteger

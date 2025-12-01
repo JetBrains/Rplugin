@@ -53,7 +53,7 @@ import org.jetbrains.r.run.visualize.RVisualizeTableUtil
 import java.util.*
 
 class RConsoleExecuteActionHandler(
-  private val consoleView: RConsoleView,
+  private val consoleView: RConsoleViewImpl,
 ) : BaseConsoleExecuteActionHandler(false), Condition<LanguageConsoleView> {
   private val rInterop = consoleView.rInterop
   private val listeners = HashSet<Listener>()

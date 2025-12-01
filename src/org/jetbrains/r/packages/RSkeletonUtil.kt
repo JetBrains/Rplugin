@@ -16,6 +16,9 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.r.psi.RPluginUtil
 import com.intellij.r.psi.classes.S4ClassInfo
+import com.intellij.r.psi.interpreter.RMultiOutputProcessor
+import com.intellij.r.psi.interpreter.runHelper
+import com.intellij.r.psi.interpreter.runMultiOutputHelper
 import com.intellij.r.psi.interpreter.uploadFileToHost
 import com.intellij.r.psi.packages.LibrarySummary.RLibraryPackage
 import com.intellij.r.psi.packages.LibrarySummary.RLibraryPackage.*
@@ -26,9 +29,6 @@ import com.intellij.r.psi.packages.RPackagePriority
 import com.intellij.r.psi.packages.RSkeletonUtilPsi
 import com.intellij.r.psi.skeleton.RSkeletonFileType
 import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.r.interpreter.RMultiOutputProcessor
-import org.jetbrains.r.interpreter.runHelper
-import org.jetbrains.r.interpreter.runMultiOutputHelper
 import org.jetbrains.r.packages.remote.RepoUtils
 import org.jetbrains.r.rinterop.RInteropImpl
 import java.io.File

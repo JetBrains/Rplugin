@@ -10,10 +10,10 @@ import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.Messages
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.execution.ExecuteExpressionUtils.getListBlockingWithIndicator
 import com.intellij.ui.CheckBoxList
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBCheckBox
-import org.jetbrains.r.execution.ExecuteExpressionUtils.getListBlockingWithIndicator
 import org.jetbrains.r.packages.remote.RDefaultRepository
 import org.jetbrains.r.packages.remote.RRepository
 import org.jetbrains.r.packages.remote.RUserRepository

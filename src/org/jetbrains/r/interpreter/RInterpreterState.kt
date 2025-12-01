@@ -22,6 +22,7 @@ import com.intellij.r.psi.common.ExpiringList
 import com.intellij.r.psi.common.emptyExpiringList
 import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.r.psi.interpreter.RInterpreterState
+import com.intellij.r.psi.interpreter.RInterpreterUtil
 import com.intellij.r.psi.interpreter.RLibraryWatcher
 import com.intellij.r.psi.packages.RInstalledPackage
 import com.intellij.util.concurrency.AppExecutorUtil

@@ -7,14 +7,14 @@ package org.jetbrains.r.rinterop
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.r.psi.debugger.RSourcePosition
+import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import junit.framework.TestCase
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.debugger.RDebuggerUtil
-import com.intellij.r.psi.debugger.RSourcePosition
-import com.intellij.r.psi.interpreter.RInterpreter
-import com.intellij.r.psi.interpreter.RInterpreterManager
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 import org.jetbrains.r.run.debug.RLineBreakpointType
 

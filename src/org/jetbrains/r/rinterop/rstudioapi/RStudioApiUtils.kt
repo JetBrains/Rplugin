@@ -15,15 +15,15 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vcs.changes.actions.RefreshAction
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.interpreter.isLocal
 import com.intellij.r.psi.rinterop.RObject
 import com.intellij.util.PathUtilRt
 import com.intellij.util.containers.ComparatorUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.await
-import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.console.RConsoleView
-import org.jetbrains.r.interpreter.isLocal
+import org.jetbrains.r.console.RConsoleManagerImpl
+import org.jetbrains.r.console.RConsoleViewImpl
 import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.rinterop.rstudioapi.RStudioAPISourceMarkerInspection.Companion.SOURCE_MARKERS_KEY
 import java.util.concurrent.ConcurrentHashMap
@@ -264,12 +264,12 @@ object RStudioApiUtils {
     return RObject.newBuilder().setRNull(RObject.RNull.getDefaultInstance()).build()
   }
 
-  internal fun getConsoleView(rInterop: RInteropImpl): RConsoleView? {
-    return if (RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull?.rInterop == rInterop) {
-      RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull
+  internal fun getConsoleView(rInterop: RInteropImpl): RConsoleViewImpl? {
+    return if (RConsoleManagerImpl.getInstance(rInterop.project).currentConsoleOrNull?.rInterop == rInterop) {
+      RConsoleManagerImpl.getInstance(rInterop.project).currentConsoleOrNull
     }
     else {
-      RConsoleManager.getInstance(rInterop.project).consoles.find { it.rInterop == rInterop }
+      RConsoleManagerImpl.getInstance(rInterop.project).consoles.find { it.rInterop == rInterop }
     }
   }
 

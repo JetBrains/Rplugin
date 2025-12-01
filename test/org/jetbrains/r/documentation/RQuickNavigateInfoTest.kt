@@ -7,10 +7,10 @@ package org.jetbrains.r.documentation
 import com.intellij.codeInsight.navigation.CtrlMouseHandler
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorColorsScheme
+import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.console.addRuntimeInfo
-import com.intellij.r.psi.interpreter.RInterpreterManager
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 import java.io.File
 import java.nio.file.Path

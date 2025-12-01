@@ -6,8 +6,8 @@ package org.jetbrains.r.cfg
 
 import com.intellij.internal.cfgView.ShowControlFlowHandler
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import com.intellij.r.psi.psi.api.RFile
+import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import java.io.File
 import java.io.IOException
 

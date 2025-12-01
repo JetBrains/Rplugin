@@ -14,14 +14,14 @@ import com.intellij.r.psi.classes.s4.RS4SourceManager
 import com.intellij.r.psi.classes.s4.classInfo.*
 import com.intellij.r.psi.classes.s4.classInfo.RS4ClassInfoUtil.toSlot
 import com.intellij.r.psi.classes.s4.methods.RS4MethodsUtil.methodNameIdentifier
-import org.jetbrains.r.console.RConsoleBaseTestCase
-import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
-import org.jetbrains.r.console.RConsoleView
-import org.jetbrains.r.console.addRuntimeInfo
 import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
 import com.intellij.r.psi.psi.api.RCallExpression
 import com.intellij.r.psi.psi.api.RNamedArgument
 import com.intellij.r.psi.psi.api.RStringLiteralExpression
+import org.jetbrains.r.console.RConsoleBaseTestCase
+import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
+import org.jetbrains.r.console.RConsoleViewImpl
+import org.jetbrains.r.console.addRuntimeInfo
 
 class RS4ClassResolveTest : RConsoleBaseTestCase() {
   override fun setUp() {
@@ -383,7 +383,7 @@ class RS4ClassResolveTest : RConsoleBaseTestCase() {
       else text
     myFixture.configureByText(RFileType, fileText)
     if (isConsole) {
-      myFixture.file.putUserData(RConsoleView.IS_R_CONSOLE_KEY, true)
+      myFixture.file.putUserData(RConsoleViewImpl.IS_R_CONSOLE_KEY, true)
       myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
     }
     return resolve().mapNotNull { it.element }

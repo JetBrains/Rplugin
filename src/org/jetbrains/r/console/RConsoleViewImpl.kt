@@ -40,6 +40,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RLanguage
 import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.console.RConsoleView
 import com.intellij.r.psi.interpreter.RInterpreter
 import com.intellij.r.psi.psi.RRecursiveElementVisitor
 import com.intellij.ui.JBSplitter
@@ -65,7 +66,7 @@ import java.awt.Font
 import java.awt.event.KeyEvent
 import javax.swing.JComponent
 
-class RConsoleView(val rInterop: RInteropImpl, title: String) : LanguageConsoleImpl(rInterop.project, title, RLanguage.INSTANCE) {
+class RConsoleViewImpl(override val rInterop: RInteropImpl, title: String) : LanguageConsoleImpl(rInterop.project, title, RLanguage.INSTANCE), RConsoleView {
   val interpreter: RInterpreter
     get() = rInterop.interpreter
   val executeActionHandler = RConsoleExecuteActionHandler(this)
@@ -123,7 +124,7 @@ class RConsoleView(val rInterop: RInteropImpl, title: String) : LanguageConsoleI
       if (field != directory) {
         field = directory
         RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
-          val content = RConsoleToolWindowFactory.getConsoleContent(this@RConsoleView) ?: return@launch
+          val content = RConsoleToolWindowFactory.getConsoleContent(this@RConsoleViewImpl) ?: return@launch
           content.displayName = interpreter.suggestConsoleName(directory)
         }
       }
@@ -197,12 +198,12 @@ class RConsoleView(val rInterop: RInteropImpl, title: String) : LanguageConsoleI
   companion object {
     private const val DEFAULT_WIDTH = 160
     val IS_R_CONSOLE_KEY = Key.create<Boolean>("IS_R_CONSOLE")
-    val R_CONSOLE_DATA_KEY = DataKey.create<RConsoleView>("R_CONSOLE")
-    const val INTERRUPT_ACTION_ID = "org.jetbrains.r.console.RConsoleView.RInterruptAction"
-    const val EOF_ACTION_ID = "org.jetbrains.r.console.RConsoleView.REofAction"
+    val R_CONSOLE_DATA_KEY = DataKey.create<RConsoleViewImpl>("R_CONSOLE")
+    const val INTERRUPT_ACTION_ID = "org.jetbrains.r.console.RConsoleViewImpl.RInterruptAction"
+    const val EOF_ACTION_ID = "org.jetbrains.r.console.RConsoleViewImpl.REofAction"
 
     private fun getConsole(e: AnActionEvent) =
-      e.getData(R_CONSOLE_DATA_KEY) ?: e.project?.let { RConsoleManager.getInstance(it).currentConsoleOrNull }
+      e.getData(R_CONSOLE_DATA_KEY) ?: e.project?.let { RConsoleManagerImpl.getInstance(it).currentConsoleOrNull }
   }
 
   class RInterruptAction : DumbAwareAction() {

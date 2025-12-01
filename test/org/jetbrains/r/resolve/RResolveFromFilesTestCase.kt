@@ -6,8 +6,8 @@ import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiUtilCore
 import com.intellij.r.psi.RLanguage
-import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import com.intellij.r.psi.psi.api.RExpression
+import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import java.io.File
 import java.nio.file.Path
 

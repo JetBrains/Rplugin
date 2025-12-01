@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.interpreter
 
-import com.intellij.ide.browsers.BrowserLauncher
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.EDT
@@ -17,45 +16,19 @@ import com.intellij.psi.stubs.StubUpdatingIndex
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginUtil
 import com.intellij.r.psi.interpreter.*
-import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.r.psi.rinterop.RInteropCoroutineScope
+import com.intellij.r.psi.settings.RInterpreterSettings
+import com.intellij.r.psi.settings.RSettings
 import com.intellij.util.indexing.FileBasedIndex
 import kotlinx.coroutines.*
-import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleManagerImpl
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.packages.remote.RepoProvider
 import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
-import org.jetbrains.r.settings.RInterpreterSettings
-import org.jetbrains.r.settings.RSettings
 import org.jetbrains.r.statistics.RInterpretersCollector
 import java.io.IOException
 import java.nio.file.Paths
-
-interface RInterpreterManager {
-  companion object {
-    fun restartInterpreter(project: Project, afterRestart: Runnable? = null) {
-      val manager = RInterpreterManager.getInstance(project)
-
-      RInteropCoroutineScope.getCoroutineScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
-        val interpreter = manager.awaitInterpreter(force = true).getOrNull()
-        if (interpreter != null) {
-          RepoProvider.getInstance(project).onInterpreterVersionChange()
-          launch(Dispatchers.EDT) {
-            val packagesPanel = RToolWindowFactory.findContent(project, RToolWindowFactory.PACKAGES).component as RInstalledPackagesPanel
-            packagesPanel.scheduleRefresh()
-          }
-        }
-        RConsoleManager.getInstance(project).awaitCurrentConsole().onSuccess {
-          withContext(Dispatchers.EDT) {
-            RConsoleManager.closeMismatchingConsoles(project, interpreter)
-            RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.show(afterRestart)
-          }
-        }
-      }
-    }
-  }
-}
 
 class NoRInterpreterException(message: String = "No R Interpreter"): RuntimeException(message)
 
@@ -121,6 +94,28 @@ internal class RInterpreterManagerImpl(
 
   override fun hasInterpreterLocation() = RSettings.getInstance(project).interpreterLocation != null
 
+  // TODO this function was originally a static function but I put it in the interface meanwhile because
+  // because I don't want to deal with RToolWindowFactory yet.
+  override fun restartInterpreter(afterRestart: Runnable?) {
+    val manager = this
+    RInteropCoroutineScope.getCoroutineScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
+      val interpreter = manager.awaitInterpreter(force = true).getOrNull()
+      if (interpreter != null) {
+        RepoProvider.getInstance(project).onInterpreterVersionChange()
+        launch(Dispatchers.EDT) {
+          val packagesPanel = RToolWindowFactory.findContent(project, RToolWindowFactory.PACKAGES).component as RInstalledPackagesPanel
+          packagesPanel.scheduleRefresh()
+        }
+      }
+      RConsoleManagerImpl.getInstance(project).awaitCurrentConsole().onSuccess {
+        withContext(Dispatchers.EDT) {
+          RConsoleManagerImpl.closeMismatchingConsoles(project, interpreter)
+          RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.show(afterRestart)
+        }
+      }
+    }
+  }
+
   private fun fetchInterpreterLocation(): RInterpreterLocation? {
     return if (ApplicationManager.getApplication().isUnitTestMode) {
       RLocalInterpreterLocation(runBlockingMaybeCancellable { RInterpreterUtil.suggestHomePath() })
@@ -160,13 +155,7 @@ internal class RInterpreterManagerImpl(
   }
 
   companion object {
-    private const val DOWNLOAD_R_PAGE = "https://cloud.r-project.org/"
-
     private val SUGGESTED_INTERPRETER_NAME = RBundle.message("project.settings.suggested.interpreter")
-
-    fun openDownloadRPage() {
-      BrowserLauncher.instance.browse(DOWNLOAD_R_PAGE)
-    }
   }
 }
 

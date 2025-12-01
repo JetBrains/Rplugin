@@ -8,13 +8,13 @@ import com.intellij.codeInsight.TargetElementUtil
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.refactoring.rename.NameSuggestionProvider
-import com.intellij.refactoring.rename.PreferrableNameSuggestionProvider
 import com.intellij.r.psi.RFileType.DOT_R_EXTENSION
-import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import com.intellij.r.psi.psi.RPsiUtil
 import com.intellij.r.psi.psi.api.RIdentifierExpression
 import com.intellij.r.psi.psi.api.RParameter
+import com.intellij.refactoring.rename.NameSuggestionProvider
+import com.intellij.refactoring.rename.PreferrableNameSuggestionProvider
+import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 
 class RNameSuggestionProviderTest : RLightCodeInsightFixtureTestCase() {
 

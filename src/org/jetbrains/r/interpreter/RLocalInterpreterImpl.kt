@@ -7,7 +7,6 @@ package org.jetbrains.r.interpreter
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.FileChooserFactory
@@ -21,10 +20,7 @@ import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.r.psi.RPluginCoroutineScope
-import com.intellij.r.psi.interpreter.OperatingSystem
-import com.intellij.r.psi.interpreter.RInterpreter
-import com.intellij.r.psi.interpreter.RInterpreterBase
-import com.intellij.r.psi.interpreter.RInterpreterState
+import com.intellij.r.psi.interpreter.*
 import com.intellij.r.psi.rinterop.RInterop
 import com.intellij.util.system.CpuArch
 import kotlinx.coroutines.async
@@ -38,6 +34,12 @@ import org.jetbrains.r.rinterop.RInteropUtil
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
+
+class RLocalInterpreterProviderImpl : RLocalInterpreterProvider {
+  override fun instantiate(location: RLocalInterpreterLocation, project: Project): RInterpreterBase {
+    return RLocalInterpreterImpl(location, project)
+  }
+}
 
 class RLocalInterpreterImpl(location: RLocalInterpreterLocation, project: Project) : RInterpreterBase(location, project) {
   private val interpreterPath = location.path
@@ -137,9 +139,5 @@ class RLocalInterpreterImpl(location: RLocalInterpreterLocation, project: Projec
     RPluginCoroutineScope.getScope(project).launch(ModalityState.defaultModalityState().asContextElement()) {
       RToolWindowFactory.showUrl(project, url)
     }
-  }
-
-  companion object {
-    val LOG = Logger.getInstance(RLocalInterpreterImpl::class.java)
   }
 }

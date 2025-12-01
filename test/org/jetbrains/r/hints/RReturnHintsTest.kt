@@ -9,8 +9,8 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RFileType
 import com.intellij.r.psi.RLanguage
-import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import com.intellij.r.psi.rmarkdown.RMarkdownFileType
+import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 
 class RReturnHintsTest : RLightCodeInsightFixtureTestCase() {
 

@@ -7,12 +7,12 @@ package org.jetbrains.r.packages.build.ui
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.settings.RPackageBuildSettings
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
-import org.jetbrains.r.settings.RPackageBuildSettings
 import javax.swing.JComponent
 import javax.swing.event.DocumentEvent
 import kotlin.reflect.KProperty

@@ -49,10 +49,9 @@ import com.intellij.r.psi.refactoring.rNamesValidator
 import com.intellij.r.psi.rinterop.RValueFunction
 import com.intellij.r.psi.skeleton.psi.RSkeletonAssignmentStatement
 import com.intellij.r.psi.util.RPathUtil
-import com.intellij.testFramework.LightVirtualFile
 import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
-import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.console.RConsoleViewImpl
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.editor.completion.RPackageCompletionUtil
 import org.jetbrains.r.lsp.RLspStatus
@@ -337,7 +336,7 @@ class RCompletionContributor : CompletionContributor() {
       }
 
       val file = parameters.originalFile
-      val isHelpFromRConsole = file.getUserData(RConsoleView.IS_R_CONSOLE_KEY)?.let { file.firstChild is RHelpExpression } ?: false
+      val isHelpFromRConsole = file.getUserData(RConsoleViewImpl.IS_R_CONSOLE_KEY)?.let { file.firstChild is RHelpExpression } ?: false
       val elementFactory = if (isHelpFromRConsole) RLookupElementFactory() else rCompletionElementFactory
       addKeywords(position, shownNames, result, isHelpFromRConsole)
       addLocalsFromControlFlow(position, shownNames, result, elementFactory)
@@ -863,7 +862,7 @@ class RCompletionContributor : CompletionContributor() {
                                                                          provider: RStaticRuntimeCompletionProvider<T>) : Set<String> {
       val runtimeInfo = file.runtimeInfo
       val shownNames = HashSet<String>()
-      if (file.getUserData(RConsoleView.IS_R_CONSOLE_KEY) == true) {
+      if (file.getUserData(RConsoleViewImpl.IS_R_CONSOLE_KEY) == true) {
         if (runtimeInfo == null || !provider.addCompletionFromRuntime(psiElement, shownNames, result, runtimeInfo)) {
           provider.addCompletionStatically(psiElement, shownNames, result)
         }

@@ -6,11 +6,11 @@ package org.jetbrains.r.rinterop
 
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.util.Disposer
+import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.interpreter.RInterpreterManager
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.RUsefulTestCase
-import com.intellij.r.psi.interpreter.RInterpreter
-import com.intellij.r.psi.interpreter.RInterpreterManager
 import java.io.File
 
 class RProfileTest : RUsefulTestCase() {

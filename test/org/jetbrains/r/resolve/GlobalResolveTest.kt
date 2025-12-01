@@ -5,12 +5,12 @@
 package org.jetbrains.r.resolve
 
 import com.intellij.pom.PomTargetPsiElement
-import junit.framework.TestCase
 import com.intellij.r.psi.RFileType
-import org.jetbrains.r.console.RConsoleBaseTestCase
 import com.intellij.r.psi.psi.DataFramePomTarget
 import com.intellij.r.psi.psi.FunctionPomTarget
 import com.intellij.r.psi.psi.VariablePomTarget
+import junit.framework.TestCase
+import org.jetbrains.r.console.RConsoleBaseTestCase
 import kotlin.reflect.KClass
 
 class GlobalResolveTest : RConsoleBaseTestCase() {

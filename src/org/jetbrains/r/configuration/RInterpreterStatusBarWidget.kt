@@ -21,25 +21,17 @@ import com.intellij.openapi.wm.impl.status.EditorBasedStatusBarPopup
 import com.intellij.openapi.wm.impl.status.widget.StatusBarWidgetsManager
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.r.psi.RBundle
-import com.intellij.r.psi.interpreter.RInterpreterInfo
-import com.intellij.r.psi.interpreter.RInterpreterLocation
-import com.intellij.util.messages.MessageBusConnection
-import com.intellij.r.psi.icons.RIcons
 import com.intellij.r.psi.RPluginCoroutineScope
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
-import kotlinx.coroutines.withContext
+import com.intellij.r.psi.configuration.RSettingsProjectConfigurable
+import com.intellij.r.psi.icons.RIcons
+import com.intellij.r.psi.interpreter.*
+import com.intellij.r.psi.settings.RInterpreterSettings
+import com.intellij.r.psi.settings.RInterpreterSettingsProvider
+import com.intellij.r.psi.settings.RSettings
+import com.intellij.util.messages.MessageBusConnection
+import kotlinx.coroutines.*
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.console.RConsoleToolWindowFactory
-import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.RLocalInterpreterLocation
-import org.jetbrains.r.settings.RInterpreterSettings
-import org.jetbrains.r.settings.RInterpreterSettingsProvider
-import org.jetbrains.r.settings.RSettings
 
 private const val ID: String = "rInterpreterWidget"
 
@@ -175,7 +167,7 @@ class RInterpreterPopupFactory(private val project: Project) {
     if (interpreterInfo.interpreterLocation != previousLocation) {
       settings.interpreterLocation = interpreterInfo.interpreterLocation
       if (!project.isDefault) {
-        RInterpreterManager.restartInterpreter(project)
+        RInterpreterManager.getInstance(project).restartInterpreter()
       }
     }
   }

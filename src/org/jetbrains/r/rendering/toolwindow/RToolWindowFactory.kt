@@ -17,14 +17,14 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.PsiElement
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.icons.RIcons
 import com.intellij.r.psi.packages.build.RPackageBuildUtil
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
 import com.intellij.webcore.packaging.PackagesNotificationPanel
-import com.intellij.r.psi.icons.RIcons
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleManagerImpl
 import org.jetbrains.r.packages.build.ui.RPackageBuildToolWindow
 import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
@@ -66,7 +66,7 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
     return component
   }
 
-  override fun shouldBeAvailable(project: Project) = RConsoleManager.getInstance(project).initialized
+  override fun shouldBeAvailable(project: Project) = RConsoleManagerImpl.getInstance(project).initialized
 
   private fun createPackages(project: Project): RInstalledPackagesPanel {
     val notificationPanel = PackagesNotificationPanel()

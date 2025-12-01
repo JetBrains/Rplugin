@@ -4,10 +4,10 @@
 
 package org.jetbrains.r.run
 
+import com.intellij.r.psi.interpreter.RInterpreterUtil
 import junit.framework.TestCase
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.r.RUsefulTestCase
-import org.jetbrains.r.interpreter.RInterpreterUtil
 
 class InterpreterValidityTest : RUsefulTestCase() {
   fun testValidity() {

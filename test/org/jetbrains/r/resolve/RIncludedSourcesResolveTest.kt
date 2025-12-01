@@ -11,9 +11,9 @@ import com.intellij.openapi.progress.util.ProgressIndicatorBase
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilCore
+import com.intellij.r.psi.psi.api.RFile
 import junit.framework.TestCase
 import org.jetbrains.concurrency.runAsync
-import com.intellij.r.psi.psi.api.RFile
 import java.io.File
 
 class RIncludedSourcesResolveTest : RResolveFromFilesTestCase("resolveInSource") {

@@ -10,7 +10,7 @@ import org.jetbrains.r.blockingGetAndDispatchEvents
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 abstract class RConsoleBaseTestCase : RProcessHandlerBaseTestCase() {
-  protected lateinit var console: RConsoleView
+  protected lateinit var console: RConsoleViewImpl
     private set
 
   override fun setUp() {
@@ -20,7 +20,7 @@ abstract class RConsoleBaseTestCase : RProcessHandlerBaseTestCase() {
 
     console = promise.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT) ?: error("Cannot initialize test console")
     console.component // initialize editor and more...
-    RConsoleManager.getInstance(project).setCurrentConsoleForTests(console)
+    RConsoleManagerImpl.getInstance(project).setCurrentConsoleForTests(console)
     // console is not running command, it just haven't received the first prompt from rwrapper
     var i = 0
     while (console.isRunningCommand && i++ < 100) { Thread.sleep(20) }
@@ -32,7 +32,7 @@ abstract class RConsoleBaseTestCase : RProcessHandlerBaseTestCase() {
     try {
       PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
       Disposer.dispose(console)
-      RConsoleManager.getInstance(project).setCurrentConsoleForTests(null)
+      RConsoleManagerImpl.getInstance(project).setCurrentConsoleForTests(null)
     }
     catch (e: Throwable) {
       addSuppressedException(e)

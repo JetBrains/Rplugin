@@ -16,8 +16,8 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.r.psi.psi.RPsiUtil
 import com.intellij.r.psi.psi.api.*
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
-import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.console.RConsoleManagerImpl
+import org.jetbrains.r.console.RConsoleViewImpl
 
 internal object REditorActionUtil {
   data class SelectedCode(val code: String, val file: VirtualFile, val range: TextRange)
@@ -142,12 +142,12 @@ internal object REditorActionUtil {
     }
   }
 
-  fun isRunningCommand(console: RConsoleView?): Boolean {
+  fun isRunningCommand(console: RConsoleViewImpl?): Boolean {
     return console != null && console.executeActionHandler.state != RConsoleExecuteActionHandler.State.PROMPT
   }
 
   fun isRunningCommand(project: Project?): Boolean {
     if (project == null) return false
-    return isRunningCommand(RConsoleManager.getInstance(project).currentConsoleOrNull)
+    return isRunningCommand(RConsoleManagerImpl.getInstance(project).currentConsoleOrNull)
   }
 }

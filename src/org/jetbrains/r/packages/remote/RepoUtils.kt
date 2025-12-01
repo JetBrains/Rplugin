@@ -15,12 +15,12 @@ import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginUtil
 import com.intellij.r.psi.interpreter.OperatingSystem
 import com.intellij.r.psi.interpreter.RInterpreterStateManager
+import com.intellij.r.psi.interpreter.RInterpreterUtil
 import com.intellij.r.psi.interpreter.RLibraryWatcher
 import com.intellij.r.psi.packages.RInstalledPackage
 import com.intellij.r.psi.packages.RPackageVersion
 import com.intellij.r.psi.rinterop.RInterop
 import com.intellij.webcore.packaging.RepoPackage
-import org.jetbrains.r.interpreter.RInterpreterUtil
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.URL

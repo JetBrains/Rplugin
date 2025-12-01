@@ -3,7 +3,7 @@ package org.jetbrains.r.rendering.editor
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleManagerImpl
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
@@ -32,11 +32,11 @@ class ChunkExecutionState(
 
   companion object {
     fun setCurrent(project: Project, value: ChunkExecutionState?) {
-      RConsoleManager.Companion.getInstance(project).currentConsoleOrNull?.executeActionHandler?.chunkState = value
+      RConsoleManagerImpl.Companion.getInstance(project).currentConsoleOrNull?.executeActionHandler?.chunkState = value
     }
 
     fun getCurrent(project: Project): ChunkExecutionState? =
-      RConsoleManager.Companion.getInstance(project).currentConsoleOrNull?.executeActionHandler?.chunkState
+      RConsoleManagerImpl.Companion.getInstance(project).currentConsoleOrNull?.executeActionHandler?.chunkState
   }
 }
 

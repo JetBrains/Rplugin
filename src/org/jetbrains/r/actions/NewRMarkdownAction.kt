@@ -10,8 +10,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
 import com.intellij.r.psi.RBundle
-import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.r.psi.icons.RIcons
+import com.intellij.r.psi.interpreter.RInterpreterManager
 
 
 /**

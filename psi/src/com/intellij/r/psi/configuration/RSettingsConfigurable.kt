@@ -2,7 +2,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.configuration
+package com.intellij.r.psi.configuration
 
 import com.intellij.openapi.options.DslConfigurableBase
 import com.intellij.openapi.project.Project
@@ -10,18 +10,18 @@ import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.util.Disposer
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.console.RConsoleManager
 import com.intellij.r.psi.interpreter.RInterpreterInfo
 import com.intellij.r.psi.interpreter.RInterpreterLocation
+import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.RInterpreterUtil
+import com.intellij.r.psi.settings.RInterpreterSettings
+import com.intellij.r.psi.settings.RInterpreterSettingsProvider
+import com.intellij.r.psi.settings.RSettings
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.settings.RInterpreterSettings
-import org.jetbrains.r.settings.RInterpreterSettingsProvider
-import org.jetbrains.r.settings.RSettings
 
 class RSettingsConfigurable(private val project: Project) : DslConfigurableBase() {
   private val settings = RSettings.getInstance(project)
@@ -121,6 +121,6 @@ class RSettingsConfigurable(private val project: Project) : DslConfigurableBase(
 
   private fun onInterpreterLocationChanged() {
     if (project.isDefault) return
-    RInterpreterManager.restartInterpreter(project)
+    RInterpreterManager.getInstance(project).restartInterpreter()
   }
 }

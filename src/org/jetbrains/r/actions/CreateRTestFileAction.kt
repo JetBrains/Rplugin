@@ -22,8 +22,8 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RFileType
-import com.intellij.r.psi.packages.build.RPackageBuildUtil
 import com.intellij.r.psi.icons.RIcons
+import com.intellij.r.psi.packages.build.RPackageBuildUtil
 
 class CreateRTestFileAction : CreateFromTemplateAction(FileTemplateManager.getDefaultInstance().getInternalTemplate(TEST_FILE_TEMPLATE)) {
 

@@ -7,11 +7,11 @@ package org.jetbrains.r.structureView
 import com.intellij.lang.LanguageStructureViewBuilder
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.psi.PsiElement
+import com.intellij.r.psi.psi.RGlobalVariablesFilterId
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.UsefulTestCase
 import org.intellij.lang.annotations.Language
 import org.jetbrains.r.RUsefulTestCase
-import com.intellij.r.psi.psi.RGlobalVariablesFilterId
 
 class RStructureViewTest : RUsefulTestCase() {
   fun testJustFunctions() {

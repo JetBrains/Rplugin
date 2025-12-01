@@ -8,11 +8,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.r.psi.interpreter.RInterpreterState
 import com.intellij.r.psi.interpreter.RInterpreterStateManager
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleManagerImpl
 
 class RInterpreterStateManagerImpl(private val project: Project) : RInterpreterStateManager {
   private val rConsoleManager
-    get() = RConsoleManager.getInstance(project)
+    get() = RConsoleManagerImpl.getInstance(project)
 
   override val states: List<RInterpreterState>
     get() = rConsoleManager.consoles.map { it.rInterop.state }

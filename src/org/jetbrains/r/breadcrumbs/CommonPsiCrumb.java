@@ -5,7 +5,6 @@ package org.jetbrains.r.breadcrumbs;
 
 import com.intellij.internal.statistic.eventLog.FeatureUsageData;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiAnchor;
 import com.intellij.psi.PsiElement;

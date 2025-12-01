@@ -9,7 +9,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAware
-import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleManagerImpl
 
 class RImportDataContextActionGroup : ActionGroup(), DumbAware {
   private val actions: Array<RImportDataContextAction> = arrayOf(
@@ -24,7 +24,7 @@ class RImportDataContextActionGroup : ActionGroup(), DumbAware {
   }
 
   override fun update(e: AnActionEvent) {
-    val hasConsole = e.project?.let { RConsoleManager.getInstance(it).currentConsoleOrNull } != null
+    val hasConsole = e.project?.let { RConsoleManagerImpl.getInstance(it).currentConsoleOrNull } != null
     e.presentation.isEnabledAndVisible = hasConsole && actions.any { it.isApplicableTo(e) }
   }
 

@@ -11,8 +11,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.DumbAware
 import com.intellij.r.psi.RFileType
+import com.intellij.r.psi.interpreter.RProfileErrorException
 import com.intellij.r.psi.notifications.RNotificationUtil
-import org.jetbrains.r.interpreter.RProfileErrorException
 
 class RConsoleAction : AnAction(), DumbAware {
   init {
@@ -22,7 +22,7 @@ class RConsoleAction : AnAction(), DumbAware {
   override fun actionPerformed(event: AnActionEvent) {
     val project = event.getData(CommonDataKeys.PROJECT)
     if (project != null) {
-      RConsoleManager.runConsole(project, requestFocus = true).onError { e ->
+      RConsoleManagerImpl.runConsole(project, requestFocus = true).onError { e ->
         if (e !is RProfileErrorException) {
           RNotificationUtil.notifyConsoleError(project, e.message)
         }

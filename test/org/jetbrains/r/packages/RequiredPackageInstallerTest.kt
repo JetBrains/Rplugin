@@ -6,7 +6,8 @@ package org.jetbrains.r.packages
 
 import junit.framework.TestCase
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.r.interpreter.*
+import org.jetbrains.r.interpreter.RInterpreterBaseTestCase
+import org.jetbrains.r.interpreter.RInterpreterTestUtil
 import java.util.concurrent.atomic.AtomicInteger
 
 class RequiredPackageInstallerTest : RInterpreterBaseTestCase() {

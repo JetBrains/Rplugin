@@ -25,7 +25,7 @@ class RConsoleNextLineAction : AnAction(), RPromotedAction {
     val project = e.project ?: return
     val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document)
     val presentation = e.presentation
-    presentation.isEnabled = psiFile?.getUserData(RConsoleView.IS_R_CONSOLE_KEY) == true
+    presentation.isEnabled = psiFile?.getUserData(RConsoleViewImpl.IS_R_CONSOLE_KEY) == true
   }
 
   override fun getActionUpdateThread() = ActionUpdateThread.BGT

@@ -11,6 +11,12 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.project.stateStore
 import com.intellij.psi.PsiFile
+import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.psi.RElementFactory
+import com.intellij.r.psi.psi.api.RBooleanLiteral
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RNamedArgument
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.SuspendPolicy
@@ -21,13 +27,7 @@ import kotlinx.coroutines.runBlocking
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RUsefulTestCase
-import com.intellij.r.psi.interpreter.RInterpreter
-import com.intellij.r.psi.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterStateImpl
-import com.intellij.r.psi.psi.RElementFactory
-import com.intellij.r.psi.psi.api.RBooleanLiteral
-import com.intellij.r.psi.psi.api.RCallExpression
-import com.intellij.r.psi.psi.api.RNamedArgument
 import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.rinterop.RInteropUtil
 import org.jetbrains.r.run.debug.RLineBreakpointType

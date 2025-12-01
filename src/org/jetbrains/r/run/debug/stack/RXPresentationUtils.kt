@@ -19,7 +19,7 @@ import com.intellij.xdebugger.frame.XValueNode
 import com.intellij.xdebugger.frame.presentation.XValuePresentation
 import com.intellij.xdebugger.impl.ui.tree.nodes.XValueNodeImpl
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleManagerImpl
 import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rinterop.RInteropImpl
@@ -94,7 +94,7 @@ internal object RXPresentationUtils {
           .also { rxVar.stackFrame.tryRegisterDisposable(Disposable { it.cancel() }) }
           .then {
             ref.rInterop.invalidateCaches()
-            RConsoleManager.getInstance(ref.rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
+            RConsoleManagerImpl.getInstance(ref.rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
             if (it is RValueError) {
               callback.errorOccurred(it.text)
             } else {
@@ -216,7 +216,7 @@ internal object RXPresentationUtils {
         ref.evaluateAsTextAsync()
           .also { rxVar.stackFrame.tryRegisterDisposable(Disposable { it.cancel() }) }
           .onSuccess {
-            RConsoleManager.getInstance(ref.rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
+            RConsoleManagerImpl.getInstance(ref.rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
             callback.evaluated("")
           }
           .onError { callback.errorOccurred((it as? RDebuggerException)?.message.orEmpty()) }

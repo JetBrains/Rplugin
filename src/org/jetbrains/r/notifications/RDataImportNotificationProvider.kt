@@ -17,7 +17,7 @@ import com.intellij.r.psi.RBundle
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotificationProvider
 import com.intellij.ui.HyperlinkLabel
-import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleManagerImpl
 import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.run.visualize.actions.RImportBaseDataContextAction
 import org.jetbrains.r.run.visualize.actions.RImportCsvDataContextAction
@@ -36,7 +36,7 @@ class RDataImportNotificationProvider : EditorNotificationProvider, DumbAware {
   }
 
   private fun createNotificationPanel(file: VirtualFile, fileEditor: FileEditor, project: Project): EditorNotificationPanel? {
-    RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.let { interop ->
+    RConsoleManagerImpl.getInstance(project).currentConsoleOrNull?.rInterop?.let { interop ->
       if (interop.hasVariable(file.nameWithoutExtension)) {
         return null
       }

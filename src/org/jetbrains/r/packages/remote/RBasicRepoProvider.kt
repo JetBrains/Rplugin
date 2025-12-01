@@ -9,12 +9,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.RPluginUtil
 import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.RInterpreterUtil
+import com.intellij.r.psi.interpreter.runHelper
 import com.intellij.util.SuspendingLazy
 import com.intellij.util.suspendingLazy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.runHelper
 import org.jetbrains.r.packages.RPackageService
 import org.jetbrains.r.packages.remote.RepoUtils.CRAN_URL_PLACEHOLDER
 import java.io.File

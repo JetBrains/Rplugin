@@ -15,10 +15,10 @@ import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.execution.ExecuteExpressionUtils
 import com.intellij.r.psi.packages.build.RPackageBuildUtil
 import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.PackagesNotificationPanel
-import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.projectGenerator.panel.RPanel
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
 import java.nio.file.Paths

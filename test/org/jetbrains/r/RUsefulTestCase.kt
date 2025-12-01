@@ -18,6 +18,12 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.RInterpreterStateManager
+import com.intellij.r.psi.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
+import com.intellij.r.psi.packages.RInstalledPackage
+import com.intellij.r.psi.packages.RPackage
+import com.intellij.r.psi.skeleton.RSkeletonFileType
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
@@ -31,19 +37,13 @@ import junit.framework.TestCase
 import org.intellij.lang.annotations.Language
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.isPending
-import org.jetbrains.r.console.RConsoleView
-import com.intellij.r.psi.interpreter.RInterpreterManager
-import com.intellij.r.psi.interpreter.RInterpreterStateManager
-import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
+import org.jetbrains.r.console.RConsoleViewImpl
 import org.jetbrains.r.mock.MockInterpreterManager
 import org.jetbrains.r.mock.MockInterpreterStateManager
 import org.jetbrains.r.mock.MockRepoProvider
-import com.intellij.r.psi.packages.RInstalledPackage
-import com.intellij.r.psi.packages.RPackage
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.packages.remote.RepoProvider
 import org.jetbrains.r.rinterop.RInteropUtil
-import com.intellij.r.psi.skeleton.RSkeletonFileType
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
@@ -96,7 +96,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
                             fileExtension: String = "R") {
     myFixture.configureByText("foo.$fileExtension", text)
     if (fileIsRConsole) {
-      myFixture.file.putUserData(RConsoleView.IS_R_CONSOLE_KEY, true)
+      myFixture.file.putUserData(RConsoleViewImpl.IS_R_CONSOLE_KEY, true)
     }
     val result = myFixture.completeBasic()
     TestCase.assertNotNull(result)

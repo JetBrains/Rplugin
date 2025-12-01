@@ -6,9 +6,9 @@ package org.jetbrains.r.hints.parameterInfo
 
 import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.application.impl.NonBlockingReadActionImpl
+import com.intellij.r.psi.RBundle
 import com.intellij.testFramework.fixtures.EditorHintFixture
 import com.intellij.util.ui.UIUtil
-import com.intellij.r.psi.RBundle
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 
 class RParameterInfoHandlerTest : RLightCodeInsightFixtureTestCase() {

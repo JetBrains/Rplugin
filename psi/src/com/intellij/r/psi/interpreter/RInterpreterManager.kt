@@ -1,13 +1,11 @@
 package com.intellij.r.psi.interpreter
 
+import com.intellij.ide.browsers.BrowserLauncher
 import com.intellij.openapi.components.service
 import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.Project
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.future.asCompletableFuture
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.asPromise
 
@@ -31,7 +29,15 @@ interface RInterpreterManager {
 
   fun hasInterpreterLocation(): Boolean
 
+  fun restartInterpreter(afterRestart: Runnable? = null)
+
   companion object {
+    private const val DOWNLOAD_R_PAGE = "https://cloud.r-project.org/"
+
+    fun openDownloadRPage() {
+      BrowserLauncher.instance.browse(DOWNLOAD_R_PAGE)
+    }
+
     fun getInstance(project: Project): RInterpreterManager = project.service()
     private fun getInstanceIfCreated(project: Project): RInterpreterManager? = project.getServiceIfCreated(RInterpreterManager::class.java)
 

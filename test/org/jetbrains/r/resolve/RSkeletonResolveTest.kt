@@ -6,17 +6,17 @@ package org.jetbrains.r.resolve
 
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.psi.PsiElement
-import com.intellij.testFramework.UsefulTestCase
-import junit.framework.TestCase
 import com.intellij.r.psi.RFileType
-import org.jetbrains.r.console.RConsoleBaseTestCase
-import org.jetbrains.r.console.runtimeInfo
 import com.intellij.r.psi.packages.RPackage
 import com.intellij.r.psi.rinterop.RValueDataFrame
 import com.intellij.r.psi.rinterop.RValueFunction
 import com.intellij.r.psi.rinterop.RVar
 import com.intellij.r.psi.rinterop.getWithCheckCanceled
 import com.intellij.r.psi.skeleton.psi.RSkeletonAssignmentStatement
+import com.intellij.testFramework.UsefulTestCase
+import junit.framework.TestCase
+import org.jetbrains.r.console.RConsoleBaseTestCase
+import org.jetbrains.r.console.runtimeInfo
 
 class RSkeletonResolveTest : RConsoleBaseTestCase() {
   override fun setUp() {

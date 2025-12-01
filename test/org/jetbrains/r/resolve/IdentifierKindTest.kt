@@ -4,11 +4,11 @@
 
 package org.jetbrains.r.resolve
 
-import junit.framework.TestCase
-import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import com.intellij.r.psi.psi.ReferenceKind
 import com.intellij.r.psi.psi.api.RIdentifierExpression
 import com.intellij.r.psi.psi.getKind
+import junit.framework.TestCase
+import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 
 class IdentifierKindTest : RLightCodeInsightFixtureTestCase() {
 

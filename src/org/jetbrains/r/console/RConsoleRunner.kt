@@ -30,6 +30,8 @@ import com.intellij.openapi.util.Key
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RFileType
 import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.interpreter.RInterpreterUtil
+import com.intellij.r.psi.settings.RSettings
 import com.intellij.r.psi.util.RPathUtil
 import com.intellij.util.WaitForProgressToShow
 import com.intellij.util.ui.UIUtil
@@ -41,7 +43,6 @@ import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.help.RWebHelpProvider
-import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.rinterop.RInteropUtil
 import org.jetbrains.r.run.graphics.RGraphicsDevice
@@ -50,7 +51,6 @@ import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.graphics.ui.RGraphicsToolWindowListener
 import org.jetbrains.r.settings.REditorSettings
 import org.jetbrains.r.settings.RGraphicsSettings
-import org.jetbrains.r.settings.RSettings
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -60,10 +60,10 @@ class RConsoleRunner(private val interpreter: RInterpreter,
                      private val contentIndex: Int? = null) {
   private val project = interpreter.project
   private val consoleTitle = interpreter.suggestConsoleName(workingDir)
-  private lateinit var consoleView: RConsoleView
+  private lateinit var consoleView: RConsoleViewImpl
 
-  fun initAndRun(): Promise<RConsoleView> {
-    val promise = AsyncPromise<RConsoleView>()
+  fun initAndRun(): Promise<RConsoleViewImpl> {
+    val promise = AsyncPromise<RConsoleViewImpl>()
     checkRProfile().onSuccess {
       interpreter.prepareForExecutionAsync().onProcessed {
         UIUtil.invokeLaterIfNeeded {
@@ -86,10 +86,10 @@ class RConsoleRunner(private val interpreter: RInterpreter,
     return promise
   }
 
-  internal fun initByInterop(rInterop: RInteropImpl, promise: AsyncPromise<RConsoleView> = AsyncPromise()): Promise<RConsoleView> {
+  internal fun initByInterop(rInterop: RInteropImpl, promise: AsyncPromise<RConsoleViewImpl> = AsyncPromise()): Promise<RConsoleViewImpl> {
     UIUtil.invokeLaterIfNeeded {
       WriteIntentReadAction.run {
-        consoleView = RConsoleView(rInterop, consoleTitle)
+        consoleView = RConsoleViewImpl(rInterop, consoleTitle)
       }
       ProcessTerminatedListener.attach(rInterop.processHandler)
       rInterop.processHandler.addProcessListener(object : ProcessListener {
@@ -190,14 +190,14 @@ class RConsoleRunner(private val interpreter: RInterpreter,
   }
 
   private fun createSetCurrentDirectory(): AnAction {
-    return ActionManager.getInstance().getAction("org.jetbrains.r.console.RConsoleView.RSetCurrentDirectoryFromEditor")
+    return ActionManager.getInstance().getAction("org.jetbrains.r.console.RConsoleViewImpl.RSetCurrentDirectoryFromEditor")
   }
 
   private fun createRestartRAction(): AnAction {
-    return ActionManager.getInstance().getAction("org.jetbrains.r.console.RConsoleView.RestartRAction")
+    return ActionManager.getInstance().getAction("org.jetbrains.r.console.RConsoleViewImpl.RestartRAction")
   }
 
-  private fun createToggleSoftWrapAction(console: RConsoleView): ToggleSoftWrapAction =
+  private fun createToggleSoftWrapAction(console: RConsoleViewImpl): ToggleSoftWrapAction =
     object : ToggleSoftWrapAction() {
       private var isSelected: Boolean = REditorSettings.useSoftWrapsInConsole
 
@@ -218,9 +218,9 @@ class RConsoleRunner(private val interpreter: RInterpreter,
     }
 
 
-  private fun createInterruptAction(console: RConsoleView): AnAction =
+  private fun createInterruptAction(console: RConsoleViewImpl): AnAction =
     object : RDumbAwareBgtAction(), RPromotedAction {
-      private val action = ActionManager.getInstance().getAction(RConsoleView.INTERRUPT_ACTION_ID).also { copyFrom(it) }
+      private val action = ActionManager.getInstance().getAction(RConsoleViewImpl.INTERRUPT_ACTION_ID).also { copyFrom(it) }
 
       override fun actionPerformed(e: AnActionEvent) {
         ActionUtil.performAction(action, e)
@@ -232,12 +232,12 @@ class RConsoleRunner(private val interpreter: RInterpreter,
 
       private fun createEvent(e: AnActionEvent): AnActionEvent =
         AnActionEvent.createFromInputEvent(e.inputEvent, "", e.presentation,
-                                           SimpleDataContext.getSimpleContext(RConsoleView.R_CONSOLE_DATA_KEY, console, e.dataContext))
+                                           SimpleDataContext.getSimpleContext(RConsoleViewImpl.R_CONSOLE_DATA_KEY, console, e.dataContext))
     }
 
-  private fun createEofAction(console: RConsoleView): AnAction =
+  private fun createEofAction(console: RConsoleViewImpl): AnAction =
     object : RDumbAwareBgtAction(), RPromotedAction {
-      private val action = ActionManager.getInstance().getAction(RConsoleView.EOF_ACTION_ID).also { copyFrom(it) }
+      private val action = ActionManager.getInstance().getAction(RConsoleViewImpl.EOF_ACTION_ID).also { copyFrom(it) }
 
       override fun actionPerformed(e: AnActionEvent) {
         ActionUtil.performAction(action, e)
@@ -249,7 +249,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
 
       private fun createEvent(e: AnActionEvent): AnActionEvent =
         AnActionEvent.createFromInputEvent(e.inputEvent, "", e.presentation,
-                                           SimpleDataContext.getSimpleContext(RConsoleView.R_CONSOLE_DATA_KEY, console, e.dataContext))
+                                           SimpleDataContext.getSimpleContext(RConsoleViewImpl.R_CONSOLE_DATA_KEY, console, e.dataContext))
     }
 
   private fun createConsoleExecAction(): AnAction {

@@ -9,7 +9,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
-import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleManagerImpl
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.*
@@ -20,7 +20,7 @@ class DumpRInteropMessages : AnAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val logPath = PathManager.getLogPath()
     val project = e.project ?: return
-    val json = RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.rInteropGrpcLogger?.toJson() ?: return
+    val json = RConsoleManagerImpl.getInstance(project).currentConsoleOrNull?.rInterop?.rInteropGrpcLogger?.toJson() ?: return
     Paths.get(logPath, dateFormat.format(Date()) + ".json").toFile().writeText(json)
   }
 

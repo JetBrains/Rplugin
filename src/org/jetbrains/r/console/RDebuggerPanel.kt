@@ -22,6 +22,7 @@ import com.intellij.openapi.wm.WindowManager
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.debugger.RSourcePosition
+import com.intellij.r.psi.icons.RIcons
 import com.intellij.r.psi.rinterop.RVar
 import com.intellij.r.psi.util.tryRegisterDisposable
 import com.intellij.ui.EditorNotificationPanel
@@ -35,9 +36,8 @@ import com.intellij.xdebugger.XSourcePositionWrapper
 import com.intellij.xdebugger.impl.XDebuggerUtilImpl
 import com.intellij.xdebugger.impl.actions.handlers.XDebuggerCustomMuteBreakpointHandler
 import com.intellij.xdebugger.impl.frame.XDebuggerFramesList
-import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
-import com.intellij.r.psi.icons.RIcons
 import com.intellij.xdebugger.impl.messages.XDebuggerImplBundle
+import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Nls
@@ -53,7 +53,7 @@ import javax.swing.Icon
 import javax.swing.JComponent
 import javax.swing.JPanel
 
-class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()), Disposable, RConsoleExecuteActionHandler.Listener {
+class RDebuggerPanel(private val console: RConsoleViewImpl): JPanel(BorderLayout()), Disposable, RConsoleExecuteActionHandler.Listener {
   private val rInterop = console.rInterop
   private val variablesView = RXVariablesView(console, this).also { Disposer.register(this, it) }
   private val framesView = XDebuggerFramesList(console.project)
@@ -430,7 +430,7 @@ class RDebuggerCustomMuteBreakpointHandler : XDebuggerCustomMuteBreakpointHandle
   }
 
   private fun getPanel(project: Project): RDebuggerPanel? {
-    return RConsoleManager.getInstance(project).currentConsoleOrNull?.debuggerPanel
+    return RConsoleManagerImpl.getInstance(project).currentConsoleOrNull?.debuggerPanel
   }
 }
 

@@ -6,10 +6,10 @@ package org.jetbrains.r.hints.parameterInfo
 
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
-import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import com.intellij.r.psi.psi.api.RCallExpression
 import com.intellij.r.psi.psi.api.RExpression
 import com.intellij.r.psi.psi.api.RNamedArgument
+import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 
 class RArgumentInfoTest : RLightCodeInsightFixtureTestCase() {
 

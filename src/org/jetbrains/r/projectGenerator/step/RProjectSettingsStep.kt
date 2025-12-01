@@ -21,10 +21,10 @@ import com.intellij.platform.ide.progress.ModalTaskOwner
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginUtil
+import com.intellij.r.psi.interpreter.RInterpreterUtil
 import com.intellij.ui.HideableDecorator
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.UIUtil
-import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.projectGenerator.panel.interpreter.RAddNewInterpreterPanel
 import org.jetbrains.r.projectGenerator.panel.interpreter.RChooseInterpreterGroupPanel
 import org.jetbrains.r.projectGenerator.panel.interpreter.RInterpreterPanel

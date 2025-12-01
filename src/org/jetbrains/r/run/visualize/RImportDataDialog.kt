@@ -28,7 +28,9 @@ import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.interpreter.LocalOrRemotePath
 import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.interpreter.isLocal
 import com.intellij.r.psi.run.visualize.RVisualization
+import com.intellij.r.psi.visualization.inlays.components.DialogUtil
 import com.intellij.ui.*
 import com.intellij.ui.EditorNotifications.getInstance
 import com.intellij.ui.components.ActionLink
@@ -38,11 +40,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.await
-import org.jetbrains.r.interpreter.isLocal
 import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.run.visualize.forms.RImportDataDialogForm
 import org.jetbrains.r.visualization.inlays.components.BorderlessDialogWrapper
-import org.jetbrains.r.visualization.inlays.components.DialogUtil
 import java.awt.event.FocusAdapter
 import java.awt.event.FocusEvent
 import java.awt.event.ItemEvent

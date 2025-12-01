@@ -2,14 +2,10 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.settings
+package com.intellij.r.psi.settings
 
 import com.intellij.openapi.components.*
-import com.intellij.r.psi.interpreter.RInterpreterInfo
-import com.intellij.r.psi.interpreter.RInterpreterLocation
-import org.jetbrains.r.interpreter.RBasicInterpreterInfo
-import org.jetbrains.r.interpreter.RVersion
-import org.jetbrains.r.interpreter.toLocalPathOrNull
+import com.intellij.r.psi.interpreter.*
 import java.io.File
 
 @State(name = "RInterpreterSettings", storages = [Storage("rInterpreterSettings.xml")])

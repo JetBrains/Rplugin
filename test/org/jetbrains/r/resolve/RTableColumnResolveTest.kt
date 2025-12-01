@@ -1,8 +1,8 @@
 package org.jetbrains.r.resolve
 
 import com.intellij.openapi.fileTypes.LanguageFileType
-import junit.framework.TestCase
 import com.intellij.r.psi.RFileType
+import junit.framework.TestCase
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.console.addRuntimeInfo
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase

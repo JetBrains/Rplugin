@@ -15,7 +15,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.*
 import com.intellij.openapi.options.ShowSettingsUtil
-import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
@@ -30,7 +29,10 @@ import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.configuration.RSettingsProjectConfigurable
 import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.RInterpreterUtil
+import com.intellij.r.psi.settings.RSettings
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
@@ -41,18 +43,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.actions.RDumbAwareBgtAction
-import org.jetbrains.r.configuration.RSettingsProjectConfigurable
-import org.jetbrains.r.interpreter.RInterpreterManagerImpl
-import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
-import org.jetbrains.r.settings.RSettings
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.SwingConstants
 
 class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
 
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-    val rConsoleManager = RConsoleManager.getInstance(project)
+    val rConsoleManager = RConsoleManagerImpl.getInstance(project)
     rConsoleManager.registerContentManager(toolWindow.contentManager)
     toolWindow.component.putClientProperty(ToolWindowContentUi.HIDE_ID_LABEL, "true")
     toolWindow.setToHideOnEmptyContent(true)
@@ -118,7 +116,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
     fun focusOnCurrentConsole(project: Project) {
       val rConsoleToolWindows = getRConsoleToolWindows(project)
       rConsoleToolWindows?.show(null)
-      val currentConsoleOrNull = RConsoleManager.getInstance(project).currentConsoleOrNull ?: return
+      val currentConsoleOrNull = RConsoleManagerImpl.getInstance(project).currentConsoleOrNull ?: return
       rConsoleToolWindows?.contentManager?.let {contentManager ->
         contentManager.contents.firstOrNull { isConsole(it) && UIUtil.isAncestor(it.component, currentConsoleOrNull) }?.let { content ->
          contentManager.setSelectedContent(content)
@@ -173,7 +171,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       }
     }
 
-    fun restartConsole(console: RConsoleView) {
+    fun restartConsole(console: RConsoleViewImpl) {
       val toolWindow = getRConsoleToolWindows(console.project) ?: return
       val content = getConsoleContent(console) ?: return
       val index = toolWindow.contentManager.getIndexOfContent(content)
@@ -200,10 +198,10 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       }
     }
 
-    fun getConsoleContent(console: RConsoleView): Content? {
+    fun getConsoleContent(console: RConsoleViewImpl): Content? {
       val toolWindow = getRConsoleToolWindows(console.project) ?: return null
       return toolWindow.contentManager.contents.firstOrNull {
-        UIUtil.findComponentOfType(it.component, RConsoleView::class.java) == console
+        UIUtil.findComponentOfType(it.component, RConsoleViewImpl::class.java) == console
       }
     }
 
@@ -236,7 +234,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
           ShowSettingsUtil.getInstance().showSettingsDialog(project, RSettingsProjectConfigurable::class.java)
         }
         printHyperlink(RBundle.message("console.no.interpreter.download.interpreter") + "\n") {
-          RInterpreterManagerImpl.openDownloadRPage()
+          RInterpreterManager.openDownloadRPage()
         }
       }
 
@@ -251,7 +249,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
           console.isCloseable = false
           toolWindow.contentManager.addContent(console, 0)
         } else {
-          RConsoleManager.getInstance(project).currentConsoleAsync
+          RConsoleManagerImpl.getInstance(project).currentConsoleAsync
         }
       }
     }

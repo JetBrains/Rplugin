@@ -5,10 +5,10 @@
 package org.jetbrains.r.mock
 
 import com.intellij.openapi.project.Project
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
 import com.intellij.r.psi.interpreter.RInterpreterState
 import com.intellij.r.psi.interpreter.RInterpreterStateManager
+import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 
 class MockInterpreterStateManager(project: Project) : RInterpreterStateManager {
   override val currentStateOrNull: RInterpreterState = MockInterpreterState(project, MockInterpreterStateProvider.DUMMY)

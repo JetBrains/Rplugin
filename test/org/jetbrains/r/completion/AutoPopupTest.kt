@@ -5,20 +5,20 @@
 package org.jetbrains.r.completion
 
 import com.intellij.openapi.application.runReadAction
-import com.intellij.testFramework.fixtures.CompletionAutoPopupTester
-import com.intellij.util.ThrowableRunnable
 import com.intellij.r.psi.RFileType
-import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import com.intellij.r.psi.classes.r6.R6ClassInfo
 import com.intellij.r.psi.classes.s4.classInfo.RS4ClassInfo
 import com.intellij.r.psi.console.RConsoleRuntimeInfo
-import org.jetbrains.r.console.addRuntimeInfo
 import com.intellij.r.psi.hints.parameterInfo.RExtraNamedArgumentsInfo
 import com.intellij.r.psi.psi.TableInfo
 import com.intellij.r.psi.psi.api.RFunctionExpression
-import org.jetbrains.r.rinterop.RInteropImpl
 import com.intellij.r.psi.rinterop.RValueSimple
 import com.intellij.r.psi.rmarkdown.RMarkdownFileType
+import com.intellij.testFramework.fixtures.CompletionAutoPopupTester
+import com.intellij.util.ThrowableRunnable
+import org.jetbrains.r.RLightCodeInsightFixtureTestCase
+import org.jetbrains.r.console.addRuntimeInfo
+import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.settings.REditorSettings
 
 class AutoPopupTest : RLightCodeInsightFixtureTestCase() {

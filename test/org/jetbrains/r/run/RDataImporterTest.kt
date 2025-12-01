@@ -4,13 +4,13 @@
 
 package org.jetbrains.r.run
 
+import com.intellij.r.psi.interpreter.LocalOrRemotePath
+import com.intellij.r.psi.rinterop.RReference
 import junit.framework.TestCase
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.blockingGetAndDispatchEvents
-import com.intellij.r.psi.interpreter.LocalOrRemotePath
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
-import com.intellij.r.psi.rinterop.RReference
 import org.jetbrains.r.run.visualize.*
 import org.jetbrains.r.run.visualize.RImportDataDialog.Companion.toRBoolean
 import java.nio.file.Paths

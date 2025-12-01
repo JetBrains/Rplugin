@@ -9,7 +9,7 @@ import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.blockingGetAndDispatchEvents
 
-class RConsoleDebuggerTestHelper(console: RConsoleView) {
+class RConsoleDebuggerTestHelper(console: RConsoleViewImpl) {
   private var promise = AsyncPromise<Boolean>()
 
   init {

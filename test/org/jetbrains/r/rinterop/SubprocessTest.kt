@@ -7,10 +7,10 @@ package org.jetbrains.r.rinterop
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
-import junit.framework.TestCase
-import org.jetbrains.concurrency.AsyncPromise
 import com.intellij.r.psi.interpreter.OperatingSystem
 import com.intellij.r.psi.rinterop.RReference
+import junit.framework.TestCase
+import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 import java.io.File
 

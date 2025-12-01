@@ -5,10 +5,10 @@
 package org.jetbrains.r.resolve
 
 import com.intellij.openapi.fileTypes.LanguageFileType
-import junit.framework.TestCase
 import com.intellij.r.psi.RFileType
-import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import com.intellij.r.psi.rmarkdown.RMarkdownFileType
+import junit.framework.TestCase
+import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 
 class RLocalResolveTest: RLightCodeInsightFixtureTestCase() {
 

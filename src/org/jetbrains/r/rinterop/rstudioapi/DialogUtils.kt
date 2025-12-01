@@ -12,6 +12,7 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showOkCancelDialog
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.interpreter.isLocal
 import com.intellij.r.psi.rinterop.RObject
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBPasswordField
@@ -21,7 +22,6 @@ import com.intellij.ui.dsl.builder.columns
 import com.intellij.ui.dsl.builder.panel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.r.interpreter.isLocal
 import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.getRNull
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.rError

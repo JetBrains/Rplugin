@@ -5,10 +5,10 @@ import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.fileTypes.PlainTextLanguage
+import com.intellij.r.psi.RLanguage
 import com.intellij.testFramework.common.ThreadLeakTracker
 import com.jetbrains.python.PythonLanguage
 import org.intellij.plugins.markdown.lang.MarkdownLanguage
-import com.intellij.r.psi.RLanguage
 import org.jetbrains.r.visualization.RNotebookCellLines
 import org.jetbrains.r.visualization.RNotebookCellLines.CellType.CODE
 import org.jetbrains.r.visualization.RNotebookCellLines.CellType.MARKDOWN

@@ -18,7 +18,7 @@ import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import com.intellij.ui.JBIntSpinner
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.ui.JBUI
-import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.console.RConsoleViewImpl
 import javax.swing.JPanel
 import javax.swing.JSpinner
 import javax.swing.text.DefaultFormatter
@@ -46,7 +46,7 @@ class RReturnHintInlayProvider : InlayHintsProvider<RReturnHintInlayProvider.Set
     object : FactoryInlayHintsCollector(editor) {
       // Information will be painted with org.jetbrains.r.hints.RReturnHintModel$RReturnHintLineExtensionPainter
       override fun collect(element: PsiElement, editor: Editor, sink: InlayHintsSink): Boolean {
-        if (element !is PsiFile || element.getUserData(RConsoleView.IS_R_CONSOLE_KEY) == true) return false
+        if (element !is PsiFile || element.getUserData(RConsoleViewImpl.IS_R_CONSOLE_KEY) == true) return false
 
         val document = editor.document
         if (lastSeenSettings.differentReturnExpressions != settings.differentReturnExpressions

@@ -17,16 +17,16 @@ import com.intellij.openapi.project.Project
 import com.intellij.r.psi.RPluginUtil
 import com.intellij.r.psi.interpreter.RInterpreter
 import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.RInterpreterUtil
+import com.intellij.r.psi.interpreter.runHelperProcess
 import com.intellij.util.EventDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.console.RConsoleView
-import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.runHelperProcess
+import org.jetbrains.r.console.RConsoleManagerImpl
+import org.jetbrains.r.console.RConsoleViewImpl
 import org.jetbrains.r.rinterop.RInteropImpl
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
@@ -53,7 +53,7 @@ class RJobRunner(
       FileDocumentManager.getInstance().saveAllDocuments()
     }
 
-    val rConsoleManager = RConsoleManager.getInstance(project)
+    val rConsoleManager = RConsoleManagerImpl.getInstance(project)
     val console = rConsoleManager.currentConsoleOrNull
     val rInterop = console?.rInterop
 
@@ -71,7 +71,7 @@ class RJobRunner(
   private fun installProcessListener(
     processHandler: ProcessHandler,
     exportRDataFile: String,
-    console: RConsoleView?,
+    console: RConsoleViewImpl?,
     task: RJobTask,
     exportEnvName: String? = null,
   ) {

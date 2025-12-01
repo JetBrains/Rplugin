@@ -8,15 +8,15 @@ import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.r.psi.RFileType
+import com.intellij.r.psi.debugger.RSourcePosition
+import com.intellij.r.psi.rinterop.ExecuteCodeRequest
+import com.intellij.r.psi.rinterop.RReference
 import com.intellij.xdebugger.impl.XDebuggerUtilImpl
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.runAsync
-import com.intellij.r.psi.RFileType
 import org.jetbrains.r.debugger.RDebuggerUtil
-import com.intellij.r.psi.debugger.RSourcePosition
-import com.intellij.r.psi.rinterop.ExecuteCodeRequest
-import com.intellij.r.psi.rinterop.RReference
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 class RDebuggerTest : RProcessHandlerBaseTestCase() {

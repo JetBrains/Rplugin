@@ -40,12 +40,14 @@ import com.intellij.r.psi.hints.parameterInfo.RExtraNamedArgumentsInfo
 import com.intellij.r.psi.interpreter.RInterpreter
 import com.intellij.r.psi.interpreter.RInterpreterState
 import com.intellij.r.psi.interpreter.RLibraryWatcher
+import com.intellij.r.psi.interpreter.RVersion
 import com.intellij.r.psi.packages.RInstalledPackage
 import com.intellij.r.psi.packages.RPackagePriority
 import com.intellij.r.psi.psi.TableColumnInfo
 import com.intellij.r.psi.psi.TableInfo
 import com.intellij.r.psi.psi.TableType
 import com.intellij.r.psi.rinterop.*
+import com.intellij.r.psi.settings.RSettings
 import com.intellij.r.psi.util.thenCancellable
 import com.intellij.r.psi.util.tryRegisterDisposable
 import com.intellij.util.ConcurrencyUtil
@@ -63,7 +65,6 @@ import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.debugger.RStackFrame
 import org.jetbrains.r.interpreter.RInterpreterStateImpl
-import org.jetbrains.r.interpreter.RVersion
 import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiFunctionId
@@ -72,7 +73,6 @@ import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RDataFrameViewer
 import org.jetbrains.r.run.visualize.RDataFrameViewerImpl
-import org.jetbrains.r.settings.RSettings
 import java.awt.Dimension
 import java.util.*
 import java.util.concurrent.*
@@ -225,7 +225,7 @@ class RInteropImpl(
   var workspaceFile: String? = null
     private set
   private var saveOnExitValue = false
-  var saveOnExit: Boolean
+  override var saveOnExit: Boolean
     get() = saveOnExitValue
     set(value) {
       if (saveOnExitValue != value && workspaceFile != null) {
@@ -1032,8 +1032,8 @@ class RInteropImpl(
     return execute(asyncStub::getObjectSizes, RRefList.newBuilder().addAllRefs(refs.map { it.proto }).build()).listList
   }
 
-  fun setRStudioApiEnabled(isEnabled: Boolean) {
-    executeRequestAsync(RPIServiceGrpc.getSetRStudioApiEnabledMethod(), BoolValue.of(isEnabled))
+  override fun setRStudioApiEnabled(enabled: Boolean) {
+    executeRequestAsync(RPIServiceGrpc.getSetRStudioApiEnabledMethod(), BoolValue.of(enabled))
   }
 
   private fun <TRequest : GeneratedMessageV3> executeRequest(

@@ -1,5 +1,9 @@
 <idea-plugin>
   <extensions defaultExtensionNs="com.intellij">
+    <!-- Registry keys -->
+    <registryKey defaultValue="120000" key="r.interpreter.defaultTimeout" description="Default timeout for R interpreter operations"/>
+    <registryKey defaultValue="30000" key="r.interpreter.initializedTimeout" description="Timeout for initializing Rwrapper"/>
+
     <fileType name="R" implementationClass="com.intellij.r.psi.RFileType" fieldName="INSTANCE" language="R" extensions="R;Rprofile"/>
   </extensions>
 </idea-plugin>

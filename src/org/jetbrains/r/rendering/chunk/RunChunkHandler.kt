@@ -40,8 +40,8 @@ import kotlinx.coroutines.withContext
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.concurrency.*
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
-import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.console.RConsoleManagerImpl
+import org.jetbrains.r.console.RConsoleViewImpl
 import org.jetbrains.r.editor.ui.rMarkdownNotebook
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
@@ -109,7 +109,7 @@ class RunChunkHandler(
     runSelectedCode: Boolean,
     isDebug: Boolean,
   ) {
-    val console = RConsoleManager.getInstance(psiFile.project).awaitCurrentConsole().getOrNull() ?: return
+    val console = RConsoleManagerImpl.getInstance(psiFile.project).awaitCurrentConsole().getOrNull() ?: return
 
     try {
       val chunks = readAction {
@@ -149,7 +149,7 @@ class RunChunkHandler(
     textRange: TextRange? = null,
   ): Boolean {
     val editor: EditorEx
-    val console: RConsoleView?
+    val console: RConsoleViewImpl?
 
     withContext(Dispatchers.EDT) {
       require(element.project == project)
@@ -158,7 +158,7 @@ class RunChunkHandler(
       if (element.containingFile == null || element.context == null) throw RunChunkHandlerException("parent not found")
       val fileEditor = FileEditorManager.getInstance(project).getSelectedEditor(element.containingFile.originalFile.virtualFile)
       editor = EditorUtil.getEditorEx(fileEditor) ?: throw RunChunkHandlerException("editor not found")
-      console = RConsoleManager.getInstance(project).awaitCurrentConsole().getOrNull()
+      console = RConsoleManagerImpl.getInstance(project).awaitCurrentConsole().getOrNull()
     }
 
     if (console == null) return false
@@ -179,7 +179,7 @@ class RunChunkHandler(
 
     @RequiresReadLock
     @Throws(RunChunkHandlerException::class)
-    fun makeRequest(textRange: TextRange?, console: RConsoleView, isDebug: Boolean): RInteropImpl.ReplSourceFileRequest {
+    fun makeRequest(textRange: TextRange?, console: RConsoleViewImpl, isDebug: Boolean): RInteropImpl.ReplSourceFileRequest {
       val range = codeElement.getTextRange(textRange)
       val originalRequest = console.rInterop.prepareReplSourceFileRequest(file.virtualFile, range, isDebug)
       return modifyRequestIfPython(originalRequest, codeElement)
@@ -202,7 +202,7 @@ class RunChunkHandler(
   }
 
   private suspend fun runHandlersAndExecuteChunk(
-    console: RConsoleView,
+    console: RConsoleViewImpl,
     element: PsiElement,
     editor: EditorEx,
     isDebug: Boolean = false,
@@ -258,7 +258,7 @@ class RunChunkHandler(
   @RequiresReadLock
   @VisibleForTesting
   internal fun runHandlersAndExecuteChunkAsync(
-    console: RConsoleView,
+    console: RConsoleViewImpl,
     element: PsiElement,
     editor: EditorEx,
     isDebug: Boolean = false,
@@ -426,7 +426,7 @@ class RunChunkHandler(
     }
 
     private fun ensureConsoleIsReady(
-      console: RConsoleView,
+      console: RConsoleViewImpl,
       project: Project,
       promise: AsyncPromise<Boolean>,
     ): Boolean {
@@ -441,7 +441,7 @@ class RunChunkHandler(
 
     @Throws(RunChunkHandlerException::class)
     private fun checkConsoleIsReady(
-      console: RConsoleView,
+      console: RConsoleViewImpl,
       project: Project,
     ) {
       if (console.executeActionHandler.state != RConsoleExecuteActionHandler.State.PROMPT) {
@@ -455,7 +455,7 @@ class RunChunkHandler(
       element: PsiElement,
       rInterop: RInteropImpl,
       result: ExecutionResult?,
-      console: RConsoleView,
+      console: RConsoleViewImpl,
       editor: EditorEx,
       inlayElement: PsiElement,
       isBatchMode: Boolean,
@@ -497,7 +497,7 @@ class RunChunkHandler(
     private fun executeCode(
       project: Project,
       request: RInteropImpl.ReplSourceFileRequest,
-      console: RConsoleView,
+      console: RConsoleViewImpl,
       onOutput: (ProcessOutput) -> Unit = {},
     ): Promise<ExecutionResult> {
       val result = mutableListOf<ProcessOutput>()

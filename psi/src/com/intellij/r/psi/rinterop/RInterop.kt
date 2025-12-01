@@ -84,6 +84,10 @@ interface RInterop : Disposable, UserDataHolder {
 
   fun invalidateCaches()
 
+  fun setRStudioApiEnabled(enabled: Boolean)
+
+  var saveOnExit: Boolean
+
   fun <T : Any> cached(defaultValue: T? = null, f: () -> T): Cached<T>
   interface Cached<T> {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T

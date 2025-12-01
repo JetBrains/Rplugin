@@ -43,7 +43,7 @@ import com.intellij.xdebugger.impl.ui.tree.XDebuggerTreeState
 import com.intellij.xdebugger.impl.ui.tree.nodes.*
 import org.jetbrains.r.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
-import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.console.RConsoleViewImpl
 import org.jetbrains.r.console.RDebuggerPanel
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
@@ -60,7 +60,7 @@ import javax.swing.SwingUtilities
 import javax.swing.event.TreeSelectionListener
 
 
-class RXVariablesView(private val console: RConsoleView, private val debuggerPanel: RDebuggerPanel)
+class RXVariablesView(private val console: RConsoleViewImpl, private val debuggerPanel: RDebuggerPanel)
   : XVariablesViewBase(console.rInterop.project, RDebuggerEditorsProvider, null), XWatchesView, DataProvider {
   var stackFrame: RXStackFrame? = null
     set(frame) {

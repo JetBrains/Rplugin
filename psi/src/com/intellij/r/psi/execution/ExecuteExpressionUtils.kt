@@ -2,7 +2,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.execution
+package com.intellij.r.psi.execution
 
 import com.intellij.execution.process.BaseProcessHandler
 import com.intellij.execution.process.CapturingProcessRunner
@@ -17,12 +17,12 @@ import com.intellij.openapi.util.ThrowableComputable
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.r.psi.RPluginUtil
 import com.intellij.r.psi.interpreter.RInterpreterLocation
+import com.intellij.r.psi.interpreter.RInterpreterUtil
+import com.intellij.r.psi.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import com.intellij.util.ui.EDT
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withTimeout
-import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import java.nio.file.Paths
 
 object ExecuteExpressionUtils {

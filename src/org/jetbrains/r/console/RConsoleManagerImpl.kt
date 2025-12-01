@@ -14,6 +14,8 @@ import com.intellij.openapi.diagnostic.fileLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.console.RConsoleManager
+import com.intellij.r.psi.console.RConsoleView
 import com.intellij.r.psi.interpreter.RInterpreter
 import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.r.psi.packages.RPackageProjectManager
@@ -35,30 +37,29 @@ import java.util.concurrent.atomic.AtomicInteger
 
 private val LOG = fileLogger()
 
-@Service(Service.Level.PROJECT)
-class RConsoleManager(
+class RConsoleManagerImpl(
   private val project: Project,
   private val coroutineScope: CoroutineScope
-) {
+) : RConsoleManager {
   @Volatile
-  private var currentConsole: RConsoleView? = null
+  private var currentConsole: RConsoleViewImpl? = null
   private val consoleCounter: AtomicInteger = AtomicInteger()
-  private var consolePromise: Promise<RConsoleView>? = null
+  private var consolePromise: Promise<RConsoleViewImpl>? = null
   @Volatile
   var initialized = false
     private set
 
   @Deprecated("use awaitCurrentConsole() instead")
-  val currentConsoleAsync: Promise<RConsoleView>
+  val currentConsoleAsync: Promise<RConsoleViewImpl>
     get() = currentConsole?.let { resolvedPromise(it) } ?: runConsole()
 
-  suspend fun awaitCurrentConsole(): Result<RConsoleView> =
+  suspend fun awaitCurrentConsole(): Result<RConsoleViewImpl> =
     runCatching {
       currentConsoleAsync.await()
     }
 
   @Synchronized
-  private fun runConsole(): Promise<RConsoleView> {
+  private fun runConsole(): Promise<RConsoleViewImpl> {
     consolePromise?.let { return it }
     return runSingleConsole().also {
       consolePromise = it
@@ -70,16 +71,20 @@ class RConsoleManager(
     }
   }
 
-  val currentConsoleOrNull: RConsoleView?
+  override fun runConsole(requestFocus: Boolean, workingDir: String?): Promise<RConsoleView> {
+    return runConsole(project, requestFocus, workingDir).then { it as RConsoleView }
+  }
+
+  val currentConsoleOrNull: RConsoleViewImpl?
     get() = currentConsole
 
-  val consoles: List<RConsoleView>
+  override val consoles: List<RConsoleViewImpl>
     get() = getContentDescription(project)?.contentConsolePairs?.map { it.second }?.toList() ?: listOf()
 
 
-  private fun runSingleConsole(): Promise<RConsoleView> {
+  private fun runSingleConsole(): Promise<RConsoleViewImpl> {
     if (RConsoleToolWindowFactory.getRConsoleToolWindows(project) == null) {
-      return AsyncPromise<RConsoleView>().apply {
+      return AsyncPromise<RConsoleViewImpl>().apply {
         val message = RBundle.message("notification.console.noToolWindowFound")
         LOG.error(message)
         setError(message)
@@ -96,7 +101,7 @@ class RConsoleManager(
       override fun contentAdded(event: ContentManagerEvent) {
         if (RConsoleToolWindowFactory.isConsole(event.content) && consoleCounter.incrementAndGet() == 1) {
           RConsoleToolWindowFactory.setAvailableForRToolWindows(project, true)
-          currentConsole = findComponentOfType(event.content.component, RConsoleView::class.java)
+          currentConsole = findComponentOfType(event.content.component, RConsoleViewImpl::class.java)
           currentConsole?.onSelect()
         }
         RInterpreterBarWidgetFactory.updateWidget(project)
@@ -112,7 +117,7 @@ class RConsoleManager(
 
       override fun selectionChanged(event: ContentManagerEvent) {
         if (!RConsoleToolWindowFactory.isConsole(event.content)) return
-        val eventConsole = findComponentOfType(event.content.component, RConsoleView::class.java)
+        val eventConsole = findComponentOfType(event.content.component, RConsoleViewImpl::class.java)
         if (event.content.isSelected) {
           currentConsole = eventConsole
           currentConsole?.onSelect()
@@ -124,7 +129,7 @@ class RConsoleManager(
   }
 
   @TestOnly
-  internal fun setCurrentConsoleForTests(console: RConsoleView?) {
+  internal fun setCurrentConsoleForTests(console: RConsoleViewImpl?) {
     check(ApplicationManager.getApplication().isUnitTestMode)
     currentConsole = console
   }
@@ -132,18 +137,18 @@ class RConsoleManager(
   companion object {
     private data class ContentDescription(
       val contentManager: ContentManager,
-      val contentConsolePairs: Sequence<Pair<Content, RConsoleView>>
+      val contentConsolePairs: Sequence<Pair<Content, RConsoleViewImpl>>
     )
 
-    fun getInstance(project: Project): RConsoleManager {
-      return project.service()
+    fun getInstance(project: Project): RConsoleManagerImpl {
+      return project.service<RConsoleManager>() as RConsoleManagerImpl
     }
 
     /**
      * Success promise means that [currentConsoleOrNull] is not null
      */
-    fun runConsole(project: Project, requestFocus: Boolean = false, workingDir: String? = null): Promise<RConsoleView> {
-      val promise = AsyncPromise<RConsoleView>()
+    fun runConsole(project: Project, requestFocus: Boolean = false, workingDir: String? = null): Promise<RConsoleViewImpl> {
+      val promise = AsyncPromise<RConsoleViewImpl>()
       doRunConsole(project, requestFocus, workingDir).processed(promise)
       return promise
     }
@@ -162,8 +167,8 @@ class RConsoleManager(
       }
     }
 
-    private fun doRunConsole(project: Project, requestFocus: Boolean, workingDir: String?): Promise<RConsoleView> {
-      val result = AsyncPromise<RConsoleView>()
+    private fun doRunConsole(project: Project, requestFocus: Boolean, workingDir: String?): Promise<RConsoleViewImpl> {
+      val result = AsyncPromise<RConsoleViewImpl>()
       RInterpreterManager.getInterpreterAsync(project).onSuccess { interpreter ->
         RConsoleRunner(interpreter, workingDir ?: interpreter.basePath).initAndRun().onSuccess { console ->
           result.setResult(console)
@@ -191,7 +196,7 @@ class RConsoleManager(
       return RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.contentManager?.let { cm ->
         val pairs = cm.contents.asSequence()
           .mapNotNull {
-            findComponentOfType(it.component, RConsoleView::class.java)?.let { console ->
+            findComponentOfType(it.component, RConsoleViewImpl::class.java)?.let { console ->
               Pair(it, console)
             }
           }

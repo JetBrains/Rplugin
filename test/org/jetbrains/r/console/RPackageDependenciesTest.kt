@@ -4,9 +4,9 @@
 
 package org.jetbrains.r.console
 
+import com.intellij.r.psi.packages.RPackageProjectManager
 import com.intellij.testFramework.UsefulTestCase
 import com.intellij.util.ui.UIUtil
-import com.intellij.r.psi.packages.RPackageProjectManager
 
 class RPackageDependenciesTest : RConsoleBaseTestCase() {
 

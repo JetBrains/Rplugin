@@ -5,8 +5,8 @@
 package org.jetbrains.r.resolve
 
 import com.intellij.pom.PomTargetPsiElement
-import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import com.intellij.r.psi.psi.RSkeletonParameterPomTarget
+import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 
 class RNamedArgumentResolveTest : RLightCodeInsightFixtureTestCase() {
   override fun setUp() {

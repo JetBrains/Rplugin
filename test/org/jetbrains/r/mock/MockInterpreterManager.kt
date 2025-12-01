@@ -6,13 +6,11 @@ package org.jetbrains.r.mock
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import kotlinx.coroutines.CompletableDeferred
 import com.intellij.r.psi.interpreter.*
+import com.intellij.r.psi.settings.RInterpreterSettingsProvider
 import com.intellij.testFramework.common.timeoutRunBlocking
-import kotlinx.coroutines.runBlocking
-import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.RLocalInterpreterLocation
-import org.jetbrains.r.settings.RInterpreterSettingsProvider
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Runnable
 
 class MockInterpreterManager(project: Project) : RInterpreterManager {
   override var interpreterLocation: RInterpreterLocation? =
@@ -23,6 +21,8 @@ class MockInterpreterManager(project: Project) : RInterpreterManager {
   override fun getInterpreterDeferred(force: Boolean) = CompletableDeferred(Result.success(interpreterOrNull))
 
   override fun hasInterpreterLocation(): Boolean = true
+
+  override fun restartInterpreter(afterRestart: Runnable?) {}
 
   init {
     LOG.warn("List of settings providers: ${RInterpreterSettingsProvider.getProviders().toList()}")

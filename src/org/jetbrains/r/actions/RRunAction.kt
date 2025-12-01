@@ -10,9 +10,9 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.notifications.RNotificationUtil
 import com.intellij.ui.AppUIUtil
-import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleManagerImpl
 import org.jetbrains.r.console.RConsoleToolWindowFactory
-import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.console.RConsoleViewImpl
 
 abstract class RRunActionBase : REditorActionBase() {
   override fun actionPerformed(e: AnActionEvent) {
@@ -21,7 +21,7 @@ abstract class RRunActionBase : REditorActionBase() {
     AppUIUtil.invokeOnEdt {
       RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.show {}
     }
-    RConsoleManager.getInstance(project).currentConsoleAsync.onSuccess { console ->
+    RConsoleManagerImpl.getInstance(project).currentConsoleAsync.onSuccess { console ->
       if (REditorActionUtil.isRunningCommand(console)) {
         RNotificationUtil.notifyConsoleError(project, RBundle.message("notification.console.busy"))
       }
@@ -43,11 +43,11 @@ abstract class RRunActionBase : REditorActionBase() {
 
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
-  abstract fun doExecute(console: RConsoleView, file: VirtualFile)
+  abstract fun doExecute(console: RConsoleViewImpl, file: VirtualFile)
 }
 
 class RRunAction : RRunActionBase() {
-  override fun doExecute(console: RConsoleView, file: VirtualFile) {
+  override fun doExecute(console: RConsoleViewImpl, file: VirtualFile) {
     console.rInterop.replSourceFile(file)
   }
 
@@ -58,7 +58,7 @@ class RRunAction : RRunActionBase() {
 }
 
 class RDebugAction : RRunActionBase() {
-  override fun doExecute(console: RConsoleView, file: VirtualFile) {
+  override fun doExecute(console: RConsoleViewImpl, file: VirtualFile) {
     console.rInterop.replSourceFile(file, debug = true)
   }
 

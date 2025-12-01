@@ -2,14 +2,14 @@
  * Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.settings
+package com.intellij.r.psi.settings
 
 import com.intellij.icons.AllIcons.Nodes.HomeFolder
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.configuration.RAddInterpreterDialog
 import com.intellij.r.psi.interpreter.RInterpreterInfo
 import com.intellij.r.psi.interpreter.RInterpreterLocation
-import org.jetbrains.r.configuration.RAddInterpreterDialog
-import org.jetbrains.r.interpreter.RLocalInterpreterLocation
+import com.intellij.r.psi.interpreter.RLocalInterpreterLocation
 import javax.swing.Icon
 
 class RLocalInterpreterSettingsProvider : RInterpreterSettingsProvider {

@@ -1,12 +1,10 @@
-package org.jetbrains.r.interpreter
+package com.intellij.r.psi.interpreter
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.BaseProcessHandler
 import com.intellij.execution.process.OSProcessHandler
 import com.intellij.openapi.project.Project
 import com.intellij.r.psi.RBundle
-import com.intellij.r.psi.interpreter.RInterpreterBase
-import com.intellij.r.psi.interpreter.RInterpreterLocation
 import java.io.File
 
 data class RLocalInterpreterLocation(val path: String): RInterpreterLocation {
@@ -35,7 +33,7 @@ data class RLocalInterpreterLocation(val path: String): RInterpreterLocation {
       if (!RInterpreterUtil.checkInterpreterLocation(project, this)) {
         throw RuntimeException("Invalid R Interpreter")
       }
-      RLocalInterpreterImpl(this, project)
+      RLocalInterpreterProvider.getInstance(project).instantiate(this, project)
     }
   }
 

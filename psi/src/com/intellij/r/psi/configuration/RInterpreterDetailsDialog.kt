@@ -2,17 +2,17 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.configuration
+package com.intellij.r.psi.configuration
 
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.interpreter.RInterpreterInfo
+import com.intellij.r.psi.settings.RInterpreterSettingsProvider
+import com.intellij.r.psi.visualization.inlays.components.DialogUtil
 import com.intellij.ui.CollectionListModel
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.settings.RInterpreterSettingsProvider
-import org.jetbrains.r.visualization.inlays.components.DialogUtil
 import javax.swing.JComponent
 import javax.swing.ListSelectionModel
 

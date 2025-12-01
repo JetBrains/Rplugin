@@ -7,6 +7,7 @@ package com.intellij.r.psi.interpreter
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.BaseProcessHandler
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Version
 import org.jetbrains.annotations.Nls
 import java.io.File
 
@@ -33,4 +34,8 @@ interface RInterpreterLocation {
   fun canWrite(path: String): Boolean
 
   fun canExecute(path: String): Boolean
+}
+
+fun RInterpreterLocation.getVersion(): Version? {
+  return RInterpreterUtil.getVersionByLocation(this)
 }

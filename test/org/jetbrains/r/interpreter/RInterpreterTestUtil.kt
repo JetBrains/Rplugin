@@ -8,6 +8,8 @@ import com.intellij.execution.process.CapturingProcessRunner
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.interpreter.RInterpreterUtil
+import com.intellij.r.psi.interpreter.RLocalInterpreterLocation
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.common.timeoutRunBlocking
 import java.util.concurrent.TimeoutException

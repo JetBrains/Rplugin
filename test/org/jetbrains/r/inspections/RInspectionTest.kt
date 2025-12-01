@@ -9,11 +9,10 @@ import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.editor.colors.CodeInsightColors
+import com.intellij.r.psi.RFileType
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import org.intellij.lang.annotations.Language
-import com.intellij.r.psi.RFileType
 import org.jetbrains.r.RUsefulTestCase
-
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path

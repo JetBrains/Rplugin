@@ -4,10 +4,10 @@
 
 package org.jetbrains.r.documentation
 
+import com.intellij.r.psi.rinterop.RInterop
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.rinterop.RInteropAsyncEventsListener
-import com.intellij.r.psi.rinterop.RInterop
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 class RHttpdDocumentationTest : RProcessHandlerBaseTestCase() {

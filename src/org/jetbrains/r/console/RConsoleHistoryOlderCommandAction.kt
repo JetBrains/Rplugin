@@ -12,7 +12,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.editor.Editor
 
 /** In our code-base *next* means older command in the history. So better use more clear term. */
-class RConsoleHistoryOlderCommandAction(private val console: RConsoleView) : AnAction() {
+class RConsoleHistoryOlderCommandAction(private val console: RConsoleViewImpl) : AnAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val controller = ConsoleHistoryController.getController(console)
     controller?.historyNext?.actionPerformed(e)

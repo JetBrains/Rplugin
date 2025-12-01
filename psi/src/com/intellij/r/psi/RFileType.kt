@@ -6,9 +6,9 @@
 package com.intellij.r.psi
 
 import com.intellij.openapi.fileTypes.LanguageFileType
+import com.intellij.r.psi.icons.RIcons
 import com.intellij.util.indexing.DefaultFileTypeSpecificInputFilter
 import com.intellij.util.indexing.FileBasedIndex
-import com.intellij.r.psi.icons.RIcons
 
 object RFileType : LanguageFileType(RLanguage.INSTANCE) {
 

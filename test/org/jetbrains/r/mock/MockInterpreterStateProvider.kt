@@ -9,8 +9,8 @@ import com.intellij.r.psi.common.ExpiringList
 import com.intellij.r.psi.common.emptyExpiringList
 import com.intellij.r.psi.interpreter.RInterpreterState
 import com.intellij.r.psi.packages.RInstalledPackage
-import org.jetbrains.r.rinterop.RInteropImpl
 import com.intellij.r.psi.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropImpl
 
 interface MockInterpreterStateProvider {
   val rInterop: RInterop

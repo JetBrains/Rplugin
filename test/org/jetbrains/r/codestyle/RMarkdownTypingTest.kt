@@ -7,10 +7,10 @@ package org.jetbrains.r.codestyle
 import com.intellij.application.options.CodeStyle
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CodeStyleSettingsManager
-import org.intellij.lang.annotations.Language
 import com.intellij.r.psi.RLanguage
-import org.jetbrains.r.RUsefulTestCase
 import com.intellij.r.psi.rmarkdown.RMarkdownFileType
+import org.intellij.lang.annotations.Language
+import org.jetbrains.r.RUsefulTestCase
 
 class RMarkdownTypingTest : RUsefulTestCase() {
   fun testFunctionInRFence() {

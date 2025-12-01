@@ -18,7 +18,7 @@ import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.interpreter.RInterpreterManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleManagerImpl
 
 class RunRJobAction : DumbAwareAction() {
   override fun actionPerformed(e: AnActionEvent) {
@@ -41,7 +41,7 @@ class RunRJobAction : DumbAwareAction() {
         val selectedFile = FileEditorManager.getInstance(project).selectedFiles.firstOrNull()
         val script = selectedFile?.takeIf { FileTypeRegistry.getInstance().isFileOfType(it, RFileType) }
         val workingDirectory =
-          RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.workingDir?.takeIf { it.isNotEmpty() }
+          RConsoleManagerImpl.getInstance(project).currentConsoleOrNull?.rInterop?.workingDir?.takeIf { it.isNotEmpty() }
           ?: interpreter.basePath
         RRunJobDialog(interpreter, script, workingDirectory).show()
       }

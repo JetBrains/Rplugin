@@ -10,8 +10,8 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.interpreter.RInterpreterManager
-import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
-import org.jetbrains.r.interpreter.runHelperProcess
+import com.intellij.r.psi.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
+import com.intellij.r.psi.interpreter.runHelperProcess
 
 class RCommandLineRunningState(environment: ExecutionEnvironment?) : CommandLineState(environment) {
   override fun startProcess(): ProcessHandler {

@@ -12,11 +12,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.*
-import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.r.psi.icons.RIcons
+import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.settings.RSettings
 import org.jetbrains.r.projectGenerator.builder.RModuleBuilder
 import org.jetbrains.r.projectGenerator.step.RProjectSettingsStep
-import org.jetbrains.r.settings.RSettings
 import javax.swing.Icon
 import javax.swing.JComponent
 import javax.swing.JPanel
