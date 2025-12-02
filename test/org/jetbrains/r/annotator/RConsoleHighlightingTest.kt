@@ -14,7 +14,7 @@ import com.intellij.openapi.editor.markup.RangeHighlighter
 import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.testFramework.UsefulTestCase
 import org.jetbrains.r.console.RConsoleBaseTestCase
-import org.jetbrains.r.highlighting.*
+import com.intellij.r.psi.highlighting.*
 import java.awt.Color
 import java.awt.Font
 

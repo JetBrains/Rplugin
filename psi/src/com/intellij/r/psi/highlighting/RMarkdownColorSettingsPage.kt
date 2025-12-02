@@ -4,7 +4,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.highlighting
+package com.intellij.r.psi.highlighting
 
 import com.intellij.lang.Language
 import com.intellij.openapi.editor.colors.TextAttributesKey
@@ -16,8 +16,8 @@ import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.icons.RIcons
 import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import org.jetbrains.annotations.NonNls
-import org.jetbrains.r.highlighting.RColorSettingsPage.Companion.R_DEMO
-import org.jetbrains.r.highlighting.RColorSettingsPage.Companion.TAGS
+import com.intellij.r.psi.highlighting.RColorSettingsPage.Companion.R_DEMO
+import com.intellij.r.psi.highlighting.RColorSettingsPage.Companion.TAGS
 import javax.swing.Icon
 
 class RMarkdownColorSettingsPage : RainbowColorSettingsPage {

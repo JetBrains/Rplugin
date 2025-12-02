@@ -33,7 +33,7 @@ import com.intellij.ui.popup.AbstractPopup
 import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.console.runtimeInfo
-import org.jetbrains.r.highlighting.DOC_COMMENT
+import com.intellij.r.psi.highlighting.DOC_COMMENT
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory

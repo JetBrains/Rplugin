@@ -2,7 +2,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.annotator
+package com.intellij.r.psi.annotator
 
 import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInsight.daemon.impl.HighlightInfoType
@@ -25,7 +25,7 @@ import com.intellij.r.psi.psi.ReferenceKind
 import com.intellij.r.psi.psi.api.*
 import com.intellij.r.psi.psi.getKind
 import com.intellij.r.psi.psi.isFunctionFromLibrary
-import org.jetbrains.r.highlighting.*
+import com.intellij.r.psi.highlighting.*
 
 class RAnnotatorVisitor(private val holder: MutableList<HighlightInfo>, private val annotationSession: UserDataHolder) : RVisitor() {
 

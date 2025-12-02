@@ -412,8 +412,8 @@ You can find the source code in the following repositories:
                                       implementationClass="org.jetbrains.r.quarto.QuartoFileViewProviderFactory"/>
 
         <lang.syntaxHighlighterFactory language="R"
-                                       implementationClass="org.jetbrains.r.highlighting.RSyntaxHighlighterFactory"/>
-        <highlightVisitor implementation="org.jetbrains.r.highlighting.RRainbowVisitor"/>
+                                       implementationClass="com.intellij.r.psi.highlighting.RSyntaxHighlighterFactory"/>
+        <highlightVisitor implementation="com.intellij.r.psi.highlighting.RRainbowVisitor"/>
         <lang.syntaxHighlighter language="Roxygen" implementationClass="com.intellij.r.psi.roxygen.RoxygenSyntaxHighlighter"/>
 
         <actionPromoter implementation="org.jetbrains.r.actions.RActionPromoter"/>
@@ -426,15 +426,15 @@ You can find the source code in the following repositories:
         <codeStyleSettingsProvider implementation="org.jetbrains.r.editor.formatting.RCodeStyleSettingsProvider"/>
         <langCodeStyleSettingsProvider
                 implementation="org.jetbrains.r.editor.formatting.RLanguageCodeStyleSettingsProvider"/>
-        <colorSettingsPage implementation="org.jetbrains.r.highlighting.RColorSettingsPage"/>
-        <colorSettingsPage implementation="org.jetbrains.r.highlighting.RMarkdownColorSettingsPage"/>
+        <colorSettingsPage implementation="com.intellij.r.psi.highlighting.RColorSettingsPage"/>
+        <colorSettingsPage implementation="com.intellij.r.psi.highlighting.RMarkdownColorSettingsPage"/>
         <lang.formatter language="R" implementationClass="org.jetbrains.r.editor.formatting.RFormattingModelBuilder"/>
         <lang.braceMatcher language="R" implementationClass="org.jetbrains.r.editor.RBraceMatcher"/>
         <lang.braceMatcher language="Roxygen" implementationClass="com.intellij.r.psi.roxygen.RoxygenBraceMatcher"/>
         <quoteHandler className="org.jetbrains.r.editor.RQuoteHandler" fileType="R"/>
 
         <lang.foldingBuilder language="R" implementationClass="org.jetbrains.r.editor.RFoldingBuilder"/>
-        <annotator language="R" implementationClass="org.jetbrains.r.annotator.RAnnotator"/>
+        <annotator language="R" implementationClass="com.intellij.r.psi.annotator.RAnnotator"/>
         <annotator language="Roxygen" implementationClass="org.jetbrains.r.roxygen.annotator.RoxygenAnnotator"/>
         <lang.namesValidator language="R" implementationClass="com.intellij.r.psi.refactoring.RNamesValidator"/>
 

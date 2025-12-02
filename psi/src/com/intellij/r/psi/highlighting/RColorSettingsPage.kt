@@ -4,7 +4,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.highlighting
+package com.intellij.r.psi.highlighting
 
 import com.intellij.lang.Language
 import com.intellij.openapi.editor.colors.TextAttributesKey
@@ -43,7 +43,7 @@ class RColorSettingsPage : RainbowColorSettingsPage {
      * To be sure that annotator output is consistent with R highlighting demo
      * we use the same input in the annotator test and in R highlighting demo.
      */
-    internal val R_DEMO_FOR_TESTS = """
+    /*internal*/ val R_DEMO_FOR_TESTS = """
 # function declaration 
 <info descr="R_FUNCTION_DECLARATION">global_function</info> <- function(<info descr="R_PARAMETER">regular</info>, <info descr="R_PARAMETER">named</info> = "Hello World!") {
   # inner function declaration

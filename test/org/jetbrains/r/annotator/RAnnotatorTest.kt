@@ -9,7 +9,7 @@ import com.intellij.openapi.keymap.KeymapManager
 import com.intellij.openapi.keymap.KeymapUtil
 import com.intellij.util.containers.ContainerUtil
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
-import org.jetbrains.r.highlighting.RColorSettingsPage
+import com.intellij.r.psi.highlighting.RColorSettingsPage
 import java.io.File
 import java.nio.file.Paths
 

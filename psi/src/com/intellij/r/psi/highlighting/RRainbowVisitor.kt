@@ -2,7 +2,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.highlighting
+package com.intellij.r.psi.highlighting
 
 import com.intellij.codeInsight.daemon.RainbowVisitor
 import com.intellij.codeInsight.daemon.impl.HighlightVisitor
@@ -17,7 +17,7 @@ import com.intellij.r.psi.psi.api.RParameter
 import com.intellij.r.psi.psi.findVariableDefinition
 import com.intellij.r.psi.psi.isDependantIdentifier
 import com.intellij.r.psi.rmarkdown.RMarkdownFileType
-import org.jetbrains.r.annotator.textAttribute
+import com.intellij.r.psi.annotator.textAttribute
 
 class RRainbowVisitor : RainbowVisitor() {
   override fun suitableForFile(psiFile: PsiFile): Boolean = psiFile is RFile || psiFile.virtualFile?.fileType == RMarkdownFileType

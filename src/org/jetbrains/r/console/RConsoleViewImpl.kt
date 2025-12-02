@@ -55,7 +55,7 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.asPromise
 import org.jetbrains.concurrency.await
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.annotator.RAnnotatorVisitor
+import com.intellij.r.psi.annotator.RAnnotatorVisitor
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.RInteropImpl
