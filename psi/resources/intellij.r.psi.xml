@@ -4,14 +4,14 @@
     <module name="intellij.platform.langInjection"/>
   </dependencies>
 
-  <extensionPoints>
-    <extensionPoint qualifiedName="com.intellij.rInterpreterSettingsProvider"
-                    interface="com.intellij.r.psi.settings.RInterpreterSettingsProvider" dynamic="true"/>
-    <extensionPoint qualifiedName="org.jetbrains.r.librarySupportProvider"
-                    interface="com.intellij.r.psi.codeInsight.libraries.RLibrarySupportProvider" dynamic="true"/>
-    <extensionPoint qualifiedName="org.jetbrains.r.tableContextProvider"
-                    interface="com.intellij.r.psi.codeInsight.table.RTableContextManager" dynamic="true"/>
-  </extensionPoints>
+  <!--<extensionPoints>-->
+  <!--  <extensionPoint qualifiedName="com.intellij.rInterpreterSettingsProvider"-->
+  <!--                  interface="com.intellij.r.psi.settings.RInterpreterSettingsProvider" dynamic="true"/>-->
+  <!--  <extensionPoint qualifiedName="org.jetbrains.r.librarySupportProvider"-->
+  <!--                  interface="com.intellij.r.psi.codeInsight.libraries.RLibrarySupportProvider" dynamic="true"/>-->
+  <!--  <extensionPoint qualifiedName="org.jetbrains.r.tableContextProvider"-->
+  <!--                  interface="com.intellij.r.psi.codeInsight.table.RTableContextManager" dynamic="true"/>-->
+  <!--</extensionPoints>-->
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- Registry keys -->
