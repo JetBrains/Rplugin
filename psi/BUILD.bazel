@@ -14,7 +14,7 @@ jvm_library(
   srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form", "gen/**/*.kt", "gen/**/*.java", "gen-grpc/main/java/**/*.kt", "gen-grpc/main/java/**/*.java", "gen-grpc/main/grpc/**/*.kt", "gen-grpc/main/grpc/**/*.java"], allow_empty = True),
   resources = [":psi_resources"],
   deps = [
-    "@lib//:protobuf",
+    "@community//libraries/protobuf",
     "@community//platform/core-api:core",
     "@community//platform/lang-api:lang",
     "@community//platform/core-impl",
