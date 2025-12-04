@@ -37,6 +37,7 @@
     <orderEntry type="module" module-name="intellij.platform.ide" />
     <orderEntry type="module" module-name="intellij.platform.debugger" />
     <orderEntry type="module" module-name="intellij.platform.debugger.impl" />
+    <orderEntry type="module" module-name="intellij.platform.debugger.impl.ui" />
     <orderEntry type="module" module-name="intellij.platform.usageView.impl" />
     <orderEntry type="module" module-name="intellij.remoteRun" />
     <orderEntry type="module" module-name="intellij.libraries.jediterm.core" />
