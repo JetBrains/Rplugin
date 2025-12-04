@@ -18,7 +18,7 @@ import com.intellij.r.psi.visualization.inlays.components.DialogUtil
 import com.intellij.ui.DocumentAdapter
 import com.intellij.util.ui.JBUI
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.actions.RDumbAwareBgtAction
+import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.run.graphics.RPlot

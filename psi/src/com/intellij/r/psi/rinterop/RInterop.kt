@@ -67,6 +67,7 @@ interface RInterop : Disposable, UserDataHolder {
   fun loaderGetVariables(request: GetVariablesRequest): CancellablePromise<VariablesResponse>
 
   fun getFunctionPosition(rRef: RReference): CancellablePromise<Pair<RSourcePosition, String?>?>
+  fun getFunctionSourcePosition(rRef: RRef): CancellablePromise<GetFunctionSourcePositionResponse>
 
   fun repoAddLibraryPath(path: String): RIExecutionResult
   fun repoCheckPackageInstalled(packageName: String): RIExecutionResult
@@ -79,6 +80,9 @@ interface RInterop : Disposable, UserDataHolder {
   fun dataFrameSort(ref: RReference, sortKeys: List<RowSorter.SortKey>, disposableParent: Disposable? = null): RPersistentRef
   fun dataFrameFilter(ref: RReference, f: DataFrameFilterRequest.Filter, disposableParent: Disposable? = null): RPersistentRef
   fun dataFrameRefresh(ref: RReference): CancellablePromise<Boolean>
+
+  fun getSourceFileText(fileId: String): String
+  fun getSourceFileName(fileId: String): String
 
   fun rInteropGrpcLoggerAsJson(withPending: Boolean = false): String
 

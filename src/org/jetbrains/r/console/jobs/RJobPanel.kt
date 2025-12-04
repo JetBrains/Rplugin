@@ -44,7 +44,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.miginfocom.swing.MigLayout
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.actions.RDumbAwareBgtAction
+import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent

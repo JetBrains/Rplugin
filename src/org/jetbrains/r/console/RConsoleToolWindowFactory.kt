@@ -42,7 +42,7 @@ import com.intellij.util.ui.components.BorderLayoutPanel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.actions.RDumbAwareBgtAction
+import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.SwingConstants

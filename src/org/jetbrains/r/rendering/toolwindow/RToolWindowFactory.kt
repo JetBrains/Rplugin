@@ -19,6 +19,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.icons.RIcons
 import com.intellij.r.psi.packages.build.RPackageBuildUtil
+import com.intellij.r.psi.rendering.toolwindow.RDocumentationComponent
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
 import com.intellij.webcore.packaging.PackagesNotificationPanel
@@ -30,7 +31,7 @@ import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
 import org.jetbrains.r.run.graphics.ui.RGraphicsToolWindow
 import org.jetbrains.r.run.ui.RNonStealingToolWindowInvoker
-import org.jetbrains.r.run.viewer.ui.RViewerToolWindow
+import com.intellij.r.psi.run.viewer.ui.RViewerToolWindow
 import javax.swing.BorderFactory
 import javax.swing.Icon
 import javax.swing.JComponent

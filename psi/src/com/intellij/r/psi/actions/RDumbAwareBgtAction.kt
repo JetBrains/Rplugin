@@ -1,4 +1,4 @@
-package org.jetbrains.r.actions
+package com.intellij.r.psi.actions
 
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.project.DumbAwareAction

@@ -19,6 +19,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.visualization.inlays.components.EmptyComponentPanel
 import com.intellij.testFramework.BinaryLightVirtualFile
 import com.intellij.ui.JreHiDpiUtil
 import com.intellij.ui.components.ActionLink

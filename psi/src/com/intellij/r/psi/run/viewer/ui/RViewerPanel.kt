@@ -2,7 +2,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.run.viewer.ui
+package com.intellij.r.psi.run.viewer.ui
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.EDT
@@ -13,8 +13,8 @@ import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.util.ui.JBUI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.r.run.viewer.RViewerUtils
-import org.jetbrains.r.visualization.inlays.components.EmptyComponentPanel
+import com.intellij.r.psi.run.viewer.RViewerUtils
+import com.intellij.r.psi.visualization.inlays.components.EmptyComponentPanel
 import java.io.File
 import java.net.URI
 import javax.swing.JLabel

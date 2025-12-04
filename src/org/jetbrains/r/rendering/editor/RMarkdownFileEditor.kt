@@ -28,7 +28,7 @@ import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.icons.RIcons
 import com.intellij.r.psi.interpreter.isLocal
 import kotlinx.coroutines.launch
-import org.jetbrains.r.actions.RDumbAwareBgtAction
+import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RMarkdownInterruptAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.actions.editor

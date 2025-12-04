@@ -41,7 +41,7 @@ import com.intellij.xdebugger.impl.ui.DebuggerUIUtil
 import com.intellij.xdebugger.impl.ui.tree.XDebuggerTree
 import com.intellij.xdebugger.impl.ui.tree.XDebuggerTreeState
 import com.intellij.xdebugger.impl.ui.tree.nodes.*
-import org.jetbrains.r.actions.RDumbAwareBgtAction
+import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
 import org.jetbrains.r.console.RConsoleViewImpl
 import org.jetbrains.r.console.RDebuggerPanel

@@ -2,7 +2,7 @@
  * Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.rendering.toolwindow
+package com.intellij.r.psi.rendering.toolwindow
 
 import com.intellij.codeInsight.documentation.DocumentationComponent
 import com.intellij.codeInsight.documentation.DocumentationManager
@@ -24,7 +24,7 @@ import com.intellij.ui.SearchTextField
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.NamedColorUtil
 import com.intellij.util.ui.UIUtil
-import org.jetbrains.r.actions.RDumbAwareBgtAction
+import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import java.awt.*
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent

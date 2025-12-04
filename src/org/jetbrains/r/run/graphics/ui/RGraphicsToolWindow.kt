@@ -22,7 +22,7 @@ import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.jetbrains.r.actions.RDumbAwareBgtAction
+import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.run.graphics.*
 import org.jetbrains.r.settings.RGraphicsSettings

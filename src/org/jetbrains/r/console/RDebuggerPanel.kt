@@ -41,7 +41,7 @@ import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.actions.RDumbAwareBgtAction
+import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
 import org.jetbrains.r.debugger.RStackFrame
 import org.jetbrains.r.debugger.RXVariablesView

@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.rinterop
 
-import com.google.protobuf.StringValue
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runWriteAction
@@ -13,6 +12,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.r.psi.debugger.RSourcePosition
+import com.intellij.r.psi.rinterop.RInterop
 import com.intellij.r.psi.rinterop.RRef
 import com.intellij.r.psi.rinterop.RReference
 import com.intellij.r.psi.rinterop.RSourceFileManager
@@ -25,10 +25,10 @@ import org.jetbrains.r.run.debug.RLineBreakpointType
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-class RSourceFileManager(private val rInterop: RInteropImpl): Disposable {
+class RSourceFileManager(private val rInterop: RInterop): Disposable {
   private val files = ConcurrentHashMap<String, VirtualFile>()
   private val fileToId = ConcurrentHashMap<VirtualFile, String>()
-  private val cachedFunctionPositions by rInterop.Cached { ConcurrentHashMap<RRef, Optional<Pair<RSourcePosition, String?>>>() }
+  private val cachedFunctionPositions by rInterop.cached { ConcurrentHashMap<RRef, Optional<Pair<RSourcePosition, String?>>>() }
 
   init {
     Disposer.register(rInterop, this)
@@ -59,9 +59,9 @@ class RSourceFileManager(private val rInterop: RInteropImpl): Disposable {
         return it
       }
     }
-    val text = rInterop.execute(rInterop.asyncStub::getSourceFileText, StringValue.of(fileId)).value
+    val text = rInterop.getSourceFileText(fileId)
     if (text.isEmpty()) return null
-    val name = rInterop.execute(rInterop.asyncStub::getSourceFileName, StringValue.of(fileId)).value
+    val name = rInterop.getSourceFileName(fileId)
       .takeIf { it.isNotEmpty() } ?: "tmp"
     val filesystem = VirtualFileManager.getInstance().getFileSystem(PROTOCOL) as RSourceFileManager.MyVirtualFileSystem
     val file = filesystem.createFile(name, text)
@@ -85,7 +85,7 @@ class RSourceFileManager(private val rInterop: RInteropImpl): Disposable {
 
   fun getFunctionPosition(rRef: RReference): CancellablePromise<Pair<RSourcePosition, String?>?> {
     val map = cachedFunctionPositions
-    return rInterop.executeAsync(rInterop.asyncStub::getFunctionSourcePosition, rRef.proto).thenCancellable { response ->
+    return rInterop.getFunctionSourcePosition(rRef.proto).thenCancellable { response ->
       map.getOrPut(rRef.proto) {
         getFileById(response.position.fileId)
           ?.let { file -> RSourcePosition(file, response.position.line) to response.sourcePositionText.takeIf { it.isNotEmpty() }}

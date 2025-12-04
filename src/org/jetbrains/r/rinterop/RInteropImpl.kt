@@ -883,6 +883,14 @@ class RInteropImpl(
     return executeAsync(asyncStub::dataFrameRefresh, ref.proto).thenCancellable { it.value }
   }
 
+  override fun getSourceFileText(fileId: String): String {
+    return execute(asyncStub::getSourceFileText, StringValue.of(fileId)).value
+  }
+
+  override fun getSourceFileName(fileId: String): String {
+    return execute(asyncStub::getSourceFileName, StringValue.of(fileId)).value
+  }
+
   fun findInheritorNamedArguments(function: RReference): List<String> {
     return try {
       executeWithCheckCancel(asyncStub::findInheritorNamedArguments, function.proto).listList
@@ -1503,6 +1511,8 @@ class RInteropImpl(
 
   override fun getFunctionPosition(rRef: RReference): CancellablePromise<kotlin.Pair<RSourcePosition, String?>?>
     = sourceFileManager.getFunctionPosition(rRef)
+  override fun getFunctionSourcePosition(rRef: RRef): CancellablePromise<GetFunctionSourcePositionResponse>
+    = executeAsync(asyncStub::getFunctionSourcePosition, rRef)
 
   override fun rInteropGrpcLoggerAsJson(withPending: Boolean): String = rInteropGrpcLogger.toJson(withPending)
 

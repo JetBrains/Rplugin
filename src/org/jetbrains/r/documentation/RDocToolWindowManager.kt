@@ -13,7 +13,7 @@ import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.psi.PsiElement
 import com.intellij.r.psi.RLanguage
 import com.intellij.ui.content.Content
-import org.jetbrains.r.actions.RDumbAwareBgtAction
+import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import java.util.function.Supplier
 

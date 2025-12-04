@@ -39,7 +39,7 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.actions.RDumbAwareBgtAction
+import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.help.RWebHelpProvider
