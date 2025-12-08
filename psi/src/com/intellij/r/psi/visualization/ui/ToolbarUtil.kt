@@ -1,4 +1,4 @@
-package org.jetbrains.r.visualization.ui
+package com.intellij.r.psi.visualization.ui
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*

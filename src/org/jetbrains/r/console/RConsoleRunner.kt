@@ -50,7 +50,7 @@ import org.jetbrains.r.run.graphics.RGraphicsRepository
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.graphics.ui.RGraphicsToolWindowListener
 import org.jetbrains.r.settings.REditorSettings
-import org.jetbrains.r.settings.RGraphicsSettings
+import com.intellij.r.psi.settings.RGraphicsSettings
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel

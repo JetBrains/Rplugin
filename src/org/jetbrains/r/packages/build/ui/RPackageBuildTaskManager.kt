@@ -15,7 +15,7 @@ import com.intellij.r.psi.RPluginCoroutineScope
 import kotlinx.coroutines.launch
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
-import org.jetbrains.r.visualization.ui.ToolbarUtil
+import com.intellij.r.psi.visualization.ui.ToolbarUtil
 import javax.swing.Icon
 
 class RPackageBuildTaskManager(

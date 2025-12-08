@@ -4,6 +4,7 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.rinterop.RInteropImpl
+import com.intellij.r.psi.run.graphics.RGraphicsUtils
 import java.util.*
 
 class RGraphicsRescaleQueue(private val deviceId: Long, private val interop: RInteropImpl) {

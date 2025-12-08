@@ -19,13 +19,15 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.visualization.inlays.components.CHANGE_DARK_MODE_TOPIC
+import com.intellij.r.psi.visualization.inlays.components.DarkModeNotifier
 import com.intellij.r.psi.visualization.inlays.components.EmptyComponentPanel
+import com.intellij.r.psi.visualization.inlays.components.RImageInverter
 import com.intellij.testFramework.BinaryLightVirtualFile
 import com.intellij.ui.JreHiDpiUtil
 import com.intellij.ui.components.ActionLink
 import com.intellij.ui.components.JBLoadingPanel
 import com.intellij.ui.scale.JBUIScale
-import com.intellij.util.messages.Topic
 import com.intellij.util.ui.UIUtil
 import org.intellij.images.editor.ImageEditor
 import org.intellij.images.editor.ImageZoomModel
@@ -47,12 +49,6 @@ import javax.swing.*
 import kotlin.io.path.exists
 import kotlin.io.path.name
 import kotlin.io.path.readBytes
-
-val CHANGE_DARK_MODE_TOPIC = Topic.create("Graphics Panel Dark Mode Topic", DarkModeNotifier::class.java)
-
-interface DarkModeNotifier {
-  fun onDarkModeChanged(isEnabled: Boolean)
-}
 
 class GraphicsPanel(private val project: Project, private val disposableParent: Disposable) {
   private val graphicsManager = ChunkGraphicsManager(project)

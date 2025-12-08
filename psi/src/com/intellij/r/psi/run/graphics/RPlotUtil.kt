@@ -1,11 +1,11 @@
-package org.jetbrains.r.run.graphics
+package com.intellij.r.psi.run.graphics
 
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.rinterop.*
 import com.intellij.util.ui.ImageUtil
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.visualization.inlays.components.RImageInverter
+import com.intellij.r.psi.visualization.inlays.components.RImageInverter
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.Image

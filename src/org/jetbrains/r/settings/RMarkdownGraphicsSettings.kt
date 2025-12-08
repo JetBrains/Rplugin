@@ -8,7 +8,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
-import org.jetbrains.r.run.graphics.RGraphicsUtils
+import com.intellij.r.psi.run.graphics.RGraphicsUtils
 
 @Service(Service.Level.PROJECT)
 @State(name = "RMarkdownGraphicsSettings", storages = [Storage("rMarkdownGraphicsSettings.xml")])

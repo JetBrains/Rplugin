@@ -15,9 +15,9 @@ import com.intellij.util.ui.UIUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.r.run.graphics.RGraphicsDevice
-import org.jetbrains.r.run.graphics.RPlotUtil
-import org.jetbrains.r.run.graphics.RSnapshot
-import org.jetbrains.r.settings.RGraphicsSettings
+import com.intellij.r.psi.run.graphics.RPlotUtil
+import com.intellij.r.psi.run.graphics.RSnapshot
+import com.intellij.r.psi.settings.RGraphicsSettings
 import org.jetbrains.r.visualization.inlays.InlayOutputData
 import org.jetbrains.r.visualization.ui.use
 import java.awt.Image

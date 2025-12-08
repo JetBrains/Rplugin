@@ -11,7 +11,9 @@ import com.intellij.r.psi.rinterop.RIExecutionResult
 import com.intellij.util.io.delete
 import org.jetbrains.concurrency.*
 import org.jetbrains.r.rinterop.RInteropImpl
-import org.jetbrains.r.settings.RGraphicsSettings
+import com.intellij.r.psi.settings.RGraphicsSettings
+import com.intellij.r.psi.run.graphics.RGraphicsUtils
+import com.intellij.r.psi.run.graphics.*
 import java.nio.file.Path
 import kotlin.io.path.exists
 import kotlin.io.path.listDirectoryEntries

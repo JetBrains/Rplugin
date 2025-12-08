@@ -21,7 +21,7 @@ import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 import org.jetbrains.r.visualization.inlays.components.NotebookInlayMultiOutput
 import org.jetbrains.r.visualization.inlays.components.NotebookInlayState
 import org.jetbrains.r.visualization.inlays.components.ToolBarProvider
-import org.jetbrains.r.visualization.ui.ToolbarUtil
+import com.intellij.r.psi.visualization.ui.ToolbarUtil
 import java.awt.BorderLayout
 import java.awt.Rectangle
 import java.awt.event.ComponentAdapter

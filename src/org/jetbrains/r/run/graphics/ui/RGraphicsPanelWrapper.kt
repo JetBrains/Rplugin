@@ -14,8 +14,9 @@ import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
-import org.jetbrains.r.run.graphics.*
-import org.jetbrains.r.settings.RGraphicsSettings
+import com.intellij.r.psi.run.graphics.*
+import com.intellij.r.psi.run.graphics.ui.RPlotViewer
+import com.intellij.r.psi.settings.RGraphicsSettings
 import org.jetbrains.r.visualization.inlays.components.GraphicsPanel
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -268,7 +269,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     if (isStandalone) {
       plot?.let { plot ->
         if (plot.error != null) {
-          showPlotError(plot.error)
+          showPlotError(plot.error!!)
         } else {
           rescale(plot, newSize, newResolution)
         }

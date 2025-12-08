@@ -2,15 +2,15 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.settings
+package com.intellij.r.psi.settings
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
-import org.jetbrains.r.run.graphics.RGraphicsUtils
-import org.jetbrains.r.visualization.inlays.components.CHANGE_DARK_MODE_TOPIC
-import org.jetbrains.r.visualization.inlays.components.DarkModeNotifier
+import com.intellij.r.psi.run.graphics.RGraphicsUtils
+import com.intellij.r.psi.visualization.inlays.components.CHANGE_DARK_MODE_TOPIC
+import com.intellij.r.psi.visualization.inlays.components.DarkModeNotifier
 import java.awt.Dimension
 
 @Service(Service.Level.PROJECT)

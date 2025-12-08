@@ -8,6 +8,9 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.intellij.r.psi.run.graphics.RGraphicsUpdate
+import com.intellij.r.psi.run.graphics.RGraphicsUtils
+import com.intellij.r.psi.run.graphics.RSnapshot
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import java.nio.file.Path

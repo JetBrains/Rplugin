@@ -13,7 +13,9 @@ import junit.framework.TestCase
 import org.jetbrains.r.console.UpdateGraphicsHandler
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.run.graphics.*
-import org.jetbrains.r.settings.RGraphicsSettings
+import org.jetbrains.r.run.graphics.RGraphicsUtils
+import com.intellij.r.psi.settings.RGraphicsSettings
+import com.intellij.r.psi.run.graphics.*
 import java.awt.Dimension
 import java.awt.image.BufferedImage
 import java.awt.image.DataBuffer

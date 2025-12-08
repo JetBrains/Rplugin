@@ -50,7 +50,7 @@ import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.rmarkdown.RmdFenceProvider
 import org.jetbrains.r.run.graphics.RGraphicsDevice
-import org.jetbrains.r.run.graphics.RGraphicsUtils
+import com.intellij.r.psi.run.graphics.RGraphicsUtils
 import org.jetbrains.r.settings.RMarkdownGraphicsSettings
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.inlays.components.GraphicsPanel

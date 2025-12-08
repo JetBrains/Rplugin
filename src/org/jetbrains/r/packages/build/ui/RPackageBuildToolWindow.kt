@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
-import org.jetbrains.r.visualization.ui.ToolbarUtil
+import com.intellij.r.psi.visualization.ui.ToolbarUtil
 import java.awt.BorderLayout
 import java.nio.file.Paths
 import javax.swing.JComponent

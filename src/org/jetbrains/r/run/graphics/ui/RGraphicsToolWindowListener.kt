@@ -6,8 +6,8 @@ package org.jetbrains.r.run.graphics.ui
 
 import com.intellij.openapi.project.Project
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
-import org.jetbrains.r.run.graphics.RGraphicsCompletedUpdate
-import org.jetbrains.r.run.graphics.RGraphicsUpdate
+import com.intellij.r.psi.run.graphics.RGraphicsCompletedUpdate
+import com.intellij.r.psi.run.graphics.RGraphicsUpdate
 import org.jetbrains.r.run.ui.RNonStealingToolWindowInvoker
 
 class RGraphicsToolWindowListener(project: Project) : (RGraphicsUpdate) -> Unit {

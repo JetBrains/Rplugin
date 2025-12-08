@@ -39,7 +39,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.actions.RDumbAwareEdtToggleAction
-import org.jetbrains.r.visualization.inlays.RClipboardUtils
+import com.intellij.r.psi.visualization.inlays.RClipboardUtils
 import org.jetbrains.r.visualization.inlays.table.filters.gui.TableFilterHeader
 import org.jetbrains.r.visualization.ui.MaterialTableUtils
 import java.awt.BorderLayout

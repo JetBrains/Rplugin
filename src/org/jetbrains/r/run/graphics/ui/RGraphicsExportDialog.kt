@@ -21,8 +21,8 @@ import org.jetbrains.annotations.Nls
 import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
-import org.jetbrains.r.run.graphics.RPlot
-import org.jetbrains.r.run.graphics.RSnapshot
+import com.intellij.r.psi.run.graphics.RPlot
+import com.intellij.r.psi.run.graphics.RSnapshot
 import org.jetbrains.r.run.graphics.ui.forms.RGraphicsExportDialogForm
 import org.jetbrains.r.visualization.inlays.components.BorderlessDialogWrapper
 import org.jetbrains.r.visualization.inlays.components.GraphicsPanel

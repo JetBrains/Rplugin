@@ -23,13 +23,16 @@ import com.intellij.util.ui.update.Update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.intellij.r.psi.actions.RDumbAwareBgtAction
+import com.intellij.r.psi.run.graphics.RGraphicsUtils
+import com.intellij.r.psi.run.graphics.ui.RPlotViewer
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.run.graphics.*
-import org.jetbrains.r.settings.RGraphicsSettings
-import org.jetbrains.r.visualization.inlays.RClipboardUtils
-import org.jetbrains.r.visualization.inlays.components.CHANGE_DARK_MODE_TOPIC
+import com.intellij.r.psi.run.graphics.*
+import com.intellij.r.psi.settings.RGraphicsSettings
+import com.intellij.r.psi.visualization.inlays.RClipboardUtils
+import com.intellij.r.psi.visualization.inlays.components.CHANGE_DARK_MODE_TOPIC
 import org.jetbrains.r.visualization.inlays.components.GraphicsPanel
-import org.jetbrains.r.visualization.ui.ToolbarUtil
+import com.intellij.r.psi.visualization.ui.ToolbarUtil
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -145,7 +148,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
         showPlot(output.plot)
       } else {
         if (output.snapshot != null) {
-          graphicsPanel.showImage(output.snapshot.file)
+          graphicsPanel.showImage(output.snapshot!!.file)
         } else {
           graphicsPanel.showLoadingMessage(RESCALING_HINT)
         }

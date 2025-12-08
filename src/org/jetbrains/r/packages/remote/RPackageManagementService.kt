@@ -25,6 +25,9 @@ import com.intellij.r.psi.interpreter.RInterpreterState
 import com.intellij.r.psi.interpreter.RInterpreterStateManager
 import com.intellij.r.psi.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import com.intellij.r.psi.packages.RInstalledPackage
+import com.intellij.r.psi.packages.remote.MissingPackageDetailsException
+import com.intellij.r.psi.packages.remote.PackageDetailsException
+import com.intellij.r.psi.packages.remote.UnresolvedPackageDetailsException
 import com.intellij.r.psi.rinterop.RInterop
 import com.intellij.util.CatchingConsumer
 import com.intellij.webcore.packaging.InstalledPackage
@@ -40,20 +43,6 @@ import org.jetbrains.r.documentation.RDocumentationProvider
 import org.jetbrains.r.packages.remote.ui.RPackageServiceListener
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import java.util.concurrent.atomic.AtomicInteger
-
-sealed class PackageDetailsException(message: String) : RuntimeException(message)
-
-/**
- * This error is thrown when package manager is unable to gather list of available packages.
- * This can be caused by networking issues
- */
-class MissingPackageDetailsException(message: String) : PackageDetailsException(message)
-
-/**
- * This error is thrown when package manager cannot resolve particular package name.
- * This can be caused by missing repository or package name misspelling
- */
-class UnresolvedPackageDetailsException(message: String) : PackageDetailsException(message)
 
 class RPackageManagementService(private val project: Project,
                                 private val serviceListener: RPackageServiceListener? = null) : PackageManagementService() {

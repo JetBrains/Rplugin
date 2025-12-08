@@ -10,7 +10,7 @@ import com.intellij.r.psi.RBundle
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.util.ui.JBUI
-import org.jetbrains.r.run.graphics.RGraphicsUtils
+import com.intellij.r.psi.run.graphics.RGraphicsUtils
 import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout

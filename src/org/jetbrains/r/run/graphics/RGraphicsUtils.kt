@@ -5,52 +5,16 @@
 
 package org.jetbrains.r.run.graphics
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.ui.JreHiDpiUtil
-import com.intellij.util.ui.UIUtil
+import com.intellij.r.psi.run.graphics.RGraphicsUtils
 import org.jetbrains.r.rinterop.RInteropImpl
 import java.awt.Dimension
-import java.awt.GraphicsConfiguration
-import java.awt.Toolkit
 import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.math.max
 
 object RGraphicsUtils {
-  data class ScreenParameters(
-    val dimension: Dimension,
-    val resolution: Int?
-  ) {
-    val width: Int
-      get() = dimension.width
-
-    val height: Int
-      get() = dimension.height
-  }
-
-  private const val FULL_HD_HEIGHT = 1080
-  private const val QUAD_HD_HEIGHT = 1440
-  private const val ULTRA_HD_HEIGHT = 2160
-
-  private const val RESOLUTION_MULTIPLIER = 4
-  private const val MINIMAL_GRAPHICS_RESOLUTION = 75
-  private const val FALLBACK_RESOLUTION = 150
-  private const val FULL_HD_RESOLUTION = 300
-  private const val QUAD_HD_RESOLUTION = 450
-  private const val ULTRA_HD_RESOLUTION = 600
-
-  const val DEFAULT_RESOLUTION = 72
-
-  internal val isHiDpi = (JreHiDpiUtil.isJreHiDPI(null as GraphicsConfiguration?) || UIUtil.isRetina()) &&
-                         !ApplicationManager.getApplication().isUnitTestMode
-
-  fun createParameters(parameters: ScreenParameters?): ScreenParameters {
-    return createParameters(parameters?.dimension, parameters?.resolution)
-  }
-
   fun createGraphicsDevice(rInterop: RInteropImpl, screenDimension: Dimension?, resolution: Int?): RGraphicsDevice {
     val tmpDirectory = createTempDeviceDirectory()
-    val parameters = createParameters(screenDimension, resolution)
+    val parameters = RGraphicsUtils.createParameters(screenDimension, resolution)
     return RGraphicsDevice(rInterop, tmpDirectory, parameters, true)
   }
 
@@ -59,56 +23,5 @@ object RGraphicsUtils {
     return Files.createTempDirectory("rplugin-graphics").apply {
       toFile().deleteOnExit()
     }
-  }
-
-  fun getDefaultScreenParameters(isFullScreenMode: Boolean = true): ScreenParameters {
-    val screenSize = getScreenSize()
-    val resolution = getDefaultResolution(screenSize, isFullScreenMode)
-    return ScreenParameters(screenSize.downscaleIf(!isFullScreenMode), resolution)
-  }
-
-  fun getDefaultResolution(isFullScreenMode: Boolean): Int {
-    return getDefaultResolution(getScreenSize(), isFullScreenMode)
-  }
-
-  private fun getDefaultResolution(screenSize: Dimension, isFullScreenMode: Boolean): Int {
-    val height = screenSize.height
-    val resolution = when {
-      height >= ULTRA_HD_HEIGHT -> ULTRA_HD_RESOLUTION
-      height >= QUAD_HD_HEIGHT -> QUAD_HD_RESOLUTION
-      height >= FULL_HD_HEIGHT -> FULL_HD_RESOLUTION
-      else -> FALLBACK_RESOLUTION
-    }
-    return if (isFullScreenMode) resolution else max(resolution / RESOLUTION_MULTIPLIER, MINIMAL_GRAPHICS_RESOLUTION)
-  }
-
-  private fun createParameters(dimension: Dimension?, resolution: Int?): ScreenParameters {
-    return if (dimension != null) {
-      ScreenParameters(dimension, resolution)
-    } else {
-      val parameters = getDefaultScreenParameters(false)
-      if (resolution != null) {
-        parameters.copy(resolution = resolution)
-      } else {
-        parameters
-      }
-    }
-  }
-
-  private fun getScreenSize(): Dimension {
-    return Toolkit.getDefaultToolkit().screenSize
-  }
-
-  private fun scaleForHiDpi(dimension: Dimension): Dimension =
-    if (isHiDpi) Dimension(dimension.width * 2, dimension.height * 2) else dimension
-
-  fun scaleForHiDpi(parameters: ScreenParameters): ScreenParameters =
-    if (isHiDpi) ScreenParameters(scaleForHiDpi(parameters.dimension), parameters.resolution?.times(2)) else parameters
-
-  internal fun downscaleForHiDpi(resolution: Int): Int =
-    if (isHiDpi) resolution / 2 else resolution
-
-  private fun Dimension.downscaleIf(condition: Boolean): Dimension {
-    return if (condition) Dimension(width / 2, height / 2) else this
   }
 }

@@ -21,6 +21,9 @@ import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.interpreter.RLibraryWatcher
 import com.intellij.r.psi.packages.RInstalledPackage
 import com.intellij.r.psi.packages.RPackageVersion
+import com.intellij.r.psi.packages.remote.MissingPackageDetailsException
+import com.intellij.r.psi.packages.remote.PackageDetailsException
+import com.intellij.r.psi.packages.remote.UnresolvedPackageDetailsException
 import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.RepoPackage
 import kotlinx.coroutines.CoroutineScope
@@ -28,10 +31,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.console.RConsoleManagerImpl
-import org.jetbrains.r.packages.remote.MissingPackageDetailsException
-import org.jetbrains.r.packages.remote.PackageDetailsException
 import org.jetbrains.r.packages.remote.RPackageManagementService
-import org.jetbrains.r.packages.remote.UnresolvedPackageDetailsException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentSkipListSet
 import java.util.concurrent.atomic.AtomicBoolean

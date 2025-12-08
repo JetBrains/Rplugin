@@ -1,4 +1,4 @@
-package org.jetbrains.r.run.graphics
+package com.intellij.r.psi.run.graphics
 
 sealed class RViewport {
   /**

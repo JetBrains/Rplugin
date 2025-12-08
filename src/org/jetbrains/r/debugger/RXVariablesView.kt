@@ -53,7 +53,7 @@ import org.jetbrains.r.run.debug.stack.RXVariableViewSettings
 import org.jetbrains.r.run.visualize.RImportBaseDataDialog
 import org.jetbrains.r.run.visualize.RImportCsvDataDialog
 import org.jetbrains.r.run.visualize.RImportExcelDataDialog
-import org.jetbrains.r.visualization.ui.ToolbarUtil
+import com.intellij.r.psi.visualization.ui.ToolbarUtil
 import java.awt.BorderLayout
 import java.awt.event.*
 import javax.swing.SwingUtilities

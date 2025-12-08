@@ -1,4 +1,4 @@
-package org.jetbrains.r.visualization.inlays
+package com.intellij.r.psi.visualization.inlays
 
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType

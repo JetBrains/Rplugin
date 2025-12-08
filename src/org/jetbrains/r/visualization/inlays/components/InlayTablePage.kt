@@ -22,7 +22,7 @@ import com.intellij.ui.SideBorder
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
-import org.jetbrains.r.visualization.inlays.RClipboardUtils
+import com.intellij.r.psi.visualization.inlays.RClipboardUtils
 import org.jetbrains.r.visualization.inlays.dataframe.DataFrame
 import org.jetbrains.r.visualization.inlays.dataframe.columns.DoubleType
 import org.jetbrains.r.visualization.inlays.dataframe.columns.IntType

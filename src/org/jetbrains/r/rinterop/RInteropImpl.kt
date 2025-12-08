@@ -69,7 +69,7 @@ import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiFunctionId
 import org.jetbrains.r.run.graphics.RGraphicsDeviceManager
-import org.jetbrains.r.run.graphics.RGraphicsUtils
+import com.intellij.r.psi.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RDataFrameViewer
 import org.jetbrains.r.run.visualize.RDataFrameViewerImpl

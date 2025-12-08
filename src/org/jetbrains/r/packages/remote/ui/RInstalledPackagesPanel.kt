@@ -25,7 +25,7 @@ import com.intellij.webcore.packaging.PackagesNotificationPanel
 import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.packages.remote.RPackageManagementService
-import org.jetbrains.r.visualization.ui.ToolbarUtil
+import com.intellij.r.psi.visualization.ui.ToolbarUtil
 
 class RInstalledPackagesPanel(private val project: Project, area: PackagesNotificationPanel) :
   RInstalledPackagesPanelBase(project, area), RPackageServiceListener {

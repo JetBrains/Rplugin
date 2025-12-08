@@ -7,11 +7,12 @@ package org.jetbrains.r.rendering.chunk
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
+import com.intellij.r.psi.rendering.chunk.GraphicsManager
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.run.graphics.RGraphicsRepository
-import org.jetbrains.r.run.graphics.RGraphicsUtils
-import org.jetbrains.r.run.graphics.RSnapshot
-import org.jetbrains.r.settings.RGraphicsSettings
+import com.intellij.r.psi.run.graphics.RGraphicsUtils
+import com.intellij.r.psi.run.graphics.RSnapshot
+import com.intellij.r.psi.settings.RGraphicsSettings
 import org.jetbrains.r.settings.RMarkdownGraphicsSettings
 import java.awt.Dimension
 import java.nio.file.Files

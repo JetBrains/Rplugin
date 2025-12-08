@@ -1,4 +1,4 @@
-package org.jetbrains.r.run.graphics.ui
+package com.intellij.r.psi.run.graphics.ui
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.colors.EditorColorsListener
@@ -6,10 +6,10 @@ import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.Project
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.ui.ImageUtil
-import org.jetbrains.r.run.graphics.RGraphicsUtils
-import org.jetbrains.r.run.graphics.RPlot
-import org.jetbrains.r.run.graphics.RPlotUtil
-import org.jetbrains.r.settings.RGraphicsSettings
+import com.intellij.r.psi.run.graphics.RGraphicsUtils
+import com.intellij.r.psi.run.graphics.RPlot
+import com.intellij.r.psi.run.graphics.RPlotUtil
+import com.intellij.r.psi.settings.RGraphicsSettings
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.image.BufferedImage
