@@ -2,6 +2,9 @@
   <dependencies>
     <plugin id="org.intellij.plugins.markdown"/>
     <module name="intellij.platform.langInjection"/>
+    <!-- editor-fold desc="Generated dependencies - do not edit manually" -->
+    <module name="intellij.libraries.grpc"/>
+    <!-- end editor-fold -->
   </dependencies>
 
   <!--<extensionPoints>-->
