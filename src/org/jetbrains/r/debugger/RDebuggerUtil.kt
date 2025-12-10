@@ -30,8 +30,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.r.rinterop.RInteropAsyncEventsListener
 import org.jetbrains.r.rinterop.RInteropImpl
-import org.jetbrains.r.rinterop.RSourceFileManager
-import org.jetbrains.r.run.debug.RLineBreakpointType
+import com.intellij.r.psi.rinterop.RSourceFileManager
+import com.intellij.r.psi.run.debug.RLineBreakpointType
 import kotlin.math.max
 import kotlin.math.min
 

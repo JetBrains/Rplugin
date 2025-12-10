@@ -7,6 +7,7 @@ package org.jetbrains.r.run.debug
 
 import junit.framework.TestCase
 import org.jetbrains.r.RUsefulTestCase
+import com.intellij.r.psi.run.debug.RLineBreakpointUtils
 
 class RLineBreakpointUtilsTest : RUsefulTestCase() {
   fun testNotRFile() {

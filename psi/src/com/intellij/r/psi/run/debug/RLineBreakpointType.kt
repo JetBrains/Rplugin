@@ -3,7 +3,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.run.debug
+package com.intellij.r.psi.run.debug
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -18,5 +18,7 @@ class RLineBreakpointType : XLineBreakpointTypeBase(ID, TITLE, REditorsProvider(
   companion object {
     private const val ID = "the-r-line"
     private const val TITLE = "R Breakpoints"
+
+    fun getInstanceOrNull(): RLineBreakpointType? = EXTENSION_POINT_NAME.findExtension(RLineBreakpointType::class.java)
   }
 }

@@ -37,7 +37,7 @@ import com.intellij.r.psi.highlighting.DOC_COMMENT
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
-import org.jetbrains.r.rinterop.RSourceFileManager
+import com.intellij.r.psi.rinterop.RSourceFileManager
 import java.awt.Color
 import java.io.File
 import java.net.URL

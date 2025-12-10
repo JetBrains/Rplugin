@@ -568,7 +568,7 @@ You can find the source code in the following repositories:
         <projectService serviceInterface="org.jetbrains.r.packages.remote.RepoProvider"
                         serviceImplementation="org.jetbrains.r.packages.remote.RBasicRepoProvider"/>
 
-        <xdebugger.breakpointType implementation="org.jetbrains.r.run.debug.RLineBreakpointType"/>
+        <xdebugger.breakpointType implementation="com.intellij.r.psi.run.debug.RLineBreakpointType"/>
 
         <xdebugger.customMuteBreakpointHandler implementation="org.jetbrains.r.console.RDebuggerCustomMuteBreakpointHandler"/>
 

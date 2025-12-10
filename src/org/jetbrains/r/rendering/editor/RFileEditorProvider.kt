@@ -14,7 +14,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.r.psi.RFileType
-import org.jetbrains.r.rinterop.RSourceFileManager
+import com.intellij.r.psi.rinterop.RSourceFileManager
 
 class RFileEditorProvider : FileEditorProvider, DumbAware {
 

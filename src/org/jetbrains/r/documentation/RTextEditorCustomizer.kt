@@ -8,7 +8,7 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileEditor.impl.text.TextEditorCustomizer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.r.rinterop.RSourceFileManager
+import com.intellij.r.psi.rinterop.RSourceFileManager
 
 private class RTextEditorCustomizer : TextEditorCustomizer {
   override suspend fun execute(textEditor: TextEditor) {

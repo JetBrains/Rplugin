@@ -3,7 +3,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.run.debug
+package com.intellij.r.psi.run.debug
 
 import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.Project
@@ -14,10 +14,10 @@ import com.intellij.r.psi.RLanguage
 import com.intellij.r.psi.psi.api.RBlockExpression
 import com.intellij.r.psi.psi.api.RExpression
 import com.intellij.r.psi.psi.api.RFile
+import com.intellij.r.psi.rinterop.RSourceFileManager
 import com.intellij.r.psi.rmarkdown.RMarkdownFileType
-import org.jetbrains.r.rinterop.RSourceFileManager
 
-internal object RLineBreakpointUtils {
+/*internal*/ object RLineBreakpointUtils {
   fun canPutAt(project: Project, file: VirtualFile, line: Int): Boolean {
     return (FileTypeRegistry.getInstance().isFileOfType(file, RFileType) || FileTypeRegistry.getInstance().isFileOfType(file, RMarkdownFileType)) &&
            !RSourceFileManager.isInvalid(file.url) &&

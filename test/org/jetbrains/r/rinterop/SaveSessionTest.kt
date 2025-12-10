@@ -16,7 +16,7 @@ import junit.framework.TestCase
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
-import org.jetbrains.r.run.debug.RLineBreakpointType
+import com.intellij.r.psi.run.debug.RLineBreakpointType
 
 class SaveSessionTest : RUsefulTestCase() {
   private lateinit var interpreter: RInterpreter

@@ -45,7 +45,7 @@ import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
 import org.jetbrains.r.debugger.RStackFrame
 import org.jetbrains.r.debugger.RXVariablesView
-import org.jetbrains.r.rinterop.RSourceFileManager
+import com.intellij.r.psi.rinterop.RSourceFileManager
 import org.jetbrains.r.run.debug.stack.RXStackFrame
 import java.awt.BorderLayout
 import java.util.function.Function
