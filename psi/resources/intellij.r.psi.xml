@@ -2,7 +2,7 @@
   <dependencies>
     <plugin id="org.intellij.plugins.markdown"/>
     <module name="intellij.platform.langInjection"/>
-    <!-- region Generated dependencies - do not edit manually -->
+    <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
     <module name="intellij.libraries.grpc"/>
     <!-- endregion -->
   </dependencies>
