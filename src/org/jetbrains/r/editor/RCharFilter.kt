@@ -10,7 +10,7 @@ import com.intellij.r.psi.RLanguage
 
 
 class RCharFilter : CharFilter() {
-  override fun acceptChar(c: Char, prefixLength: Int, lookup: Lookup?): Result? {
+  override fun acceptChar(c: Char, prefixLength: Int, lookup: Lookup): Result? {
     if (lookup?.psiElement?.language !is RLanguage) return null
 
     if (Character.isLetterOrDigit(c) || c == '.' || c == '_') {
