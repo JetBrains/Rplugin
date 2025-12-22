@@ -21,7 +21,9 @@
     <registryKey defaultValue="120000" key="r.interpreter.defaultTimeout" description="Default timeout for R interpreter operations"/>
     <registryKey defaultValue="30000" key="r.interpreter.initializedTimeout" description="Timeout for initializing Rwrapper"/>
 
-    <rInterpreterSettingsProvider implementation="com.intellij.r.psi.settings.RLocalInterpreterSettingsProvider"/>
+    <!-- TODO: Temporarily commented out to avoid duplicate registration with R4Intellij (see DS FUS scheme generation failure).
+         Proper fix: add <incompatible-with>R4Intellij</incompatible-with> to R Next plugin.xml -->
+    <!--<rInterpreterSettingsProvider implementation="com.intellij.r.psi.settings.RLocalInterpreterSettingsProvider"/>-->
 
     <fileType name="R" implementationClass="com.intellij.r.psi.RFileType" fieldName="INSTANCE" language="R" extensions="R;Rprofile"/>
     <fileType name="RMarkdown" implementationClass="com.intellij.r.psi.rmarkdown.RMarkdownFileType" fieldName="INSTANCE"
