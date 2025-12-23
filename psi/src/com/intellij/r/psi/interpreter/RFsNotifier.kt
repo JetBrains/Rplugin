@@ -78,7 +78,7 @@ class RFsNotifier(private val interpreter: RInterpreter): Disposable {
     }
   }
 
-  private fun fireListeners(stringPath: String) = synchronized(listeners) {
+  private fun fireListeners(stringPath: String): Unit = synchronized(listeners) {
     val path = RPathUtil.toPath(stringPath) ?: return
     listeners.forEach { (root, listener) ->
       if (path.startsWith(root)) {
@@ -169,7 +169,7 @@ class RFsNotifier(private val interpreter: RInterpreter): Disposable {
   companion object {
     private val LOG = Logger.getInstance(RLibraryWatcher::class.java)
 
-    fun getFsNotifierExecutableName(operatingSystem: OperatingSystem, arch: CpuArch) = when (operatingSystem) {
+    fun getFsNotifierExecutableName(operatingSystem: OperatingSystem, arch: CpuArch): String? = when (operatingSystem) {
       OperatingSystem.WINDOWS -> "fsnotifier-windows.exe"
       OperatingSystem.LINUX -> when (arch) {
         CpuArch.X86_64 -> "fsnotifier-linux"
