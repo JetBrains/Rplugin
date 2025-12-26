@@ -26,7 +26,7 @@ abstract class RClassesUtilTestsBase : RProcessHandlerBaseTestCase() {
   protected fun getRootElementOfPsi(code: String): PsiElement {
     val rFile = myFixture.configureByText("foo.R", code) as RFile
     val viewProvider = rFile.getViewProvider()
-    val rPsi = viewProvider.getPsi(RLanguage.INSTANCE)
+    val rPsi = viewProvider.getPsi(RLanguage.INSTANCE)!!
     return rPsi.originalElement.firstChild
   }
 }

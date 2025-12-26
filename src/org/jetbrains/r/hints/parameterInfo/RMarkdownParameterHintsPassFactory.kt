@@ -14,6 +14,6 @@ import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 class RMarkdownParameterHintsPassFactory : ParameterHintsPassFactory() {
   override fun createHighlightingPass(psiFile: PsiFile, editor: Editor): TextEditorHighlightingPass? {
     if (psiFile.language != RMarkdownLanguage) return null
-    return super.createHighlightingPass(psiFile.viewProvider.getPsi(RLanguage.INSTANCE), editor)
+    return super.createHighlightingPass(psiFile.viewProvider.getPsi(RLanguage.INSTANCE)!!, editor)
   }
 }

@@ -49,7 +49,7 @@ class RReturnHintPass(private val file: PsiFile,
     }
 
     val actualHints = HashMap<PsiElement, RReturnHint>()
-    file.viewProvider.getPsi(RLanguage.INSTANCE).accept(object : RRecursiveElementVisitor() {
+    file.viewProvider.getPsi(RLanguage.INSTANCE)!!.accept(object : RRecursiveElementVisitor() {
       override fun visitFunctionExpression(o: RFunctionExpression) {
         val body = o.expression
         if (body !is RBlockExpression) {
