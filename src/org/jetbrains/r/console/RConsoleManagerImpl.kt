@@ -78,9 +78,8 @@ class RConsoleManagerImpl(
   val currentConsoleOrNull: RConsoleViewImpl?
     get() = currentConsole
 
-  override val consoles: List<RConsoleViewImpl>
-    get() = getContentDescription(project)?.contentConsolePairs?.map { it.second }?.toList() ?: listOf()
-
+  override val consoles: List<RConsoleViewImpl> get() = consolesCache
+  var consolesCache: List<RConsoleViewImpl> = listOf()
 
   private fun runSingleConsole(): Promise<RConsoleViewImpl> {
     if (RConsoleToolWindowFactory.getRConsoleToolWindows(project) == null) {
@@ -91,6 +90,10 @@ class RConsoleManagerImpl(
       }
     }
     return runConsole(project)
+  }
+
+  private fun updateConsolesCache() {
+    consolesCache = getContentDescription(project)?.contentConsolePairs?.map { it.second }?.toList() ?: listOf()
   }
 
   fun registerContentManager(contentManager: ContentManager) {
@@ -105,6 +108,7 @@ class RConsoleManagerImpl(
           currentConsole?.onSelect()
         }
         RInterpreterBarWidgetFactory.updateWidget(project)
+        updateConsolesCache()
       }
 
       override fun contentRemoved(event: ContentManagerEvent) {
@@ -113,6 +117,7 @@ class RConsoleManagerImpl(
           RConsoleToolWindowFactory.setAvailableForRToolWindows(project, false)
         }
         RInterpreterBarWidgetFactory.updateWidget(project)
+        updateConsolesCache()
       }
 
       override fun selectionChanged(event: ContentManagerEvent) {
