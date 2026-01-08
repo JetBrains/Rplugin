@@ -17,8 +17,11 @@ import com.jetbrains.python.formatter.PythonFormattingModelBuilder
 import org.jetbrains.r.editor.formatting.TemplateContext
 
 class RmdFenceProviderForPython : RmdFenceProvider {
-  override val fenceLanguage: Language = PythonLanguage.INSTANCE
-  override val fenceElementType: IElementType = IElementType("Python Fence", RMarkdownLanguage)
+  override val fenceLanguage: Language
+    get() = PythonLanguage.INSTANCE
+
+  override val fenceElementType: IElementType
+    get() = FENCE_ELEMENT_TYPE
 
   override fun getFormattingBlocks(context: TemplateContext, textRange: TextRange): List<Block>? {
     return context.getFenceBlocks(textRange, PythonLanguage.INSTANCE) { roots ->
@@ -29,6 +32,8 @@ class RmdFenceProviderForPython : RmdFenceProvider {
 
   override fun getNewChildAttributes(newChildIndex: Int): ChildAttributes = ChildAttributes.DELEGATE_TO_PREV_CHILD
 }
+
+private val FENCE_ELEMENT_TYPE: IElementType = IElementType("Python Fence", RMarkdownLanguage)
 
 private fun getPythonSpacingBuilder(settings: CodeStyleSettings): SpacingBuilder {
   // A simple hack: PythonFormattingModelBuilder#createSpacingBuilder can be static method but now it is non-static and protected
