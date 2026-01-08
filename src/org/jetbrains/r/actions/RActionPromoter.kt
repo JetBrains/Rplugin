@@ -4,11 +4,12 @@
 
 package org.jetbrains.r.actions
 
+import com.intellij.lang.LanguageUtil
 import com.intellij.openapi.actionSystem.ActionPromoter
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.psi.PsiDocumentManager
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.r.psi.RLanguage
 import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 
@@ -25,9 +26,8 @@ class RActionPromoter : ActionPromoter {
   private fun isRContext(context: DataContext): Boolean {
     val editor = context.getData(CommonDataKeys.EDITOR)
     val document = editor?.document ?: return false
-    val project = context.getData(CommonDataKeys.PROJECT) ?: return false
-    val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document)
-    val language = psiFile?.language
+    val virtualFile = FileDocumentManager.getInstance().getFile(document)
+    val language = LanguageUtil.getFileLanguage(virtualFile)
     return language == RLanguage.INSTANCE || language == RMarkdownLanguage
   }
 }
