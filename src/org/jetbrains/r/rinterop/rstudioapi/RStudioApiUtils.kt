@@ -12,7 +12,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.vcs.changes.actions.RefreshAction
+import com.intellij.openapi.vcs.changes.ChangeListManagerRefreshHelper
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.interpreter.isLocal
@@ -203,7 +203,7 @@ object RStudioApiUtils {
     when (val command = args.list.getRObjects(0).rString.getStrings(0)) {
       "vcsRefresh" -> {
         invokeLater {
-          RefreshAction.doRefresh(rInterop.project)
+          ChangeListManagerRefreshHelper.refreshSync(rInterop.project)
         }
       }
       else -> {
