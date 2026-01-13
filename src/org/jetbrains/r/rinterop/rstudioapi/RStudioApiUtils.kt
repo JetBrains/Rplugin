@@ -2,7 +2,6 @@ package org.jetbrains.r.rinterop.rstudioapi
 
 import com.intellij.analysis.problemsView.toolWindow.ProblemsView
 import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.EditorFactory
@@ -202,9 +201,7 @@ object RStudioApiUtils {
   fun executeCommand(rInterop: RInteropImpl, args: RObject) {
     when (val command = args.list.getRObjects(0).rString.getStrings(0)) {
       "vcsRefresh" -> {
-        invokeLater {
-          ChangeListManagerRefreshHelper.refreshSync(rInterop.project)
-        }
+        ChangeListManagerRefreshHelper.launchRefreshOrNotifyFrozen(rInterop.project)
       }
       else -> {
         val quiet = args.list.getRObjects(1).rBoolean.getBooleans(0)
