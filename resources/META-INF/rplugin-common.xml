@@ -51,6 +51,8 @@
 <p><span>Find a bug? Please, file an issue <a href="https://youtrack.jetbrains.com/issues/R">here</a></span>.</p>
 <p><span>For more details, see </span><span><a href="https://www.jetbrains.com/help/pycharm/2019.3/r-plugin-support.html">PyCharm web help</a></span><span>.</span></p>
 <br>
+<p><b>Note: R version 4.5.0 and greater requires the plugin version 252 or greater.</b></p>
+<br>
 <p>
 This plugin comes with ABSOLUTELY NO WARRANTY.</p>
 <p>
