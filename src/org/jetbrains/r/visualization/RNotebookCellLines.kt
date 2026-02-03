@@ -3,7 +3,7 @@ package org.jetbrains.r.visualization
 import com.intellij.lang.Language
 import com.intellij.openapi.editor.Document
 import com.intellij.util.EventDispatcher
-import java.util.*
+import java.util.EventListener
 
 /**
  * Incrementally iterates over Notebook document, calculates line ranges of cells using lexer.

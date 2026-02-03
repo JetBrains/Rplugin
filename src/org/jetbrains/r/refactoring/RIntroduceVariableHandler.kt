@@ -10,7 +10,14 @@ import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.r.psi.psi.RElementFactory
 import com.intellij.r.psi.psi.RPrecedenceUtil
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RBlockExpression
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RFile
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RParameterList
 import com.intellij.r.psi.psi.findBlockParent
 import com.intellij.r.psi.psi.findParenthesisParent
 import org.jetbrains.r.refactoring.RIntroduceLocalHandler.Companion.IntroduceOperation

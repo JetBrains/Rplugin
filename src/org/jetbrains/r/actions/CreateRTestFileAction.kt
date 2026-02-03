@@ -9,7 +9,12 @@ import com.intellij.ide.fileTemplates.actions.CreateFromTemplateAction
 import com.intellij.ide.impl.ProjectViewSelectInTarget
 import com.intellij.ide.projectView.impl.ProjectViewPane
 import com.intellij.ide.util.PsiNavigationSupport
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileTypes.FileTypeRegistry

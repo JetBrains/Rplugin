@@ -13,7 +13,7 @@ import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Date
 import javax.swing.JComponent
 
 interface RJobDescriptor {

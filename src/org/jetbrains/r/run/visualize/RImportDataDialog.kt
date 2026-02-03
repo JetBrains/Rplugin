@@ -31,8 +31,13 @@ import com.intellij.r.psi.interpreter.RInterpreter
 import com.intellij.r.psi.interpreter.isLocal
 import com.intellij.r.psi.run.visualize.RVisualization
 import com.intellij.r.psi.visualization.inlays.components.DialogUtil
-import com.intellij.ui.*
+import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.EditorNotifications.getInstance
+import com.intellij.ui.Gray
+import com.intellij.ui.IdeBorderFactory
+import com.intellij.ui.JBColor
+import com.intellij.ui.OnePixelSplitter
+import com.intellij.ui.SideBorder
 import com.intellij.ui.components.ActionLink
 import com.intellij.util.PathUtil
 import com.intellij.util.ui.JBUI
@@ -48,7 +53,11 @@ import java.awt.event.FocusEvent
 import java.awt.event.ItemEvent
 import java.nio.file.Path
 import java.nio.file.Paths
-import javax.swing.*
+import javax.swing.JCheckBox
+import javax.swing.JComboBox
+import javax.swing.JComponent
+import javax.swing.JTextField
+import javax.swing.SwingConstants
 import javax.swing.event.DocumentEvent
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.reflect.KProperty

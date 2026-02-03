@@ -4,13 +4,18 @@
 
 package org.jetbrains.r.rinterop
 
-import com.google.gson.*
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 import com.google.protobuf.GeneratedMessageV3
 import com.intellij.concurrency.ConcurrentCollectionFactory
 import com.intellij.r.psi.rinterop.CommandOutput
 import io.grpc.MethodDescriptor
 import java.lang.reflect.Type
-import java.util.*
+import java.util.ArrayDeque
+import java.util.Base64
 import java.util.concurrent.atomic.AtomicInteger
 
 class RInteropGrpcLogger(private val maxMessages: Int? = null) {

@@ -7,7 +7,16 @@ package com.intellij.r.psi.psi.cfg
 import com.intellij.codeInsight.controlflow.Instruction
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RControlFlowHolder
+import com.intellij.r.psi.psi.api.RFile
+import com.intellij.r.psi.psi.api.RForStatement
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RInfixOperator
+import com.intellij.r.psi.psi.api.RParameter
+import com.intellij.r.psi.psi.api.RPsiElement
+import com.intellij.r.psi.psi.api.RSubscriptionExpression
 
 class VariableDescription(val firstDefinition: RPsiElement) {
   val name = firstDefinition.name!!

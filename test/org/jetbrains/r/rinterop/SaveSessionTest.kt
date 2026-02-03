@@ -10,13 +10,13 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.r.psi.debugger.RSourcePosition
 import com.intellij.r.psi.interpreter.RInterpreter
 import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.run.debug.RLineBreakpointType
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import junit.framework.TestCase
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
-import com.intellij.r.psi.run.debug.RLineBreakpointType
 
 class SaveSessionTest : RUsefulTestCase() {
   private lateinit var interpreter: RInterpreter

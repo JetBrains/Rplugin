@@ -12,10 +12,10 @@ import com.intellij.openapi.fileEditor.FileDocumentManager.getInstance
 import com.intellij.openapi.project.Project
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.visualization.ui.ToolbarUtil
 import kotlinx.coroutines.launch
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
-import com.intellij.r.psi.visualization.ui.ToolbarUtil
 import javax.swing.Icon
 
 class RPackageBuildTaskManager(

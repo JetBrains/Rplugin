@@ -7,7 +7,12 @@ import com.intellij.lang.BracePair
 import com.intellij.lang.PairedBraceMatcher
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IElementType
-import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.*
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_LANGLE
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_LBRACKET
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_LPAR
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_RANGLE
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_RBRACKET
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_RPAR
 
 class RoxygenBraceMatcher : PairedBraceMatcher {
   override fun getPairs(): Array<BracePair> = arrayOf(

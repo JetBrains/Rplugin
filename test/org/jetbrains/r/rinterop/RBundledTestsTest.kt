@@ -11,7 +11,11 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.r.psi.interpreter.*
+import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.R_3_4
+import com.intellij.r.psi.interpreter.R_3_5
+import com.intellij.r.psi.interpreter.isLocal
+import com.intellij.r.psi.interpreter.toLocalPathOrNull
 import junit.framework.TestCase
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase

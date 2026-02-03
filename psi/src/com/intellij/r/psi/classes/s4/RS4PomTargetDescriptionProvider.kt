@@ -8,7 +8,11 @@ import com.intellij.pom.PomDescriptionProvider
 import com.intellij.pom.PomTarget
 import com.intellij.psi.ElementDescriptionLocation
 import com.intellij.r.psi.RBundle
-import com.intellij.r.psi.classes.s4.classInfo.*
+import com.intellij.r.psi.classes.s4.classInfo.RS4ComplexSlotPomTarget
+import com.intellij.r.psi.classes.s4.classInfo.RSkeletonS4ClassPomTarget
+import com.intellij.r.psi.classes.s4.classInfo.RSkeletonS4SlotPomTarget
+import com.intellij.r.psi.classes.s4.classInfo.RStringLiteralPomTarget
+import com.intellij.r.psi.classes.s4.classInfo.associatedS4ClassInfo
 import com.intellij.r.psi.classes.s4.context.RS4ContextProvider
 import com.intellij.r.psi.classes.s4.context.setClass.RS4SetClassClassNameContext
 import com.intellij.usageView.UsageViewLongNameLocation

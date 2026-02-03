@@ -20,7 +20,13 @@ import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.r.psi.RPluginCoroutineScope
-import com.intellij.r.psi.interpreter.*
+import com.intellij.r.psi.interpreter.OperatingSystem
+import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.interpreter.RInterpreterBase
+import com.intellij.r.psi.interpreter.RInterpreterState
+import com.intellij.r.psi.interpreter.RInterpreterUtil
+import com.intellij.r.psi.interpreter.RLocalInterpreterLocation
+import com.intellij.r.psi.interpreter.RLocalInterpreterProvider
 import com.intellij.r.psi.rinterop.RInterop
 import com.intellij.util.system.CpuArch
 import kotlinx.coroutines.async

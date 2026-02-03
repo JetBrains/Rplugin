@@ -11,8 +11,13 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.blockingGetAndDispatchEvents
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
-import org.jetbrains.r.run.visualize.*
+import org.jetbrains.r.run.visualize.RDataFrameViewer
+import org.jetbrains.r.run.visualize.RDataImporter
+import org.jetbrains.r.run.visualize.RImportBaseDataDialog
+import org.jetbrains.r.run.visualize.RImportCsvDataDialog
 import org.jetbrains.r.run.visualize.RImportDataDialog.Companion.toRBoolean
+import org.jetbrains.r.run.visualize.RImportExcelDataDialog
+import org.jetbrains.r.run.visualize.RImportOptions
 import java.nio.file.Paths
 import kotlin.math.sin
 

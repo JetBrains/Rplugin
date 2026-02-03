@@ -9,7 +9,12 @@ import com.intellij.psi.PsiReference
 import com.intellij.psi.impl.source.tree.LeafElement
 import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_IDENTIFIER
 import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_TAG_NAME
-import com.intellij.r.psi.roxygen.psi.api.*
+import com.intellij.r.psi.roxygen.psi.api.RoxygenExpression
+import com.intellij.r.psi.roxygen.psi.api.RoxygenIdentifierExpression
+import com.intellij.r.psi.roxygen.psi.api.RoxygenNamespaceAccessExpression
+import com.intellij.r.psi.roxygen.psi.api.RoxygenParameter
+import com.intellij.r.psi.roxygen.psi.api.RoxygenPsiElement
+import com.intellij.r.psi.roxygen.psi.api.RoxygenTag
 import com.intellij.r.psi.roxygen.reference.RoxygenHelpPageReference
 import com.intellij.r.psi.roxygen.reference.RoxygenParameterReference
 

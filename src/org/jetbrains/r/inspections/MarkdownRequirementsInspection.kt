@@ -14,7 +14,7 @@ import com.intellij.r.psi.interpreter.RInterpreterStateManager
 import com.intellij.r.psi.psi.api.RFile
 import org.jetbrains.r.intentions.InstallPackagesFix
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
-import java.util.*
+import java.util.Locale
 
 class MarkdownRequirementsInspection : RInspection() {
   override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {

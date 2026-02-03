@@ -8,13 +8,13 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.util.Disposer
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.run.viewer.RViewerUtils
+import com.intellij.r.psi.visualization.inlays.components.EmptyComponentPanel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.util.ui.JBUI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.intellij.r.psi.run.viewer.RViewerUtils
-import com.intellij.r.psi.visualization.inlays.components.EmptyComponentPanel
 import java.io.File
 import java.net.URI
 import javax.swing.JLabel

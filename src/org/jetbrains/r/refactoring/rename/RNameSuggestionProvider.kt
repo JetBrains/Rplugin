@@ -10,7 +10,12 @@ import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.codeStyle.SuggestedNameInfo
 import com.intellij.psi.search.LocalSearchScope
 import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RFile
+import com.intellij.r.psi.psi.api.RForStatement
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RParameter
+import com.intellij.r.psi.psi.api.RPsiElement
 import com.intellij.r.psi.psi.references.RReferenceBase
 import com.intellij.refactoring.rename.NameSuggestionProvider
 import org.jetbrains.r.refactoring.RRefactoringUtil

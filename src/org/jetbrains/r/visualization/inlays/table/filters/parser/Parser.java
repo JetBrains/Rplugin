@@ -6,7 +6,7 @@ package org.jetbrains.r.visualization.inlays.table.filters.parser;
 
 import org.jetbrains.r.visualization.inlays.table.filters.IParser;
 
-import javax.swing.*;
+import javax.swing.RowFilter;
 import java.text.Format;
 import java.text.ParseException;
 import java.util.Comparator;

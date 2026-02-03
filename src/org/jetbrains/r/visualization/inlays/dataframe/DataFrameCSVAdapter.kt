@@ -4,7 +4,11 @@
 
 package org.jetbrains.r.visualization.inlays.dataframe
 
-import org.jetbrains.r.visualization.inlays.dataframe.columns.*
+import org.jetbrains.r.visualization.inlays.dataframe.columns.Column
+import org.jetbrains.r.visualization.inlays.dataframe.columns.DoubleType
+import org.jetbrains.r.visualization.inlays.dataframe.columns.IntType
+import org.jetbrains.r.visualization.inlays.dataframe.columns.StringType
+import org.jetbrains.r.visualization.inlays.dataframe.columns.Type
 
 /**
  * Converts tab separated string into DataFrame

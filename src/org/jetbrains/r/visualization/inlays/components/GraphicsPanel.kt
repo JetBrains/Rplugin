@@ -43,9 +43,13 @@ import java.awt.GraphicsConfiguration
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.nio.file.Path
-import java.util.*
+import java.util.Base64
 import javax.imageio.ImageIO
-import javax.swing.*
+import javax.swing.Box
+import javax.swing.BoxLayout
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JPanel
 import kotlin.io.path.exists
 import kotlin.io.path.name
 import kotlin.io.path.readBytes

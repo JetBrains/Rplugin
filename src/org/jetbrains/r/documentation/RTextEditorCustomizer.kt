@@ -6,9 +6,9 @@ import com.intellij.openapi.components.serviceAsync
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileEditor.impl.text.TextEditorCustomizer
+import com.intellij.r.psi.rinterop.RSourceFileManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.intellij.r.psi.rinterop.RSourceFileManager
 
 private class RTextEditorCustomizer : TextEditorCustomizer {
   override suspend fun execute(textEditor: TextEditor) {

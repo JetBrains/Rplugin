@@ -12,7 +12,11 @@ import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
 import org.jetbrains.annotations.Nls
 import java.awt.Dimension
-import javax.swing.*
+import javax.swing.Box
+import javax.swing.BoxLayout
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JPanel
 
 data class RPackageUpdateInfo(
   val installedPackage: RInstalledPackage,

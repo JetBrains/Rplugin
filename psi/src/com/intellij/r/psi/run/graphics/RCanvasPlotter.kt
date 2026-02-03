@@ -1,7 +1,16 @@
 package com.intellij.r.psi.run.graphics
 
-import java.awt.*
-import java.awt.geom.*
+import java.awt.BasicStroke
+import java.awt.Color
+import java.awt.Font
+import java.awt.Graphics2D
+import java.awt.Image
+import java.awt.Stroke
+import java.awt.geom.AffineTransform
+import java.awt.geom.Ellipse2D
+import java.awt.geom.Line2D
+import java.awt.geom.Path2D
+import java.awt.geom.Rectangle2D
 
 class RCanvasPlotterProvider(override val parameters: RGraphicsUtils.ScreenParameters, private val graphics: Graphics2D) : RPlotterProvider {
   override fun create(fonts: List<RFont>, colors: List<Color>, strokes: List<RStroke>): RPlotter {

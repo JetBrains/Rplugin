@@ -19,7 +19,7 @@ import org.intellij.markdown.ast.ASTNode
 import org.intellij.markdown.ast.accept
 import org.intellij.markdown.ast.visitors.RecursiveVisitor
 import org.intellij.markdown.parser.MarkdownParser
-import java.util.*
+import java.util.Locale
 import org.intellij.markdown.IElementType as MarkdownIElementType
 
 val INNER_ELEMENT = IElementType("INNER", RMarkdownLanguage)

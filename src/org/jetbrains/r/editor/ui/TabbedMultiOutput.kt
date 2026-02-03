@@ -11,6 +11,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.Disposer
+import com.intellij.r.psi.visualization.ui.ToolbarUtil
 import com.intellij.ui.Gray
 import com.intellij.ui.tabs.TabInfo
 import com.intellij.ui.tabs.TabsListener
@@ -21,7 +22,6 @@ import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
 import org.jetbrains.r.visualization.inlays.components.NotebookInlayMultiOutput
 import org.jetbrains.r.visualization.inlays.components.NotebookInlayState
 import org.jetbrains.r.visualization.inlays.components.ToolBarProvider
-import com.intellij.r.psi.visualization.ui.ToolbarUtil
 import java.awt.BorderLayout
 import java.awt.Rectangle
 import java.awt.event.ComponentAdapter

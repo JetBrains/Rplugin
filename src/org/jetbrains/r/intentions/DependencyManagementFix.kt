@@ -5,7 +5,11 @@
 package org.jetbrains.r.intentions
 
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
-import com.intellij.codeInspection.*
+import com.intellij.codeInspection.InspectionEngine
+import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.LocalInspectionTool
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ex.LocalInspectionToolWrapper
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType

@@ -7,7 +7,12 @@ package org.jetbrains.r.run.graphics.ui
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.scale.JBUIScale
 import com.intellij.util.ui.JBUI
-import java.awt.*
+import java.awt.Color
+import java.awt.Cursor
+import java.awt.Dimension
+import java.awt.Graphics
+import java.awt.Point
+import java.awt.Rectangle
 import java.awt.event.MouseEvent
 import javax.swing.JComponent
 import javax.swing.JLayeredPane

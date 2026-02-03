@@ -17,6 +17,7 @@ import com.intellij.r.psi.psi.RElementFactory
 import com.intellij.r.psi.psi.api.RBooleanLiteral
 import com.intellij.r.psi.psi.api.RCallExpression
 import com.intellij.r.psi.psi.api.RNamedArgument
+import com.intellij.r.psi.run.debug.RLineBreakpointType
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.SuspendPolicy
@@ -30,7 +31,6 @@ import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.interpreter.RInterpreterStateImpl
 import org.jetbrains.r.rinterop.RInteropImpl
 import org.jetbrains.r.rinterop.RInteropUtil
-import com.intellij.r.psi.run.debug.RLineBreakpointType
 import java.nio.file.Files
 import kotlin.coroutines.EmptyCoroutineContext
 

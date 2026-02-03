@@ -24,12 +24,21 @@ import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.configuration.RSettingsProjectConfigurable
 import com.intellij.r.psi.icons.RIcons
-import com.intellij.r.psi.interpreter.*
+import com.intellij.r.psi.interpreter.RInterpreterInfo
+import com.intellij.r.psi.interpreter.RInterpreterLocation
+import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.RInterpreterUtil
+import com.intellij.r.psi.interpreter.RLocalInterpreterLocation
 import com.intellij.r.psi.settings.RInterpreterSettings
 import com.intellij.r.psi.settings.RInterpreterSettingsProvider
 import com.intellij.r.psi.settings.RSettings
 import com.intellij.util.messages.MessageBusConnection
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 

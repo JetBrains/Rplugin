@@ -12,7 +12,11 @@ import com.intellij.r.psi.psi.TableManipulationAnalyzer.Companion.processAllDots
 import com.intellij.r.psi.psi.TableManipulationAnalyzer.Companion.processColumnsOfCountFunction
 import com.intellij.r.psi.psi.TableManipulationAnalyzer.Companion.processOperandColumns
 import com.intellij.r.psi.psi.TableManipulationAnalyzer.Companion.processOperandTableAndAllDotsColumns
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RNamedArgument
+import com.intellij.r.psi.psi.api.ROperatorExpression
 import com.intellij.util.Processor
 import org.jetbrains.annotations.NonNls
 

@@ -15,7 +15,11 @@ import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.psi.RPsiUtil
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RForStatement
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RSubscriptionExpression
 
 /**
  * Flag unused variables. We never flag functions calls (even when not being assigned) because

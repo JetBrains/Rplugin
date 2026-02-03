@@ -13,7 +13,22 @@ import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.psi.RElementFactory
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RBooleanLiteral
+import com.intellij.r.psi.psi.api.RBreakStatement
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RLoopStatement
+import com.intellij.r.psi.psi.api.RNaLiteral
+import com.intellij.r.psi.psi.api.RNextStatement
+import com.intellij.r.psi.psi.api.RNumericLiteralExpression
+import com.intellij.r.psi.psi.api.ROperatorExpression
+import com.intellij.r.psi.psi.api.RParenthesizedExpression
+import com.intellij.r.psi.psi.api.RPsiElement
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
+import com.intellij.r.psi.psi.api.RVisitor
 
 /**
  * Find boolean expressions that can be simplified (e.g. (x && TRUE), (!!y))

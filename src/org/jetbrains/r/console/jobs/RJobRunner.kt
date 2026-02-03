@@ -30,7 +30,7 @@ import org.jetbrains.r.console.RConsoleViewImpl
 import org.jetbrains.r.rinterop.RInteropImpl
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
-import java.util.*
+import java.util.EventListener
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
 

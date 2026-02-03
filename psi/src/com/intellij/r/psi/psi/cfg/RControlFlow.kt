@@ -8,7 +8,7 @@ import com.intellij.codeInsight.controlflow.ControlFlowUtil
 import com.intellij.codeInsight.controlflow.Instruction
 import com.intellij.codeInsight.controlflow.impl.ControlFlowImpl
 import com.intellij.psi.PsiElement
-import java.util.*
+import java.util.BitSet
 
 class RControlFlow(instructions: Array<Instruction>): ControlFlowImpl(instructions) {
   private val reachable = BitSet()

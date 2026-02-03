@@ -12,7 +12,13 @@ import com.intellij.r.psi.psi.RDataTableAnalyzer.processSetnames
 import com.intellij.r.psi.psi.RDataTableAnalyzer.processSubscription
 import com.intellij.r.psi.psi.TableManipulationAnalyzer.Companion.processAllDotsColumns
 import com.intellij.r.psi.psi.TableManipulationAnalyzer.Companion.processOperandColumns
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RNullLiteral
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
+import com.intellij.r.psi.psi.api.RSubscriptionExpression
 import com.intellij.r.psi.psi.references.RResolveUtil
 import com.intellij.r.psi.refactoring.rNamesValidator
 import com.intellij.util.CommonProcessors

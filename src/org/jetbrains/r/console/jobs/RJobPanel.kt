@@ -8,7 +8,14 @@ import com.intellij.codeInsight.hint.HintUtil.RECENT_LOCATIONS_SELECTION_KEY
 import com.intellij.icons.AllIcons
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.ide.ui.AntialiasingType
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.ActionToolbar
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
@@ -23,6 +30,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiManager
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import com.intellij.r.psi.icons.RIcons
 import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.ui.DoubleClickListener
@@ -44,12 +52,23 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.miginfocom.swing.MigLayout
 import org.jetbrains.concurrency.runAsync
-import com.intellij.r.psi.actions.RDumbAwareBgtAction
-import java.awt.*
+import java.awt.Color
+import java.awt.Dimension
+import java.awt.FlowLayout
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
+import java.awt.Rectangle
+import java.awt.RenderingHints
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.util.concurrent.atomic.AtomicBoolean
-import javax.swing.*
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.JProgressBar
+import javax.swing.SwingConstants
 
 internal interface SplitterApi {
   fun setLeftComponent(component: JComponent)

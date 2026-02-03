@@ -6,7 +6,17 @@ package org.jetbrains.r.rendering.editor
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.browsers.WebBrowserManager
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.ActionToolbar
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
@@ -25,10 +35,10 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import com.intellij.r.psi.icons.RIcons
 import com.intellij.r.psi.interpreter.isLocal
 import kotlinx.coroutines.launch
-import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RMarkdownInterruptAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.actions.editor

@@ -6,10 +6,19 @@ package org.jetbrains.r.run.debug.stack
 
 import com.intellij.openapi.Disposable
 import com.intellij.r.psi.RBundle
-import com.intellij.r.psi.rinterop.*
+import com.intellij.r.psi.rinterop.RReference
+import com.intellij.r.psi.rinterop.RValueEnvironment
+import com.intellij.r.psi.rinterop.RValueFunction
+import com.intellij.r.psi.rinterop.RValueSimple
+import com.intellij.r.psi.rinterop.RVar
 import com.intellij.r.psi.util.tryRegisterDisposable
 import com.intellij.xdebugger.XExpression
-import com.intellij.xdebugger.frame.*
+import com.intellij.xdebugger.frame.XCompositeNode
+import com.intellij.xdebugger.frame.XNamedValue
+import com.intellij.xdebugger.frame.XValueChildrenList
+import com.intellij.xdebugger.frame.XValueModifier
+import com.intellij.xdebugger.frame.XValueNode
+import com.intellij.xdebugger.frame.XValuePlace
 import java.util.concurrent.CancellationException
 
 internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStackFrame,

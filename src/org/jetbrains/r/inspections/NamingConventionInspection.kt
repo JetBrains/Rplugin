@@ -4,14 +4,22 @@
 
 package org.jetbrains.r.inspections
 
-import com.intellij.codeInspection.*
+import com.intellij.codeInspection.LocalInspectionToolSession
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.ide.DataManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.r.psi.RBundle
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RForStatement
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RParameter
+import com.intellij.r.psi.psi.api.RVisitor
 import com.intellij.refactoring.RefactoringFactory
 import com.intellij.refactoring.rename.RenameHandlerRegistry
 import org.jetbrains.r.refactoring.rename.RNameSuggestionProvider

@@ -11,7 +11,15 @@ import com.intellij.psi.util.CachedValuesManager
 import com.intellij.r.psi.classes.s4.RS4Util
 import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
 import com.intellij.r.psi.packages.RPackageProjectManager
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.REmptyExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RNaLiteral
+import com.intellij.r.psi.psi.api.RNamedArgument
+import com.intellij.r.psi.psi.api.RNullLiteral
+import com.intellij.r.psi.psi.api.RPsiElement
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
 import com.intellij.r.psi.psi.impl.RCallExpressionImpl
 import com.intellij.r.psi.psi.isFunctionFromLibrarySoft
 import com.intellij.r.psi.psi.references.RSearchScopeUtil

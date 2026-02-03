@@ -15,7 +15,12 @@ import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.ide.CommonActionsManager
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.ApplicationManager
@@ -29,8 +34,10 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Key
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RFileType
+import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import com.intellij.r.psi.interpreter.RInterpreter
 import com.intellij.r.psi.interpreter.RInterpreterUtil
+import com.intellij.r.psi.settings.RGraphicsSettings
 import com.intellij.r.psi.settings.RSettings
 import com.intellij.r.psi.util.RPathUtil
 import com.intellij.util.WaitForProgressToShow
@@ -39,7 +46,6 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
-import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.help.RWebHelpProvider
@@ -50,7 +56,6 @@ import org.jetbrains.r.run.graphics.RGraphicsRepository
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.graphics.ui.RGraphicsToolWindowListener
 import org.jetbrains.r.settings.REditorSettings
-import com.intellij.r.psi.settings.RGraphicsSettings
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel

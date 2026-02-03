@@ -18,7 +18,14 @@ import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
 import com.intellij.r.psi.interpreter.RInterpreterStateManager
 import com.intellij.r.psi.psi.RPsiUtil
 import com.intellij.r.psi.psi.RRecursiveElementVisitor
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RBooleanLiteral
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RFile
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RNamespaceAccessExpression
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.intentions.InstallAllFilePackagesFix
 import org.jetbrains.r.intentions.InstallPackagesFix

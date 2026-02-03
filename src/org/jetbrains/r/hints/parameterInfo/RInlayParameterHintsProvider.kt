@@ -14,7 +14,17 @@ import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
 import com.intellij.r.psi.packages.RSkeletonUtilPsi
 import com.intellij.r.psi.psi.RPsiUtil
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RArgumentList
+import com.intellij.r.psi.psi.api.RBooleanLiteral
+import com.intellij.r.psi.psi.api.RBoundaryLiteral
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RNaLiteral
+import com.intellij.r.psi.psi.api.RNamedArgument
+import com.intellij.r.psi.psi.api.RNullLiteral
+import com.intellij.r.psi.psi.api.RNumericLiteralExpression
+import com.intellij.r.psi.psi.api.RPsiElement
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
 import com.intellij.r.psi.skeleton.psi.RSkeletonAssignmentStatement
 
 class RInlayParameterHintsProvider : InlayParameterHintsProvider {

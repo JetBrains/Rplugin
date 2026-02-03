@@ -17,7 +17,12 @@ import com.intellij.r.psi.classes.s4.methods.RS4MethodsUtil.associatedS4GenericI
 import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
 import com.intellij.r.psi.packages.RPackage
 import com.intellij.r.psi.psi.TableColumnInfo
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RPsiElement
+import com.intellij.r.psi.psi.api.RS4GenericOrMethodHolder
 import com.intellij.r.psi.refactoring.quoteIfNeeded
 import com.intellij.r.psi.refactoring.rNamesValidator
 import javax.swing.Icon

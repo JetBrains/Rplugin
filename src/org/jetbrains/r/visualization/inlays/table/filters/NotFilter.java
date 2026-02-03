@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.visualization.inlays.table.filters;
 
-import javax.swing.*;
+import javax.swing.RowFilter;
 
 /**
  * Composed set of filters, added via logical AND, and then NOT-ed the result.

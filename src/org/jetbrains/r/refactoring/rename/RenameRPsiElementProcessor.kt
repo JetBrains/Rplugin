@@ -13,7 +13,16 @@ import com.intellij.r.psi.classes.s4.classInfo.RStringLiteralPomTarget
 import com.intellij.r.psi.classes.s4.context.RS4ContextProvider
 import com.intellij.r.psi.classes.s4.context.setClass.RS4SetClassClassNameContext
 import com.intellij.r.psi.psi.RPsiUtil
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RFile
+import com.intellij.r.psi.psi.api.RForStatement
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RNamedArgument
+import com.intellij.r.psi.psi.api.RParameter
+import com.intellij.r.psi.psi.api.RPsiElement
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
 import com.intellij.refactoring.rename.RenamePsiElementProcessor
 import com.intellij.refactoring.rename.UnresolvableCollisionUsageInfo
 import com.intellij.usageView.UsageInfo

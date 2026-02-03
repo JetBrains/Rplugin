@@ -4,7 +4,11 @@
 
 package com.intellij.r.psi.util
 
-import org.jetbrains.concurrency.*
+import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.CancellablePromise
+import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.isPending
+import org.jetbrains.concurrency.resolvedPromise
 import java.util.concurrent.atomic.AtomicReference
 
 object PromiseUtil {

@@ -6,7 +6,7 @@ import com.intellij.util.messages.Topic
 import org.jetbrains.r.visualization.inlays.components.NotebookInlayMouseListener.Companion.topic
 import java.awt.AWTEvent
 import java.awt.event.MouseEvent
-import java.util.*
+import java.util.EventListener
 import javax.swing.JLayer
 import javax.swing.JPanel
 import javax.swing.plaf.LayerUI

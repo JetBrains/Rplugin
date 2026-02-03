@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.visualization.inlays.table.filters;
 
-import javax.swing.*;
+import javax.swing.RowFilter;
 
 /**
  * <p>Interface to be implemented by any instance holding a filter than can be

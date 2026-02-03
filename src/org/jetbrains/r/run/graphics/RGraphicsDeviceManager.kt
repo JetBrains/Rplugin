@@ -1,6 +1,6 @@
 package org.jetbrains.r.run.graphics
 
-import java.util.*
+import java.util.Stack
 
 class RGraphicsDeviceManager {
   private val previousIds = Stack<Long>()

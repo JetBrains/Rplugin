@@ -5,7 +5,11 @@
 
 package com.intellij.r.psi.psi
 
-import com.intellij.ide.structureView.*
+import com.intellij.ide.structureView.StructureViewBuilder
+import com.intellij.ide.structureView.StructureViewModel
+import com.intellij.ide.structureView.StructureViewTreeElement
+import com.intellij.ide.structureView.TextEditorBasedStructureViewModel
+import com.intellij.ide.structureView.TreeBasedStructureViewBuilder
 import com.intellij.ide.util.treeView.smartTree.Filter
 import com.intellij.ide.util.treeView.smartTree.Grouper
 import com.intellij.ide.util.treeView.smartTree.Sorter

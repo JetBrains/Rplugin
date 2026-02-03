@@ -5,7 +5,13 @@
 package org.jetbrains.r.rinterop
 
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.r.psi.rinterop.*
+import com.intellij.r.psi.rinterop.RReference
+import com.intellij.r.psi.rinterop.RValueEnvironment
+import com.intellij.r.psi.rinterop.RValueFunction
+import com.intellij.r.psi.rinterop.RValueList
+import com.intellij.r.psi.rinterop.RValueMatrix
+import com.intellij.r.psi.rinterop.RValueSimple
+import com.intellij.r.psi.rinterop.RValueUnevaluated
 import junit.framework.TestCase
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 

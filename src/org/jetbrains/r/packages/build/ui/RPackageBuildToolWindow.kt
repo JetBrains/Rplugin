@@ -19,13 +19,13 @@ import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.r.psi.interpreter.RLocalInterpreterLocation
 import com.intellij.r.psi.packages.build.RPackageBuildUtil
 import com.intellij.r.psi.settings.RPackageBuildSettings
+import com.intellij.r.psi.visualization.ui.ToolbarUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
-import com.intellij.r.psi.visualization.ui.ToolbarUtil
 import java.awt.BorderLayout
 import java.nio.file.Paths
 import javax.swing.JComponent

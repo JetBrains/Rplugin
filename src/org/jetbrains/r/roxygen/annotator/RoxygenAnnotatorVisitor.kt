@@ -13,7 +13,11 @@ import com.intellij.r.psi.roxygen.AUTOLINK
 import com.intellij.r.psi.roxygen.HELP_PAGE_LINK
 import com.intellij.r.psi.roxygen.LINK_DESTINATION
 import com.intellij.r.psi.roxygen.PARAMETER
-import com.intellij.r.psi.roxygen.psi.api.*
+import com.intellij.r.psi.roxygen.psi.api.RoxygenAutolink
+import com.intellij.r.psi.roxygen.psi.api.RoxygenHelpPageLink
+import com.intellij.r.psi.roxygen.psi.api.RoxygenLinkDestination
+import com.intellij.r.psi.roxygen.psi.api.RoxygenParamTag
+import com.intellij.r.psi.roxygen.psi.api.RoxygenVisitor
 
 
 class RoxygenAnnotatorVisitor(private val holder: AnnotationHolder) : RoxygenVisitor() {

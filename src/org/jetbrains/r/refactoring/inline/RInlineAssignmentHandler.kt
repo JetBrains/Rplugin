@@ -18,7 +18,13 @@ import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RLanguage
 import com.intellij.r.psi.psi.RPsiUtil
 import com.intellij.r.psi.psi.RRecursiveElementVisitor
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RBlockExpression
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RIfStatement
 import com.intellij.r.psi.psi.isFunctionFromLibrary
 import com.intellij.r.psi.psi.references.RReferenceBase
 import com.intellij.r.psi.skeleton.psi.RSkeletonBase

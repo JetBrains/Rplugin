@@ -23,7 +23,14 @@ import com.intellij.r.psi.packages.build.RPackageBuildUtil
 import com.intellij.r.psi.psi.RPomTarget
 import com.intellij.r.psi.psi.RPsiUtil
 import com.intellij.r.psi.psi.RPsiUtil.getFunction
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RArgumentList
+import com.intellij.r.psi.psi.api.RAtExpression
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RControlFlowHolder
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RParameterList
+import com.intellij.r.psi.psi.api.RPsiElement
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
 import com.intellij.r.psi.psi.stubs.RAssignmentNameIndex
 import com.intellij.r.psi.skeleton.psi.RSkeletonAssignmentStatement
 import java.util.function.Predicate

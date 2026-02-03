@@ -12,7 +12,15 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.debugger.RDebuggerUtilPsi
 import com.intellij.r.psi.debugger.exception.RDebuggerException
-import com.intellij.r.psi.rinterop.*
+import com.intellij.r.psi.rinterop.RValueDataFrame
+import com.intellij.r.psi.rinterop.RValueEnvironment
+import com.intellij.r.psi.rinterop.RValueError
+import com.intellij.r.psi.rinterop.RValueFunction
+import com.intellij.r.psi.rinterop.RValueGraph
+import com.intellij.r.psi.rinterop.RValueList
+import com.intellij.r.psi.rinterop.RValueMatrix
+import com.intellij.r.psi.rinterop.RValueSimple
+import com.intellij.r.psi.rinterop.RValueUnevaluated
 import com.intellij.r.psi.util.tryRegisterDisposable
 import com.intellij.xdebugger.frame.XFullValueEvaluator
 import com.intellij.xdebugger.frame.XValueNode

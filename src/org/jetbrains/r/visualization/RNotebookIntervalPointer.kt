@@ -10,7 +10,7 @@ import com.intellij.util.concurrency.annotations.RequiresWriteLock
 import com.intellij.util.messages.Topic
 import org.jetbrains.r.rmarkdown.RMarkdownVirtualFile
 import org.jetbrains.r.visualization.RNotebookCellLines.Interval
-import java.util.*
+import java.util.EventListener
 
 /**
  * Pointer becomes invalid when code cell is removed.

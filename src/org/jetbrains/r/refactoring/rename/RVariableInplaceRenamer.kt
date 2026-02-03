@@ -9,7 +9,11 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.pom.PomTargetPsiElement
-import com.intellij.psi.*
+import com.intellij.psi.ElementManipulators
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.PsiReference
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.r.psi.classes.s4.classInfo.RStringLiteralPomTarget
 import com.intellij.r.psi.classes.s4.context.RS4ContextProvider
@@ -18,7 +22,11 @@ import com.intellij.r.psi.classes.s4.context.methods.RS4SetMethodFunctionNameCon
 import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
 import com.intellij.r.psi.psi.RPomTarget
 import com.intellij.r.psi.psi.RRecursiveElementVisitor
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
 import com.intellij.r.psi.psi.isFunctionFromLibrary
 import com.intellij.r.psi.psi.references.RSearchScopeUtil
 import com.intellij.r.psi.psi.stubs.classes.RS4GenericIndex

@@ -8,7 +8,12 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.DocumentAdapter
 import com.intellij.util.ui.JBUI
 import org.jetbrains.r.visualization.inlays.components.HistogramSlider.Companion.show
-import java.awt.*
+import java.awt.Color
+import java.awt.Dimension
+import java.awt.Graphics
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
+import java.awt.Point
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.JComponent

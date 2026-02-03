@@ -7,7 +7,11 @@ package org.jetbrains.r.visualization.inlays.components
 import com.intellij.icons.AllIcons
 import com.intellij.ide.CopyProvider
 import com.intellij.ide.DataManager
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
 import com.intellij.openapi.ide.CopyPasteManager
@@ -17,12 +21,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.icons.RIcons
+import com.intellij.r.psi.visualization.inlays.RClipboardUtils
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.SideBorder
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
-import com.intellij.r.psi.visualization.inlays.RClipboardUtils
 import org.jetbrains.r.visualization.inlays.dataframe.DataFrame
 import org.jetbrains.r.visualization.inlays.dataframe.columns.DoubleType
 import org.jetbrains.r.visualization.inlays.dataframe.columns.IntType
@@ -41,7 +45,13 @@ import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.io.BufferedWriter
 import java.io.File
-import javax.swing.*
+import javax.swing.AbstractAction
+import javax.swing.JComponent
+import javax.swing.JMenuItem
+import javax.swing.JPanel
+import javax.swing.JPopupMenu
+import javax.swing.JTable
+import javax.swing.KeyStroke
 import javax.swing.table.TableRowSorter
 
 /**

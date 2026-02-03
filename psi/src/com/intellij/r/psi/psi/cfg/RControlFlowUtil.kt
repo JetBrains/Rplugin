@@ -5,7 +5,11 @@
 package com.intellij.r.psi.psi.cfg
 
 import com.intellij.codeInsight.controlflow.Instruction
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RForStatement
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RPsiElement
 
 object RControlFlowUtil {
   fun getEntryPoint(element: RPsiElement?, controlFlow: RControlFlow): Instruction? {

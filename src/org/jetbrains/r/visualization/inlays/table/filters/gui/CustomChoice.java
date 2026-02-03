@@ -8,8 +8,14 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.NotNullFunction;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.RowFilter;
+import javax.swing.UIManager;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.io.Serializable;
 import java.text.Format;
 import java.util.Collection;

@@ -8,7 +8,16 @@ import com.intellij.icons.AllIcons
 import com.intellij.ide.DataManager
 import com.intellij.idea.ActionsBundle
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.ActionUiKind
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonShortcuts
+import com.intellij.openapi.actionSystem.DataProvider
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.ui.Messages
@@ -16,7 +25,9 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.EmptyRunnable
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.actions.RDumbAwareBgtAction
 import com.intellij.r.psi.rinterop.RVar
+import com.intellij.r.psi.visualization.ui.ToolbarUtil
 import com.intellij.ui.AppUIUtil
 import com.intellij.ui.ClickListener
 import com.intellij.ui.DoubleClickListener
@@ -40,8 +51,11 @@ import com.intellij.xdebugger.impl.messages.XDebuggerImplBundle
 import com.intellij.xdebugger.impl.ui.DebuggerUIUtil
 import com.intellij.xdebugger.impl.ui.tree.XDebuggerTree
 import com.intellij.xdebugger.impl.ui.tree.XDebuggerTreeState
-import com.intellij.xdebugger.impl.ui.tree.nodes.*
-import com.intellij.r.psi.actions.RDumbAwareBgtAction
+import com.intellij.xdebugger.impl.ui.tree.nodes.WatchNode
+import com.intellij.xdebugger.impl.ui.tree.nodes.WatchNodeImpl
+import com.intellij.xdebugger.impl.ui.tree.nodes.WatchesRootNode
+import com.intellij.xdebugger.impl.ui.tree.nodes.XDebuggerTreeNode
+import com.intellij.xdebugger.impl.ui.tree.nodes.XValueContainerNode
 import org.jetbrains.r.actions.RDumbAwareBgtToggleAction
 import org.jetbrains.r.console.RConsoleViewImpl
 import org.jetbrains.r.console.RDebuggerPanel
@@ -53,9 +67,12 @@ import org.jetbrains.r.run.debug.stack.RXVariableViewSettings
 import org.jetbrains.r.run.visualize.RImportBaseDataDialog
 import org.jetbrains.r.run.visualize.RImportCsvDataDialog
 import org.jetbrains.r.run.visualize.RImportExcelDataDialog
-import com.intellij.r.psi.visualization.ui.ToolbarUtil
 import java.awt.BorderLayout
-import java.awt.event.*
+import java.awt.event.ComponentEvent
+import java.awt.event.ComponentListener
+import java.awt.event.FocusEvent
+import java.awt.event.FocusListener
+import java.awt.event.MouseEvent
 import javax.swing.SwingUtilities
 import javax.swing.event.TreeSelectionListener
 

@@ -6,7 +6,7 @@ package org.jetbrains.r.visualization.inlays.table.filters.gui.editor;
 
 import org.jetbrains.r.visualization.inlays.table.filters.gui.CustomChoice;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;

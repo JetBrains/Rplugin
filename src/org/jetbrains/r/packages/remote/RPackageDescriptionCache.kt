@@ -4,7 +4,11 @@
 
 package org.jetbrains.r.packages.remote
 
-import com.intellij.openapi.components.*
+import com.intellij.openapi.components.BaseState
+import com.intellij.openapi.components.SimplePersistentStateComponent
+import com.intellij.openapi.components.State
+import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.service
 
 // Note: there is no need to save this list independently for each project
 // since it's doesn't rely on interpreter version whatsoever

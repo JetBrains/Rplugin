@@ -11,7 +11,11 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.*
+import com.intellij.platform.DirectoryProjectGenerator
+import com.intellij.platform.DirectoryProjectGeneratorBase
+import com.intellij.platform.GeneratorPeerImpl
+import com.intellij.platform.ProjectGeneratorPeer
+import com.intellij.platform.ProjectTemplate
 import com.intellij.r.psi.icons.RIcons
 import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.r.psi.settings.RSettings

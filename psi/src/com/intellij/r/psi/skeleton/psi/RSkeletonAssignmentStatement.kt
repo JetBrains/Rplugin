@@ -23,7 +23,12 @@ import com.intellij.r.psi.psi.api.RFunctionExpression
 import com.intellij.r.psi.psi.references.RReferenceBase
 import com.intellij.r.psi.refactoring.quoteIfNeeded
 import com.intellij.r.psi.refactoring.rNamesValidator
-import com.intellij.r.psi.rinterop.*
+import com.intellij.r.psi.rinterop.RInterop
+import com.intellij.r.psi.rinterop.RInteropManager
+import com.intellij.r.psi.rinterop.RInteropTerminated
+import com.intellij.r.psi.rinterop.RReference
+import com.intellij.r.psi.rinterop.RValueError
+import com.intellij.r.psi.rinterop.RVar
 import com.intellij.util.IncorrectOperationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

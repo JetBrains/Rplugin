@@ -19,7 +19,13 @@ import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.interpreter.RInterpreter
 import com.intellij.r.psi.interpreter.isLocal
 import com.intellij.ui.DocumentAdapter
-import com.intellij.ui.dsl.builder.*
+import com.intellij.ui.dsl.builder.AlignX
+import com.intellij.ui.dsl.builder.RightGap
+import com.intellij.ui.dsl.builder.RowLayout
+import com.intellij.ui.dsl.builder.bindItem
+import com.intellij.ui.dsl.builder.bindSelected
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.toNullableProperty
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

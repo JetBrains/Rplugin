@@ -1,7 +1,11 @@
 package org.jetbrains.r.codeInsight.libraries
 
 import com.intellij.codeInsight.completion.CompletionResultSet
-import com.intellij.psi.*
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElementResolveResult
+import com.intellij.psi.ResolveResult
+import com.intellij.psi.SmartPointerManager
+import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
@@ -9,7 +13,12 @@ import com.intellij.r.psi.codeInsight.libraries.RLibrarySupportProvider
 import com.intellij.r.psi.editor.completion.RLookupElementFactory
 import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
 import com.intellij.r.psi.psi.RRecursiveElementVisitor
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RFile
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RMemberExpression
+import com.intellij.r.psi.psi.api.RPsiElement
 import com.intellij.r.psi.psi.impl.RStringLiteralExpressionImpl
 import com.intellij.util.Processor
 import org.jetbrains.annotations.NonNls

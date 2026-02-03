@@ -5,7 +5,12 @@
 package com.intellij.r.psi.psi
 
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RArgumentHolder
+import com.intellij.r.psi.psi.api.RArgumentList
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RControlFlowHolder
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RParameter
 import com.intellij.r.psi.psi.cfg.VariableDefinition
 
 enum class ReferenceKind {

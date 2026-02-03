@@ -4,7 +4,11 @@
 
 package org.jetbrains.r.rmarkdown
 
-import com.intellij.formatting.*
+import com.intellij.formatting.Block
+import com.intellij.formatting.ChildAttributes
+import com.intellij.formatting.FormattingMode
+import com.intellij.formatting.Indent
+import com.intellij.formatting.SpacingBuilder
 import com.intellij.lang.Language
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.codeStyle.CodeStyleSettings

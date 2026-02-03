@@ -7,7 +7,11 @@ package com.intellij.r.psi.skeleton.psi
 import com.intellij.lang.ASTNode
 import com.intellij.lang.Language
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.*
+import com.intellij.psi.PsiCompiledElement
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiInvalidElementAccessException
+import com.intellij.psi.PsiManager
+import com.intellij.psi.ResolveState
 import com.intellij.psi.impl.PsiElementBase
 import com.intellij.psi.scope.PsiScopeProcessor
 import com.intellij.r.psi.RLanguage

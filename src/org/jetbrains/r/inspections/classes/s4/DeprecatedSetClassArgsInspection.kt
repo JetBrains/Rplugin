@@ -4,7 +4,11 @@
 
 package org.jetbrains.r.inspections.classes.s4
 
-import com.intellij.codeInspection.*
+import com.intellij.codeInspection.LocalInspectionToolSession
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.codeStyle.CodeStyleManager
@@ -13,7 +17,14 @@ import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
 import com.intellij.r.psi.parsing.RElementTypes
 import com.intellij.r.psi.psi.RElementFactory
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RArgumentList
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.REmptyExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RNamedArgument
+import com.intellij.r.psi.psi.api.RPsiElement
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
+import com.intellij.r.psi.psi.api.RVisitor
 import com.intellij.r.psi.psi.isFunctionFromLibrary
 import org.jetbrains.r.inspections.RInspection
 

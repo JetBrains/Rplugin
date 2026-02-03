@@ -18,7 +18,13 @@ import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo.Companion.getArgumen
 import com.intellij.r.psi.psi.RElementFactory
 import com.intellij.r.psi.psi.RPsiUtil
 import com.intellij.r.psi.psi.RPsiUtil.isPipeOperator
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RArgumentHolder
+import com.intellij.r.psi.psi.api.RArgumentList
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RNamedArgument
+import com.intellij.r.psi.psi.api.ROperatorExpression
 import com.intellij.util.io.StringRef
 
 /**

@@ -7,13 +7,21 @@ package com.intellij.r.psi.psi;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.stubs.*;
+import com.intellij.psi.stubs.IndexSink;
+import com.intellij.psi.stubs.PsiFileStub;
+import com.intellij.psi.stubs.StubElement;
+import com.intellij.psi.stubs.StubInputStream;
+import com.intellij.psi.stubs.StubOutputStream;
 import com.intellij.r.psi.psi.api.RAssignmentStatement;
 import com.intellij.r.psi.psi.api.RFile;
 import com.intellij.r.psi.psi.api.RFunctionExpression;
 import com.intellij.r.psi.psi.api.RPsiElement;
 import com.intellij.r.psi.psi.impl.RAssignmentStatementImpl;
-import com.intellij.r.psi.psi.stubs.*;
+import com.intellij.r.psi.psi.stubs.RAssignmentCompletionIndex;
+import com.intellij.r.psi.psi.stubs.RAssignmentNameIndex;
+import com.intellij.r.psi.psi.stubs.RAssignmentStub;
+import com.intellij.r.psi.psi.stubs.RAssignmentStubImpl;
+import com.intellij.r.psi.psi.stubs.RStubElementType;
 import com.intellij.util.io.StringRef;
 import org.jetbrains.annotations.NotNull;
 

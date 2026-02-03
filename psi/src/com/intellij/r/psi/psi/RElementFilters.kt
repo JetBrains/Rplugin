@@ -14,7 +14,13 @@ import com.intellij.psi.util.elementType
 import com.intellij.r.psi.classes.r6.context.R6ContextProvider
 import com.intellij.r.psi.classes.s4.context.RS4ContextProvider
 import com.intellij.r.psi.parsing.RElementTypes
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RArgumentList
+import com.intellij.r.psi.psi.api.RAtExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RInfixOperator
+import com.intellij.r.psi.psi.api.RNoCommaTail
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
 
 object RElementFilters {
   val IMPORT_FILTER = ImportFilter()

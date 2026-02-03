@@ -12,7 +12,7 @@ import com.intellij.openapi.application.PathManager
 import org.jetbrains.r.console.RConsoleManagerImpl
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 private val dateFormat = SimpleDateFormat("yyyy-MM-dd-HH:mm:ss")
 

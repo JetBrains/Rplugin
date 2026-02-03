@@ -17,7 +17,9 @@ import com.intellij.r.psi.classes.s4.methods.RS4MethodParameterInfo
 import com.intellij.r.psi.classes.s4.methods.RS4RawMethodInfo
 import com.intellij.r.psi.hints.parameterInfo.RExtraNamedArgumentsInfo
 import com.intellij.r.psi.packages.LibrarySummary
-import com.intellij.r.psi.packages.LibrarySummary.RLibrarySymbol.*
+import com.intellij.r.psi.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation
+import com.intellij.r.psi.packages.LibrarySummary.RLibrarySymbol.RepresentationCase
+import com.intellij.r.psi.packages.LibrarySummary.RLibrarySymbol.Type
 import com.intellij.r.psi.parsing.RParserDefinition
 import com.intellij.r.psi.skeleton.psi.RSkeletonAssignmentStub
 import com.intellij.r.psi.skeleton.psi.RSkeletonCallExpressionStub

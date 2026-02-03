@@ -4,7 +4,12 @@
 
 package org.jetbrains.r.hints.parameterInfo
 
-import com.intellij.lang.parameterInfo.*
+import com.intellij.lang.parameterInfo.CreateParameterInfoContext
+import com.intellij.lang.parameterInfo.ParameterInfoContext
+import com.intellij.lang.parameterInfo.ParameterInfoHandler
+import com.intellij.lang.parameterInfo.ParameterInfoUIContext
+import com.intellij.lang.parameterInfo.ParameterInfoUtils
+import com.intellij.lang.parameterInfo.UpdateParameterInfoContext
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType

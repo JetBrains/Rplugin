@@ -15,7 +15,9 @@ import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.lexer.MarkdownLexerAdapter
 import org.jetbrains.r.rmarkdown.RmdCellLanguageProvider
 import org.jetbrains.r.visualization.RIntervalsGenerator
-import org.jetbrains.r.visualization.RNotebookCellLines.*
+import org.jetbrains.r.visualization.RNotebookCellLines.CellType
+import org.jetbrains.r.visualization.RNotebookCellLines.Interval
+import org.jetbrains.r.visualization.RNotebookCellLines.MarkersAtLines
 import kotlin.math.max
 
 

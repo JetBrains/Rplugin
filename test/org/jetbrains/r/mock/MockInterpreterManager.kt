@@ -6,7 +6,11 @@ package org.jetbrains.r.mock
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.intellij.r.psi.interpreter.*
+import com.intellij.r.psi.interpreter.RInterpreter
+import com.intellij.r.psi.interpreter.RInterpreterLocation
+import com.intellij.r.psi.interpreter.RInterpreterManager
+import com.intellij.r.psi.interpreter.RInterpreterUtil
+import com.intellij.r.psi.interpreter.RLocalInterpreterLocation
 import com.intellij.r.psi.settings.RInterpreterSettingsProvider
 import com.intellij.testFramework.common.timeoutRunBlocking
 import kotlinx.coroutines.CompletableDeferred

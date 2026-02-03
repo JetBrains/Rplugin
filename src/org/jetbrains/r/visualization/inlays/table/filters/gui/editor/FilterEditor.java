@@ -11,17 +11,31 @@ import com.intellij.ui.SideBorder;
 import org.jetbrains.r.visualization.inlays.table.filters.Filter;
 import org.jetbrains.r.visualization.inlays.table.filters.IFilter;
 import org.jetbrains.r.visualization.inlays.table.filters.IParser;
-import org.jetbrains.r.visualization.inlays.table.filters.gui.*;
+import org.jetbrains.r.visualization.inlays.table.filters.gui.AbstractFiltersHandler;
+import org.jetbrains.r.visualization.inlays.table.filters.gui.AutoChoices;
+import org.jetbrains.r.visualization.inlays.table.filters.gui.ChoiceRenderer;
+import org.jetbrains.r.visualization.inlays.table.filters.gui.CustomChoice;
+import org.jetbrains.r.visualization.inlays.table.filters.gui.IFilterEditor;
+import org.jetbrains.r.visualization.inlays.table.filters.gui.IParserModel;
 import org.jetbrains.r.visualization.inlays.table.filters.parser.DateComparator;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.RowFilter;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.text.Format;
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 /**

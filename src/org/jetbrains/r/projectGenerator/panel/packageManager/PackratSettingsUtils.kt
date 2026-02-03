@@ -7,7 +7,7 @@ package org.jetbrains.r.projectGenerator.panel.packageManager
 import com.intellij.r.psi.RPluginUtil
 import com.intellij.r.psi.interpreter.RInterpreterLocation
 import com.intellij.r.psi.interpreter.RInterpreterUtil
-import java.util.*
+import java.util.StringJoiner
 
 private val SCRIPT_FILE = RPluginUtil.findFileInRHelpers("R/projectGenerator/getPackratOptions.R")
 

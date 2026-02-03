@@ -4,7 +4,11 @@
 
 package org.jetbrains.r.hints
 
-import com.intellij.codeHighlighting.*
+import com.intellij.codeHighlighting.EditorBoundHighlightingPass
+import com.intellij.codeHighlighting.TextEditorHighlightingPass
+import com.intellij.codeHighlighting.TextEditorHighlightingPassFactory
+import com.intellij.codeHighlighting.TextEditorHighlightingPassFactoryRegistrar
+import com.intellij.codeHighlighting.TextEditorHighlightingPassRegistrar
 import com.intellij.codeInsight.hints.InlayHintsSettings
 import com.intellij.codeInsight.hints.InlayParameterHintsExtension
 import com.intellij.openapi.components.Service

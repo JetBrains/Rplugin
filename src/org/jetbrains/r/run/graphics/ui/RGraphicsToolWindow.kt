@@ -5,7 +5,11 @@
 
 package org.jetbrains.r.run.graphics.ui
 
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ex.CheckboxAction
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction
@@ -18,21 +22,25 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.actions.RDumbAwareBgtAction
+import com.intellij.r.psi.run.graphics.RGraphicsCompletedUpdate
+import com.intellij.r.psi.run.graphics.RGraphicsLoadingUpdate
+import com.intellij.r.psi.run.graphics.RGraphicsOutput
+import com.intellij.r.psi.run.graphics.RGraphicsUpdate
+import com.intellij.r.psi.run.graphics.RGraphicsUtils
+import com.intellij.r.psi.run.graphics.RPlot
+import com.intellij.r.psi.run.graphics.ui.RPlotViewer
+import com.intellij.r.psi.settings.RGraphicsSettings
+import com.intellij.r.psi.visualization.inlays.RClipboardUtils
+import com.intellij.r.psi.visualization.inlays.components.CHANGE_DARK_MODE_TOPIC
+import com.intellij.r.psi.visualization.ui.ToolbarUtil
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.intellij.r.psi.actions.RDumbAwareBgtAction
-import com.intellij.r.psi.run.graphics.RGraphicsUtils
-import com.intellij.r.psi.run.graphics.ui.RPlotViewer
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
-import org.jetbrains.r.run.graphics.*
-import com.intellij.r.psi.run.graphics.*
-import com.intellij.r.psi.settings.RGraphicsSettings
-import com.intellij.r.psi.visualization.inlays.RClipboardUtils
-import com.intellij.r.psi.visualization.inlays.components.CHANGE_DARK_MODE_TOPIC
+import org.jetbrains.r.run.graphics.RGraphicsRepository
 import org.jetbrains.r.visualization.inlays.components.GraphicsPanel
-import com.intellij.r.psi.visualization.ui.ToolbarUtil
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent

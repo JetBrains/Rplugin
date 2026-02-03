@@ -9,6 +9,7 @@ import com.intellij.codeInsight.daemon.impl.HighlightVisitor
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.r.psi.annotator.textAttribute
 import com.intellij.r.psi.psi.RPsiUtil
 import com.intellij.r.psi.psi.api.RControlFlowHolder
 import com.intellij.r.psi.psi.api.RFile
@@ -17,7 +18,6 @@ import com.intellij.r.psi.psi.api.RParameter
 import com.intellij.r.psi.psi.findVariableDefinition
 import com.intellij.r.psi.psi.isDependantIdentifier
 import com.intellij.r.psi.rmarkdown.RMarkdownFileType
-import com.intellij.r.psi.annotator.textAttribute
 
 class RRainbowVisitor : RainbowVisitor() {
   override fun suitableForFile(psiFile: PsiFile): Boolean = psiFile is RFile || psiFile.virtualFile?.fileType == RMarkdownFileType

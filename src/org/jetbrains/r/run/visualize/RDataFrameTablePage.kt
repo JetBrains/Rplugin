@@ -11,7 +11,13 @@ import com.intellij.ide.CopyProvider
 import com.intellij.ide.DataManager
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.ActionToolbar
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
@@ -30,6 +36,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.icons.RIcons
+import com.intellij.r.psi.visualization.inlays.RClipboardUtils
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.SideBorder
 import com.intellij.ui.components.JBScrollPane
@@ -39,7 +46,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.actions.RDumbAwareEdtToggleAction
-import com.intellij.r.psi.visualization.inlays.RClipboardUtils
 import org.jetbrains.r.visualization.inlays.table.filters.gui.TableFilterHeader
 import org.jetbrains.r.visualization.ui.MaterialTableUtils
 import java.awt.BorderLayout
@@ -52,7 +58,14 @@ import java.awt.event.MouseEvent
 import java.io.BufferedWriter
 import java.io.File
 import java.io.IOException
-import javax.swing.*
+import javax.swing.AbstractAction
+import javax.swing.JComponent
+import javax.swing.JMenuItem
+import javax.swing.JPanel
+import javax.swing.JPopupMenu
+import javax.swing.JViewport
+import javax.swing.KeyStroke
+import javax.swing.RowSorter
 import kotlin.math.min
 
 internal class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout()) {

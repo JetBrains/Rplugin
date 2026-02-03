@@ -7,7 +7,13 @@ import com.intellij.openapi.util.Key
 import com.intellij.util.asSafely
 import org.jetbrains.r.rendering.chunk.ChunkImageInlayOutput
 import org.jetbrains.r.visualization.inlays.InlayOutputData
-import org.jetbrains.r.visualization.inlays.components.*
+import org.jetbrains.r.visualization.inlays.components.InlayOutput
+import org.jetbrains.r.visualization.inlays.components.InlayOutputHtml
+import org.jetbrains.r.visualization.inlays.components.InlayOutputTable
+import org.jetbrains.r.visualization.inlays.components.InlayOutputText
+import org.jetbrains.r.visualization.inlays.components.InlayProgressStatus
+import org.jetbrains.r.visualization.inlays.components.NotebookInlayState
+import org.jetbrains.r.visualization.inlays.components.ToolBarProvider
 import java.awt.BorderLayout
 import java.awt.Rectangle
 import java.awt.event.ComponentAdapter

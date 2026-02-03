@@ -18,14 +18,35 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReference
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.highlighting.CLOSURE
+import com.intellij.r.psi.highlighting.FIELD
+import com.intellij.r.psi.highlighting.FUNCTION_CALL
+import com.intellij.r.psi.highlighting.FUNCTION_DECLARATION
+import com.intellij.r.psi.highlighting.LOCAL_VARIABLE
+import com.intellij.r.psi.highlighting.NAMED_ARGUMENT
+import com.intellij.r.psi.highlighting.NAMESPACE
+import com.intellij.r.psi.highlighting.PARAMETER
 import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
 import com.intellij.r.psi.psi.RPsiUtil
 import com.intellij.r.psi.psi.RPsiUtil.isFieldLikeComponent
 import com.intellij.r.psi.psi.ReferenceKind
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RArgumentList
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RInvalidLiteral
+import com.intellij.r.psi.psi.api.RNamedArgument
+import com.intellij.r.psi.psi.api.RNamespaceAccessExpression
+import com.intellij.r.psi.psi.api.RNoCommaTail
+import com.intellij.r.psi.psi.api.ROperatorExpression
+import com.intellij.r.psi.psi.api.RParameter
+import com.intellij.r.psi.psi.api.RPsiElement
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
+import com.intellij.r.psi.psi.api.RVisitor
 import com.intellij.r.psi.psi.getKind
 import com.intellij.r.psi.psi.isFunctionFromLibrary
-import com.intellij.r.psi.highlighting.*
 
 class RAnnotatorVisitor(private val holder: MutableList<HighlightInfo>, private val annotationSession: UserDataHolder) : RVisitor() {
 

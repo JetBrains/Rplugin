@@ -1,11 +1,11 @@
 package org.jetbrains.r.run.graphics
 
+import com.intellij.r.psi.run.graphics.RGraphicsUtils
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.rinterop.RInteropImpl
-import com.intellij.r.psi.run.graphics.RGraphicsUtils
-import java.util.*
+import java.util.ArrayDeque
 
 class RGraphicsRescaleQueue(private val deviceId: Long, private val interop: RInteropImpl) {
   private var isTaskRunning = false

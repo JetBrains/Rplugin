@@ -12,7 +12,16 @@ import com.intellij.psi.PsiRecursiveVisitor
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.r.psi.psi.RElementFactory
 import com.intellij.r.psi.psi.RPsiUtil
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RBlockExpression
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RControlFlowHolder
+import com.intellij.r.psi.psi.api.RFile
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIfStatement
+import com.intellij.r.psi.psi.api.RLoopStatement
+import com.intellij.r.psi.psi.api.RParameter
+import com.intellij.r.psi.psi.api.RVisitor
 
 object RRefactoringUtil {
   fun getRScope(local: PsiElement): RControlFlowHolder {

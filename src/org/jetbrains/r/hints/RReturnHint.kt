@@ -5,7 +5,11 @@
 package org.jetbrains.r.hints
 
 import com.intellij.r.psi.RBundle
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RMemberExpression
+import com.intellij.r.psi.psi.api.RNamedArgument
 
 sealed class RReturnHint(hintPrefix: String, function: RFunctionExpression) {
   val hintText: String = hintPrefix + getFunctionName(function)

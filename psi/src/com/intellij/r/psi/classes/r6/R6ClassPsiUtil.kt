@@ -10,7 +10,13 @@ import com.intellij.psi.util.elementType
 import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
 import com.intellij.r.psi.parsing.RElementTypes.R_IDENTIFIER_EXPRESSION
 import com.intellij.r.psi.parsing.RElementTypes.R_MEMBER_EXPRESSION
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RMemberExpression
+import com.intellij.r.psi.psi.api.RNamedArgument
+import com.intellij.r.psi.psi.api.RPsiElement
 import com.intellij.r.psi.psi.impl.RCallExpressionImpl
 import com.intellij.r.psi.psi.isFunctionFromLibrarySoft
 import com.intellij.r.psi.psi.references.RSearchScopeUtil

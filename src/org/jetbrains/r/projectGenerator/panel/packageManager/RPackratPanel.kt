@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nls
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
 import java.awt.BorderLayout
 import java.awt.Component
-import java.util.*
+import java.util.StringJoiner
 import java.util.function.Consumer
 import javax.swing.JComboBox
 import javax.swing.JComponent

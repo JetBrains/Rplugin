@@ -17,7 +17,7 @@ import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import org.jetbrains.r.refactoring.rename.RMemberInplaceRenameHandler
 import org.jetbrains.r.refactoring.rename.RVariableInplaceRenameHandler
 import java.io.File
-import java.util.*
+import java.util.Locale
 
 class RRenameTest : RLightCodeInsightFixtureTestCase() {
 

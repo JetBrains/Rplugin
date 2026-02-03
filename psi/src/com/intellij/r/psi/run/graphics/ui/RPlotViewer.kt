@@ -4,17 +4,17 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.Project
-import com.intellij.util.concurrency.AppExecutorUtil
-import com.intellij.util.ui.ImageUtil
 import com.intellij.r.psi.run.graphics.RGraphicsUtils
 import com.intellij.r.psi.run.graphics.RPlot
 import com.intellij.r.psi.run.graphics.RPlotUtil
 import com.intellij.r.psi.settings.RGraphicsSettings
+import com.intellij.util.concurrency.AppExecutorUtil
+import com.intellij.util.ui.ImageUtil
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.image.BufferedImage
 import java.lang.ref.SoftReference
-import java.util.*
+import java.util.TimerTask
 import java.util.concurrent.TimeUnit
 import javax.swing.JComponent
 

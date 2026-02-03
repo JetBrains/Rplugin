@@ -13,11 +13,11 @@ import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.RainbowColorSettingsPage
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.highlighting.RColorSettingsPage.Companion.R_DEMO
+import com.intellij.r.psi.highlighting.RColorSettingsPage.Companion.TAGS
 import com.intellij.r.psi.icons.RIcons
 import com.intellij.r.psi.rmarkdown.RMarkdownLanguage
 import org.jetbrains.annotations.NonNls
-import com.intellij.r.psi.highlighting.RColorSettingsPage.Companion.R_DEMO
-import com.intellij.r.psi.highlighting.RColorSettingsPage.Companion.TAGS
 import javax.swing.Icon
 
 class RMarkdownColorSettingsPage : RainbowColorSettingsPage {

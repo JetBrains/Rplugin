@@ -7,7 +7,14 @@ package com.intellij.r.psi.interpreter
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.*
+import com.intellij.execution.process.BaseProcessHandler
+import com.intellij.execution.process.CapturingProcessAdapter
+import com.intellij.execution.process.CapturingProcessHandler
+import com.intellij.execution.process.CapturingProcessRunner
+import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.ProcessListener
+import com.intellij.execution.process.ProcessOutput
+import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager

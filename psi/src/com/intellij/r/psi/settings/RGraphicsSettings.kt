@@ -5,12 +5,17 @@
 package com.intellij.r.psi.settings
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.components.*
+import com.intellij.openapi.components.BaseState
+import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.SimplePersistentStateComponent
+import com.intellij.openapi.components.State
+import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.intellij.util.messages.Topic
 import com.intellij.r.psi.run.graphics.RGraphicsUtils
 import com.intellij.r.psi.visualization.inlays.components.CHANGE_DARK_MODE_TOPIC
 import com.intellij.r.psi.visualization.inlays.components.DarkModeNotifier
+import com.intellij.util.messages.Topic
 import java.awt.Dimension
 
 @Service(Service.Level.PROJECT)

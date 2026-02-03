@@ -6,9 +6,13 @@ package org.jetbrains.r.visualization.inlays.table.filters.gui.editor;
 
 import org.jetbrains.r.visualization.inlays.table.filters.gui.CustomChoice;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.text.Format;
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
 
 /**
  * List model to handle the choices in the popup menu: it assumes that all the

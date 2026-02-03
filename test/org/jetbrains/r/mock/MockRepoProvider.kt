@@ -4,7 +4,11 @@
 
 package org.jetbrains.r.mock
 
-import org.jetbrains.r.packages.remote.*
+import org.jetbrains.r.packages.remote.RMirror
+import org.jetbrains.r.packages.remote.RRepoPackage
+import org.jetbrains.r.packages.remote.RRepository
+import org.jetbrains.r.packages.remote.RRepositoryWithSelection
+import org.jetbrains.r.packages.remote.RepoProvider
 
 class MockRepoProvider : RepoProvider {
   override var selectedCranMirrorIndex: Int

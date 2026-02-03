@@ -12,9 +12,15 @@ import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.DocumentMarkupModel
 import com.intellij.openapi.editor.markup.RangeHighlighter
 import com.intellij.openapi.editor.markup.TextAttributes
+import com.intellij.r.psi.highlighting.COMMA
+import com.intellij.r.psi.highlighting.FUNCTION_CALL
+import com.intellij.r.psi.highlighting.LOCAL_VARIABLE
+import com.intellij.r.psi.highlighting.NAMED_ARGUMENT
+import com.intellij.r.psi.highlighting.NUMBER
+import com.intellij.r.psi.highlighting.OPERATION_SIGN
+import com.intellij.r.psi.highlighting.PARENTHESES
 import com.intellij.testFramework.UsefulTestCase
 import org.jetbrains.r.console.RConsoleBaseTestCase
-import com.intellij.r.psi.highlighting.*
 import java.awt.Color
 import java.awt.Font
 

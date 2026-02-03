@@ -12,7 +12,13 @@ import com.intellij.execution.filters.HyperlinkInfo
 import com.intellij.execution.process.AnsiEscapeDecoder
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleViewContentType
-import com.intellij.openapi.application.*
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
+import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.command.undo.DocumentReferenceManager
 import com.intellij.openapi.command.undo.UndoManager
@@ -29,8 +35,13 @@ import com.intellij.r.psi.interpreter.RLibraryWatcher
 import com.intellij.r.psi.notifications.RNotificationUtil
 import com.intellij.r.psi.psi.RElementFactory
 import com.intellij.r.psi.psi.RPomTarget
-import com.intellij.r.psi.rinterop.*
+import com.intellij.r.psi.rinterop.ExecuteCodeRequest
+import com.intellij.r.psi.rinterop.RInterop
+import com.intellij.r.psi.rinterop.RObject
+import com.intellij.r.psi.rinterop.RReference
 import com.intellij.r.psi.rinterop.RSourceFileManager
+import com.intellij.r.psi.rinterop.RValue
+import com.intellij.r.psi.rinterop.RVar
 import com.intellij.r.psi.util.PromiseUtil
 import com.intellij.xdebugger.XSourcePosition
 import kotlinx.coroutines.Dispatchers
@@ -46,11 +57,24 @@ import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
-import org.jetbrains.r.rinterop.*
-import org.jetbrains.r.rinterop.rstudioapi.*
+import org.jetbrains.r.rinterop.RExceptionInfo
+import org.jetbrains.r.rinterop.RINTEROP_THREAD_NAME
+import org.jetbrains.r.rinterop.RInteropAsyncEventsListener
+import org.jetbrains.r.rinterop.RInterrupted
+import org.jetbrains.r.rinterop.RNoSuchPackageError
+import org.jetbrains.r.rinterop.rstudioapi.DialogUtils
+import org.jetbrains.r.rinterop.rstudioapi.DocumentUtils
+import org.jetbrains.r.rinterop.rstudioapi.JobUtils
+import org.jetbrains.r.rinterop.rstudioapi.ProjectsUtils
+import org.jetbrains.r.rinterop.rstudioapi.RSessionUtils
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiFunctionId
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils
+import org.jetbrains.r.rinterop.rstudioapi.TerminalUtils
+import org.jetbrains.r.rinterop.rstudioapi.ThemeUtils
 import org.jetbrains.r.run.visualize.RDataFrameViewer
 import org.jetbrains.r.run.visualize.RVisualizeTableUtil
-import java.util.*
+import java.util.ArrayDeque
+import java.util.Queue
 
 class RConsoleExecuteActionHandler(
   private val consoleView: RConsoleViewImpl,

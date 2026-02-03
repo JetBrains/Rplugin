@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.visualization.inlays.table.filters.gui;
 
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * Interface to customize the rendering of choices in the {@link IFilterEditor}.

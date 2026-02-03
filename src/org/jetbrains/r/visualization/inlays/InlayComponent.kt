@@ -10,7 +10,12 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.util.Disposer
 import org.jetbrains.r.visualization.inlays.components.RResizeController
-import java.awt.*
+import java.awt.AlphaComposite
+import java.awt.BorderLayout
+import java.awt.Dimension
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.Rectangle
 import javax.swing.JPanel
 
 /** Inlay editor component displaying text output, table data and charts for notebook paragraphs. */

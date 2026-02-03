@@ -6,7 +6,7 @@ package org.jetbrains.r.visualization.inlays.components
 
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.util.ui.JBUI
-import java.util.*
+import java.util.Scanner
 
 /** github-markdown.css as String, dependent form current IDE theme. */
 object GithubMarkdownCss {

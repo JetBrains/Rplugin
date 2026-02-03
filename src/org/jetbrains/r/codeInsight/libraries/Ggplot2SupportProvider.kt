@@ -8,7 +8,11 @@ import com.intellij.r.psi.codeInsight.libraries.RLibrarySupportProvider
 import com.intellij.r.psi.editor.completion.ARGUMENT_VALUE_PRIORITY
 import com.intellij.r.psi.editor.completion.RLookupElement
 import com.intellij.r.psi.editor.completion.RLookupElementFactory
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RArgumentList
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RNamedArgument
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
 import com.intellij.r.psi.psi.isFunctionFromLibrarySoft
 
 class Ggplot2SupportProvider : RLibrarySupportProvider {

@@ -10,7 +10,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.r.psi.RBundle
-import org.jetbrains.r.projectGenerator.panel.packageManager.*
+import org.jetbrains.r.projectGenerator.panel.packageManager.RDefaultPackagePanel
+import org.jetbrains.r.projectGenerator.panel.packageManager.RDevtoolsPanel
+import org.jetbrains.r.projectGenerator.panel.packageManager.RPackageManagerGroupPanel
+import org.jetbrains.r.projectGenerator.panel.packageManager.RPackratPanel
+import org.jetbrains.r.projectGenerator.panel.packageManager.RRcppArmadilloPanel
+import org.jetbrains.r.projectGenerator.panel.packageManager.RRcppEigenPanel
+import org.jetbrains.r.projectGenerator.panel.packageManager.RRcppPanel
 import java.nio.file.Path
 import java.util.function.Consumer
 import javax.swing.JComponent

@@ -14,7 +14,11 @@ import com.intellij.r.psi.classes.s4.classInfo.RSkeletonS4SlotPomTarget
 import com.intellij.r.psi.classes.s4.classInfo.associatedS4ClassInfo
 import com.intellij.r.psi.classes.s4.context.RS4ContextProvider
 import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RNamedArgument
+import com.intellij.r.psi.psi.api.RPsiElement
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
 import com.intellij.r.psi.psi.isFunctionFromLibrarySoft
 
 class RS4SlotDeclarationContext(override val originalElement: RPsiElement,

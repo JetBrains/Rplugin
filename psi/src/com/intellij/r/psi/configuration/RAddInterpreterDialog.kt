@@ -12,7 +12,11 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.execution.ExecuteExpressionUtils
-import com.intellij.r.psi.interpreter.*
+import com.intellij.r.psi.interpreter.RBasicInterpreterInfo
+import com.intellij.r.psi.interpreter.RInterpreterInfo
+import com.intellij.r.psi.interpreter.RInterpreterLocation
+import com.intellij.r.psi.interpreter.RInterpreterUtil
+import com.intellij.r.psi.interpreter.RLocalInterpreterLocation
 import com.intellij.util.PathUtil
 
 class RAddInterpreterDialog {

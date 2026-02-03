@@ -15,7 +15,16 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RFileType
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RArgumentList
+import com.intellij.r.psi.psi.api.RBlockExpression
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RFile
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RNamedArgument
+import com.intellij.r.psi.psi.api.RNamespaceAccessExpression
+import com.intellij.r.psi.psi.api.RParameter
+import com.intellij.r.psi.psi.api.RParameterList
 import com.intellij.r.psi.psi.isAssignee
 import com.intellij.r.psi.refactoring.quoteIfNeeded
 import com.intellij.r.psi.refactoring.rNamesValidator

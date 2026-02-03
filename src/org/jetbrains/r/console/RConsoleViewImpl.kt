@@ -15,7 +15,12 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CustomShortcutSet
 import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.actionSystem.ex.ActionUtil
-import com.intellij.openapi.application.*
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
+import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.command.undo.DocumentReferenceManager
@@ -40,6 +45,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RLanguage
 import com.intellij.r.psi.RPluginCoroutineScope
+import com.intellij.r.psi.annotator.RAnnotatorVisitor
 import com.intellij.r.psi.console.RConsoleView
 import com.intellij.r.psi.interpreter.RInterpreter
 import com.intellij.r.psi.psi.RRecursiveElementVisitor
@@ -55,7 +61,6 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.asPromise
 import org.jetbrains.concurrency.await
 import org.jetbrains.concurrency.runAsync
-import com.intellij.r.psi.annotator.RAnnotatorVisitor
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.RInteropImpl

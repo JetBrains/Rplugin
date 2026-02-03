@@ -1,6 +1,10 @@
 package org.jetbrains.r.codeInsight.table
 
-import com.intellij.r.psi.psi.*
+import com.intellij.r.psi.psi.DplyrFunction
+import com.intellij.r.psi.psi.RDplyrAnalyzer
+import com.intellij.r.psi.psi.TableColumnInfo
+import com.intellij.r.psi.psi.TableManipulationAnalyzer
+import com.intellij.r.psi.psi.TableManipulationContextInfo
 import com.intellij.util.Processor
 
 class RDplyrTableContextManager : RTableManipulationAnalyzerManager<DplyrFunction>() {

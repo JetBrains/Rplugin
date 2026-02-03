@@ -8,6 +8,9 @@ import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.run.graphics.RPlotUtil
+import com.intellij.r.psi.run.graphics.RSnapshot
+import com.intellij.r.psi.settings.RGraphicsSettings
 import com.intellij.ui.scale.JBUIScale
 import com.intellij.util.IconUtil
 import com.intellij.util.ui.ImageUtil
@@ -15,9 +18,6 @@ import com.intellij.util.ui.UIUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.r.run.graphics.RGraphicsDevice
-import com.intellij.r.psi.run.graphics.RPlotUtil
-import com.intellij.r.psi.run.graphics.RSnapshot
-import com.intellij.r.psi.settings.RGraphicsSettings
 import org.jetbrains.r.visualization.inlays.InlayOutputData
 import org.jetbrains.r.visualization.ui.use
 import java.awt.Image
@@ -27,7 +27,12 @@ import java.awt.image.BufferedImage
 import java.nio.file.Path
 import javax.imageio.ImageIO
 import javax.swing.Icon
-import kotlin.io.path.*
+import kotlin.io.path.exists
+import kotlin.io.path.getLastModifiedTime
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.name
+import kotlin.io.path.nameWithoutExtension
+import kotlin.io.path.readText
 
 object ChunkOutputProvider {
   suspend fun cleanup(chunkPath: ChunkPath): Unit =

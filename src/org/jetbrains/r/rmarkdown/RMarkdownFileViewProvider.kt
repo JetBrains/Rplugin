@@ -7,7 +7,11 @@ package org.jetbrains.r.rmarkdown
 import com.intellij.lang.Language
 import com.intellij.lang.LanguageParserDefinitions
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.*
+import com.intellij.psi.FileViewProvider
+import com.intellij.psi.FileViewProviderFactory
+import com.intellij.psi.MultiplePsiFilesPerDocumentFileViewProvider
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.source.PsiFileImpl
 import com.intellij.psi.templateLanguages.TemplateDataElementType
 import com.intellij.psi.templateLanguages.TemplateLanguageFileViewProvider

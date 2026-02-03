@@ -7,7 +7,13 @@ import com.intellij.patterns.PlatformPatterns;
 import com.intellij.patterns.PsiElementPattern;
 import com.intellij.psi.PsiElement;
 import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo;
-import com.intellij.r.psi.psi.api.*;
+import com.intellij.r.psi.psi.api.RArgumentList;
+import com.intellij.r.psi.psi.api.RCallExpression;
+import com.intellij.r.psi.psi.api.RExpression;
+import com.intellij.r.psi.psi.api.RIdentifierExpression;
+import com.intellij.r.psi.psi.api.RMemberExpression;
+import com.intellij.r.psi.psi.api.RNamedArgument;
+import com.intellij.r.psi.psi.api.RStringLiteralExpression;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 

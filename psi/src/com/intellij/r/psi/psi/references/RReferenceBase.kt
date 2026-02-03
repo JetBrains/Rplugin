@@ -22,7 +22,12 @@ import com.intellij.r.psi.console.runtimeInfo
 import com.intellij.r.psi.packages.RPackage
 import com.intellij.r.psi.psi.RPsiUtil
 import com.intellij.r.psi.psi.RSkeletonParameterPomTarget
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RNamedArgument
+import com.intellij.r.psi.psi.api.RParameter
+import com.intellij.r.psi.psi.api.RPsiElement
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
 import com.intellij.r.psi.rinterop.RSourceFileManager
 import com.intellij.r.psi.skeleton.RSkeletonFileType
 import com.intellij.util.IncorrectOperationException

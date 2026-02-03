@@ -20,7 +20,12 @@ import com.intellij.r.psi.packages.LibrarySummary
 import com.intellij.r.psi.parsing.RElementTypes
 import com.intellij.r.psi.parsing.RTokenTypes
 import com.intellij.r.psi.psi.RPsiUtil
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RParameter
+import com.intellij.r.psi.psi.api.RPsiElement
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
 import com.intellij.r.psi.skeleton.psi.RSkeletonAssignmentStatement
 
 private class RFindUsagesProvider : FindUsagesProvider {

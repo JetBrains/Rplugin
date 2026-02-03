@@ -11,11 +11,15 @@ import org.jetbrains.r.visualization.inlays.table.filters.IFilter;
 import org.jetbrains.r.visualization.inlays.table.filters.IFilterObserver;
 import org.jetbrains.r.visualization.inlays.table.filters.gui.editor.FilterEditor;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.TableColumn;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.util.Objects;
 
 public class TableFilterHeader extends AdditionalTableHeader {

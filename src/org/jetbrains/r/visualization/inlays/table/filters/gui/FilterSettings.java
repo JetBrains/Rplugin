@@ -6,8 +6,9 @@ package org.jetbrains.r.visualization.inlays.table.filters.gui;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.table.AdditionalTableHeader;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Icon;
+import java.awt.Color;
+import java.awt.Font;
 
 /**
  * Class to define some common settings to the TableFilter library.<br>

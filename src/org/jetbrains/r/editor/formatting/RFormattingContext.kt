@@ -4,7 +4,13 @@
 
 package org.jetbrains.r.editor.formatting
 
-import com.intellij.formatting.*
+import com.intellij.formatting.Alignment
+import com.intellij.formatting.Block
+import com.intellij.formatting.Indent
+import com.intellij.formatting.Spacing
+import com.intellij.formatting.SpacingBuilder
+import com.intellij.formatting.Wrap
+import com.intellij.formatting.WrapType
 import com.intellij.lang.ASTNode
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.patterns.PsiElementPattern
@@ -19,7 +25,14 @@ import com.intellij.r.psi.parsing.RElementTypes
 import com.intellij.r.psi.parsing.RParserDefinition
 import com.intellij.r.psi.parsing.RTokenTypes
 import com.intellij.r.psi.psi.RPsiUtil
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RArgumentList
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RBlockExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RFile
+import com.intellij.r.psi.psi.api.ROperator
+import com.intellij.r.psi.psi.api.ROperatorExpression
+import com.intellij.r.psi.psi.api.RParameter
 import com.intellij.util.containers.FactoryMap
 
 private val NON_INDENT_PARTS = TokenSet.create(

@@ -9,7 +9,14 @@ import com.intellij.r.psi.codeInsight.table.RTableColumnCollectProcessor
 import com.intellij.r.psi.codeInsight.table.RTableContextManager
 import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
 import com.intellij.r.psi.psi.TableColumnInfo
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RArgumentList
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RNamedArgument
+import com.intellij.r.psi.psi.api.ROperatorExpression
 import com.intellij.r.psi.psi.isFunctionFromLibrarySoft
 import com.intellij.r.psi.psi.references.RResolveUtil
 import com.intellij.util.Processor

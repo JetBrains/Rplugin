@@ -15,7 +15,7 @@ import org.jetbrains.r.console.RConsoleManagerImpl
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rinterop.RInteropImpl
-import java.util.*
+import java.util.Locale
 
 abstract class RImportDataContextAction(text: String, description: String) : DumbAwareAction(text, description, null) {
   protected abstract val supportedFormats: Array<String>

@@ -11,7 +11,13 @@ import com.intellij.webcore.packaging.ManagePackagesDialog
 import com.intellij.webcore.packaging.PackageManagementService
 import org.jetbrains.r.packages.remote.RPackageManagementService
 import java.awt.Component
-import javax.swing.*
+import javax.swing.JButton
+import javax.swing.JCheckBox
+import javax.swing.JComboBox
+import javax.swing.JComponent
+import javax.swing.JPanel
+import javax.swing.JSplitPane
+import javax.swing.JTextField
 
 class RManagePackagesDialog(
   private val project: Project,

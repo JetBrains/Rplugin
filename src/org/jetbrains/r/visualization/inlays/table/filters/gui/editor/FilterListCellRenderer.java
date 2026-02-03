@@ -8,8 +8,17 @@ import org.jetbrains.r.visualization.inlays.table.filters.gui.ChoiceRenderer;
 import org.jetbrains.r.visualization.inlays.table.filters.gui.CustomChoice;
 import org.jetbrains.r.visualization.inlays.table.filters.gui.IFilterEditor;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.CellRendererPane;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
 
 /**

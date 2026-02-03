@@ -11,8 +11,13 @@ import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.r.psi.RFileType
 import com.intellij.r.psi.classes.s4.RS4SourceManager
-import com.intellij.r.psi.classes.s4.classInfo.*
 import com.intellij.r.psi.classes.s4.classInfo.RS4ClassInfoUtil.toSlot
+import com.intellij.r.psi.classes.s4.classInfo.RS4ClassSlot
+import com.intellij.r.psi.classes.s4.classInfo.RS4ComplexSlotPomTarget
+import com.intellij.r.psi.classes.s4.classInfo.RSkeletonS4ClassPomTarget
+import com.intellij.r.psi.classes.s4.classInfo.RSkeletonS4SlotPomTarget
+import com.intellij.r.psi.classes.s4.classInfo.RStringLiteralPomTarget
+import com.intellij.r.psi.classes.s4.classInfo.associatedS4ClassInfo
 import com.intellij.r.psi.classes.s4.methods.RS4MethodsUtil.methodNameIdentifier
 import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
 import com.intellij.r.psi.psi.api.RCallExpression

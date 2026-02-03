@@ -4,8 +4,16 @@
 
 package com.intellij.r.psi.settings
 
-import com.intellij.openapi.components.*
-import com.intellij.r.psi.interpreter.*
+import com.intellij.openapi.components.BaseState
+import com.intellij.openapi.components.SimplePersistentStateComponent
+import com.intellij.openapi.components.State
+import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.service
+import com.intellij.r.psi.interpreter.RBasicInterpreterInfo
+import com.intellij.r.psi.interpreter.RInterpreterInfo
+import com.intellij.r.psi.interpreter.RInterpreterLocation
+import com.intellij.r.psi.interpreter.RVersion
+import com.intellij.r.psi.interpreter.toLocalPathOrNull
 import java.io.File
 
 @State(name = "RInterpreterSettings", storages = [Storage("rInterpreterSettings.xml")])

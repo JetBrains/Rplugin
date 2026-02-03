@@ -6,7 +6,11 @@ package org.jetbrains.r.interpreter
 
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.r.psi.common.ExpiringList
-import com.intellij.r.psi.interpreter.*
+import com.intellij.r.psi.interpreter.RInterpreterState
+import com.intellij.r.psi.interpreter.RInterpreterStateManager
+import com.intellij.r.psi.interpreter.RInterpreterUtil
+import com.intellij.r.psi.interpreter.isLocal
+import com.intellij.r.psi.interpreter.uploadFileToHost
 import com.intellij.r.psi.packages.RInstalledPackage
 import com.intellij.r.psi.rinterop.RInterop
 import com.intellij.testFramework.registerServiceInstance

@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.visualization.inlays.table.filters;
 
-import javax.swing.*;
+import javax.swing.RowFilter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;

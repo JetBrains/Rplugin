@@ -9,7 +9,13 @@ import com.google.common.annotations.VisibleForTesting
 import com.google.gson.Gson
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
-import com.intellij.openapi.application.*
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
+import com.intellij.openapi.application.edtWriteAction
+import com.intellij.openapi.application.readAction
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.fileLogger
@@ -31,6 +37,7 @@ import com.intellij.psi.util.elementType
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RLanguage
 import com.intellij.r.psi.rinterop.RIExecutionResult
+import com.intellij.r.psi.run.graphics.RGraphicsUtils
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import com.intellij.util.io.createDirectories
 import kotlinx.coroutines.CoroutineScope
@@ -38,7 +45,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
-import org.jetbrains.concurrency.*
+import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.await
+import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManagerImpl
 import org.jetbrains.r.console.RConsoleViewImpl
@@ -50,7 +61,6 @@ import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.rmarkdown.RmdFenceProvider
 import org.jetbrains.r.run.graphics.RGraphicsDevice
-import com.intellij.r.psi.run.graphics.RGraphicsUtils
 import org.jetbrains.r.settings.RMarkdownGraphicsSettings
 import org.jetbrains.r.visualization.inlays.RInlayDimensions
 import org.jetbrains.r.visualization.inlays.components.GraphicsPanel
@@ -62,7 +72,12 @@ import java.io.File
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.io.path.*
+import kotlin.io.path.createDirectory
+import kotlin.io.path.exists
+import kotlin.io.path.isDirectory
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.name
+import kotlin.io.path.writeText
 
 
 private val LOG = fileLogger()

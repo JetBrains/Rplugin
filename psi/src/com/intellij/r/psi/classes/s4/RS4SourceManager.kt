@@ -19,7 +19,7 @@ import com.intellij.r.psi.psi.api.RFile
 import com.intellij.r.psi.rinterop.RInterop
 import com.intellij.r.psi.skeleton.psi.RSkeletonCallExpression
 import com.intellij.testFramework.ReadOnlyLightVirtualFile
-import java.util.*
+import java.util.Optional
 import java.util.concurrent.ConcurrentHashMap
 
 @Service(Service.Level.PROJECT)

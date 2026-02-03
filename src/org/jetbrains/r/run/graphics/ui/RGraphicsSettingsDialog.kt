@@ -7,10 +7,10 @@ package org.jetbrains.r.run.graphics.ui
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.run.graphics.RGraphicsUtils
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.util.ui.JBUI
-import com.intellij.r.psi.run.graphics.RGraphicsUtils
 import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout

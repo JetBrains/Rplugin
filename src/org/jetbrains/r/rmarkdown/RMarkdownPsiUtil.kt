@@ -15,13 +15,25 @@ import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiUtilCore
-import org.intellij.plugins.markdown.lang.MarkdownTokenTypeSets.*
+import org.intellij.plugins.markdown.lang.MarkdownTokenTypeSets.BLOCK_QUOTE
+import org.intellij.plugins.markdown.lang.MarkdownTokenTypeSets.HEADERS
+import org.intellij.plugins.markdown.lang.MarkdownTokenTypeSets.HEADER_LEVEL_1_SET
+import org.intellij.plugins.markdown.lang.MarkdownTokenTypeSets.HEADER_LEVEL_2_SET
+import org.intellij.plugins.markdown.lang.MarkdownTokenTypeSets.HEADER_LEVEL_3_SET
+import org.intellij.plugins.markdown.lang.MarkdownTokenTypeSets.HEADER_LEVEL_4_SET
+import org.intellij.plugins.markdown.lang.MarkdownTokenTypeSets.HEADER_LEVEL_5_SET
+import org.intellij.plugins.markdown.lang.MarkdownTokenTypeSets.HEADER_LEVEL_6_SET
+import org.intellij.plugins.markdown.lang.MarkdownTokenTypeSets.LIST_ITEM
+import org.intellij.plugins.markdown.lang.MarkdownTokenTypeSets.MARKDOWN_FILE
+import org.intellij.plugins.markdown.lang.MarkdownTokenTypeSets.MARKDOWN_FILE_ELEMENT_TYPE
+import org.intellij.plugins.markdown.lang.MarkdownTokenTypeSets.ORDERED_LIST
+import org.intellij.plugins.markdown.lang.MarkdownTokenTypeSets.UNORDERED_LIST
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.MarkdownPsiElement
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFence
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownFile
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownHeader
-import java.util.*
+import java.util.Locale
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 

@@ -13,7 +13,7 @@ import com.intellij.r.psi.psi.api.RAssignmentStatement
 import com.intellij.r.psi.psi.api.RExpression
 import org.hamcrest.CoreMatchers.instanceOf
 import org.junit.Assert.assertThat
-import java.util.*
+import java.util.Objects
 
 class UnresolvedReferenceInspectionTest : RInspectionTest() {
 

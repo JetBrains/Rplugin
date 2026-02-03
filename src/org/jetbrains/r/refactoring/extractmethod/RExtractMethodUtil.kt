@@ -12,7 +12,13 @@ import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.r.psi.psi.RElementFactory
 import com.intellij.r.psi.psi.RPrecedenceUtil
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RBlockExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RFile
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIfStatement
+import com.intellij.r.psi.psi.api.RLoopStatement
 import com.intellij.refactoring.extractMethod.ExtractMethodHelper
 import com.intellij.refactoring.extractMethod.SimpleDuplicatesFinder
 import com.intellij.refactoring.util.AbstractVariableData

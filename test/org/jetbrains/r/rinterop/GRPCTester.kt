@@ -16,7 +16,7 @@ import org.apache.commons.compress.compressors.xz.XZCompressorInputStream
 import java.io.File
 import java.io.InputStreamReader
 import java.lang.reflect.Type
-import java.util.*
+import java.util.Base64
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction

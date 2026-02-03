@@ -7,7 +7,7 @@ package org.jetbrains.r.visualization.inlays.table.filters.gui;
 import org.jetbrains.r.visualization.inlays.table.filters.IFilter;
 import org.jetbrains.r.visualization.inlays.table.filters.gui.editor.FilterEditor;
 
-import javax.swing.*;
+import javax.swing.RowFilter;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.TableModel;
 import java.util.Collections;

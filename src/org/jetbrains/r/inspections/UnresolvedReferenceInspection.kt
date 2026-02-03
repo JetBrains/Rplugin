@@ -13,7 +13,11 @@ import com.intellij.psi.PsiElementVisitor
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.console.RConsoleRuntimeInfo
 import com.intellij.r.psi.interpreter.RInterpreterStateManager
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.ROperator
+import com.intellij.r.psi.psi.api.RPsiElement
+import com.intellij.r.psi.psi.api.RStringLiteralExpression
+import com.intellij.r.psi.psi.api.RVisitor
 import com.intellij.r.psi.psi.isFunctionFromLibrary
 import com.intellij.r.psi.psi.references.RReferenceBase
 import com.intellij.r.psi.psi.references.RSearchScopeUtil

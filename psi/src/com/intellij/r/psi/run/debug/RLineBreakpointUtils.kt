@@ -8,7 +8,12 @@ package com.intellij.r.psi.run.debug
 import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.*
+import com.intellij.psi.PsiComment
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiManager
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.r.psi.RFileType
 import com.intellij.r.psi.RLanguage
 import com.intellij.r.psi.psi.api.RBlockExpression

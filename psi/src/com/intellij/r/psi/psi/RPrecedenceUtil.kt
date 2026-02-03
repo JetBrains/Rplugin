@@ -6,7 +6,14 @@ package com.intellij.r.psi.psi
 
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RMemberExpression
+import com.intellij.r.psi.psi.api.RNamespaceAccessExpression
+import com.intellij.r.psi.psi.api.ROperatorExpression
+import com.intellij.r.psi.psi.api.RParenthesizedExpression
+import com.intellij.r.psi.psi.api.RSubscriptionExpression
+import com.intellij.r.psi.psi.api.RTildeExpression
 
 object RPrecedenceUtil {
   private const val LITERAL_PRECEDENCE = 0

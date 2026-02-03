@@ -13,7 +13,13 @@ import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.ThreadingAssertions
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.r.visualization.RNotebookCellLines.Interval
-import org.jetbrains.r.visualization.RNotebookIntervalPointersEvent.*
+import org.jetbrains.r.visualization.RNotebookIntervalPointersEvent.Change
+import org.jetbrains.r.visualization.RNotebookIntervalPointersEvent.EventSource
+import org.jetbrains.r.visualization.RNotebookIntervalPointersEvent.OnEdited
+import org.jetbrains.r.visualization.RNotebookIntervalPointersEvent.OnInserted
+import org.jetbrains.r.visualization.RNotebookIntervalPointersEvent.OnRemoved
+import org.jetbrains.r.visualization.RNotebookIntervalPointersEvent.OnSwapped
+import org.jetbrains.r.visualization.RNotebookIntervalPointersEvent.PointerSnapshot
 
 object RNotebookIntervalPointerFactoryImplProvider {
   fun create(project: Project, document: Document): RNotebookIntervalPointerFactory {

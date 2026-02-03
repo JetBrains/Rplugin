@@ -5,7 +5,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.r.psi.psi.api.RControlFlowHolder
 import com.intellij.r.psi.psi.api.RIdentifierExpression
-import java.util.*
+import java.util.LinkedList
 
 object RResolveUtil {
   /**

@@ -20,18 +20,22 @@ import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.rinterop.DebugAddOrModifyBreakpointRequest
 import com.intellij.r.psi.rinterop.DebugSetMasterBreakpointRequest
 import com.intellij.r.psi.rinterop.ExecuteCodeRequest
+import com.intellij.r.psi.rinterop.RSourceFileManager
 import com.intellij.r.psi.rinterop.SourcePosition
+import com.intellij.r.psi.run.debug.RLineBreakpointType
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
-import com.intellij.xdebugger.breakpoints.*
+import com.intellij.xdebugger.breakpoints.SuspendPolicy
+import com.intellij.xdebugger.breakpoints.XBreakpoint
+import com.intellij.xdebugger.breakpoints.XBreakpointListener
+import com.intellij.xdebugger.breakpoints.XBreakpointProperties
+import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.intellij.xdebugger.impl.breakpoints.XBreakpointManagerImpl
 import com.intellij.xdebugger.impl.breakpoints.XDependentBreakpointListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.r.rinterop.RInteropAsyncEventsListener
 import org.jetbrains.r.rinterop.RInteropImpl
-import com.intellij.r.psi.rinterop.RSourceFileManager
-import com.intellij.r.psi.run.debug.RLineBreakpointType
 import kotlin.math.max
 import kotlin.math.min
 

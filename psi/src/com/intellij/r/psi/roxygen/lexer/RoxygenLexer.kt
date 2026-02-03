@@ -6,7 +6,18 @@ package com.intellij.r.psi.roxygen.lexer
 import com.intellij.lexer.FlexAdapter
 import com.intellij.psi.tree.IElementType
 import com.intellij.r.psi.lexer.PatchingLexerWithQueue
-import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.*
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_AUTOLINK_URI
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_DOUBLECOLON
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_IDENTIFIER
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_LANGLE
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_LBRACKET
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_LPAR
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_NL
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_RANGLE
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_RBRACKET
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_RPAR
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_TEXT
+import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_WS
 
 class RoxygenLexer : PatchingLexerWithQueue(RoxygenLexerWithCollapsedSequences()) {
 

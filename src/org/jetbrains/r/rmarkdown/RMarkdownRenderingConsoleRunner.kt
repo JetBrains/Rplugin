@@ -28,7 +28,11 @@ import com.intellij.r.psi.interpreter.runHelperProcess
 import com.intellij.r.psi.interpreter.uploadFileToHost
 import com.intellij.r.psi.util.RPathUtil
 import com.intellij.util.PathUtil
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
 import java.awt.BorderLayout
 import java.io.IOException

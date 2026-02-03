@@ -8,7 +8,11 @@ import com.intellij.ui.scale.JBUIScale
 import org.jetbrains.r.editor.RMarkdownEditorAppearance
 import java.awt.BorderLayout
 import java.awt.Color
-import javax.swing.*
+import javax.swing.BorderFactory
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.JProgressBar
 
 object InlayOutputProgressStatus {
   private val TEXT_BORDER = JBUIScale.scale(5)

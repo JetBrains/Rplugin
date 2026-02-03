@@ -8,7 +8,12 @@ import com.intellij.openapi.util.Key
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.r.psi.hints.parameterInfo.RArgumentInfo
 import com.intellij.r.psi.psi.RElementFactory
-import com.intellij.r.psi.psi.api.*
+import com.intellij.r.psi.psi.api.RAssignmentStatement
+import com.intellij.r.psi.psi.api.RCallExpression
+import com.intellij.r.psi.psi.api.RExpression
+import com.intellij.r.psi.psi.api.RFunctionExpression
+import com.intellij.r.psi.psi.api.RIdentifierExpression
+import com.intellij.r.psi.psi.api.RMemberExpression
 import com.intellij.r.psi.psi.impl.RCallExpressionImpl
 import com.intellij.r.psi.psi.impl.RMemberExpressionImpl
 import com.intellij.r.psi.psi.isFunctionFromLibrarySoft

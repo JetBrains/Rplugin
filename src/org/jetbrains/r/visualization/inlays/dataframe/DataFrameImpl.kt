@@ -4,7 +4,16 @@
 
 package org.jetbrains.r.visualization.inlays.dataframe
 
-import org.jetbrains.r.visualization.inlays.dataframe.columns.*
+import org.jetbrains.r.visualization.inlays.dataframe.columns.Column
+import org.jetbrains.r.visualization.inlays.dataframe.columns.DoubleArrayColumn
+import org.jetbrains.r.visualization.inlays.dataframe.columns.DoubleColumn
+import org.jetbrains.r.visualization.inlays.dataframe.columns.DoubleType
+import org.jetbrains.r.visualization.inlays.dataframe.columns.IntArrayColumn
+import org.jetbrains.r.visualization.inlays.dataframe.columns.IntColumn
+import org.jetbrains.r.visualization.inlays.dataframe.columns.IntType
+import org.jetbrains.r.visualization.inlays.dataframe.columns.StringArrayColumn
+import org.jetbrains.r.visualization.inlays.dataframe.columns.StringColumn
+import org.jetbrains.r.visualization.inlays.dataframe.columns.StringType
 import java.awt.Dimension
 
 class DataFrameImpl(private val columns: ArrayList<Column<*>>) : DataFrame() {

@@ -17,6 +17,7 @@ import com.intellij.r.psi.interpreter.RInterpreterManager
 import com.intellij.r.psi.interpreter.RLibraryWatcher
 import com.intellij.r.psi.packages.RInstalledPackage
 import com.intellij.r.psi.packages.RPackageVersion
+import com.intellij.r.psi.visualization.ui.ToolbarUtil
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import com.intellij.webcore.packaging.ManagePackagesDialog
@@ -25,7 +26,6 @@ import com.intellij.webcore.packaging.PackagesNotificationPanel
 import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.packages.remote.RPackageManagementService
-import com.intellij.r.psi.visualization.ui.ToolbarUtil
 
 class RInstalledPackagesPanel(private val project: Project, area: PackagesNotificationPanel) :
   RInstalledPackagesPanelBase(project, area), RPackageServiceListener {

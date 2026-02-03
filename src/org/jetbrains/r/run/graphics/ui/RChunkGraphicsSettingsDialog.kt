@@ -7,10 +7,20 @@ package org.jetbrains.r.run.graphics.ui
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.r.psi.RBundle
 import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.dsl.builder.*
+import com.intellij.ui.dsl.builder.RightGap
+import com.intellij.ui.dsl.builder.bindIntText
+import com.intellij.ui.dsl.builder.bindItem
+import com.intellij.ui.dsl.builder.bindSelected
+import com.intellij.ui.dsl.builder.columns
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.toNullableProperty
 import com.intellij.ui.layout.selected
 import java.awt.Component
-import javax.swing.*
+import javax.swing.DefaultListCellRenderer
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JList
+import javax.swing.ListCellRenderer
 
 private const val DEFAULT_RESOLUTION = 75  // It's never required in practice and for backward compatibility purposes only
 private const val INPUT_COLUMN_COUNT = 7

@@ -7,9 +7,9 @@ package org.jetbrains.r.annotator
 import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.keymap.KeymapManager
 import com.intellij.openapi.keymap.KeymapUtil
+import com.intellij.r.psi.highlighting.RColorSettingsPage
 import com.intellij.util.containers.ContainerUtil
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
-import com.intellij.r.psi.highlighting.RColorSettingsPage
 import java.io.File
 import java.nio.file.Paths
 

@@ -7,7 +7,8 @@ package com.intellij.r.psi.lexer
 import com.intellij.lexer.DelegateLexer
 import com.intellij.lexer.Lexer
 import com.intellij.psi.tree.IElementType
-import java.util.*
+import java.util.ArrayDeque
+import java.util.Queue
 
 abstract class PatchingLexerWithQueue(delegate: Lexer) : DelegateLexer(delegate) {
   protected val queue: Queue<TokenData> = ArrayDeque()

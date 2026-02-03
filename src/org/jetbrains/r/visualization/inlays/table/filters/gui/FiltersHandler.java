@@ -7,7 +7,10 @@ package org.jetbrains.r.visualization.inlays.table.filters.gui;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
+import javax.swing.DefaultRowSorter;
+import javax.swing.JTable;
+import javax.swing.RowFilter;
+import javax.swing.RowSorter;
 
 
 /**

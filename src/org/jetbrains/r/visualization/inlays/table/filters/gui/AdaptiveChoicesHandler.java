@@ -7,11 +7,18 @@ package org.jetbrains.r.visualization.inlays.table.filters.gui;
 import org.jetbrains.r.visualization.inlays.table.filters.IFilter;
 import org.jetbrains.r.visualization.inlays.table.filters.gui.editor.FilterEditor;
 
-import javax.swing.*;
+import javax.swing.RowFilter;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.TableModel;
 import java.text.Format;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Internal class to handle choices under adaptive behaviour<br>

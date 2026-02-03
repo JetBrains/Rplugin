@@ -21,7 +21,9 @@ import com.intellij.r.psi.interpreter.runHelper
 import com.intellij.r.psi.interpreter.runMultiOutputHelper
 import com.intellij.r.psi.interpreter.uploadFileToHost
 import com.intellij.r.psi.packages.LibrarySummary.RLibraryPackage
-import com.intellij.r.psi.packages.LibrarySummary.RLibraryPackage.*
+import com.intellij.r.psi.packages.LibrarySummary.RLibraryPackage.Priority
+import com.intellij.r.psi.packages.LibrarySummary.RLibraryPackage.newBuilder
+import com.intellij.r.psi.packages.LibrarySummary.RLibraryPackage.parseFrom
 import com.intellij.r.psi.packages.LibrarySummary.RLibrarySymbol
 import com.intellij.r.psi.packages.RInstalledPackage
 import com.intellij.r.psi.packages.RPackage
