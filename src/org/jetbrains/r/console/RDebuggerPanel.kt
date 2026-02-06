@@ -46,10 +46,10 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.DocumentUtil
 import com.intellij.xdebugger.XSourcePositionWrapper
-import com.intellij.xdebugger.impl.XDebuggerUtilImpl
 import com.intellij.xdebugger.impl.actions.handlers.XDebuggerCustomMuteBreakpointHandler
 import com.intellij.xdebugger.impl.frame.XDebuggerFramesList
 import com.intellij.xdebugger.impl.messages.XDebuggerImplBundle
+import com.intellij.xdebugger.impl.ui.DebuggerUIUtil.getCaretPosition
 import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -264,7 +264,7 @@ class RDebuggerPanel(private val console: RConsoleViewImpl): JPanel(BorderLayout
       AllIcons.Actions.RunToCursor,
       "RunToCursor",
       callback = {
-        val position = XDebuggerUtilImpl.getCaretPosition(console.project, it.dataContext)
+        val position = getCaretPosition(it.dataContext)
         if (position != null) {
           wasCommandExecuted = true
           console.executeActionHandler.fireBusy()
