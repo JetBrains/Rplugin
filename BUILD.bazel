@@ -123,6 +123,7 @@ jvm_library(
     "@community//platform/xdebugger-impl:debugger-impl",
     "@community//platform/xdebugger-impl:debugger-impl_test_lib",
     "@community//platform/xdebugger-impl/ui",
+    "@community//platform/xdebugger-impl/ui:ui_test_lib",
     "@community//platform/usageView-impl",
     "//plugins/remote-run",
     "//plugins/remote-run:remote-run_test_lib",

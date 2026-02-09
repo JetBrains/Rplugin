@@ -32,6 +32,7 @@ jvm_library(
     "@community//platform/projectModel-api:projectModel",
     "@community//platform/xdebugger-api:debugger",
     "@community//platform/xdebugger-impl:debugger-impl",
+    "@community//platform/xdebugger-impl/shared",
     "@community//platform/platform-impl:ide-impl",
     "@community//platform/indexing-impl",
     "@community//platform/platform-util-io:ide-util-io",
