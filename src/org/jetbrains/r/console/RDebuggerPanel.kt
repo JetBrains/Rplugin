@@ -48,7 +48,7 @@ import com.intellij.util.DocumentUtil
 import com.intellij.xdebugger.XSourcePositionWrapper
 import com.intellij.xdebugger.impl.actions.handlers.XDebuggerCustomMuteBreakpointHandler
 import com.intellij.xdebugger.impl.frame.XDebuggerFramesList
-import com.intellij.xdebugger.impl.messages.XDebuggerImplBundle
+import com.intellij.platform.debugger.impl.ui.XDebuggerUiBundle
 import com.intellij.xdebugger.impl.ui.DebuggerUIUtil.getCaretPosition
 import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
 import com.intellij.xdebugger.ui.ExecutionPointHighlighterProvider
@@ -291,7 +291,7 @@ class RDebuggerPanel(private val console: RConsoleViewImpl): JPanel(BorderLayout
   }
 
   private fun createMuteBreakpointsAction(): ToggleAction {
-    return object : RDumbAwareBgtToggleAction(XDebuggerImplBundle.message("action.XDebugger.MuteBreakpoints.text"), null,
+    return object : RDumbAwareBgtToggleAction(XDebuggerUiBundle.message("action.XDebugger.MuteBreakpoints.text"), null,
                                               AllIcons.Debugger.MuteBreakpoints) {
       override fun isSelected(e: AnActionEvent) = breakpointsMuted
 
