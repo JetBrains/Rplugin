@@ -51,6 +51,7 @@ import com.intellij.xdebugger.impl.frame.XDebuggerFramesList
 import com.intellij.xdebugger.impl.messages.XDebuggerImplBundle
 import com.intellij.xdebugger.impl.ui.DebuggerUIUtil.getCaretPosition
 import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
+import com.intellij.xdebugger.ui.ExecutionPointHighlighterProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Nls
@@ -153,7 +154,7 @@ class RDebuggerPanel(private val console: RConsoleViewImpl): JPanel(BorderLayout
         } else {
           val rStackFrame = frame.rStackFrame
           val newPosition = if (rStackFrame?.extendedPosition != null) {
-            object : XSourcePositionWrapper(position), ExecutionPointHighlighter.HighlighterProvider {
+            object : XSourcePositionWrapper(position), ExecutionPointHighlighterProvider {
               override fun getHighlightRange() = rStackFrame.extendedPosition
             }
           } else {
