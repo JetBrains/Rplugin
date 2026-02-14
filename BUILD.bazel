@@ -161,7 +161,6 @@ jvm_library(
     "@community//platform/editor-ui-api:editor-ui",
     "@community//libraries/jcef",
     "@community//images",
-    "@community//images:images_test_lib",
     "@community//libraries/grpc",
     "@community//libraries/grpc-netty-shaded",
     "//rplugin/psi",
