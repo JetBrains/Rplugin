@@ -25,12 +25,20 @@ jvm_library(
     "@lib//:kotlin-stdlib",
   ]
 )
+### auto-generated section `build intellij.r.python` end
+
+### auto-generated section `build intellij.r.python.tests` start
+jvm_library(
+  name = "r-python-tests",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True)
+)
 
 jvm_library(
-  name = "python_test_lib",
+  name = "r-python-tests_test_lib",
   visibility = ["//visibility:public"],
   srcs = glob(["test/**/*.kt", "test/**/*.java", "test/**/*.form"], allow_empty = True),
-  associates = [":python"],
+  associates = ["//rplugin/python"],
   deps = [
     "@community//platform/code-style-api:codeStyle",
     "@community//platform/core-api:core",
@@ -44,18 +52,20 @@ jvm_library(
     "@community//python/openapi:community",
     "@community//python/openapi:community_test_lib",
     "@community//python:python-community-impl",
+    "@community//python:python-community-impl_test_lib",
     "@community//python/testFramework",
     "@lib//:kotlin-stdlib",
     "//rplugin:r-tests_test_lib",
-  ]
+  ],
+  runtime_deps = [":r-python-tests"]
 )
-### auto-generated section `build intellij.r.python` end
+### auto-generated section `build intellij.r.python.tests` end
 
-### auto-generated section `test intellij.r.python` start
+### auto-generated section `test intellij.r.python.tests` start
 load("@community//build:tests-options.bzl", "jps_test")
 
 jps_test(
-  name = "python_test",
-  runtime_deps = [":python_test_lib"]
+  name = "r-python-tests_test",
+  runtime_deps = [":r-python-tests_test_lib"]
 )
-### auto-generated section `test intellij.r.python` end
+### auto-generated section `test intellij.r.python.tests` end
