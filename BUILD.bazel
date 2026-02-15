@@ -7,12 +7,6 @@ resourcegroup(
   strip_prefix = "resources"
 )
 
-resourcegroup(
-  name = "r_test_resources",
-  srcs = glob(["testResources/**/*"]),
-  strip_prefix = "testResources"
-)
-
 jvm_library(
   name = "r",
   module_name = "intellij.r",
@@ -84,13 +78,27 @@ jvm_library(
     "@community//platform/forms_rt:java-guiForms-rt",
   ]
 )
+### auto-generated section `build intellij.r` end
+
+### auto-generated section `build intellij.r.tests` start
+resourcegroup(
+  name = "r-tests_test_resources",
+  srcs = glob(["testResources/**/*"]),
+  strip_prefix = "testResources"
+)
 
 jvm_library(
-  name = "r_test_lib",
+  name = "r-tests",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True)
+)
+
+jvm_library(
+  name = "r-tests_test_lib",
   visibility = ["//visibility:public"],
   srcs = glob(["test/**/*.kt", "test/**/*.java", "test/**/*.form"], allow_empty = True),
-  resources = [":r_test_resources"],
-  associates = [":r"],
+  resources = [":r-tests_test_resources"],
+  associates = ["//rplugin:r"],
   deps = [
     "@community//libraries/guava",
     "@community//platform/analysis-api:analysis",
@@ -100,6 +108,7 @@ jvm_library(
     "@community//platform/core-impl",
     "@community//platform/credential-store",
     "@community//platform/platform-impl:ide-impl",
+    "@community//platform/platform-impl:ide-impl_test_lib",
     "@community//libraries/protobuf",
     "@community//platform/welcome-screen-impl:welcomeScreen-impl",
     "@community//platform/editor-ui-ex:editor-ex",
@@ -165,15 +174,16 @@ jvm_library(
     "//rplugin/psi",
     "@community//platform/xdebugger-impl/shared",
     "@community//platform/forms_rt:java-guiForms-rt",
-  ]
+  ],
+  runtime_deps = [":r-tests"]
 )
-### auto-generated section `build intellij.r` end
+### auto-generated section `build intellij.r.tests` end
 
-### auto-generated section `test intellij.r` start
+### auto-generated section `test intellij.r.tests` start
 load("@community//build:tests-options.bzl", "jps_test")
 
 jps_test(
-  name = "r_test",
-  runtime_deps = [":r_test_lib"]
+  name = "r-tests_test",
+  runtime_deps = [":r-tests_test_lib"]
 )
-### auto-generated section `test intellij.r` end
+### auto-generated section `test intellij.r.tests` end

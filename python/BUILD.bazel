@@ -36,7 +36,6 @@ jvm_library(
     "@community//platform/core-api:core",
     "@community//platform/projectModel-api:projectModel",
     "//rplugin:r",
-    "//rplugin:r_test_lib",
     "//rplugin/psi",
     "@community//platform/lang-api:lang",
     "@community//platform/lang-impl",
@@ -47,6 +46,7 @@ jvm_library(
     "@community//python:python-community-impl",
     "@community//python/testFramework",
     "@lib//:kotlin-stdlib",
+    "//rplugin:r-tests_test_lib",
   ]
 )
 ### auto-generated section `build intellij.r.python` end
