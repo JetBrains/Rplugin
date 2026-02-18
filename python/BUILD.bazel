@@ -25,6 +25,24 @@ jvm_library(
     "@lib//:kotlin-stdlib",
   ]
 )
+
+jvm_library(
+  name = "python_test_lib",
+  module_name = "intellij.r.python",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":python",
+    "@community//platform/code-style-api:codeStyle_test_lib",
+    "@community//platform/core-api:core_test_lib",
+    "//rplugin:r_test_lib",
+    "//rplugin/psi:psi_test_lib",
+    "@community//platform/lang-api:lang_test_lib",
+    "@community//platform/lang-impl:lang-impl_test_lib",
+    "@community//python/openapi:community_test_lib",
+    "@community//python:python-community-impl_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.r.python` end
 
 ### auto-generated section `build intellij.r.python.tests` start
@@ -38,15 +56,25 @@ jvm_library(
   name = "r-python-tests_test_lib",
   visibility = ["//visibility:public"],
   srcs = glob(["test/**/*.kt", "test/**/*.java", "test/**/*.form"], allow_empty = True),
-  associates = ["//rplugin/python"],
+  associates = [
+    "//rplugin/python",
+    "//rplugin/python:python_test_lib",
+  ],
   deps = [
     "@community//platform/code-style-api:codeStyle",
+    "@community//platform/code-style-api:codeStyle_test_lib",
     "@community//platform/core-api:core",
+    "@community//platform/core-api:core_test_lib",
     "@community//platform/projectModel-api:projectModel",
+    "@community//platform/projectModel-api:projectModel_test_lib",
     "//rplugin:r",
+    "//rplugin:r_test_lib",
     "//rplugin/psi",
+    "//rplugin/psi:psi_test_lib",
     "@community//platform/lang-api:lang",
+    "@community//platform/lang-api:lang_test_lib",
     "@community//platform/lang-impl",
+    "@community//platform/lang-impl:lang-impl_test_lib",
     "@community//platform/testFramework",
     "@community//platform/testFramework:testFramework_test_lib",
     "@community//python/openapi:community",
@@ -54,7 +82,9 @@ jvm_library(
     "@community//python:python-community-impl",
     "@community//python:python-community-impl_test_lib",
     "@community//python/testFramework",
+    "@community//python/testFramework:testFramework_test_lib",
     "@lib//:kotlin-stdlib",
+    "//rplugin:r-tests",
     "//rplugin:r-tests_test_lib",
   ],
   runtime_deps = [":r-python-tests"]

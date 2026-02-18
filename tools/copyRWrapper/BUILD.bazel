@@ -11,4 +11,15 @@ jvm_library(
     "@lib//:kotlin-stdlib",
   ]
 )
+
+jvm_library(
+  name = "r-build-copyRwrapper_test_lib",
+  module_name = "intellij.r.build.copyRwrapper",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":r-build-copyRwrapper",
+    "@community//libraries/commons/io:io_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.r.build.copyRwrapper` end
