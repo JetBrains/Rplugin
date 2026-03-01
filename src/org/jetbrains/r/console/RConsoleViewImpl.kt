@@ -309,7 +309,7 @@ class RConsoleViewImpl(override val rInterop: RInteropImpl, title: String) : Lan
     val historyLengthBeforeInput = to.document.textLength
     val promptAttributes = promptAttributes.attributes
     postFlushActions.add {
-      val allHighlighters = to.allHighlighters.toList()
+      val allHighlighters = to.allHighlighters.toList().filter { it.isValid }
       var currentOffset = historyLengthBeforeInput
       for (currentLine in 0..<nextLineBegins.size) {
         // Firstly, find console prompt
