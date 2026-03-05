@@ -40,6 +40,7 @@ jvm_library(
     "@community//libraries/grpc",
     "@community//libraries/guava",
     "@community//libraries/javax/annotation",
+    "@community//libraries/kotlinx/collections-immutable:libraries-kotlinx-collections-immutable",
   ]
 )
 
@@ -78,6 +79,7 @@ jvm_library(
     "@community//libraries/javax/annotation:annotation_test_lib",
     "@community//platform/testFramework",
     "@community//platform/testFramework:testFramework_test_lib",
+    "@community//libraries/kotlinx/collections-immutable:libraries-kotlinx-collections-immutable_test_lib",
   ]
 )
 ### auto-generated section `build intellij.r.psi` end
