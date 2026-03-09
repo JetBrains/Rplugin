@@ -8,6 +8,8 @@ import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.UI
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.editor.Document
@@ -27,13 +29,14 @@ import com.intellij.openapi.editor.markup.RangeHighlighter
 import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
+import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.util.Processor
 import com.intellij.util.SmartList
 import com.intellij.util.asSafely
 import com.intellij.util.concurrency.ThreadingAssertions
 import com.intellij.util.containers.SmartHashSet
-import com.intellij.util.ui.update.MergingUpdateQueue
-import com.intellij.util.ui.update.Update
+import com.intellij.util.ui.update.DebouncedUpdates
+import kotlinx.coroutines.Dispatchers
 import org.jetbrains.r.editor.RMarkdownEditorAppearance
 import org.jetbrains.r.visualization.RNotebookCellLines.CellType
 import org.jetbrains.r.visualization.RNotebookCellLines.Interval
@@ -43,15 +46,31 @@ import java.awt.Graphics
 import javax.swing.JComponent
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.time.Duration.Companion.milliseconds
 
 class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
   private val disposable = Disposer.newCheckedDisposable(editor.disposable)
   private val inlays: MutableMap<Inlay<*>, RNotebookCellInlayController> = HashMap()
   private val notebookCellLines = RNotebookCellLines.get(editor.document)
-  private val viewportQueue = MergingUpdateQueue("RNotebookCellInlayManager Viewport Update", 100, true, null, disposable, null, true)
+
+  private val scope = RPluginCoroutineScope.getApplicationScope()
+
+  private val viewportUpdateQueue = DebouncedUpdates.forScope<Unit>(scope, "RNotebookCellInlayManager Viewport Update", 100.milliseconds)
+    .withContext(Dispatchers.UI)
+    .runLatest { updateViewPort() }
+    .cancelOnDispose(disposable)
+
+  private sealed interface InlayUpdateEvent {
+    data object UpdateAll : InlayUpdateEvent
+    data class UpdatePointers(val pointers: Collection<RNotebookIntervalPointer>) : InlayUpdateEvent
+  }
 
   /** 20 is 1000 / 50, two times faster than the eye refresh rate. Actually, the value has been chosen randomly, without experiments. */
-  private val updateQueue = MergingUpdateQueue("RNotebookCellInlayManager Interval Update", 20, true, null, disposable, null, true)
+  private val inlayUpdateQueue = DebouncedUpdates.forScope<InlayUpdateEvent>(scope, "RNotebookCellInlayManager Interval Update", 20.milliseconds)
+    .withContext(Dispatchers.EDT)
+    .runBatched { processInlayUpdatesBatch(it) }
+    .cancelOnDispose(disposable)
+
   private var initialized = false
 
   fun inlaysForInterval(interval: Interval): Iterable<RNotebookCellInlayController> =
@@ -67,36 +86,50 @@ class RNotebookCellInlayManager private constructor(val editor: EditorImpl) {
   /** It's public, but think seven times before using it. Called many times in a row, it can freeze UI. */
   internal fun updateAllImmediately() {
     if (initialized) {
-      updateQueue.cancelAllUpdates()
       updateConsequentInlays(0..editor.document.lineCount)
     }
   }
 
   fun updateAll() {
-    updateQueue.queue(UpdateInlaysTask(this, updateAll = true))
+    inlayUpdateQueue.queue(InlayUpdateEvent.UpdateAll)
   }
 
   fun update(pointers: Collection<RNotebookIntervalPointer>) {
-    updateQueue.queue(UpdateInlaysTask(this, pointers = pointers))
+    inlayUpdateQueue.queue(InlayUpdateEvent.UpdatePointers(pointers))
   }
 
   fun update(pointer: RNotebookIntervalPointer) {
-    updateQueue.queue(UpdateInlaysTask(this, pointers = SmartList(pointer)))
+    inlayUpdateQueue.queue(InlayUpdateEvent.UpdatePointers(listOf(pointer)))
+  }
+
+  private fun processInlayUpdatesBatch(batch: List<InlayUpdateEvent>) {
+    // If ANY event is UpdateAll, do updateAll and skip rest
+    if (batch.any { it is InlayUpdateEvent.UpdateAll }) {
+      updateAllImmediately()
+      return
+    }
+
+    val allPointers = batch.flatMapTo(SmartHashSet()) { (it as InlayUpdateEvent.UpdatePointers).pointers }
+
+    val linesList = allPointers.mapNotNullTo(mutableListOf()) { it.get()?.lines }
+    linesList.sortBy { it.first }
+    linesList.mergeAndJoinIntersections(listOf())
+
+    for (lines in linesList) {
+      updateImmediately(lines)
+    }
   }
 
   private fun addViewportChangeListener() {
-    editor.scrollPane.viewport.addChangeListener {
-      viewportQueue.queue(object : Update("Viewport change") {
-        override fun run() {
-          if (disposable.isDisposed) return
-          for ((inlay, controller) in inlays) {
-            controller.onViewportChange()
+    viewportUpdateQueue.queue(Unit)
+  }
 
-            // Many UI instances has overridden getPreferredSize relying on editor dimensions.
-            inlay.renderer.asSafely<JComponent>()?.updateUI()
-          }
-        }
-      })
+  private fun updateViewPort() {
+    for ((inlay, controller) in inlays) {
+      controller.onViewportChange()
+
+      // Many UI instances has overridden getPreferredSize relying on editor dimensions.
+      inlay.renderer.asSafely<JComponent>()?.updateUI()
     }
   }
 
@@ -423,40 +456,5 @@ private object NotebookCellHighlighterRenderer : CustomHighlighterRenderer {
         g.fillRect(fillX, y, width, height)
       }
     }
-  }
-}
-
-private class UpdateInlaysTask(
-  private val manager: RNotebookCellInlayManager,
-  pointers: Collection<RNotebookIntervalPointer>? = null,
-  private var updateAll: Boolean = false,
-) : Update(Any()) {
-  private val pointerSet = pointers?.let { SmartHashSet(pointers) } ?: SmartHashSet()
-
-  override fun run() {
-    if (updateAll) {
-      manager.updateAllImmediately()
-      return
-    }
-
-    val linesList = pointerSet.mapNotNullTo(mutableListOf()) { it.get()?.lines }
-    linesList.sortBy { it.first }
-    linesList.mergeAndJoinIntersections(listOf())
-
-    for (lines in linesList) {
-      manager.updateImmediately(lines)
-    }
-  }
-
-  override fun canEat(update: Update): Boolean {
-    update as UpdateInlaysTask
-
-    updateAll = updateAll || update.updateAll
-    if (updateAll) {
-      return true
-    }
-
-    pointerSet.addAll(update.pointerSet)
-    return true
   }
 }
