@@ -15,6 +15,7 @@ import com.intellij.openapi.actionSystem.ex.ComboBoxAction
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.UI
 import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.DumbAware
@@ -34,8 +35,7 @@ import com.intellij.r.psi.settings.RGraphicsSettings
 import com.intellij.r.psi.visualization.inlays.RClipboardUtils
 import com.intellij.r.psi.visualization.inlays.components.CHANGE_DARK_MODE_TOPIC
 import com.intellij.r.psi.visualization.ui.ToolbarUtil
-import com.intellij.util.ui.update.MergingUpdateQueue
-import com.intellij.util.ui.update.Update
+import com.intellij.util.ui.update.DebouncedUpdates
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
@@ -45,6 +45,7 @@ import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import javax.swing.JComponent
+import kotlin.time.Duration.Companion.milliseconds
 
 class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(true, true) {
   private var lastOutputs = listOf<RGraphicsOutput>()
@@ -60,7 +61,13 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   private var resolution = RGraphicsSettings.getScreenParameters(project).resolution ?: RGraphicsUtils.DEFAULT_RESOLUTION
   private var isStandalone = RGraphicsSettings.isStandalone(project)
 
-  private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
+  private val queue = DebouncedUpdates.forScope<Unit>(
+    RPluginCoroutineScope.getScope(project),
+    RESIZE_TASK_NAME,
+    RESIZE_TIME_SPAN.milliseconds
+  ).withContext(Dispatchers.UI)
+    .runLatest { postScreenParameters() }
+
   private val repository = RGraphicsRepository.getInstance(project)
   private val graphicsPanel = GraphicsPanel(project, project)
   private val plotViewer = RPlotViewer(project, project)
@@ -274,11 +281,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun schedulePostScreenParameters() {
-    queue.queue(object : Update(RESIZE_TASK_IDENTITY) {
-      override fun run() {
-        postScreenParameters()
-      }
-    })
+    queue.queue(Unit)
   }
 
   private fun postScreenParameters() {
@@ -363,7 +366,6 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
   companion object {
     private const val RESIZE_TASK_NAME = "Resize graphics"
-    private const val RESIZE_TASK_IDENTITY = "Resizing graphics"
     private const val RESIZE_TIME_SPAN = 500
 
     private const val PREVIOUS_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RPreviousGraphicsAction"

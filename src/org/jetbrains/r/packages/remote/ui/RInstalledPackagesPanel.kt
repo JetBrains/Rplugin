@@ -7,10 +7,12 @@ package org.jetbrains.r.packages.remote.ui
 
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.application.UI
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages.showInfoMessage
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.execution.ExecuteExpressionUtils.getSynchronously
 import com.intellij.r.psi.icons.RIcons
 import com.intellij.r.psi.interpreter.RInterpreterManager
@@ -18,19 +20,25 @@ import com.intellij.r.psi.interpreter.RLibraryWatcher
 import com.intellij.r.psi.packages.RInstalledPackage
 import com.intellij.r.psi.packages.RPackageVersion
 import com.intellij.r.psi.visualization.ui.ToolbarUtil
-import com.intellij.util.ui.update.MergingUpdateQueue
-import com.intellij.util.ui.update.Update
+import com.intellij.util.ui.update.DebouncedUpdates
 import com.intellij.webcore.packaging.ManagePackagesDialog
 import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.PackagesNotificationPanel
 import com.intellij.webcore.packaging.RepoPackage
+import kotlinx.coroutines.Dispatchers
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.packages.remote.RPackageManagementService
+import kotlin.time.Duration.Companion.milliseconds
 
 class RInstalledPackagesPanel(private val project: Project, area: PackagesNotificationPanel) :
   RInstalledPackagesPanelBase(project, area), RPackageServiceListener {
 
-  private val queue = MergingUpdateQueue(RBundle.message("packages.panel.refresh.task.name"), REFRESH_TIME_SPAN, true, null, project)
+  private val queue = DebouncedUpdates.forScope<Unit>(
+    RPluginCoroutineScope.getScope(project),
+    RBundle.message("packages.panel.refresh.task.name"),
+    REFRESH_TIME_SPAN.milliseconds
+  ).withContext(Dispatchers.UI)
+    .runLatest { immediatelyUpdatePackages(myPackageManagementService) }
 
   private val listener = object : PackageManagementService.Listener {
     override fun operationStarted(packageName: String?) {
@@ -139,11 +147,7 @@ class RInstalledPackagesPanel(private val project: Project, area: PackagesNotifi
   }
 
   fun scheduleRefresh() {
-    queue.queue(object : Update(RBundle.message("packages.panel.refresh.task.identity")) {
-      override fun run() {
-        immediatelyUpdatePackages(myPackageManagementService)
-      }
-    })
+    queue.queue(Unit)
   }
 
   companion object {

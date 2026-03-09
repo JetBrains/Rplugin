@@ -5,11 +5,13 @@
 package org.jetbrains.r.run.graphics.ui
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.UI
 import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.r.psi.RBundle
+import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.run.graphics.RGraphicsUtils
 import com.intellij.r.psi.run.graphics.RPlot
 import com.intellij.r.psi.run.graphics.RPlotError
@@ -17,8 +19,8 @@ import com.intellij.r.psi.run.graphics.RPlotUtil
 import com.intellij.r.psi.run.graphics.RSnapshot
 import com.intellij.r.psi.run.graphics.ui.RPlotViewer
 import com.intellij.r.psi.settings.RGraphicsSettings
-import com.intellij.util.ui.update.MergingUpdateQueue
-import com.intellij.util.ui.update.Update
+import com.intellij.util.ui.update.DebouncedUpdates
+import kotlinx.coroutines.Dispatchers
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.visualization.inlays.components.GraphicsPanel
@@ -30,9 +32,16 @@ import java.awt.image.BufferedImage
 import java.nio.file.Path
 import javax.swing.JComponent
 import javax.swing.JPanel
+import kotlin.time.Duration.Companion.milliseconds
 
 class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
-  private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
+  private val queue = DebouncedUpdates.forScope<Unit>(
+    RPluginCoroutineScope.getScope(project),
+    RESIZE_TASK_NAME,
+    RESIZE_TIME_SPAN.milliseconds
+  ).withContext(Dispatchers.UI)
+    .runLatest { rescaleIfNecessary() }
+
   private val manager = ChunkGraphicsManager(project)
 
   private val graphicsPanel = GraphicsPanel(project, parent).apply {
@@ -233,11 +242,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   }
 
   private fun scheduleRescaling() {
-    queue.queue(object : Update(RESIZE_TASK_IDENTITY) {
-      override fun run() {
-        rescaleIfNecessary()
-      }
-    })
+    queue.queue(Unit)
   }
 
   fun rescaleIfNecessary(preferredSize: Dimension? = null) {
@@ -313,7 +318,6 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   companion object {
     private const val RESIZE_TIME_SPAN = 500
     private const val RESIZE_TASK_NAME = "Resize graphics"
-    private const val RESIZE_TASK_IDENTITY = "Resizing graphics"
     private val Dimension.isValid: Boolean
       get() = width > 0 && height > 0
   }
