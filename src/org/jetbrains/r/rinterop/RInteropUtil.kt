@@ -316,7 +316,7 @@ object RInteropUtil {
     crashes.sortBy { -it.lastModified() }
     val names = crashes.filterIndexed { index, file ->
       if (index >= MAX_MINIDUMP_COUNT || System.currentTimeMillis() - file.lastModified() > MINIDUMP_LIFETIME) {
-        FileUtil.asyncDelete(file)
+        FileUtil.delete(file)
         return@filterIndexed false
       }
       return@filterIndexed true
