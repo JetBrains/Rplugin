@@ -23,3 +23,9 @@ jvm_library(
   ]
 )
 ### auto-generated section `build intellij.r.build.copyRwrapper` end
+
+### auto-generated section `iml intellij.r.build.copyRwrapper` start
+exports_files([
+  "intellij.r.build.copyRwrapper.iml",
+], visibility = ["//visibility:public"])
+### auto-generated section `iml intellij.r.build.copyRwrapper` end

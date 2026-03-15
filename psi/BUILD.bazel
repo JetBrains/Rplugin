@@ -83,3 +83,9 @@ jvm_library(
   ]
 )
 ### auto-generated section `build intellij.r.psi` end
+
+### auto-generated section `iml intellij.r.psi` start
+exports_files([
+  "intellij.r.psi.iml",
+], visibility = ["//visibility:public"])
+### auto-generated section `iml intellij.r.psi` end

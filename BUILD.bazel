@@ -153,6 +153,12 @@ jvm_library(
 )
 ### auto-generated section `build intellij.r` end
 
+### auto-generated section `iml intellij.r` start
+exports_files([
+  "intellij.r.iml",
+], visibility = ["//visibility:public"])
+### auto-generated section `iml intellij.r` end
+
 ### auto-generated section `build intellij.r.tests` start
 resourcegroup(
   name = "r-tests_test_resources",
@@ -314,6 +320,12 @@ jvm_library(
   ]
 )
 ### auto-generated section `build intellij.r.tests` end
+
+### auto-generated section `iml intellij.r.tests` start
+exports_files([
+  "intellij.r.tests.iml",
+], visibility = ["//visibility:public"])
+### auto-generated section `iml intellij.r.tests` end
 
 ### auto-generated section `test intellij.r.tests` start
 load("@community//build:tests-options.bzl", "jps_test")

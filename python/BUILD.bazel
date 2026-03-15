@@ -45,6 +45,12 @@ jvm_library(
 )
 ### auto-generated section `build intellij.r.python` end
 
+### auto-generated section `iml intellij.r.python` start
+exports_files([
+  "intellij.r.python.iml",
+], visibility = ["//visibility:public"])
+### auto-generated section `iml intellij.r.python` end
+
 ### auto-generated section `build intellij.r.python.tests` start
 jvm_library(
   name = "r-python-tests",
@@ -90,6 +96,12 @@ jvm_library(
   runtime_deps = [":r-python-tests"]
 )
 ### auto-generated section `build intellij.r.python.tests` end
+
+### auto-generated section `iml intellij.r.python.tests` start
+exports_files([
+  "intellij.r.python.tests.iml",
+], visibility = ["//visibility:public"])
+### auto-generated section `iml intellij.r.python.tests` end
 
 ### auto-generated section `test intellij.r.python.tests` start
 load("@community//build:tests-options.bzl", "jps_test")
