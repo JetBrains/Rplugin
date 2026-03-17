@@ -1,347 +1,175 @@
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import com.google.protobuf.gradle.*
-import groovy.util.Node
-import groovy.util.XmlNodePrinter
-import org.gradle.api.JavaVersion.VERSION_11
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.gradle.internal.os.OperatingSystem
-import org.jetbrains.intellij.tasks.PatchPluginXmlTask
-import org.jetbrains.intellij.tasks.PrepareSandboxTask
-import org.jetbrains.intellij.tasks.PublishTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.io.BufferedOutputStream
-import java.io.FileOutputStream
-import java.io.OutputStreamWriter
-import java.io.PrintWriter
-import java.nio.charset.StandardCharsets
 
-val grpcVersion = "1.57.2"
-val protobufVersion = "3.24.4"
+val grpcVersion = "1.75.0"
+val protobufVersion = "3.25.1"
 
-val isTeamCity = System.getenv("RPLUGIN_CI") == "TeamCity"
+plugins {
+  id("java") // Java support
+  alias(libs.plugins.kotlin) // Kotlin support
+  alias(libs.plugins.intelliJPlatform) // IntelliJ Platform Gradle Plugin
+  alias(libs.plugins.changelog) // Gradle Changelog Plugin
+  alias(libs.plugins.qodana) // Gradle Qodana Plugin
+  alias(libs.plugins.kover) // Gradle Kover Plugin
+  id("com.google.protobuf") version "0.9.4"
+}
 
-val channel = prop("publishChannel")
+group = providers.gradleProperty("pluginGroup").get()
+version = providers.gradleProperty("pluginVersion").get()
 
-val excludedJars = listOf(
-  "java-api.jar",
-  "java-impl.jar"
-)
+// Set the JVM language level used to build the project.
+kotlin {
+  jvmToolchain(17)
+}
 
-buildscript {
-    repositories {
-        maven ("https://cache-redirector.jetbrains.com/repo1.maven.org/maven2" )
-        maven ("https://oss.sonatype.org/content/repositories/snapshots/" )
+sourceSets {
+  main {
+    java.srcDirs("src", "gen", "psi/src", "psi/gen", "psi/gen-grpc/java", "lsp/src")
+    resources.srcDirs("resources", "resources-gradle", "psi/resources", "lsp/resources")
+    proto {
+      srcDir("protos")
+      srcDir("grammars")
     }
-    dependencies {
-//        classpath ("org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.5.0-SNAPSHOT")
-    }
+  }
+  test {
+    java.srcDirs("test")
+    resources.srcDirs("testData", "testResources")
+  }
+}
+
+// Configure project's dependencies
+repositories {
+  mavenCentral()
+
+  // IntelliJ Platform Gradle Plugin Repositories Extension
+  intellijPlatform {
+    defaultRepositories()
+  }
 }
 
 dependencies {
-    testCompile("org.mockito:mockito-all:1.10.19")
-    compile("com.google.protobuf:protobuf-java:$protobufVersion")
-    compile("io.grpc:grpc-stub:$grpcVersion")
-    compile("io.grpc:grpc-protobuf:$grpcVersion")
-    compile("org.assertj:assertj-core:3.18.1")
-    runtimeOnly("io.grpc:grpc-netty-shaded:$grpcVersion")
-    protobuf(files("protos/", "grammars/"))
+  testImplementation(libs.junit)
+  testImplementation(libs.opentest4j)
+
+  implementation("com.google.protobuf:protobuf-java:$protobufVersion")
+  implementation("io.grpc:grpc-stub:$grpcVersion")
+  implementation("io.grpc:grpc-protobuf:$grpcVersion")
+  testImplementation("org.assertj:assertj-core:3.18.1")
+  testImplementation("org.mockito:mockito-all:1.10.19")
+  runtimeOnly("io.grpc:grpc-netty-shaded:$grpcVersion")
+
+  // IntelliJ Platform Gradle Plugin Dependencies Extension
+  intellijPlatform {
+    intellijIdea(providers.gradleProperty("platformVersion"))
+
+    bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',').map(String::trim).filter(String::isNotBlank) })
+    plugins(providers.gradleProperty("platformPlugins").map { it.split(',').map(String::trim).filter(String::isNotBlank) })
+    bundledModules(providers.gradleProperty("platformBundledModules").map { it.split(',').map(String::trim).filter(String::isNotBlank) })
+
+    testFramework(TestFrameworkType.Platform)
+  }
 }
 
 protobuf {
-    generatedFilesBaseDir = "$projectDir/psi/gen-grpc"
-    protoc {
-        artifact = "com.google.protobuf:protoc:$protobufVersion"
+  generatedFilesBaseDir = "$projectDir/psi/gen-grpc"
+  protoc {
+    artifact = "com.google.protobuf:protoc:$protobufVersion"
+  }
+  plugins {
+    id("grpc") {
+      artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion"
     }
-    plugins {
-        id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion"
-        }
+  }
+  generateProtoTasks {
+    ofSourceSet("main").forEach {
+      it.plugins {
+        id("grpc")
+      }
     }
-    generateProtoTasks {
-        ofSourceSet("main").forEach {
-            it.plugins {
-                id("grpc")
-            }
-        }
-    }
+  }
 }
 
-plugins {
-    idea
-    kotlin("jvm") version "1.4.10"
-    id("org.jetbrains.intellij") version "0.4.10"
-    id("org.jetbrains.grammarkit") version "2019.2.1"
-    id("de.undercouch.download") version "3.4.3"
-    id("net.saliman.properties") version "1.4.6"
-    id("com.google.protobuf") version "0.8.10"
+intellijPlatform {
+  pluginConfiguration {
+    name = providers.gradleProperty("pluginName")
+    version = providers.gradleProperty("pluginVersion")
+
+    // description handling skipped or simplified, assuming README doesn't have the exact same tags
+    description = "IntelliJ Plugin for R language and RMarkdown support."
+
+    changeNotes = providers.fileContents(layout.projectDirectory.file("Changes.md")).asText
+
+    ideaVersion {
+      sinceBuild = providers.gradleProperty("pluginSinceBuild")
+    }
+  }
+
+  signing {
+    certificateChain = providers.environmentVariable("CERTIFICATE_CHAIN")
+    privateKey = providers.environmentVariable("PRIVATE_KEY")
+    password = providers.environmentVariable("PRIVATE_KEY_PASSWORD")
+  }
+
+  publishing {
+    token = providers.environmentVariable("PUBLISH_TOKEN")
+    channels =
+      providers.gradleProperty("pluginVersion").map { listOf(it.substringAfter('-', "").substringBefore('.').ifEmpty { "default" }) }
+  }
+
+  pluginVerification {
+    ides {
+      recommended()
+    }
+  }
 }
 
-idea {
-    module {
-        // https://github.com/gradle/kotlin-dsl/issues/537/
-        excludeDirs = excludeDirs + file("testData") + file("deps")
-    }
+changelog {
+  groups.empty()
+  repositoryUrl = providers.gradleProperty("pluginRepositoryUrl")
+  versionPrefix = ""
 }
 
-allprojects {
-    apply {
-        plugin("org.jetbrains.intellij")
-        plugin("idea")
-        plugin("kotlin")
-        plugin("org.jetbrains.grammarkit")
-        plugin("org.jetbrains.intellij")
+kover {
+  reports {
+    total {
+      xml {
+        onCheck = true
+      }
     }
-
-    repositories {
-        mavenCentral()
-    }
-
-    intellij {
-        version = ideName()
-        updateSinceUntilBuild = true
-        instrumentCode = false
-        ideaDependencyCachePath = dependencyCachePath
-
-        if (useInlayVisualisationFromPlugin()) {
-            localPath = guessLocalIdePath() ?: error("Pre-built IDE with visualisation plugin should be unpacked into './local-ide/'")
-            downloadSources = false
-        }
-        else {
-            downloadSources = !isTeamCity
-        }
-
-        tasks.withType<PatchPluginXmlTask> {
-            fun writePatchedPluginXml(pluginXml: Node, outputFile: File) {
-                BufferedOutputStream(FileOutputStream(outputFile)).use { binaryOutputStream ->
-                    val writer = PrintWriter(OutputStreamWriter(binaryOutputStream, StandardCharsets.UTF_8))
-                    val printer = XmlNodePrinter(writer)
-                    printer.isPreserveWhitespace = true
-                    printer.print(pluginXml)
-                }
-            }
-
-            sinceBuild("${ideMajorVersion()}.${ideMinorVersion()}")
-            untilBuild("${ideMajorVersion()}.*")
-        }
-    }
-
-    tasks.withType<PublishTask> {
-        username(prop("publishUsername"))
-        password(prop("publishPassword"))
-        channels(channel)
-    }
-
-    tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "11"
-            languageVersion = "1.4"
-            apiVersion = "1.4"
-            freeCompilerArgs = listOf("-Xjvm-default=enable")
-        }
-    }
-
-    ideaPlatformPrefix()?.let { prefix ->
-        tasks.withType<org.jetbrains.intellij.tasks.RunIdeBase> {
-            systemProperty("idea.platform.prefix", prefix)
-        }
-    }
-
-    configure<JavaPluginConvention> {
-        sourceCompatibility = VERSION_11
-        targetCompatibility = VERSION_11
-    }
-
-    afterEvaluate {
-        val mainSourceSet = sourceSets.getByName("main")
-        val mainClassPath = mainSourceSet.compileClasspath
-        val exclusion = mainClassPath.filter { it.name in excludedJars }
-        mainSourceSet.compileClasspath = mainClassPath - exclusion
-
-        tasks.withType<AbstractTestTask> {
-            testLogging {
-                if (hasProp("showTestStatus") && prop("showTestStatus").toBoolean()) {
-                    events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
-                    exceptionFormat = TestExceptionFormat.FULL
-                }
-            }
-        }
-
-        // We need to prevent the platform-specific shared JNA library to loading from the system library paths,
-        // because otherwise it can lead to compatibility issues.
-        // Also note that IDEA does the same thing at startup, and not only for tests.
-        tasks.withType<Test>().configureEach {
-            systemProperty("jna.nosys", "true")
-        }
-
-        // Some plugins (for example, grammar-kit) may use jitpack.io. It is unstable sometimes, so we use a redirector.
-        if (repositories.removeIf { it is MavenArtifactRepository && it.url.toString() == "https://jitpack.io" }) {
-            repositories.add(repositories.maven("https://cache-redirector.jetbrains.com/jitpack.io"))
-        }
-    }
-}
-
-project(":") {
-    version = "${ideMajorVersion()}.${ideMinorVersion()}.${prop("buildNumber")}"
-    intellij {
-        val plugins = arrayOf("markdown", "yaml") +
-                      (if (isPyCharm()) arrayOf("python-ce") else emptyArray()) +
-                      arrayOf("platform-images", "IntelliLang", "git4idea", "terminal")
-        pluginName = "rplugin"
-        setPlugins(*plugins)
-    }
-
-    idea {
-        module {
-            generatedSourceDirs.add(file("gen"))
-        }
-    }
-
-    sourceSets {
-        main {
-            val srcDirs = mutableListOf("src", "gen")
-            srcDirs += "visualisation/src"
-            if (isPyCharm()) srcDirs += "src-python"
-            java.srcDirs(*srcDirs.toTypedArray())
-            val resourcesSrcDirs = mutableListOf("resources", "resources-gradle")
-            resourcesSrcDirs.add("visualisation/resources")
-            resources.srcDirs(*resourcesSrcDirs.toTypedArray())
-        }
-        test {
-            val testDirs = if (isPyCharm()) arrayOf("test", "test-python", "visualisation/test") else arrayOf("test", "visualisation/test")
-            java.srcDirs(*testDirs)
-            resources.srcDirs( "testData")
-        }
-    }
-
-    tasks.processResources {
-        outputs.upToDateWhen { false }
-    }
-
-    tasks.prepareSandbox {
-        prepareSandbox(this, this@project)
-    }
-
-    tasks.prepareTestingSandbox {
-        prepareSandbox(this, this@project, isTestingSandbox = true)
-    }
-
-    tasks.runIde {
-        doFirst {
-            val prepareSandboxTask = tasks.prepareSandbox.get()
-            val name = prepareSandboxTask.pluginName
-            delete(prepareSandboxTask.destinationDir.toString() + "/" + name + "/" + name.toLowerCase() + ".jar")
-        }
-        jvmArgs = listOf("-Dsun.java2d.uiScale.enabled=false", "-Xmx1024M")
-        jbrVersion("11_0_8b1098.2")
-    }
-
-    tasks.buildPlugin {
-        from("r-helpers")
-    }
+  }
 }
 
 tasks {
-    val listRepos by registering(DefaultTask::class)
+  wrapper {
+    gradleVersion = providers.gradleProperty("gradleVersion").get()
+  }
 
-    listRepos {
-        doLast {
-            project.repositories.forEach {
-                println(it.name)
-                if (it is MavenArtifactRepository) {
-                    println(it.url)
-                }
-                if (it is IvyArtifactRepository) {
-                    println(it.url)
-                }
-            }
+  publishPlugin {
+    dependsOn(patchChangelog)
+  }
+
+  buildSearchableOptions {
+    enabled = false
+  }
+}
+
+intellijPlatformTesting {
+  runIde {
+    register("runIdeForUiTests") {
+      task {
+        jvmArgumentProviders += CommandLineArgumentProvider {
+          listOf(
+            "-Drobot-server.port=8082",
+            "-Dide.mac.message.dialogs.as.sheets=false",
+            "-Djb.privacy.policy.text=<!--999.999-->",
+            "-Djb.consents.confirmation.enabled=false",
+          )
         }
+      }
+
+      plugins {
+        robotServerPlugin()
+      }
     }
+  }
 }
-
-fun hasProp(name: String): Boolean = extra.has(name)
-
-fun prop(name: String): String =
-    extra.properties[name] as? String
-        ?: error("Property `$name` is not defined in gradle.properties")
-
-fun prepareSandbox(prepareSandboxTask: PrepareSandboxTask, project: Project, isTestingSandbox: Boolean = false) {
-    buildRWrapper(project)
-    doCopyRWrapperTask(prepareSandboxTask, project)
-}
-
-fun buildRWrapper(project: Project) {
-    if (!rwrapperBuilt && !isTeamCity && OperatingSystem.current()?.isUnix == true) {
-        rwrapperBuilt = true
-        val workingDir = "${project.rootDir}/rwrapper"
-        File("$workingDir/build_rwrapper.sh").takeIf { it.exists() }?.let { script ->
-            project.exec {
-                commandLine(script)
-                workingDir(workingDir)
-            }
-        }
-    }
-}
-
-fun doCopyRWrapperTask(prepareSandboxTask: PrepareSandboxTask, project: Project) {
-    prepareSandboxTask.inputs.files(*(File("rwrapper").takeIf { it.exists() && it.isDirectory }?.list { _, name ->
-        name.startsWith("rwrapper") || name.startsWith("R-") || name == "R" || name.startsWith("fsnotifier-")
-    }?.map { "rwrapper/$it" }?.toTypedArray() ?: emptyArray<String>()))
-    prepareSandboxTask.doLast {
-        project.copy {
-            from("rwrapper/R")
-            into(prepareSandboxTask.destinationDir.toString() + "/" + prepareSandboxTask.pluginName + "/R")
-        }
-        project.copy {
-            from("rwrapper")
-            include("crashpad_handler*")
-            into(prepareSandboxTask.destinationDir.toString() + "/" + prepareSandboxTask.pluginName)
-        }
-        project.copy {
-            from("rwrapper")
-            include("R-*/*")
-            into(prepareSandboxTask.destinationDir.toString() + "/" + prepareSandboxTask.pluginName)
-        }
-        project.copy {
-            from("rwrapper")
-            include("rwrapper*")
-            into(prepareSandboxTask.destinationDir.toString() + "/" + prepareSandboxTask.pluginName)
-        }
-        project.copy {
-            from("rwrapper")
-            include("fsnotifier-*")
-            into(prepareSandboxTask.destinationDir.toString() + "/" + prepareSandboxTask.pluginName)
-        }
-    }
-}
-
-val Project.dependencyCachePath get(): String {
-    val cachePath = file("${rootProject.projectDir}/deps")
-    // If cache path doesn't exist, we need to create it manually
-    // because otherwise gradle-intellij-plugin will ignore it
-    if (!cachePath.exists()) {
-        cachePath.mkdirs()
-    }
-    return cachePath.absolutePath
-}
-
-fun Build_gradle.ideMinorVersion() = prop("ideMinor")
-
-fun Build_gradle.ideMajorVersion() = prop("ideMajor")
-
-fun Build_gradle.ideName() = prop("ideName")
-
-fun Build_gradle.isPyCharm() = ideName().contains("PY") || ideName().contains("PC") || ideaPlatformPrefix()?.contains("PyCharm") == true
-
-fun Build_gradle.guessLocalIdePath(): String? =
-  file("local-ide")
-    .takeIf { it.resolve("build.txt").exists() }
-    ?.absolutePath
-
-fun Build_gradle.useInlayVisualisationFromPlugin(): Boolean =
-  extra.properties["useInlayVisualisationFromPlugin"] == "true"
-
-fun Build_gradle.ideaPlatformPrefix(): String? =
-  (extra.properties["ideaPlatformPrefix"] as? String)?.takeIf { it.isNotBlank() }
-
-@kotlin.jvm.Volatile
-private var rwrapperBuilt = false
