@@ -5,7 +5,7 @@ import static io.grpc.MethodDescriptor.generateFullMethodName;
 /**
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.57.2)",
+    value = "by gRPC proto compiler (version 1.73.0)",
     comments = "Source: service.proto")
 @io.grpc.stub.annotations.GrpcGenerated
 public final class RPIServiceGrpc {
@@ -2975,6 +2975,21 @@ public final class RPIServiceGrpc {
   }
 
   /**
+   * Creates a new blocking-style stub that supports all types of calls on the service
+   */
+  public static RPIServiceBlockingV2Stub newBlockingV2Stub(
+      io.grpc.Channel channel) {
+    io.grpc.stub.AbstractStub.StubFactory<RPIServiceBlockingV2Stub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<RPIServiceBlockingV2Stub>() {
+        @java.lang.Override
+        public RPIServiceBlockingV2Stub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new RPIServiceBlockingV2Stub(channel, callOptions);
+        }
+      };
+    return RPIServiceBlockingV2Stub.newStub(factory, channel);
+  }
+
+  /**
    * Creates a new blocking-style stub that supports unary and streaming output calls on the service
    */
   public static RPIServiceBlockingStub newBlockingStub(
@@ -4518,6 +4533,747 @@ public final class RPIServiceGrpc {
 
   /**
    * A stub to allow clients to do synchronous rpc calls to service RPIService.
+   */
+  public static final class RPIServiceBlockingV2Stub
+      extends io.grpc.stub.AbstractBlockingStub<RPIServiceBlockingV2Stub> {
+    private RPIServiceBlockingV2Stub(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+      super(channel, callOptions);
+    }
+
+    @java.lang.Override
+    protected RPIServiceBlockingV2Stub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+      return new RPIServiceBlockingV2Stub(channel, callOptions);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.GetInfoResponse getInfo(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetInfoMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.BoolValue isBusy(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getIsBusyMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/10918")
+    public io.grpc.stub.BlockingClientCall<?, com.intellij.r.psi.rinterop.CommandOutput>
+        init(com.intellij.r.psi.rinterop.Init request) {
+      return io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall(
+          getChannel(), getInitMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty quit(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getQuitMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty quitProceed(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getQuitProceedMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/10918")
+    public io.grpc.stub.BlockingClientCall<?, com.intellij.r.psi.rinterop.ExecuteCodeResponse>
+        executeCode(com.intellij.r.psi.rinterop.ExecuteCodeRequest request) {
+      return io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall(
+          getChannel(), getExecuteCodeMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty sendReadLn(com.google.protobuf.StringValue request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getSendReadLnMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty sendEof(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getSendEofMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty replInterrupt(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getReplInterruptMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/10918")
+    public io.grpc.stub.BlockingClientCall<?, com.intellij.r.psi.rinterop.AsyncEvent>
+        getAsyncEvents(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall(
+          getChannel(), getGetAsyncEventsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * Debugger
+     * </pre>
+     */
+    public com.google.protobuf.Empty debugAddOrModifyBreakpoint(com.intellij.r.psi.rinterop.DebugAddOrModifyBreakpointRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDebugAddOrModifyBreakpointMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty debugSetMasterBreakpoint(com.intellij.r.psi.rinterop.DebugSetMasterBreakpointRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDebugSetMasterBreakpointMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty debugRemoveBreakpoint(com.google.protobuf.Int32Value request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDebugRemoveBreakpointMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty debugCommandContinue(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDebugCommandContinueMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty debugCommandPause(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDebugCommandPauseMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty debugCommandStop(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDebugCommandStopMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty debugCommandStepOver(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDebugCommandStepOverMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty debugCommandStepInto(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDebugCommandStepIntoMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty debugCommandStepIntoMyCode(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDebugCommandStepIntoMyCodeMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty debugCommandStepOut(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDebugCommandStepOutMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty debugCommandRunToPosition(com.intellij.r.psi.rinterop.SourcePosition request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDebugCommandRunToPositionMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty debugMuteBreakpoints(com.google.protobuf.BoolValue request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDebugMuteBreakpointsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.GetFunctionSourcePositionResponse getFunctionSourcePosition(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetFunctionSourcePositionMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.StringValue getSourceFileText(com.google.protobuf.StringValue request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetSourceFileTextMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.StringValue getSourceFileName(com.google.protobuf.StringValue request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetSourceFileNameMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * Graphics device service points
+     * </pre>
+     */
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/10918")
+    public io.grpc.stub.BlockingClientCall<?, com.intellij.r.psi.rinterop.CommandOutput>
+        graphicsInit(com.intellij.r.psi.rinterop.GraphicsInitRequest request) {
+      return io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall(
+          getChannel(), getGraphicsInitMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.GraphicsDumpResponse graphicsDump(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGraphicsDumpMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/10918")
+    public io.grpc.stub.BlockingClientCall<?, com.intellij.r.psi.rinterop.CommandOutput>
+        graphicsRescale(com.intellij.r.psi.rinterop.GraphicsRescaleRequest request) {
+      return io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall(
+          getChannel(), getGraphicsRescaleMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/10918")
+    public io.grpc.stub.BlockingClientCall<?, com.intellij.r.psi.rinterop.CommandOutput>
+        graphicsRescaleStored(com.intellij.r.psi.rinterop.GraphicsRescaleStoredRequest request) {
+      return io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall(
+          getChannel(), getGraphicsRescaleStoredMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty graphicsSetParameters(com.intellij.r.psi.rinterop.ScreenParameters request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGraphicsSetParametersMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.GraphicsGetSnapshotPathResponse graphicsGetSnapshotPath(com.intellij.r.psi.rinterop.GraphicsGetSnapshotPathRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGraphicsGetSnapshotPathMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.GraphicsFetchPlotResponse graphicsFetchPlot(com.google.protobuf.Int32Value request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGraphicsFetchPlotMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/10918")
+    public io.grpc.stub.BlockingClientCall<?, com.intellij.r.psi.rinterop.CommandOutput>
+        graphicsCreateGroup(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall(
+          getChannel(), getGraphicsCreateGroupMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/10918")
+    public io.grpc.stub.BlockingClientCall<?, com.intellij.r.psi.rinterop.CommandOutput>
+        graphicsRemoveGroup(com.google.protobuf.StringValue request) {
+      return io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall(
+          getChannel(), getGraphicsRemoveGroupMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/10918")
+    public io.grpc.stub.BlockingClientCall<?, com.intellij.r.psi.rinterop.CommandOutput>
+        graphicsShutdown(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall(
+          getChannel(), getGraphicsShutdownMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * RMarkdown chunks
+     * </pre>
+     */
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/10918")
+    public io.grpc.stub.BlockingClientCall<?, com.intellij.r.psi.rinterop.CommandOutput>
+        beforeChunkExecution(com.intellij.r.psi.rinterop.ChunkParameters request) {
+      return io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall(
+          getChannel(), getBeforeChunkExecutionMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/10918")
+    public io.grpc.stub.BlockingClientCall<?, com.intellij.r.psi.rinterop.CommandOutput>
+        afterChunkExecution(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall(
+          getChannel(), getAfterChunkExecutionMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.StringList pullChunkOutputPaths(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getPullChunkOutputPathsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * Repo utils service points
+     * </pre>
+     */
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/10918")
+    public io.grpc.stub.BlockingClientCall<?, com.intellij.r.psi.rinterop.CommandOutput>
+        repoGetPackageVersion(com.google.protobuf.StringValue request) {
+      return io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall(
+          getChannel(), getRepoGetPackageVersionMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty repoInstallPackage(com.intellij.r.psi.rinterop.RepoInstallPackageRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getRepoInstallPackageMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/10918")
+    public io.grpc.stub.BlockingClientCall<?, com.intellij.r.psi.rinterop.CommandOutput>
+        repoAddLibraryPath(com.google.protobuf.StringValue request) {
+      return io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall(
+          getChannel(), getRepoAddLibraryPathMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/10918")
+    public io.grpc.stub.BlockingClientCall<?, com.intellij.r.psi.rinterop.CommandOutput>
+        repoCheckPackageInstalled(com.google.protobuf.StringValue request) {
+      return io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall(
+          getChannel(), getRepoCheckPackageInstalledMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty repoRemovePackage(com.intellij.r.psi.rinterop.RepoRemovePackageRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getRepoRemovePackageMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * Dataset import service points
+     * </pre>
+     */
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/10918")
+    public io.grpc.stub.BlockingClientCall<?, com.intellij.r.psi.rinterop.CommandOutput>
+        previewDataImport(com.intellij.r.psi.rinterop.PreviewDataImportRequest request) {
+      return io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall(
+          getChannel(), getPreviewDataImportMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty commitDataImport(com.intellij.r.psi.rinterop.CommitDataImportRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getCommitDataImportMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * Methods for RRef and RVariableLoader
+     * </pre>
+     */
+    public com.intellij.r.psi.rinterop.CopyToPersistentRefResponse copyToPersistentRef(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getCopyToPersistentRefMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty disposePersistentRefs(com.intellij.r.psi.rinterop.PersistentRefList request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDisposePersistentRefsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.ParentEnvsResponse loaderGetParentEnvs(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getLoaderGetParentEnvsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.VariablesResponse loaderGetVariables(com.intellij.r.psi.rinterop.GetVariablesRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getLoaderGetVariablesMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.StringList loaderGetLoadedNamespaces(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getLoaderGetLoadedNamespacesMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.ValueInfo loaderGetValueInfo(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getLoaderGetValueInfoMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.StringOrError evaluateAsText(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getEvaluateAsTextMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.BoolValue evaluateAsBoolean(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getEvaluateAsBooleanMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.StringList getDistinctStrings(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetDistinctStringsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.StringList loadObjectNames(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getLoadObjectNamesMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.StringList findInheritorNamedArguments(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getFindInheritorNamedArgumentsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.ExtraNamedArguments findExtraNamedArguments(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getFindExtraNamedArgumentsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.classes.S4ClassInfo getS4ClassInfoByObjectName(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetS4ClassInfoByObjectNameMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.classes.R6ClassInfo getR6ClassInfoByObjectName(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetR6ClassInfoByObjectNameMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.TableColumnsInfo getTableColumnsInfo(com.intellij.r.psi.rinterop.TableColumnsInfoRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetTableColumnsInfoMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.StringList getFormalArguments(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetFormalArgumentsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Int64Value getEqualityObject(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetEqualityObjectMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.ValueInfo setValue(com.intellij.r.psi.rinterop.SetValueRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getSetValueMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.Int64List getObjectSizes(com.intellij.r.psi.rinterop.RRefList request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetObjectSizesMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.StringList getRMarkdownChunkOptions(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetRMarkdownChunkOptionsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * Data frame viewer
+     * </pre>
+     */
+    public com.google.protobuf.Int32Value dataFrameRegister(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDataFrameRegisterMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.DataFrameInfoResponse dataFrameGetInfo(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDataFrameGetInfoMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.DataFrameGetDataResponse dataFrameGetData(com.intellij.r.psi.rinterop.DataFrameGetDataRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDataFrameGetDataMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Int32Value dataFrameSort(com.intellij.r.psi.rinterop.DataFrameSortRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDataFrameSortMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Int32Value dataFrameFilter(com.intellij.r.psi.rinterop.DataFrameFilterRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDataFrameFilterMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.BoolValue dataFrameRefresh(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDataFrameRefreshMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * Documentation and http
+     * </pre>
+     */
+    public com.intellij.r.psi.rinterop.ConvertRoxygenToHTMLResponse convertRoxygenToHTML(com.intellij.r.psi.rinterop.ConvertRoxygenToHTMLRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getConvertRoxygenToHTMLMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.HttpdResponse httpdRequest(com.google.protobuf.StringValue request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getHttpdRequestMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.HttpdResponse getDocumentationForPackage(com.google.protobuf.StringValue request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetDocumentationForPackageMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.HttpdResponse getDocumentationForSymbol(com.intellij.r.psi.rinterop.DocumentationForSymbolRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetDocumentationForSymbolMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Int32Value startHttpd(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getStartHttpdMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * Misc
+     * </pre>
+     */
+    public com.google.protobuf.StringValue getWorkingDir(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetWorkingDirMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty setWorkingDir(com.google.protobuf.StringValue request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getSetWorkingDirMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty clearEnvironment(com.intellij.r.psi.rinterop.RRef request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getClearEnvironmentMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.StringList getSysEnv(com.intellij.r.psi.rinterop.GetSysEnvRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetSysEnvMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.RInstalledPackageList loadInstalledPackages(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getLoadInstalledPackagesMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.rinterop.RLibraryPathList loadLibPaths(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getLoadLibPathsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty loadLibrary(com.google.protobuf.StringValue request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getLoadLibraryMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty unloadLibrary(com.intellij.r.psi.rinterop.UnloadLibraryRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getUnloadLibraryMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty saveGlobalEnvironment(com.google.protobuf.StringValue request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getSaveGlobalEnvironmentMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty loadEnvironment(com.intellij.r.psi.rinterop.LoadEnvironmentRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getLoadEnvironmentMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty setOutputWidth(com.google.protobuf.Int32Value request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getSetOutputWidthMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty clientRequestFinished(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getClientRequestFinishedMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty rStudioApiResponse(com.intellij.r.psi.rinterop.RObject request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getRStudioApiResponseMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty setSaveOnExit(com.google.protobuf.BoolValue request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getSetSaveOnExitMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/10918")
+    public io.grpc.stub.BlockingClientCall<?, com.intellij.r.psi.rinterop.CommandOutput>
+        setRStudioApiEnabled(com.google.protobuf.BoolValue request) {
+      return io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall(
+          getChannel(), getSetRStudioApiEnabledMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.classes.ShortS4ClassInfoList getLoadedShortS4ClassInfos(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetLoadedShortS4ClassInfosMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.classes.S4ClassInfo getS4ClassInfoByClassName(com.google.protobuf.StringValue request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetS4ClassInfoByClassNameMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.classes.ShortR6ClassInfoList getLoadedShortR6ClassInfos(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetLoadedShortR6ClassInfosMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.intellij.r.psi.classes.R6ClassInfo getR6ClassInfoByClassName(com.google.protobuf.StringValue request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetR6ClassInfoByClassNameMethod(), getCallOptions(), request);
+    }
+  }
+
+  /**
+   * A stub to allow clients to do limited synchronous rpc calls to service RPIService.
    */
   public static final class RPIServiceBlockingStub
       extends io.grpc.stub.AbstractBlockingStub<RPIServiceBlockingStub> {

@@ -1,8 +1,8 @@
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import com.google.protobuf.gradle.*
 
-val grpcVersion = "1.75.0"
-val protobufVersion = "3.25.1"
+val grpcVersion = "1.73.0"
+val protobufVersion = "3.25.5"
 
 plugins {
   id("java") // Java support
