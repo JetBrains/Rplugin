@@ -71,7 +71,6 @@ dependencies {
 }
 
 protobuf {
-  generatedFilesBaseDir = "$projectDir/psi/gen-grpc"
   protoc {
     artifact = "com.google.protobuf:protoc:$protobufVersion"
   }
@@ -81,10 +80,15 @@ protobuf {
     }
   }
   generateProtoTasks {
-    ofSourceSet("main").forEach {
-      it.plugins {
+    ofSourceSet("main").forEach { task ->
+      task.plugins {
         id("grpc")
       }
+      val copyTask = project.tasks.register<Copy>("${task.name}CopyToGenGrpc") {
+        from(task.outputBaseDir)
+        into("$projectDir/psi/gen-grpc/main")
+      }
+      task.finalizedBy(copyTask)
     }
   }
 }
