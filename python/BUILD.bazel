@@ -54,6 +54,7 @@ exports_files([
 ### auto-generated section `build intellij.r.python.tests` start
 jvm_library(
   name = "r-python-tests",
+  module_name = "intellij.r.python.tests",
   visibility = ["//visibility:public"],
   srcs = glob([], allow_empty = True)
 )
