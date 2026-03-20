@@ -19,7 +19,7 @@ version = providers.gradleProperty("pluginVersion").get()
 
 // Set the JVM language level used to build the project.
 kotlin {
-  jvmToolchain(17)
+  jvmToolchain(21)
 }
 
 sourceSets {
@@ -62,9 +62,13 @@ dependencies {
   intellijPlatform {
     intellijIdea(providers.gradleProperty("platformVersion"))
 
-    bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',').map(String::trim).filter(String::isNotBlank) })
-    plugins(providers.gradleProperty("platformPlugins").map { it.split(',').map(String::trim).filter(String::isNotBlank) })
-    bundledModules(providers.gradleProperty("platformBundledModules").map { it.split(',').map(String::trim).filter(String::isNotBlank) })
+    // Plugin Dependencies -> https://plugins.jetbrains.com/docs/intellij/plugin-dependencies.html
+    bundledPlugin("org.intellij.plugins.markdown")
+    bundledPlugin("org.jetbrains.plugins.yaml")
+    bundledPlugin("com.intellij.platform.images")
+    bundledPlugin("org.intellij.intelliLang")
+    bundledPlugin("Git4Idea")
+    bundledPlugin("org.jetbrains.plugins.terminal")
 
     testFramework(TestFrameworkType.Platform)
   }
