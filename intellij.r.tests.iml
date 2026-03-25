@@ -30,6 +30,7 @@
     <orderEntry type="module" module-name="intellij.platform.structureView.impl" scope="TEST" />
     <orderEntry type="module" module-name="intellij.platform.usageView" scope="TEST" />
     <orderEntry type="module" module-name="intellij.platform.ide.core.impl" scope="TEST" />
+    <orderEntry type="module" module-name="intellij.platform.ide.core" scope="TEST" />
     <orderEntry type="module" module-name="intellij.platform.lang" scope="TEST" />
     <orderEntry type="module" module-name="intellij.platform.lang.impl" scope="TEST" />
     <orderEntry type="library" scope="TEST" name="kotlin-stdlib" level="project" />
@@ -67,6 +68,8 @@
     <orderEntry type="module" module-name="intellij.platform.vcs.impl" scope="TEST" />
     <orderEntry type="module" module-name="intellij.libraries.maven.resolver.provider" scope="TEST" />
     <orderEntry type="module" module-name="intellij.platform.util.jdom" scope="TEST" />
+    <orderEntry type="module" module-name="intellij.platform.util.ui" scope="TEST" />
+    <orderEntry type="module" module-name="intellij.platform.util.ex" scope="TEST" />
     <orderEntry type="module" module-name="intellij.libraries.kotlinx.coroutines.core" scope="TEST" />
     <orderEntry type="module" module-name="intellij.python.psi" scope="TEST" />
     <orderEntry type="module" module-name="intellij.platform.editor.ui" scope="TEST" />
