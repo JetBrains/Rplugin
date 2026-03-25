@@ -24,7 +24,11 @@ class RS4PomTargetDescriptionProvider : PomDescriptionProvider() {
   override fun getElementDescription(element: PomTarget, location: ElementDescriptionLocation): String? = when (location) {
     UsageViewTypeLocation.INSTANCE -> getType(element)
     UsageViewShortNameLocation.INSTANCE -> getShortName(element)
-    UsageViewNodeTextLocation.INSTANCE -> getType(element) + " " + getShortName(element)
+    UsageViewNodeTextLocation.INSTANCE -> {
+      val type = getType(element)
+      val shortName = getShortName(element)
+      if (type != null && shortName != null) "${type} ${shortName}" else null
+    }
     UsageViewLongNameLocation.INSTANCE -> getLongName(element)
     else -> null
   }
@@ -32,12 +36,7 @@ class RS4PomTargetDescriptionProvider : PomDescriptionProvider() {
   private fun getType(element: PomTarget): String? = when (element) {
     is RSkeletonS4ClassPomTarget -> RBundle.message("find.usages.s4.class")
     is RSkeletonS4SlotPomTarget, is RS4ComplexSlotPomTarget -> RBundle.message("find.usages.s4.slot")
-    is RStringLiteralPomTarget -> {
-      if (RS4ContextProvider.getS4Context(element.literal, RS4SetClassClassNameContext::class) != null) {
-        RBundle.message("find.usages.s4.class")
-      }
-      else null
-    }
+    is RStringLiteralPomTarget if (RS4ContextProvider.getS4Context(element.literal, RS4SetClassClassNameContext::class) != null) -> RBundle.message("find.usages.s4.class")
     else -> null
   }
 
