@@ -1,11 +1,12 @@
 <idea-plugin>
+  <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
   <dependencies>
     <plugin id="org.intellij.plugins.markdown"/>
     <module name="intellij.platform.langInjection"/>
-    <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
     <module name="intellij.libraries.grpc"/>
-    <!-- endregion -->
+    <module name="intellij.markdown"/>
   </dependencies>
+  <!-- endregion -->
 
   <!-- TODO This is a copy of rplugin-common.xml, things will be uncommented as they are moved to this module -->
   <extensionPoints>
