@@ -708,6 +708,9 @@
     <!--<runConfigurationProducer implementation="org.jetbrains.r.run.configuration.RRunConfigurationProducer"/>-->
     <!--<programRunner implementation="org.jetbrains.r.run.configuration.RProgramRunner"/>-->
 
+    <projectSettings service="com.intellij.r.psi.settings.RGraphicsSettings"/>
+    <projectSettings service="com.intellij.r.psi.settings.RSettings"/>
+    <applicationSettings service="com.intellij.r.psi.settings.RInterpreterSettings"/>
   </extensions>
 
   <!--<extensions defaultExtensionNs="org.intellij.intelliLang">-->

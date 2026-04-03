@@ -668,6 +668,12 @@ You can find the source code in the following repositories:
       <runConfigurationProducer implementation="org.jetbrains.r.run.configuration.RRunConfigurationProducer"/>
       <programRunner implementation="org.jetbrains.r.run.configuration.RProgramRunner"/>
 
+      <projectSettings service="org.jetbrains.r.rendering.settings.RMarkdownSettings"/>
+      <projectSettings service="org.jetbrains.r.packages.RPackageService"/>
+      <applicationSettings service="org.jetbrains.r.packages.remote.RPackageDescriptionCache"/>
+      <projectSettings service="org.jetbrains.r.packages.remote.RAvailablePackageCache"/>
+      <projectSettings service="org.jetbrains.r.settings.RMarkdownGraphicsSettings"/>
+      <applicationSettings service="org.jetbrains.r.settings.REditorSettings"/>
     </extensions>
 
   <extensions defaultExtensionNs="org.intellij.intelliLang">
