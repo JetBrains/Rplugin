@@ -12,7 +12,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.execution.ExecuteExpressionUtils
 import com.intellij.r.psi.interpreter.RInterpreterUtil
-import com.intellij.ui.SimpleListCellRenderer
+import com.intellij.ui.dsl.listCellRenderer.listCellRenderer
 import com.intellij.util.ui.FormBuilder
 import com.intellij.util.ui.JBUI
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
@@ -107,9 +107,11 @@ class RPackageManagerGroupPanel(name: String,
 
   private fun createComboBoxPanel(panels: List<RPackageManagerPanel>): JPanel {
     val comboBox = ComboBox(panels.toTypedArray()).apply {
-      renderer = SimpleListCellRenderer.create { label, value, _ ->
-        label.text = value?.packageManagerName ?: return@create
-        label.icon = value.icon
+      renderer = listCellRenderer("") {
+        value.icon?.let {
+          icon(it)
+        }
+        text(value.packageManagerName)
       }
 
       selectedItem = selectedPanel
