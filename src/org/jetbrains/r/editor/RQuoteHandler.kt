@@ -12,7 +12,7 @@ import com.intellij.openapi.editor.highlighter.HighlighterIterator
 import com.intellij.r.psi.parsing.RElementTypes
 
 class RQuoteHandler : SimpleTokenSetQuoteHandler(RElementTypes.R_STRING), MultiCharQuoteHandler {
-  override fun isOpeningQuote(iterator: HighlighterIterator?, offset: Int): Boolean {
+  override fun isOpeningQuote(iterator: HighlighterIterator, offset: Int): Boolean {
     if (getRawStringQuote(iterator, offset) != null) return true
     return super.isOpeningQuote(iterator, offset)
   }
@@ -30,8 +30,8 @@ class RQuoteHandler : SimpleTokenSetQuoteHandler(RElementTypes.R_STRING), MultiC
     }
   }
 
-  override fun hasNonClosedLiteral(editor: Editor?, iterator: HighlighterIterator?, offset: Int): Boolean {
-    val document = editor!!.document
+  override fun hasNonClosedLiteral(editor: Editor, iterator: HighlighterIterator, offset: Int): Boolean {
+    val document = editor.document
     val lineEndOffset = document.getLineEndOffset(document.getLineNumber(offset))
     if (offset < lineEndOffset) {
       val charSequence = document.charsSequence
@@ -50,8 +50,8 @@ class RQuoteHandler : SimpleTokenSetQuoteHandler(RElementTypes.R_STRING), MultiC
   }
 }
 
-private fun getRawStringQuote(iterator: HighlighterIterator?, offset: Int): Char? {
-  val document = iterator?.document ?: return null
+private fun getRawStringQuote(iterator: HighlighterIterator, offset: Int): Char? {
+  val document = iterator.document
   return getRawStringQuote(document, offset)
 }
 
