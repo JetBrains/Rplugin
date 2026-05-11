@@ -4,9 +4,6 @@
 
 package org.jetbrains.r.rinterop
 
-import com.intellij.diagnostic.IdeMessagePanel
-import com.intellij.diagnostic.MessagePool
-import com.intellij.diagnostic.MessagePoolListener
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.OSProcessHandler
 import com.intellij.execution.process.OSProcessUtil
@@ -18,7 +15,6 @@ import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.process.UnixProcessManager
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Attachment
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -26,7 +22,6 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.wm.impl.status.FatalErrorWidgetFactory
 import com.intellij.r.psi.RPluginUtil
 import com.intellij.r.psi.interpreter.OperatingSystem
 import com.intellij.r.psi.interpreter.RInterpreter
@@ -185,16 +180,6 @@ object RInteropUtil {
     }
     val message = (if (terminatedWithReport) "RWrapper forcibly terminated by user" else "RWrapper terminated with Runtime Error") +
                   (updateCrashes.firstOrNull()?.let { ", the crash minidump found: $it " } ?: "")
-    if (terminatedWithReport) {
-      MessagePool.getInstance().addListener(object : MessagePoolListener {
-        override fun newEntryAdded() {
-          MessagePool.getInstance().removeListener(this)
-          invokeLater {
-            (FatalErrorWidgetFactory().createWidget(project) as? IdeMessagePanel)?.openErrorsDialog(null)
-          }
-        }
-      })
-    }
     LOG.error(message, *attachments)
   }
 
