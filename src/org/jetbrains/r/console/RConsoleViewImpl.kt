@@ -20,7 +20,7 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.application.runWriteAction
-import com.intellij.openapi.application.writeAction
+import com.intellij.openapi.application.edtWriteAction
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.command.undo.DocumentReferenceManager
@@ -138,7 +138,7 @@ class RConsoleViewImpl(override val rInterop: RInteropImpl, title: String) : Lan
   fun appendCommandText(text: String) {
     RPluginCoroutineScope.getScope(project).launch(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
       flushDeferredText()
-      writeAction {
+      edtWriteAction {
         consoleEditor.document.setText(text)
         PsiDocumentManager.getInstance(project).commitDocument(consoleEditor.document)
       }
@@ -151,7 +151,7 @@ class RConsoleViewImpl(override val rInterop: RInteropImpl, title: String) : Lan
 
   fun executeText(text: String): Promise<Unit> =
     RPluginCoroutineScope.getScope(project).async(Dispatchers.EDT + ModalityState.defaultModalityState().asContextElement()) {
-      writeAction {
+      edtWriteAction {
         consoleEditor.document.setText(text)
         PsiDocumentManager.getInstance(project).commitDocument(consoleEditor.document)
       }
