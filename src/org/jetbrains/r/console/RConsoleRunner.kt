@@ -99,7 +99,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
       ProcessTerminatedListener.attach(rInterop.processHandler)
       rInterop.processHandler.addProcessListener(object : ProcessListener {
         override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
-          if (outputType == ProcessOutputType.SYSTEM) {
+          if (ProcessOutputType.isSystem(outputType)) {
             consoleView.print(event.text, ConsoleViewContentType.SYSTEM_OUTPUT)
           }
         }
