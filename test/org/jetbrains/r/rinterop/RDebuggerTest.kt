@@ -299,7 +299,7 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
     val buf = StringBuilder()
     rInterop.addAsyncEventsListener(object : RInteropAsyncEventsListener {
       override fun onText(text: String, type: ProcessOutputType) {
-        if (type == ProcessOutputType.STDERR) {
+        if (type.isStderr) {
           buf.append(text)
         }
       }

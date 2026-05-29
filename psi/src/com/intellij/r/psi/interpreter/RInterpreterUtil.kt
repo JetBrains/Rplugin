@@ -14,7 +14,7 @@ import com.intellij.execution.process.CapturingProcessRunner
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessOutput
-import com.intellij.execution.process.ProcessOutputTypes
+import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
@@ -448,12 +448,12 @@ object RInterpreterUtil {
 
     override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
       val text = event.text
-      if (outputType == ProcessOutputTypes.STDOUT) {
+      if (ProcessOutputType.isStdout(outputType)) {
         for (char in text) {
           processCharacter(char)
         }
       }
-      else if (outputType == ProcessOutputTypes.STDERR) {
+      else if (ProcessOutputType.isStderr(outputType)) {
         output.appendStderr(text)
       }
     }

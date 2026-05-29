@@ -5,13 +5,12 @@
 package org.jetbrains.r.visualization.inlays.components
 
 import com.intellij.execution.process.ProcessOutputType
-import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.openapi.util.Key
 
 class ProcessOutput(val text: String, kind: Key<*>) {
-  private val kindValue: Int = when (kind) {
-    ProcessOutputTypes.STDOUT -> 1
-    ProcessOutputTypes.STDERR -> 2
+  private val kindValue: Int = when {
+    ProcessOutputType.isStdout(kind) -> 1
+    ProcessOutputType.isStderr(kind) -> 2
     else -> 3
   }
 

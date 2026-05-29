@@ -1137,9 +1137,9 @@ class RInteropImpl(
     val stdoutBuffer = StringBuilder()
     val stderrBuffer = StringBuilder()
     val promise = executeRequestAsync(methodDescriptor, request) { text, type ->
-      when (type) {
-        ProcessOutputType.STDOUT -> stdoutBuffer.append(text)
-        ProcessOutputType.STDERR -> stderrBuffer.append(text)
+      when {
+        type.isStdout -> stdoutBuffer.append(text)
+        type.isStderr -> stderrBuffer.append(text)
       }
     }
     if (withCheckCancelled) {
@@ -1611,4 +1611,3 @@ class RInteropImpl(
 }
 
 private val LOG = Logger.getInstance(RInteropUtil.javaClass)
-

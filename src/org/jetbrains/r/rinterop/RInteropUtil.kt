@@ -78,14 +78,14 @@ object RInteropUtil {
     process.addProcessListener(object : ProcessListener {
       override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
         val text = event.text
-        when (outputType) {
-          ProcessOutputType.STDERR, ProcessOutputType.SYSTEM -> {
+        when {
+          ProcessOutputType.isStderr(outputType) || ProcessOutputType.isSystem(outputType) -> {
             if (linePromise.state == Promise.State.PENDING) {
               stderr.append(text)
             }
             LOG.debug("RWRAPPER " + StringUtil.escapeStringCharacters(text))
           }
-          ProcessOutputType.STDOUT -> {
+          ProcessOutputType.isStdout(outputType) -> {
             if (linePromise.state != Promise.State.PENDING) return
             stdout.append(text)
             if (text.contains('\n')) linePromise.setResult(stdout.toString())

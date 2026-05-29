@@ -106,9 +106,9 @@ class RFsNotifier(private val interpreter: RInterpreter): Disposable {
 
       override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
         val text = event.text
-        when (outputType) {
-          ProcessOutputType.STDERR -> LOG.warn("STDERR: $text")
-          ProcessOutputType.STDOUT -> {
+        when {
+          ProcessOutputType.isStderr(outputType) -> LOG.warn("STDERR: $text")
+          ProcessOutputType.isStdout(outputType) -> {
             text.forEach { c ->
               if (c == '\n') {
                 stdoutBuf.toString().trim().takeIf { it.isNotEmpty() }?.let { processLine(it) }

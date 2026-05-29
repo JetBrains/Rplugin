@@ -58,9 +58,9 @@ class SubprocessTest : RProcessHandlerBaseTestCase() {
       var done = false
 
       override fun onText(text: String, type: ProcessOutputType) {
-        when (type) {
-          ProcessOutputType.STDOUT -> stdout.append(text)
-          ProcessOutputType.STDERR -> stderr.append(text)
+        when {
+          type.isStdout -> stdout.append(text)
+          type.isStderr -> stderr.append(text)
         }
       }
 
@@ -117,7 +117,7 @@ class SubprocessTest : RProcessHandlerBaseTestCase() {
       var done = false
 
       override fun onText(text: String, type: ProcessOutputType) {
-        if (type == ProcessOutputType.STDOUT) stdoutBuf.append(text)
+        if (type.isStdout) stdoutBuf.append(text)
         if ("[1] 222" in stdoutBuf) promise.setResult(Unit)
       }
     })

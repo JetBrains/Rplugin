@@ -171,12 +171,12 @@ fun testExecuteMultilineWithFor() {
       val stderr = StringBuilder()
 
       override fun onText(text: String, type: ProcessOutputType) {
-        when (type) {
-          ProcessOutputType.STDOUT -> {
+        when {
+          type.isStdout -> {
             stdout.append(text)
             if (stdout.length >= expectedStdoutLength) stdoutPromise.setResult(stdout.toString())
           }
-          ProcessOutputType.STDERR -> {
+          type.isStderr -> {
             stderr.append(text)
             if (stderr.length >= expectedStderrLength) stderrPromise.setResult(stderr.toString())
           }
@@ -206,7 +206,7 @@ fun testExecuteMultilineWithFor() {
       val promise = AsyncPromise<Unit>()
       val listener = object : RInteropAsyncEventsListener {
         override fun onText(text: String, type: ProcessOutputType) {
-          if (type == ProcessOutputType.STDOUT && text.isNotBlank()) {
+          if (type.isStdout && text.isNotBlank()) {
             wasOutput = true
           }
         }
