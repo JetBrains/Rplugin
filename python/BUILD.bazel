@@ -94,10 +94,7 @@ jvm_library(
         "//rplugin/python:python_test_lib",
     ],
     visibility = ["//visibility:public"],
-    runtime_deps = [
-        # do not sort,
-        ":r-python-tests",
-    ],
+    runtime_deps = [":r-python-tests"],
     deps = [
         # do not sort,
         "@community//platform/code-style-api:codeStyle",
