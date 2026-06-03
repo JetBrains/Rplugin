@@ -1,111 +1,147 @@
-### auto-generated section `build intellij.r.python` start
+load("@community//build:tests-options.bzl", "jps_test")
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
+### auto-generated section `build intellij.r.python` start
+
 jvm_library(
-  name = "python",
-  module_name = "intellij.r.python",
-  visibility = ["//visibility:public"],
-  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
-  resources = glob(["resources/**/*"]),
-  resource_strip_prefix = "resources",
-  deps = [
-    "@community//platform/code-style-api:codeStyle",
-    "@community//platform/core-api:core",
-    "//rplugin:r",
-    "//rplugin/psi",
-    "@community//platform/lang-api:lang",
-    "@community//platform/lang-impl",
-    "@community//python/openapi:community",
-    "@community//python:python-community-impl",
-    "@lib//:kotlin-stdlib",
-  ]
+    name = "python",
+    srcs = glob(
+        [
+            "src/**/*.kt",
+            "src/**/*.java",
+            "src/**/*.form",
+        ],
+        allow_empty = True,
+    ),
+    module_name = "intellij.r.python",
+    resource_strip_prefix = "resources",
+    resources = glob(
+        ["resources/**/*"],
+    ),
+    visibility = ["//visibility:public"],
+    deps = [
+        # do not sort,
+        "@community//platform/code-style-api:codeStyle",
+        "@community//platform/core-api:core",
+        "//rplugin:r",
+        "//rplugin/psi",
+        "@community//platform/lang-api:lang",
+        "@community//platform/lang-impl",
+        "@community//python/openapi:community",
+        "@community//python:python-community-impl",
+        "@lib//:kotlin-stdlib",
+    ],
 )
 
 jvm_library(
-  name = "python_test_lib",
-  testonly = True,
-  module_name = "intellij.r.python",
-  visibility = ["//visibility:public"],
-  srcs = glob([], allow_empty = True),
-  runtime_deps = [
-    ":python",
-    "@community//platform/code-style-api:codeStyle_test_lib",
-    "@community//platform/core-api:core_test_lib",
-    "//rplugin:r_test_lib",
-    "//rplugin/psi:psi_test_lib",
-    "@community//platform/lang-api:lang_test_lib",
-    "@community//platform/lang-impl:lang-impl_test_lib",
-    "@community//python/openapi:community_test_lib",
-    "@community//python:python-community-impl_test_lib",
-  ]
+    name = "python_test_lib",
+    testonly = True,
+    srcs = glob(
+        [],
+        allow_empty = True,
+    ),
+    module_name = "intellij.r.python",
+    visibility = ["//visibility:public"],
+    runtime_deps = [
+        # do not sort,
+        ":python",
+        "@community//platform/code-style-api:codeStyle_test_lib",
+        "@community//platform/core-api:core_test_lib",
+        "//rplugin:r_test_lib",
+        "//rplugin/psi:psi_test_lib",
+        "@community//platform/lang-api:lang_test_lib",
+        "@community//platform/lang-impl:lang-impl_test_lib",
+        "@community//python/openapi:community_test_lib",
+        "@community//python:python-community-impl_test_lib",
+    ],
 )
 ### auto-generated section `build intellij.r.python` end
 
 ### auto-generated section `iml intellij.r.python` start
-exports_files([
-  "intellij.r.python.iml",
-], visibility = ["//visibility:public"])
+exports_files(
+    [
+        "intellij.r.python.iml",
+    ],
+    visibility = ["//visibility:public"],
+)
 ### auto-generated section `iml intellij.r.python` end
 
 ### auto-generated section `build intellij.r.python.tests` start
+
 jvm_library(
-  name = "r-python-tests",
-  module_name = "intellij.r.python.tests",
-  visibility = ["//visibility:public"],
-  srcs = glob([], allow_empty = True)
+    name = "r-python-tests",
+    srcs = glob(
+        [],
+        allow_empty = True,
+    ),
+    module_name = "intellij.r.python.tests",
+    visibility = ["//visibility:public"],
 )
 
 jvm_library(
-  name = "r-python-tests_test_lib",
-  testonly = True,
-  visibility = ["//visibility:public"],
-  srcs = glob(["test/**/*.kt", "test/**/*.java", "test/**/*.form"], allow_empty = True),
-  associates = [
-    "//rplugin/python",
-    "//rplugin/python:python_test_lib",
-  ],
-  deps = [
-    "@community//platform/code-style-api:codeStyle",
-    "@community//platform/code-style-api:codeStyle_test_lib",
-    "@community//platform/core-api:core",
-    "@community//platform/core-api:core_test_lib",
-    "@community//platform/projectModel-api:projectModel",
-    "@community//platform/projectModel-api:projectModel_test_lib",
-    "//rplugin:r",
-    "//rplugin:r_test_lib",
-    "//rplugin/psi",
-    "//rplugin/psi:psi_test_lib",
-    "@community//platform/lang-api:lang",
-    "@community//platform/lang-api:lang_test_lib",
-    "@community//platform/lang-impl",
-    "@community//platform/lang-impl:lang-impl_test_lib",
-    "@community//platform/testFramework",
-    "@community//platform/testFramework:testFramework_test_lib",
-    "@community//python/openapi:community",
-    "@community//python/openapi:community_test_lib",
-    "@community//python:python-community-impl",
-    "@community//python:python-community-impl_test_lib",
-    "@community//python/testFramework",
-    "@community//python/testFramework:testFramework_test_lib",
-    "@lib//:kotlin-stdlib",
-    "//rplugin:r-tests",
-    "//rplugin:r-tests_test_lib",
-  ],
-  runtime_deps = [":r-python-tests"]
+    name = "r-python-tests_test_lib",
+    testonly = True,
+    srcs = glob(
+        [
+            "test/**/*.kt",
+            "test/**/*.java",
+            "test/**/*.form",
+        ],
+        allow_empty = True,
+    ),
+    associates = [
+        "//rplugin/python",
+        "//rplugin/python:python_test_lib",
+    ],
+    visibility = ["//visibility:public"],
+    runtime_deps = [
+        # do not sort,
+        ":r-python-tests",
+    ],
+    deps = [
+        # do not sort,
+        "@community//platform/code-style-api:codeStyle",
+        "@community//platform/code-style-api:codeStyle_test_lib",
+        "@community//platform/core-api:core",
+        "@community//platform/core-api:core_test_lib",
+        "@community//platform/projectModel-api:projectModel",
+        "@community//platform/projectModel-api:projectModel_test_lib",
+        "//rplugin:r",
+        "//rplugin:r_test_lib",
+        "//rplugin/psi",
+        "//rplugin/psi:psi_test_lib",
+        "@community//platform/lang-api:lang",
+        "@community//platform/lang-api:lang_test_lib",
+        "@community//platform/lang-impl",
+        "@community//platform/lang-impl:lang-impl_test_lib",
+        "@community//platform/testFramework",
+        "@community//platform/testFramework:testFramework_test_lib",
+        "@community//python/openapi:community",
+        "@community//python/openapi:community_test_lib",
+        "@community//python:python-community-impl",
+        "@community//python:python-community-impl_test_lib",
+        "@community//python/testFramework",
+        "@community//python/testFramework:testFramework_test_lib",
+        "@lib//:kotlin-stdlib",
+        "//rplugin:r-tests",
+        "//rplugin:r-tests_test_lib",
+    ],
 )
 ### auto-generated section `build intellij.r.python.tests` end
 
 ### auto-generated section `iml intellij.r.python.tests` start
-exports_files([
-  "intellij.r.python.tests.iml",
-], visibility = ["//visibility:public"])
+exports_files(
+    [
+        "intellij.r.python.tests.iml",
+    ],
+    visibility = ["//visibility:public"],
+)
 ### auto-generated section `iml intellij.r.python.tests` end
 
 ### auto-generated section `test intellij.r.python.tests` start
-load("@community//build:tests-options.bzl", "jps_test")
 
 jps_test(
-  name = "r-python-tests_test",
-  runtime_deps = [":r-python-tests_test_lib"]
+    name = "r-python-tests_test",
+    runtime_deps = [":r-python-tests_test_lib"],
 )
 ### auto-generated section `test intellij.r.python.tests` end
