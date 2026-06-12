@@ -1,6 +1,6 @@
 package org.jetbrains.r.rinterop.rstudioapi
 
-import com.intellij.analysis.problemsView.toolWindow.ProblemsView
+import com.intellij.codeInsight.daemon.impl.ProblemsViewBridge
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.editor.Document
@@ -173,7 +173,7 @@ object RStudioApiUtils {
             val offset = getLineOffset(document, line - 1, column - 1)
             e.caretModel.primaryCaret.moveToOffset(offset)
           }
-          ProblemsView.toggleCurrentFileProblems(rInterop.project, virtualFile, document)
+          ProblemsViewBridge.toggleCurrentFileProblemsIfAvailable(rInterop.project, virtualFile, document)
         }
         autoSelect = null
       }
