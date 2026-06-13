@@ -122,6 +122,8 @@ jvm_library(
         "@lib//:kotlin-stdlib",
         "//rplugin:r-tests",
         "//rplugin:r-tests_test_lib",
+        "@community//libraries/junit4",
+        "@community//libraries/junit4:junit4_test_lib",
     ],
 )
 ### auto-generated section `build intellij.r.python.tests` end
