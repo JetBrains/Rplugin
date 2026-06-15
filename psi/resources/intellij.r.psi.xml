@@ -1,7 +1,6 @@
 <idea-plugin>
   <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
   <dependencies>
-    <plugin id="org.intellij.plugins.markdown"/>
     <module name="intellij.platform.langInjection"/>
     <module name="intellij.libraries.grpc"/>
     <module name="intellij.markdown"/>
