@@ -68,6 +68,7 @@
     <orderEntry type="module" module-name="intellij.libraries.kotlinx.coroutines.core" />
     <orderEntry type="module" module-name="intellij.platform.editor.ui" />
     <orderEntry type="module" module-name="intellij.libraries.jcef" />
+    <orderEntry type="module" module-name="intellij.platform.ui.jcef" />
     <orderEntry type="module" module-name="intellij.platform.images" />
     <orderEntry type="module" module-name="intellij.libraries.grpc" />
     <orderEntry type="module" module-name="intellij.libraries.grpc.netty.shaded" />
