@@ -3,7 +3,9 @@
   <dependencies>
     <module name="intellij.platform.langInjection"/>
     <module name="intellij.libraries.grpc"/>
+    <module name="intellij.libraries.jcef"/>
     <module name="intellij.markdown"/>
+    <module name="intellij.platform.ui.jcef"/>
   </dependencies>
   <!-- endregion -->
 
