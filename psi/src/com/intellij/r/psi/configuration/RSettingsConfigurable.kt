@@ -63,6 +63,11 @@ class RSettingsConfigurable(private val project: Project) : DslConfigurableBase(
            extensionConfigurables.any { it.isModified }
   }
 
+  override fun disposeUIResources() {
+    extensionConfigurables.forEach { it.disposeUIResources() }
+    super.disposeUIResources()
+  }
+
   override fun reset() {
     super.reset()
     fun RInterpreterLocation.findAmong(existing: List<RInterpreterInfo>): RInterpreterInfo? {
