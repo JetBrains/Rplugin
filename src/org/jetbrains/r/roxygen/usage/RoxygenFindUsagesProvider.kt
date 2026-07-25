@@ -15,7 +15,7 @@ import com.intellij.r.psi.roxygen.parsing.RoxygenElementTypes.ROXYGEN_IDENTIFIER
 import com.intellij.r.psi.roxygen.parsing.RoxygenTokenSets
 import com.intellij.r.psi.roxygen.psi.api.RoxygenParameter
 
-private class RoxygenFindUsagesProvider : FindUsagesProvider {
+internal class RoxygenFindUsagesProvider : FindUsagesProvider {
   override fun getWordsScanner(): WordsScanner {
     return DefaultWordsScanner(RoxygenLexer(),
                                TokenSet.create(ROXYGEN_IDENTIFIER),

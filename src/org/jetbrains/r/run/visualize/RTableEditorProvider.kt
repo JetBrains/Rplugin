@@ -44,7 +44,7 @@ internal class RTableVirtualFile(val table: RDataFrameTablePage, name: String) :
   override fun getFileType(): FileType = TableFileType
 }
 
-private class RTableEditorProvider : FileEditorProvider, DumbAware {
+internal class RTableEditorProvider : FileEditorProvider, DumbAware {
   override fun getEditorTypeId(): String = EDITOR_TYPE_ID
 
   override fun accept(project: Project, file: VirtualFile): Boolean = file is RTableVirtualFile

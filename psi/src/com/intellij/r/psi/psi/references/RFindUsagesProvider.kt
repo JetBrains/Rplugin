@@ -28,7 +28,7 @@ import com.intellij.r.psi.psi.api.RPsiElement
 import com.intellij.r.psi.psi.api.RStringLiteralExpression
 import com.intellij.r.psi.skeleton.psi.RSkeletonAssignmentStatement
 
-private class RFindUsagesProvider : FindUsagesProvider {
+internal class RFindUsagesProvider : FindUsagesProvider {
   override fun getWordsScanner(): WordsScanner {
     return DefaultWordsScanner(RLexer(), TokenSet.create(RElementTypes.R_IDENTIFIER),
                                TokenSet.create(RTokenTypes.END_OF_LINE_COMMENT),

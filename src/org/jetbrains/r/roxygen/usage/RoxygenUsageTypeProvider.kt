@@ -9,7 +9,7 @@ import com.intellij.r.psi.roxygen.RoxygenLanguage
 import com.intellij.usages.impl.rules.UsageType
 import com.intellij.usages.impl.rules.UsageTypeProvider
 
-private class RoxygenUsageTypeProvider : UsageTypeProvider {
+internal class RoxygenUsageTypeProvider : UsageTypeProvider {
   override fun getUsageType(element: PsiElement): UsageType? {
     return if (element.language === RoxygenLanguage.INSTANCE) ROXYGEN_DOCUMENTATION
     else null

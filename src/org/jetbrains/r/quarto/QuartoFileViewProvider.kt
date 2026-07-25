@@ -17,7 +17,7 @@ import org.jetbrains.r.rmarkdown.RMarkdownFlavourDescriptor
 import org.jetbrains.r.rmarkdown.RMarkdownTemplate
 import org.jetbrains.r.rmarkdown.RmdFenceProvider
 
-private class QuartoFileViewProviderFactory : FileViewProviderFactory {
+internal class QuartoFileViewProviderFactory : FileViewProviderFactory {
   override fun createFileViewProvider(
     file: VirtualFile,
     language: Language?,
