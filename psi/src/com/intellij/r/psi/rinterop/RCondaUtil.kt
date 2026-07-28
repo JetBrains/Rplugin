@@ -1,7 +1,6 @@
 /*
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
-
 package com.intellij.r.psi.rinterop
 
 import com.intellij.execution.configurations.PathEnvironmentVariableUtil
@@ -10,11 +9,14 @@ import com.intellij.openapi.util.io.FileSystemUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.SystemProperties
+import com.intellij.util.system.LowLevelLocalMachineAccess
+import com.intellij.util.system.OS
+import com.intellij.util.system.OS.CURRENT
 import java.io.File
 import java.nio.file.Paths
 
+@OptIn(LowLevelLocalMachineAccess::class)
 object RCondaUtil {
-
   private val CONDA_DEFAULT_ROOTS = arrayOf("anaconda", "anaconda2", "anaconda3", "miniconda",
                                             "miniconda2", "miniconda3", "Anaconda", "Anaconda2",
                                             "Anaconda3", "Miniconda", "Miniconda2", "Miniconda3")
@@ -27,19 +29,8 @@ object RCondaUtil {
     return condaRoot
   }
 
-  fun getEnvironmentName(file: File): String? {
-    var environmentDir: File? = file
-    while (environmentDir != null) {
-      if (environmentDir.parentFile?.name == "envs" && CONDA_DEFAULT_ROOTS.contains(environmentDir.parentFile?.parentFile?.name)) break
-      environmentDir = environmentDir.parentFile
-    }
-    return environmentDir?.name
-  }
-
   fun getSystemCondaExecutable(): String? {
-    val condaName = if (SystemInfo.isWindows) "conda.exe" else "conda"
-    val condaInPath = PathEnvironmentVariableUtil.findInPath(condaName)
-    return if (condaInPath != null) condaInPath.path else getCondaExecutableByName(condaName)
+    return PathEnvironmentVariableUtil.findFirst("conda")?.toString() ?: getCondaExecutableByName(OS.CURRENT.getBinaryName("conda"))
   }
 
   fun findCondaByRInterpreter(file: File): File? {
@@ -58,16 +49,14 @@ object RCondaUtil {
               if (SystemInfo.isWindows) "Scripts" else "bin",
               if (SystemInfo.isWindows) "conda.exe" else "conda").toFile().takeIf { it.exists() }
 
-
   private fun getCondaExecutableByName(condaName: String): String? {
-    val userHome = LocalFileSystem.getInstance().findFileByPath(
-      SystemProperties.getUserHome().replace('\\', '/'))
+    val userHome = LocalFileSystem.getInstance().findFileByPath(SystemProperties.getUserHome().replace('\\', '/'))
     if (userHome != null) {
       for (root in CONDA_DEFAULT_ROOTS) {
         var condaFolder = userHome.findChild(root)
         var executableFile = findExecutable(condaName, condaFolder)
         if (executableFile != null) return executableFile
-        if (SystemInfo.isWindows) {
+        if (OS.CURRENT == OS.Windows) {
           val appData = userHome.findFileByRelativePath("AppData\\Local\\Continuum\\$root")
           executableFile = findExecutable(condaName, appData)
           if (executableFile != null) return executableFile
@@ -80,7 +69,7 @@ object RCondaUtil {
         }
       }
     }
-    if (!SystemInfo.isWindows) {
+    if (OS.CURRENT != OS.Windows) {
       val systemCondaFolder = LocalFileSystem.getInstance().findFileByPath("/opt/anaconda")
       val executableFile = findExecutable(condaName, systemCondaFolder)
       if (executableFile != null) return executableFile
@@ -90,7 +79,7 @@ object RCondaUtil {
 
   private fun findExecutable(condaName: String, condaFolder: VirtualFile?): String? {
     if (condaFolder != null) {
-      val binFolder = condaFolder.findChild(if (SystemInfo.isWindows) "Scripts" else "bin")
+      val binFolder = condaFolder.findChild(if (OS.CURRENT == OS.Windows) "Scripts" else "bin")
       if (binFolder != null) {
         val bin = binFolder.findChild(condaName)
         if (bin != null) {
