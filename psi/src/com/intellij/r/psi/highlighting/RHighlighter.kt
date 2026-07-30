@@ -20,7 +20,7 @@ class RHighlighter : SyntaxHighlighterBase() {
     return RLexer()
   }
 
-  override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {
+  override fun getTokenHighlights(tokenType: IElementType): Array<out TextAttributesKey> {
     return pack(ATTRIBUTES[tokenType])
   }
 

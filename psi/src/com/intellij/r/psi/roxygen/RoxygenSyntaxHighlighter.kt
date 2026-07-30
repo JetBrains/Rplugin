@@ -14,7 +14,7 @@ class RoxygenSyntaxHighlighter : SyntaxHighlighterBase() {
 
   override fun getHighlightingLexer(): Lexer = RoxygenLexer()
 
-  override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {
+  override fun getTokenHighlights(tokenType: IElementType): Array<out TextAttributesKey> {
     val attribute = when (tokenType) {
       RoxygenElementTypes.ROXYGEN_TAG_NAME -> TAG_NAME
       else -> COMMENT_TEXT

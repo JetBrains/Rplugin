@@ -50,7 +50,7 @@ internal class RMarkdownOrQuartoTemplateEditorHighlighter(
 }
 
 private class RMarkdownSyntaxHighlighter : SyntaxHighlighterBase() {
-  override fun getTokenHighlights(tokenType: IElementType?): Array<TextAttributesKey> = TextAttributesKey.EMPTY_ARRAY
+  override fun getTokenHighlights(tokenType: IElementType): Array<out TextAttributesKey> = TextAttributesKey.EMPTY_ARRAY
 
   override fun getHighlightingLexer(): Lexer = PatchingLexer { tokenSequence -> RmdFenceProvider.matchHeader(tokenSequence)?.fenceElementType }
 }
