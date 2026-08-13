@@ -14,9 +14,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import com.intellij.psi.impl.PsiDocumentManagerImpl
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.common.ExpiringList
 import com.intellij.r.psi.common.emptyExpiringList
@@ -296,7 +296,7 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
       if (!project.isOpen || project.isDisposed) return
       val skeletonsDirectory = LocalFileSystem.getInstance().refreshAndFindFileByPath(skeletonsDirectory) ?: return
       VfsUtil.markDirtyAndRefresh(false, true, true, skeletonsDirectory)
-      WriteAction.runAndWait<Exception> { PsiDocumentManagerImpl.getInstance(project).commitAllDocuments() }
+      WriteAction.runAndWait<Exception> { PsiDocumentManager.getInstance(project).commitAllDocuments() }
     }
 
     companion object {
