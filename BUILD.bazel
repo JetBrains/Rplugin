@@ -178,6 +178,7 @@ jvm_library(
 exports_files(
     [
         "intellij.r.iml",
+        "resources/META-INF/rplugin-common.xml",
     ],
     visibility = ["//visibility:public"],
 )

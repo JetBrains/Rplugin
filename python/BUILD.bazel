@@ -60,6 +60,7 @@ jvm_library(
 exports_files(
     [
         "intellij.r.python.iml",
+        "resources/META-INF/rplugin-python.xml",
     ],
     visibility = ["//visibility:public"],
 )
