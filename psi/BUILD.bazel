@@ -112,6 +112,8 @@ jvm_library(
 exports_files(
     [
         "intellij.r.psi.iml",
+        "resources/com/intellij/r/psi/lexer/build.xml",
+        "resources/com/intellij/r/psi/roxygen/lexer/build.xml",
         "resources/intellij.r.psi.xml",
     ],
     visibility = ["//visibility:public"],

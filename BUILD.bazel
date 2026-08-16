@@ -179,6 +179,12 @@ exports_files(
     [
         "intellij.r.iml",
         "resources/META-INF/rplugin-common.xml",
+        "resources/colorSchemes/RLanguageDarcula.xml",
+        "resources/colorSchemes/RLanguageDefault.xml",
+        "resources/colorSchemes/RMarkdownChunkDarcula.xml",
+        "resources/colorSchemes/RMarkdownChunkDefault.xml",
+        "resources/injections/rInjections.xml",
+        "resources/liveTemplates/rtemplates.xml",
     ],
     visibility = ["//visibility:public"],
 )
