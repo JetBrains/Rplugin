@@ -192,7 +192,7 @@ class RunChunkHandler(
     val screenParameters: RGraphicsUtils.ScreenParameters,
   ) {
 
-    @RequiresReadLock
+    @RequiresReadLock(generateAssertion = false /* IJPL-115548 */)
     @Throws(RunChunkHandlerException::class)
     fun makeRequest(textRange: TextRange?, console: RConsoleViewImpl, isDebug: Boolean): RInteropImpl.ReplSourceFileRequest {
       val range = codeElement.getTextRange(textRange)
@@ -270,7 +270,7 @@ class RunChunkHandler(
     }
   }
 
-  @RequiresReadLock
+  @RequiresReadLock(generateAssertion = false /* IJPL-115548 */)
   @VisibleForTesting
   internal fun runHandlersAndExecuteChunkAsync(
     console: RConsoleViewImpl,

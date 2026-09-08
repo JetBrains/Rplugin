@@ -16,7 +16,7 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 
 class RProgramRunner: AsyncProgramRunner<RunnerSettings>() {
-  @RequiresWriteLock
+  @RequiresWriteLock(generateAssertion = false /* IJPL-115548 */)
   override fun execute(environment: ExecutionEnvironment, state: RunProfileState): Promise<RunContentDescriptor?> {
     FileDocumentManager.getInstance().saveAllDocuments()
     val result = AsyncPromise<RunContentDescriptor?>()
