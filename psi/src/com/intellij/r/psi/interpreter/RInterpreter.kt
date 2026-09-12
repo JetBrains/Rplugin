@@ -12,7 +12,7 @@ import com.intellij.openapi.application.edtWriteAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.r.psi.RPluginUtil
@@ -39,7 +39,7 @@ interface RInterpreter : RInterpreterInfo {
 
   fun suggestConsoleName(workingDirectory: String): String {
     val path = Path.of(project.basePath).parent.relativize(Path.of(workingDirectory)).toString()
-    return LocalFileSystem.getInstance().extractPresentableUrl(path)
+    return StandardFileSystems.local().extractPresentableUrl(path)
   }
 
   fun getFilePathAtHost(file: VirtualFile): String? {

@@ -26,7 +26,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.Formats
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.psi.PsiManager
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
@@ -368,7 +368,7 @@ internal class JobEntity(val jobDescriptor: RJobDescriptor,
   private val directoryName = jobDescriptor.scriptFile.let { file ->
     if (file.isInLocalFileSystem) {
       return@let FileUtil.getLocationRelativeToUserHome(
-        LocalFileSystem.getInstance().extractPresentableUrl(PathUtil.getParentPath(jobDescriptor.scriptFile.path)))
+        StandardFileSystems.local().extractPresentableUrl(PathUtil.getParentPath(jobDescriptor.scriptFile.path)))
     }
     val interpreter = RInterpreterManager.getInterpreterOrNull(jobDescriptor.project)
     val pathAtHost = interpreter?.getFilePathAtHost(file)

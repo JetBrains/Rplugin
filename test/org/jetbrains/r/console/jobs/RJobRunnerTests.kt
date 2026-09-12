@@ -10,7 +10,7 @@ import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.openapi.vfs.VirtualFile
 import kotlinx.coroutines.async
 import kotlinx.coroutines.future.asCompletableFuture
@@ -130,6 +130,6 @@ class RJobRunnerTests : RConsoleBaseTestCase() {
   private fun createScript(text: String): VirtualFile {
     val tempFile = FileUtil.createTempFile("test", ".R", true)
     tempFile.writeText(text)
-    return LocalFileSystem.getInstance().refreshAndFindFileByIoFile(tempFile)!!
+    return StandardFileSystems.local().refreshAndFindFileByPath(tempFile.absolutePath)!!
   }
 }

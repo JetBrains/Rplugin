@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop
 
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.r.psi.debugger.RSourcePosition
 import com.intellij.r.psi.interpreter.RInterpreter
 import com.intellij.r.psi.interpreter.RInterpreterManager
@@ -28,7 +28,7 @@ class SaveSessionTest : RUsefulTestCase() {
     val workspaceFile = interpreter.createTempFileOnHost("a.RData")
     project.putUserData(RInteropUtil.WORKSPACE_FILE_FOR_TESTS, workspaceFile)
     runWriteAction {
-      LocalFileSystem.getInstance().refreshAndFindFileByPath(workspaceFile)?.delete(this)
+      StandardFileSystems.local().refreshAndFindFileByPath(workspaceFile)?.delete(this)
     }
   }
 

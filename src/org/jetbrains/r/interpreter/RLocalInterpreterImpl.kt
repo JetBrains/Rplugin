@@ -17,8 +17,8 @@ import com.intellij.openapi.ui.TextComponentAccessor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtilRt
-import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.newvfs.RefreshQueue
 import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.interpreter.OperatingSystem
 import com.intellij.r.psi.interpreter.RInterpreter
@@ -120,7 +120,7 @@ class RLocalInterpreterImpl(location: RLocalInterpreterLocation, project: Projec
     val path = Paths.get(directory, name)
     path.toFile().parentFile.mkdirs()
     Files.write(path, content ?: "".toByteArray())
-    LocalFileSystem.getInstance().refreshNioFiles(listOf(path))
+    RefreshQueue.getInstance().refreshPaths(false, false, null, listOf(path))
     return path.toString()
   }
 

@@ -32,7 +32,7 @@ import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.ui.JBPopupMenu
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
 import com.intellij.r.psi.icons.RIcons
@@ -295,7 +295,7 @@ internal class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(Border
       withExtensionFilter(RBundle.message("inlay.table.export.as.csv.label"), "csv", "tsv")
     }
     val chooser: FileSaverDialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, this)
-    val virtualBaseDir = LocalFileSystem.getInstance().findFileByIoFile(File(ProjectManager.getInstance().openProjects[0].basePath!!))
+    val virtualBaseDir = StandardFileSystems.local().findFileByPath(File(ProjectManager.getInstance().openProjects[0].basePath!!).absolutePath)
     val fileWrapper = chooser.save(virtualBaseDir, "table.csv") ?: return
 
     fun save(onlySelected: Boolean, out: BufferedWriter, cellBreak: String, escaper: (String) -> String, pi: ProgressIndicator) {

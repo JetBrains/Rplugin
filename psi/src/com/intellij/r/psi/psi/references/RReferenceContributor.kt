@@ -6,7 +6,7 @@ package com.intellij.r.psi.psi.references
 
 import com.intellij.openapi.paths.WebReference
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileSystemItem
@@ -44,7 +44,7 @@ class RReferenceContributor : PsiReferenceContributor() {
           override fun getDefaultContexts(): MutableCollection<PsiFileSystemItem> {
             if (isAbsolute) {
               val pathRoot = path.root.toString()
-              LocalFileSystem.getInstance().findFileByPath(pathRoot)?.let { file ->
+              StandardFileSystems.local().findFileByPath(pathRoot)?.let { file ->
                 PsiUtilCore.findFileSystemItem(project, file)?.let { return mutableListOf(it) }
               }
               return mutableListOf()
@@ -53,7 +53,7 @@ class RReferenceContributor : PsiReferenceContributor() {
             val result = super.getDefaultContexts().toMutableSet()
             val workingDir = (file as? RFile)?.runtimeInfo?.workingDir
             val dir = workingDir?.let { dir ->
-              LocalFileSystem.getInstance().findFileByPath(dir)?.let { PsiUtilCore.findFileSystemItem(project, it) }
+              StandardFileSystems.local().findFileByPath(dir)?.let { PsiUtilCore.findFileSystemItem(project, it) }
             }
             dir?.let { result.add(dir) }
             return result

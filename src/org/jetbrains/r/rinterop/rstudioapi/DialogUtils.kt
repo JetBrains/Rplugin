@@ -10,7 +10,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showOkCancelDialog
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.interpreter.isLocal
 import com.intellij.r.psi.rinterop.RObject
@@ -161,7 +161,7 @@ object DialogUtils {
         }
         descriptor.isForcedToUseIdeaFileChooser = true
         val fileChooserDialog = FileChooserFactory.getInstance().createFileChooser(descriptor, rInterop.project, null)
-        val toSelect = LocalFileSystem.getInstance().refreshAndFindFileByPath(path)
+        val toSelect = StandardFileSystems.local().refreshAndFindFileByPath(path)
         val files = fileChooserDialog.choose(rInterop.project, toSelect!!)
 
         return@withContext if (files.isEmpty()) getRNull()

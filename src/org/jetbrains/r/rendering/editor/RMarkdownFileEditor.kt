@@ -30,7 +30,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.r.psi.RBundle
@@ -311,7 +311,7 @@ private fun createOutputDirectoryAction(project: Project, report: VirtualFile): 
     }
 
     private fun outputDirectory(dir: String?) {
-      outputDirectory(LocalFileSystem.getInstance().findFileByPath(dir ?: return))
+      outputDirectory(StandardFileSystems.local().findFileByPath(dir ?: return))
     }
 
     private val outputDirectoryName

@@ -12,7 +12,7 @@ import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.RPluginCoroutineScope
@@ -146,7 +146,7 @@ class RRunJobDialog(
     panel.apply()
     RPluginCoroutineScope.getScope(project).launch(Dispatchers.IO + ModalityState.defaultModalityState().asContextElement()) {
       val (script, scriptPath) = when (scriptPathType) {
-        PathType.LOCAL -> LocalFileSystem.getInstance().findFileByPath(scriptPathLocal) to scriptPathLocal
+        PathType.LOCAL -> StandardFileSystems.local().findFileByPath(scriptPathLocal) to scriptPathLocal
         PathType.REMOTE -> interpreter.findFileByPathAtHost(scriptPathRemote) to scriptPathRemote
       }
       if (script == null) {

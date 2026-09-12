@@ -18,7 +18,7 @@ import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.r.psi.RBundle
 import com.intellij.r.psi.icons.RIcons
 import com.intellij.r.psi.visualization.inlays.RClipboardUtils
@@ -245,7 +245,7 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
     }
     val chooser = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, this)
     val basePath = project.basePath ?: return
-    val virtualBaseDir = LocalFileSystem.getInstance().findFileByIoFile(File(basePath))
+    val virtualBaseDir = StandardFileSystems.local().findFileByPath(File(basePath).absolutePath)
     val fileWrapper = chooser.save(virtualBaseDir, "table.csv") ?: return
 
     fun saveSelection(out: BufferedWriter, cellBreak: String) {
