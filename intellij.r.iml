@@ -45,6 +45,8 @@
     <orderEntry type="module" module-name="intellij.terminal" />
     <orderEntry type="module" module-name="intellij.platform.execution" />
     <orderEntry type="module" module-name="intellij.platform.execution.impl" />
+    <orderEntry type="module" module-name="intellij.platform.consoleView" />
+    <orderEntry type="module" module-name="intellij.platform.consoleView.impl" />
     <orderEntry type="module" module-name="intellij.webDeployment" />
     <orderEntry type="module" module-name="intellij.libraries.winp" />
     <orderEntry type="module" module-name="intellij.libraries.miglayout.swing" />
