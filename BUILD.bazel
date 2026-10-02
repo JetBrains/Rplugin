@@ -273,6 +273,8 @@ jvm_library(
         "@community//platform/lang-api:lang_test_lib",
         "@community//platform/lang-impl",
         "@community//platform/lang-impl:lang-impl_test_lib",
+        "@community//platform/lang-impl/backend",
+        "@community//platform/lang-impl/backend:backend_test_lib",
         "@lib//:kotlin-stdlib",
         "@community//platform/core-api:core",
         "@community//platform/core-api:core_test_lib",
