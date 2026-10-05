@@ -381,8 +381,8 @@
     <!--<codeStyleSettingsProvider implementation="org.jetbrains.r.editor.formatting.RCodeStyleSettingsProvider"/>-->
     <!--<langCodeStyleSettingsProvider-->
     <!--  implementation="org.jetbrains.r.editor.formatting.RLanguageCodeStyleSettingsProvider"/>-->
-    <colorSettingsPage implementation="com.intellij.r.psi.highlighting.RColorSettingsPage"/>
-    <colorSettingsPage implementation="com.intellij.r.psi.highlighting.RMarkdownColorSettingsPage"/>
+    <colorSettings implementation="com.intellij.r.psi.highlighting.RColorSettingsPage" displayName="R"/>
+    <colorSettings implementation="com.intellij.r.psi.highlighting.RMarkdownColorSettingsPage" displayName="R Markdown"/>
     <!--<lang.formatter language="R" implementationClass="org.jetbrains.r.editor.formatting.RFormattingModelBuilder"/>-->
     <!--<lang.braceMatcher language="R" implementationClass="org.jetbrains.r.editor.RBraceMatcher"/>-->
     <lang.braceMatcher language="Roxygen" implementationClass="com.intellij.r.psi.roxygen.RoxygenBraceMatcher"/>
