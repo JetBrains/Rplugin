@@ -222,6 +222,9 @@ object RInterpreterUtil {
         ?: emptyList()
       }
 
+  // intellij.r.psi is loaded embedded in the R plugin and never runs as frontend content, so this
+  // backend-only indexing call is safe despite the inspection flagging it for split-mode compatibility.
+  @Suppress("SplitModeApiUsage")
   fun updateIndexableSet(project: Project) {
     if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
       UnindexedFilesScanner(project, "R interpreter state changed").queue()
