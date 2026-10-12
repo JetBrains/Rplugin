@@ -9,6 +9,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.psi.PsiElement
 import com.intellij.r.psi.psi.RGlobalVariablesFilterId
 import com.intellij.testFramework.PlatformTestUtil
+import com.intellij.testFramework.StructureViewComponentTestUtil
 import com.intellij.testFramework.UsefulTestCase
 import org.intellij.lang.annotations.Language
 import org.jetbrains.r.RUsefulTestCase
@@ -139,7 +140,7 @@ class RStructureViewTest : RUsefulTestCase() {
                      @Language("RMarkdown") structure: String,
                      showGlobalVariables: Boolean) {
     myFixture.configureByText("test.R", source.trimIndent())
-    myFixture.testStructureView { svc ->
+    StructureViewComponentTestUtil.testStructureView(myFixture) { svc ->
       svc.setActionActive(RGlobalVariablesFilterId, !showGlobalVariables)
       PlatformTestUtil.expandAll(svc.tree)
       PlatformTestUtil.waitForPromise(svc.select(svc.treeModel.currentEditorElement, false))
