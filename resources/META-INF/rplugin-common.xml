@@ -337,7 +337,9 @@ You can find the source code in the following repositories:
                     class="org.jetbrains.r.packages.remote.ui.RUpgradeAllAction"/>
             <action id="org.jetbrains.r.packages.remote.ui.RRefreshAction"
                     class="org.jetbrains.r.packages.remote.ui.RRefreshAction"
-                    icon="AllIcons.Actions.Refresh"/>
+                    icon="AllIcons.Actions.Refresh">
+              <override-text place="GoToAction"/>
+            </action>
             <action id="org.jetbrains.r.packages.remote.ui.RLoadUnloadAction"
                     class="org.jetbrains.r.packages.remote.ui.RLoadUnloadAction"/>
             <action id="org.jetbrains.r.packages.remote.ui.RNavigateToDocumentationAction"
