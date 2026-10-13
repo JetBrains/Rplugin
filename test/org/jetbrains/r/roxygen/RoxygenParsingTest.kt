@@ -4,75 +4,121 @@
 package org.jetbrains.r.roxygen
 
 import com.intellij.r.psi.roxygen.parsing.RoxygenParserDefinition
-import com.intellij.testFramework.ParsingTestCase
+import com.intellij.platform.testFramework.junit5.codeInsight.fixture.parsingFixture
+import com.intellij.testFramework.junit5.TestApplication
+import com.intellij.testFramework.junit5.fixture.projectFixture
 import org.jetbrains.r.RUsefulTestCase
+import org.junit.jupiter.api.Test
 
-class RoxygenParsingTest : ParsingTestCase("roxygen/parser", "roxygen", RoxygenParserDefinition()) {
-  fun testSingleTextLine() = doTest(true)
+@TestApplication
+class RoxygenParsingTest {
+  companion object {
+    private val projectFixture = projectFixture()
+  }
 
-  fun testAllLinksAndTextTogether() = doTest(true)
+  private val parsing by parsingFixture(
+    projectFixture,
+    RUsefulTestCase.TEST_DATA_PATH + "/roxygen/parser",
+    "roxygen",
+    definitions = arrayOf(RoxygenParserDefinition()),
+  )
 
-  fun testAutolink() = doTest(true)
+  @Test
+  fun testSingleTextLine() = parsing.doTest(true)
 
-  fun testAutolinkBadURI() = doTest(true)
+  @Test
+  fun testAllLinksAndTextTogether() = parsing.doTest(true)
 
-  fun testAutolinkIntoAutolink() = doTest(true)
+  @Test
+  fun testAutolink() = parsing.doTest(true)
 
-  fun testAutolinkIntoHelpPageLinkText() = doTest(true)
+  @Test
+  fun testAutolinkBadURI() = parsing.doTest(true)
 
-  fun testAutolinkIntoLinkDestinationText() = doTest(true)
+  @Test
+  fun testAutolinkIntoAutolink() = parsing.doTest(true)
 
-  fun testDoubleEscapedHelpPageLink() = doTest(true)
+  @Test
+  fun testAutolinkIntoHelpPageLinkText() = parsing.doTest(true)
 
-  fun testEscapedAutolinkIntoLinkDestinationText() = doTest(true)
+  @Test
+  fun testAutolinkIntoLinkDestinationText() = parsing.doTest(true)
 
-  fun testEscapedHelpPageLink() = doTest(true)
+  @Test
+  fun testDoubleEscapedHelpPageLink() = parsing.doTest(true)
 
-  fun testHelpPageLink() = doTest(true)
+  @Test
+  fun testEscapedAutolinkIntoLinkDestinationText() = parsing.doTest(true)
 
-  fun testHelpPageLinkBadIdentifier() = doTest(true)
+  @Test
+  fun testEscapedHelpPageLink() = parsing.doTest(true)
 
-  fun testHelpPageLinkIdentifier() = doTest(true)
+  @Test
+  fun testHelpPageLink() = parsing.doTest(true)
 
-  fun testHelpPageLinkIntoHelpPageLink() = doTest(true)
+  @Test
+  fun testHelpPageLinkBadIdentifier() = parsing.doTest(true)
 
-  fun testHelpPageLinkOpenBracketBefore() = doTest(true)
+  @Test
+  fun testHelpPageLinkIdentifier() = parsing.doTest(true)
 
-  fun testHelpPageLinkWithText() = doTest(true)
+  @Test
+  fun testHelpPageLinkIntoHelpPageLink() = parsing.doTest(true)
 
-  fun testHelpPageLinkWithTextAndTextBeforeAfter() = doTest(true)
+  @Test
+  fun testHelpPageLinkOpenBracketBefore() = parsing.doTest(true)
 
-  fun testLessGreaterIsNotAutolink() = doTest(true)
+  @Test
+  fun testHelpPageLinkWithText() = parsing.doTest(true)
 
-  fun testLinkDestination() = doTest(true)
+  @Test
+  fun testHelpPageLinkWithTextAndTextBeforeAfter() = parsing.doTest(true)
 
-  fun testLinkDestinationExtraWhitespace() = doTest(true)
+  @Test
+  fun testLessGreaterIsNotAutolink() = parsing.doTest(true)
 
-  fun testLinkDestinationParenthesisInside() = doTest(true)
+  @Test
+  fun testLinkDestination() = parsing.doTest(true)
 
-  fun testLinkDestinationUnmatchedParenthesisInside() = doTest(true)
+  @Test
+  fun testLinkDestinationExtraWhitespace() = parsing.doTest(true)
 
-  fun testMultiLineWithIndents() = doTest(true)
+  @Test
+  fun testLinkDestinationParenthesisInside() = parsing.doTest(true)
 
-  fun testMultiTextLine() = doTest(true)
+  @Test
+  fun testLinkDestinationUnmatchedParenthesisInside() = parsing.doTest(true)
 
-  fun testParamTag() = doTest(true)
+  @Test
+  fun testMultiLineWithIndents() = parsing.doTest(true)
 
-  fun testParamTagExtraWhitespace() = doTest(true)
+  @Test
+  fun testMultiTextLine() = parsing.doTest(true)
 
-  fun testSingleEmptyLine() = doTest(true)
+  @Test
+  fun testParamTag() = parsing.doTest(true)
 
-  fun testTags() = doTest(true)
+  @Test
+  fun testParamTagExtraWhitespace() = parsing.doTest(true)
 
-  fun testTagsIntoExample() = doTest(true)
+  @Test
+  fun testSingleEmptyLine() = parsing.doTest(true)
 
-  fun testTwoHelpPageLinkInARow() = doTest(true)
+  @Test
+  fun testTags() = parsing.doTest(true)
 
-  fun testUnclosedAutolink() = doTest(true)
+  @Test
+  fun testTagsIntoExample() = parsing.doTest(true)
 
-  fun testUnclosedHelpPageLink() = doTest(true)
+  @Test
+  fun testTwoHelpPageLinkInARow() = parsing.doTest(true)
 
-  fun testUnclosedLinkDestination() = doTest(true)
+  @Test
+  fun testUnclosedAutolink() = parsing.doTest(true)
 
-  override fun getTestDataPath(): String = RUsefulTestCase.TEST_DATA_PATH
+  @Test
+  fun testUnclosedHelpPageLink() = parsing.doTest(true)
+
+  @Test
+  fun testUnclosedLinkDestination() = parsing.doTest(true)
 }
