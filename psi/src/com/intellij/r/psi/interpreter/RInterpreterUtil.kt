@@ -18,8 +18,10 @@ import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.components.serviceOrNull
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.UnindexedFilesScannerExecutor
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
@@ -37,9 +39,6 @@ import com.intellij.r.psi.rinterop.RCondaUtil
 import com.intellij.r.psi.settings.RInterpreterSettings
 import com.intellij.r.psi.settings.RSettings
 import com.intellij.util.EnvironmentUtil
-import com.intellij.util.indexing.FileBasedIndex
-import com.intellij.util.indexing.FileBasedIndexImpl
-import com.intellij.util.indexing.UnindexedFilesScanner
 import com.intellij.util.io.computeDetached
 import kotlinx.coroutines.DelicateCoroutinesApi
 import org.jetbrains.concurrency.runAsync
@@ -222,13 +221,8 @@ object RInterpreterUtil {
         ?: emptyList()
       }
 
-  // intellij.r.psi is loaded embedded in the R plugin and never runs as frontend content, so this
-  // backend-only indexing call is safe despite the inspection flagging it for split-mode compatibility.
-  @Suppress("SplitModeApiUsage")
   fun updateIndexableSet(project: Project) {
-    if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
-      UnindexedFilesScanner(project, "R interpreter state changed").queue()
-    }
+    project.serviceOrNull<UnindexedFilesScannerExecutor>()?.queueFullScanning("R interpreter state changed")
   }
 
   /**
