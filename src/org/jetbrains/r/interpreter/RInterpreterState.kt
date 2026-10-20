@@ -1,5 +1,6 @@
 package org.jetbrains.r.interpreter
 
+import com.intellij.concurrency.ConcurrentCollectionFactory
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
@@ -26,7 +27,7 @@ import com.intellij.r.psi.interpreter.RInterpreterUtil
 import com.intellij.r.psi.interpreter.RLibraryWatcher
 import com.intellij.r.psi.packages.RInstalledPackage
 import com.intellij.util.concurrency.AppExecutorUtil
-import com.intellij.util.containers.ContainerUtil
+import java.util.concurrent.ConcurrentMap
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -52,7 +53,7 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
 
   private val updateEpoch = AtomicInteger(0)
 
-  private val name2PsiFile = ContainerUtil.createConcurrentSoftKeySoftValueMap<String, PsiFile>()
+  private val name2PsiFile: ConcurrentMap<String, PsiFile> = ConcurrentCollectionFactory.createConcurrentSoftKeySoftValueMap()
   private var name2libraryPaths: Map<String, RInterpreterState.LibraryPath> = emptyMap()
   private var name2installedPackages: Map<String, RInstalledPackage> = emptyMap()
 
