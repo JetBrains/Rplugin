@@ -75,6 +75,7 @@ jvm_library(
     ),
     module_name = "intellij.r.python.tests",
     visibility = ["//visibility:public"],
+    runtime_deps = ["//rplugin/python"],
 )
 
 jvm_library(
@@ -90,7 +91,11 @@ jvm_library(
     ),
     module_name = "intellij.r.python.tests",
     visibility = ["//visibility:public"],
-    runtime_deps = [":r-python-tests"],
+    runtime_deps = [
+        # do not sort,
+        ":r-python-tests",
+        "//rplugin/python:python_test_lib",
+    ],
     deps = [
         # do not sort,
         "@community//platform/code-style-api:codeStyle",
@@ -114,8 +119,6 @@ jvm_library(
         "@lib//:kotlin-stdlib",
         "//rplugin:r-tests",
         "//rplugin:r-tests_test_lib",
-        "//rplugin/python",
-        "//rplugin/python:python_test_lib",
         "@community//libraries/junit4",
         "@community//libraries/junit4:junit4_test_lib",
     ],
