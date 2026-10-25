@@ -88,10 +88,7 @@ jvm_library(
         ],
         allow_empty = True,
     ),
-    associates = [
-        "//rplugin/python",
-        "//rplugin/python:python_test_lib",
-    ],
+    module_name = "intellij.r.python.tests",
     visibility = ["//visibility:public"],
     runtime_deps = [":r-python-tests"],
     deps = [
@@ -117,6 +114,8 @@ jvm_library(
         "@lib//:kotlin-stdlib",
         "//rplugin:r-tests",
         "//rplugin:r-tests_test_lib",
+        "//rplugin/python",
+        "//rplugin/python:python_test_lib",
         "@community//libraries/junit4",
         "@community//libraries/junit4:junit4_test_lib",
     ],
