@@ -31,29 +31,6 @@ jvm_library(
         "@lib//:kotlin-stdlib",
     ],
 )
-
-jvm_library(
-    name = "python_test_lib",
-    testonly = True,
-    srcs = glob(
-        [],
-        allow_empty = True,
-    ),
-    module_name = "intellij.r.python",
-    visibility = ["//visibility:public"],
-    runtime_deps = [
-        # do not sort,
-        ":python",
-        "@community//platform/code-style-api:codeStyle_test_lib",
-        "@community//platform/core-api:core_test_lib",
-        "//rplugin:r_test_lib",
-        "//rplugin/psi:psi_test_lib",
-        "@community//platform/lang-api:lang_test_lib",
-        "@community//platform/lang-impl:lang-impl_test_lib",
-        "@community//python/openapi:community_test_lib",
-        "@community//python:python-community-impl_test_lib",
-    ],
-)
 ### auto-generated section `build intellij.r.python` end
 
 ### auto-generated section `iml intellij.r.python` start
@@ -68,17 +45,6 @@ exports_files(
 
 ### auto-generated section `build intellij.r.python.tests` start
 jvm_library(
-    name = "r-python-tests",
-    srcs = glob(
-        [],
-        allow_empty = True,
-    ),
-    module_name = "intellij.r.python.tests",
-    visibility = ["//visibility:public"],
-    runtime_deps = ["//rplugin/python"],
-)
-
-jvm_library(
     name = "r-python-tests_test_lib",
     testonly = True,
     srcs = glob(
@@ -91,36 +57,21 @@ jvm_library(
     ),
     module_name = "intellij.r.python.tests",
     visibility = ["//visibility:public"],
-    runtime_deps = [
-        # do not sort,
-        ":r-python-tests",
-        "//rplugin/python:python_test_lib",
-    ],
+    runtime_deps = ["//rplugin/python"],
     deps = [
         # do not sort,
         "@community//platform/code-style-api:codeStyle",
-        "@community//platform/code-style-api:codeStyle_test_lib",
         "@community//platform/core-api:core",
-        "@community//platform/core-api:core_test_lib",
         "@community//platform/projectModel-api:projectModel",
-        "@community//platform/projectModel-api:projectModel_test_lib",
         "//rplugin/psi",
-        "//rplugin/psi:psi_test_lib",
         "@community//platform/lang-api:lang",
-        "@community//platform/lang-api:lang_test_lib",
         "@community//platform/lang-impl",
-        "@community//platform/lang-impl:lang-impl_test_lib",
         "@community//platform/testFramework",
-        "@community//platform/testFramework:testFramework_test_lib",
         "@community//python:python-community-impl",
-        "@community//python:python-community-impl_test_lib",
         "@community//python/testFramework",
-        "@community//python/testFramework:testFramework_test_lib",
         "@lib//:kotlin-stdlib",
-        "//rplugin:r-tests",
         "//rplugin:r-tests_test_lib",
         "@community//libraries/junit4",
-        "@community//libraries/junit4:junit4_test_lib",
     ],
 )
 ### auto-generated section `build intellij.r.python.tests` end
